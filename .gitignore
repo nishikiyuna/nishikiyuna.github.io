@@ -1,0 +1,5 @@
+# OS / エディタが作る一時ファイル
+Thumbs.db
+desktop.ini
+.DS_Store
+*~

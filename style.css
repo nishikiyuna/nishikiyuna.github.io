@@ -1,0 +1,292 @@
+/* ------------------------------------------------------------------
+   Yuna Nishiki — personal site
+   Plain HTML/CSS. No build step.
+   ------------------------------------------------------------------ */
+
+:root {
+  --primary:   #3f51b5;   /* トップバー・見出しの下線 */
+  --primary-d: #303f9f;
+  --link:      #3f51b5;
+  --bg:        #ffffff;
+  --fg:        #1f2024;
+  --muted:     #63656d;
+  --rule:      #e4e5ea;
+  --card:      #f6f7fb;
+  --maxw:      52rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic UI",
+               "Segoe UI", Roboto, sans-serif;
+  font-size: .95rem;
+  line-height: 1.85;
+  font-weight: 400;
+}
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* --- top bar -------------------------------------------------------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+
+.topbar-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.brand {
+  display: block;
+  padding: .8rem 0 .3rem;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.brand:hover { text-decoration: none; opacity: .85; }
+
+nav.tabs {
+  display: flex;
+  gap: .25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav.tabs::-webkit-scrollbar { display: none; }
+
+nav.tabs a {
+  flex: 0 0 auto;
+  padding: .45rem .7rem .55rem;
+  color: rgba(255,255,255,.8);
+  font-size: .82rem;
+  letter-spacing: .03em;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+nav.tabs a:hover { color: #fff; text-decoration: none; }
+nav.tabs a.active { color: #fff; font-weight: 700; border-bottom-color: #fff; }
+nav.tabs a.lang { margin-left: auto; opacity: .85; }
+
+/* --- hero banner ---------------------------------------------------- */
+
+.hero {
+  position: relative;
+  height: 200px;
+  background-color: var(--primary-d);
+  /* images/header.jpg を置くと自動で背景になります（無ければ下のグラデーション） */
+  background-image:
+    linear-gradient(120deg, rgba(28,35,80,.72), rgba(63,81,181,.55)),
+    url("images/header.jpg"),
+    linear-gradient(120deg, #1c2350, #4a5fc1 60%, #7a86d6);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-title {
+  color: #fff;
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0,0,0,.5);
+  padding: 0 1rem;
+  line-height: 1.3;
+}
+
+/* --- layout --------------------------------------------------------- */
+
+main {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 5rem;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 1.75rem;
+  line-height: 1.4;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 2.75rem 0 1rem;
+  padding-bottom: .3rem;
+  border-bottom: 2px solid var(--primary);
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.9rem 0 .5rem;
+  color: var(--primary-d);
+}
+
+p { margin: 0 0 1rem; }
+
+ul.bullets { margin: 0 0 1rem; padding-left: 1.3rem; }
+ul.bullets li { margin-bottom: .3rem; }
+
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+
+.note { color: var(--muted); font-size: .87rem; }
+
+/* --- dated entry list (NEWS / Talks) -------------------------------- */
+
+ul.entries { list-style: none; margin: 0; padding: 0; }
+
+ul.entries > li {
+  padding: .85rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+ul.entries > li:first-child { padding-top: 0; }
+
+.date {
+  display: block;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: .03em;
+}
+.title { display: block; font-weight: 600; }
+.venue { display: block; font-size: .87rem; color: var(--muted); }
+.authors { display: block; font-size: .85rem; color: var(--muted); }
+.tag {
+  display: inline-block;
+  margin-left: .5rem;
+  padding: .05rem .45rem;
+  border-radius: 3px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  vertical-align: .1em;
+}
+
+/* --- profile table -------------------------------------------------- */
+
+dl.kv { margin: 0; display: grid; grid-template-columns: 6rem 1fr; row-gap: .35rem; }
+dl.kv dt { color: var(--muted); }
+dl.kv dd { margin: 0; }
+
+@media (max-width: 30rem) {
+  dl.kv { grid-template-columns: 1fr; row-gap: 0; }
+  dl.kv dd { margin-bottom: .6rem; }
+}
+
+/* --- CV timeline ---------------------------------------------------- */
+
+ul.timeline { list-style: none; margin: 0; padding: 0; }
+ul.timeline > li { display: grid; grid-template-columns: 11rem 1fr; padding: .7rem 0; border-bottom: 1px solid var(--rule); }
+ul.timeline .period { color: var(--muted); font-size: .85rem; font-weight: 600; }
+
+@media (max-width: 34rem) {
+  ul.timeline > li { grid-template-columns: 1fr; }
+  ul.timeline .period { margin-bottom: .1rem; }
+}
+
+/* --- file cards (Slides page) --------------------------------------- */
+
+.files { display: grid; gap: .9rem; margin-bottom: 1.5rem; }
+
+.file {
+  display: flex;
+  gap: .9rem;
+  align-items: flex-start;
+  padding: .95rem 1.1rem;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--primary);
+  border-radius: 4px;
+}
+
+.file .icon { flex: 0 0 auto; width: 1.5rem; height: 1.5rem; margin-top: .25rem; fill: var(--primary); }
+.file .body { min-width: 0; }
+.file .title { margin-bottom: .1rem; }
+
+.dl {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  margin: .5rem .5rem 0 0;
+  padding: .3rem .75rem;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 3px;
+  font-size: .82rem;
+  font-weight: 600;
+}
+.dl:hover { background: var(--primary-d); text-decoration: none; }
+.dl.ghost { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+.dl.ghost:hover { background: var(--card); }
+.size { font-weight: 400; opacity: .85; }
+
+/* --- link page groups ----------------------------------------------- */
+
+ul.linklist { list-style: none; margin: 0 0 1rem; padding: 0; columns: 2; column-gap: 2rem; }
+ul.linklist li { margin-bottom: .25rem; break-inside: avoid; }
+
+@media (max-width: 34rem) { ul.linklist { columns: 1; } }
+
+/* --- inline math (dependency-free) ---------------------------------- */
+
+.math {
+  font-family: "Cambria Math", Cambria, Georgia, "Times New Roman", serif;
+  font-style: italic;
+  white-space: nowrap;
+}
+.math .op { font-style: normal; padding: 0 .12em; }
+
+.eq {
+  display: block;
+  margin: 1.3rem 0;
+  padding: .85rem 1rem;
+  background: var(--card);
+  border-left: 3px solid var(--primary);
+  text-align: center;
+  font-size: 1.05rem;
+  overflow-x: auto;
+}
+
+/* --- footer --------------------------------------------------------- */
+
+footer {
+  border-top: 1px solid var(--rule);
+  background: var(--card);
+}
+footer .inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+/* --- print ---------------------------------------------------------- */
+
+@media print {
+  .topbar, .hero, footer { display: none; }
+  body { font-size: 10.5pt; }
+  main { max-width: none; padding: 0; }
+  a { color: #000; }
+  h2 { border-bottom-color: #000; }
+}
