@@ -168,6 +168,8 @@ ul.entries > li:first-child { padding-top: 0; }
 .title { display: block; font-weight: 600; }
 .venue { display: block; font-size: .87rem; color: var(--muted); }
 .authors { display: block; font-size: .85rem; color: var(--muted); }
+.authors .affil { font-style: italic; }
+.authors sup { font-size: .7em; vertical-align: super; }
 .tag {
   display: inline-block;
   margin-left: .5rem;
