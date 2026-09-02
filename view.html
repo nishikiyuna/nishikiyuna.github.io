@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>資料を見る｜西木結菜（Yuna Nishiki）</title>
+<meta name="description" content="西木結菜（Yuna Nishiki）の発表スライド・ポスターをブラウザ上で表示します。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Yuna Nishiki</a>
+    <nav class="tabs">
+      <a href="index.html">Home</a>
+      <a href="cv.html">CV</a>
+      <a href="publication.html">Publication</a>
+      <a href="presentation.html">Presentation</a>
+      <a href="slides.html" class="active">Slides</a>
+      <a href="link.html">Link</a>
+      <a href="en.html" class="lang">English</a>
+    </nav>
+  </div>
+</header>
+
+<div class="viewer-bar">
+  <div class="viewer-bar-inner">
+    <a class="vb-back" href="slides.html">&larr; Slides</a>
+    <span class="vb-title" id="vb-title">読み込み中…</span>
+    <span class="vb-tools">
+      <button type="button" id="zoom-out" title="縮小">&minus;</button>
+      <span id="zoom-level">100%</span>
+      <button type="button" id="zoom-in" title="拡大">&plus;</button>
+      <span class="vb-pages" id="vb-pages"></span>
+      <a class="vb-raw" id="vb-raw" href="#" target="_blank" rel="noopener">PDF を保存</a>
+    </span>
+  </div>
+</div>
+
+<div class="viewer" id="viewer">
+  <p class="viewer-msg" id="viewer-msg">資料を読み込んでいます…</p>
+</div>
+
+<footer>
+  <div class="inner">
+    &copy; 2026 Yuna Nishiki<br>
+    掲載しているスライドの内容の引用・転載についてはご連絡ください。
+  </div>
+</footer>
+
+<script type="module">
+import * as pdfjsLib from "./assets/pdfjs/pdf.mjs";
+pdfjsLib.GlobalWorkerOptions.workerSrc = "./assets/pdfjs/pdf.worker.mjs";
+
+const params  = new URLSearchParams(location.search);
+const rawSrc  = params.get("src") || "";
+const title   = params.get("title") || "";
+const viewer  = document.getElementById("viewer");
+const msgEl   = document.getElementById("viewer-msg");
+const titleEl = document.getElementById("vb-title");
+const pagesEl = document.getElementById("vb-pages");
+const rawEl   = document.getElementById("vb-raw");
+const zoomEl  = document.getElementById("zoom-level");
+
+// slides/ 配下の PDF だけを開く
+const src = /^slides\/[A-Za-z0-9._-]+\.pdf$/.test(rawSrc) ? rawSrc : null;
+
+const NEAR = 900;    // この距離まで近づいたページを描画する（px）
+const KEEP = 3500;   // この距離より離れたページは canvas を捨てる（px）
+
+let pdfDoc = null;
+let userScale = 1;
+let frames = [];          // { el, num, ratio, rendered, busy }
+let pumping = false;
+
+function fail(text) {
+  msgEl.textContent = text;
+  msgEl.hidden = false;
+}
+
+if (!src) {
+  titleEl.textContent = "資料が指定されていません";
+  fail("表示する資料が指定されていません。Slides のページから選び直してください。");
+} else {
+  titleEl.textContent = title || src.replace("slides/", "");
+  document.title = (title || "資料") + "｜西木結菜（Yuna Nishiki）";
+  rawEl.href = src;
+  start();
+}
+
+async function start() {
+  try {
+    pdfDoc = await pdfjsLib.getDocument({
+      url: src,
+      wasmUrl: "./assets/pdfjs/wasm/"
+    }).promise;
+  } catch (e) {
+    fail("資料を表示できませんでした。右上の「PDF を保存」から直接お開きください。");
+    return;
+  }
+  msgEl.hidden = true;
+  pagesEl.textContent = pdfDoc.numPages + " ページ";
+  await layout();
+}
+
+// ページ枠を先に並べ、見えているものから順に描画する
+async function layout() {
+  for (const f of frames) f.el.remove();
+  frames = [];
+
+  const width = pageWidth();
+  for (let n = 1; n <= pdfDoc.numPages; n++) {
+    const page = await pdfDoc.getPage(n);
+    const vp = page.getViewport({ scale: 1 });
+    const ratio = vp.height / vp.width;
+
+    const el = document.createElement("div");
+    el.className = "pdfpage";
+    el.style.width = width + "px";
+    el.style.height = Math.round(width * ratio) + "px";
+    viewer.appendChild(el);
+
+    frames.push({ el, num: n, ratio, rendered: false, busy: false });
+  }
+  sweep();
+}
+
+function pageWidth() {
+  const avail = Math.min(viewer.clientWidth - 8, 1400);
+  return Math.max(280, Math.round(avail * userScale));
+}
+
+function distanceFromView(el) {
+  const r = el.getBoundingClientRect();
+  if (r.bottom < 0) return -r.bottom;
+  if (r.top > window.innerHeight) return r.top - window.innerHeight;
+  return 0;
+}
+
+// 近いページを描画キューに積み、遠いページの canvas を解放する
+function sweep() {
+  for (const f of frames) {
+    const d = distanceFromView(f.el);
+    if (f.rendered && d > KEEP) {
+      f.el.replaceChildren();
+      f.rendered = false;
+    }
+  }
+  pump();
+}
+
+async function pump() {
+  if (pumping) return;
+  pumping = true;
+  try {
+    let next;
+    while ((next = frames.find(f => !f.rendered && !f.busy && distanceFromView(f.el) < NEAR))) {
+      await renderFrame(next);
+    }
+  } finally {
+    pumping = false;
+  }
+}
+
+async function renderFrame(f) {
+  f.busy = true;
+  try {
+    const page = await pdfDoc.getPage(f.num);
+    const cssWidth = f.el.clientWidth || pageWidth();
+    const base = page.getViewport({ scale: 1 });
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const viewport = page.getViewport({ scale: (cssWidth / base.width) * dpr });
+
+    const canvas = document.createElement("canvas");
+    canvas.width  = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    canvas.style.width  = "100%";
+    canvas.style.height = "100%";
+
+    // 1 ページで詰まっても後続を止めない
+    const task = page.render({
+      canvas,
+      canvasContext: canvas.getContext("2d", { alpha: false }),
+      viewport
+    });
+    let timer;
+    try {
+      await Promise.race([
+        task.promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => reject(new Error("render timeout")), 30000);
+        })
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+
+    const label = document.createElement("span");
+    label.className = "pdfpage-no";
+    label.textContent = f.num + " / " + pdfDoc.numPages;
+    f.el.replaceChildren(canvas, label);
+    f.rendered = true;
+  } catch (e) {
+    // 1 ページ描けなくても残りは進める
+  } finally {
+    f.busy = false;
+  }
+}
+
+// --- 拡大縮小 ---------------------------------------------------------
+function setZoom(next) {
+  userScale = Math.min(3, Math.max(0.5, Math.round(next * 10) / 10));
+  zoomEl.textContent = Math.round(userScale * 100) + "%";
+  if (pdfDoc) layout();
+}
+document.getElementById("zoom-in").addEventListener("click", () => setZoom(userScale + 0.2));
+document.getElementById("zoom-out").addEventListener("click", () => setZoom(userScale - 0.2));
+
+// --- スクロール・リサイズで追随 ---------------------------------------
+let sweepTimer = null;
+function scheduleSweep(delay) {
+  clearTimeout(sweepTimer);
+  sweepTimer = setTimeout(sweep, delay);
+}
+window.addEventListener("scroll", () => scheduleSweep(80), { passive: true });
+
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { if (pdfDoc) layout(); }, 250);
+});
+</script>
+
+</body>
+</html>

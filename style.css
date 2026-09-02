@@ -307,3 +307,110 @@ footer .inner {
   a { color: #000; }
   h2 { border-bottom-color: #000; }
 }
+
+/* --- PDF ビューア（view.html） --------------------------------------- */
+
+.viewer-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--card);
+  border-bottom: 1px solid var(--rule);
+}
+
+.viewer-bar-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: .5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  font-size: .82rem;
+}
+
+.vb-back { font-weight: 600; white-space: nowrap; }
+
+.vb-title {
+  flex: 1 1 12rem;
+  min-width: 0;
+  color: var(--fg);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vb-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  white-space: nowrap;
+}
+
+.vb-tools button {
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vb-tools button:hover { background: var(--card); border-color: var(--primary); }
+
+#zoom-level { min-width: 3.2rem; text-align: center; color: var(--muted); }
+.vb-pages { color: var(--muted); margin-left: .3rem; }
+
+.vb-raw {
+  margin-left: .3rem;
+  padding: .25rem .7rem;
+  border: 1px solid var(--primary);
+  border-radius: 3px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.vb-raw:hover { background: var(--bg); text-decoration: none; }
+
+.viewer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+  overflow-x: auto;   /* 拡大したページは横スクロールで見る */
+}
+
+.viewer-msg { color: var(--muted); padding: 3rem 0; text-align: center; }
+
+.pdfpage {
+  position: relative;
+  margin: 0 auto 1.25rem;
+  background: #fff;
+  border: 1px solid var(--rule);
+  box-shadow: 0 1px 6px rgba(0,0,0,.12);
+}
+
+.pdfpage canvas { display: block; }
+
+.pdfpage-no {
+  position: absolute;
+  right: .4rem;
+  bottom: .4rem;
+  padding: .1rem .45rem;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  border-radius: 2px;
+  font-size: .7rem;
+}
+
+@media (max-width: 34rem) {
+  .vb-title { flex-basis: 100%; }
+  .viewer { padding: .75rem .4rem 2rem; }
+}
+
+@media print {
+  .viewer-bar { display: none; }
+}
