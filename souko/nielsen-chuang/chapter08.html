@@ -1,0 +1,1406 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="量子操作の形式（Kraus 表現・環境表現）と、脱分極・振幅減衰などの代表的な量子ノイズ">
+  <title>第8章 量子ノイズと量子操作 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter08" data-chapter="8">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第8章に対応</span>
+  第8章 量子ノイズと量子操作
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+現実の量子系は決して孤立しておらず、環境との相互作用によって状態が乱される。
+この「量子ノイズ」を記述する数学的枠組みが本章の主題である
+<strong>量子操作 (quantum operation)</strong> の形式である。
+まず古典的なノイズの確率モデルを復習して勘所をつかむ（§8.1）。
+続いて量子操作を三つの等価な視点から導入する（§8.2）。
+環境とのユニタリ結合、演算子和（Kraus）表現、物理的要請からの公理的特徴づけである。
+続いて、ビット反転・位相反転・脱分極・振幅ダンピング・位相ダンピングという
+基本的なノイズチャネルを Kraus 演算子と Bloch 球の変形の両面から解析する（§8.3）。
+さらに連続時間の記述（Lindblad 型マスター方程式）と、
+未知の量子操作を実験的に決定するプロセストモグラフィを扱う（§8.4）。
+最後に、この形式が破綻する状況を検討する（§8.5）。
+系と環境が最初から相関している場合である。
+本章は第9章（距離尺度）・第10章（量子誤り訂正）・第12章（量子チャネル容量）の土台となる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-1">古典ノイズと Markov 過程<span class="en">Classical noise and Markov processes</span></h2>
+
+<p>
+量子ノイズの理論に入る前に、古典的なノイズがどう記述されるかを整理しておく。
+量子操作の形式は、ここで現れる構造（確率ベクトル・遷移行列・Markov 性）の
+量子版とみなせるからである。
+</p>
+
+<p>
+硬い磁気ディスクに 1 ビットの情報を保存する状況を考えよう。
+長時間放置すると、熱揺らぎや外部磁場のせいでビットが反転してしまうことがある。
+反転が確率 \(p\) で起こり、確率 \(1-p\) で元の値が保たれるとする。
+このときビットの状態は決定的な値ではなく<strong>確率分布</strong>で記述するのが自然である。
+ビットが 0 である確率を \(p_0\)、1 である確率を \(p_1\) として、
+確率ベクトル \(\vec p = (p_0, p_1)^T\) を状態とみなす。
+ノイズを受けた後の分布 \(\vec q\) は、条件付き確率を並べた行列によって
+</p>
+\[
+\vec q = E\,\vec p,
+\qquad
+E = \begin{pmatrix} 1-p &amp; p \\ p &amp; 1-p \end{pmatrix}
+\]
+<p>
+と書ける。行列要素 \(E_{yx}\) は「入力が \(x\) のとき出力が \(y\) になる条件付き確率」である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（確率行列と確率保存）</span>
+成分がすべて非負で、<strong>各列の和が 1</strong> であるような行列を
+確率行列（stochastic matrix）と呼ぶ。列和の条件
+\[
+\sum_y E_{yx} = 1 \quad (\forall x)
+\]
+は「入力 \(x\) から<em>どこかの</em>出力へは必ず遷移する」という全確率の保存を表す。
+確率行列は確率ベクトル（非負・成分和 1）を確率ベクトルに写す。
+すなわち古典ノイズとは、状態空間（確率ベクトルの集合）上の線形写像であって
+確率の非負性と規格化を保つもののことである。
+</div>
+
+<p>
+複数の段階のノイズが順に作用する場合はどうか。
+第 1 段のノイズが \(E_1\)、第 2 段が \(E_2\) で表されるなら、
+合成後の分布は \(\vec q = E_2 E_1 \vec p\) となってほしい。
+しかしこれが成り立つには重要な仮定が要る。
+第 2 段の遷移確率が、<em>系がそれ以前にどんな履歴をたどったかに依存しない</em>ことである。
+</p>
+
+<div class="remark-box">
+<span class="box-title">Markov 性の仮定の意味</span>
+確率過程が <strong>Markov 的</strong>であるとは、次の時刻の状態の分布が
+「現在の状態」だけで決まり、過去の履歴に依存しないことをいう。
+物理的には、ノイズの原因となる環境が各段階で「記憶を持たない」
+——たとえば第 1 段でビットと相互作用した環境の自由度が、
+第 2 段が始まる前に緩和してリセットされている——ことに対応する。
+環境が記憶を持つ（相関時間が長い）場合、各段階を独立な遷移行列で書くことはできず、
+系と環境を合わせた大きな系で追跡するしかない。
+この事情は量子の場合にもそのまま現れる：
+量子操作の形式が有効なのは本質的に Markov 的な状況であり、
+その限界は §8.5 で再訪する。
+</div>
+
+<p>
+以上をまとめると、古典ノイズの記述は
+「状態＝確率ベクトル、ノイズ＝確率行列、多段階ノイズ＝行列の積（Markov 性の下で）」
+という構造を持つ。量子版では
+「状態＝密度演算子、ノイズ＝量子操作、多段階ノイズ＝量子操作の合成」
+がこれに対応する。確率行列を特徴づけた二条件（非負性の保存・確率の保存）の
+量子版が何になるかが、§8.2.4 の公理的アプローチの主題である。
+そこで見るように、非負性の保存の量子版は単なる正値性ではなく
+<strong>完全正値性</strong>という、より強い（そして純粋に量子的な）条件になる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-2">量子操作<span class="en">Quantum operations</span></h2>
+
+<h3 id="sec-8-2-1">§8.2.1 概観</h3>
+
+<p>
+量子操作とは、密度演算子を密度演算子に写す写像
+\[
+\rho' = \mathcal E(\rho)
+\]
+であって、物理的に実現可能な状態変化をすべて包含する枠組みである。
+これまでに学んだ 2 種類の状態変化は、どちらも量子操作の特別な場合になる。
+</p>
+
+<ul>
+<li><strong>閉じた系のユニタリ発展</strong>：\(\mathcal E(\rho) = U\rho U^\dagger\)。</li>
+<li><strong>測定</strong>：測定演算子 \(\{M_m\}\)（\(\sum_m M_m^\dagger M_m = I\)）による測定で
+結果 \(m\) を得たとき、
+\[
+\mathcal E_m(\rho) = M_m \rho M_m^\dagger
+\]
+と定めると、\(\tr \mathcal E_m(\rho) = p(m)\) が結果 \(m\) の確率、
+規格化した \(\mathcal E_m(\rho)/\tr \mathcal E_m(\rho)\) が測定後状態となる。</li>
+</ul>
+
+<p>
+2 番目の例が示すように、本章では<strong>トレースが 1 とは限らない</strong>写像も量子操作に含める
+という規約を採る。すなわち \(\mathcal E(\rho)\) のトレースは
+「その操作（たとえば特定の測定結果）が実際に起こる確率」を表し、
+\(0 \le \tr\mathcal E(\rho) \le 1\) を満たす。
+トレースをちょうど保つ量子操作（決定的に起こる状態変化。
+<strong>量子チャネル (quantum channel)</strong> とも呼ぶ）はその特別な場合である。
+以下では主にトレース保存の場合を念頭に置き、必要に応じて一般の場合に触れる。
+</p>
+
+<p>
+量子操作を特徴づける方法は 3 通りある。
+(i) 系を環境と合成してユニタリ発展させ、環境を捨てる（§8.2.2）、
+(ii) 演算子和表現で書く（§8.2.3）、
+(iii) 物理的に妥当な写像が満たすべき公理を課す（§8.2.4）。
+本節の主定理は、この 3 つが<strong>すべて同値</strong>だという事実である。
+</p>
+
+<h3 id="sec-8-2-2">§8.2.2 環境と量子操作</h3>
+
+<p>
+ノイズの物理的な起源は、系が<strong>環境 (environment)</strong> と相互作用することである。
+系と環境を合わせた全体は閉じた系だからユニタリに発展する。
+系だけの状態変化は、全体のユニタリ発展から環境を部分トレースで消去して得られる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（系・環境モデルによる量子操作）</span>
+系の初期状態を \(\rho\)、環境の初期状態を \(\rho_E\) とし、
+両者は初期時刻に無相関（積状態 \(\rho\otimes\rho_E\)）であると仮定する。
+全体系のユニタリ発展 \(U\) の後に環境を捨てて得られる写像
+\[
+\mathcal E(\rho) = \tr_E\!\left[\,U\,(\rho\otimes\rho_E)\,U^\dagger\,\right]
+\]
+を量子操作と呼ぶ。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="60" x2="185" y2="60" class="line"/>
+  <line x1="60" y1="125" x2="185" y2="125" class="line"/>
+  <rect x="185" y="35" width="80" height="115" class="gate" stroke-width="1.5"/>
+  <text x="215" y="99" class="label" font-size="18">U</text>
+  <line x1="265" y1="60" x2="400" y2="60" class="line accent" stroke-width="1.5"/>
+  <line x1="265" y1="125" x2="330" y2="125" class="line"/>
+  <line x1="336" y1="115" x2="336" y2="135" class="line"/>
+  <line x1="341" y1="119" x2="341" y2="131" class="line"/>
+  <line x1="346" y1="122" x2="346" y2="128" class="line"/>
+  <text x="30" y="65" class="label">ρ</text>
+  <text x="22" y="130" class="label">ρ_E</text>
+  <text x="358" y="65" class="label">𝓔(ρ)</text>
+  <text x="300" y="160" class="label-muted">環境を捨てる（tr_E）</text>
+  <text x="70" y="45" class="label-muted">系</text>
+  <text x="70" y="110" class="label-muted">環境</text>
+</svg>
+<figcaption>図 8.1：量子操作の系・環境モデル。系と環境は無相関な積状態から出発し、
+全体がユニタリ \(U\) で発展した後、環境の自由度を部分トレースで消去する。</figcaption>
+</figure>
+
+<p>
+2 つの仮定に注意しておく。
+第一に、環境の初期状態は純粋状態 \(\rho_E = \ketbra{e_0}{e_0}\) としてよい。
+混合状態なら環境をさらに大きく取って純粋化すればよいからである（§2.5）。
+第二に、初期の無相関性は本質的な仮定である。
+系を実験で「準備」した直後は環境との相関が消えているという状況では妥当だが、
+そうでない場合には形式全体が破綻しうる（§8.5）。
+</p>
+
+<div class="example-box">
+<span class="box-title">例：CNOT による環境との結合</span>
+系は 1 量子ビット、環境も 1 量子ビットで初期状態 \(\ket 0\) とし、
+全体に系を制御ビットとする CNOT を作用させる。
+つまり \(U\ket{a}\ket{0} = \ket{a}\ket{a}\)（\(a=0,1\)）である。
+環境が系の計算基底の値を「コピー」して持ち去る、最も単純な盗み見モデルである。
+系の状態変化を計算しよう。\(\rho\) を成分で
+\(\rho = \sum_{a,b} \rho_{ab}\ketbra{a}{b}\) と書くと、
+\[
+U(\rho\otimes\ketbra00)U^\dagger
+= \sum_{a,b}\rho_{ab}\,\ketbra{a}{b}\otimes\ketbra{a}{b}
+\]
+であり、環境の部分トレースは \(\tr[\ketbra ab] = \delta_{ab}\) を与えるから
+\[
+\mathcal E(\rho) = \sum_a \rho_{aa}\ketbra{a}{a}
+= P_0\rho P_0 + P_1\rho P_1,
+\qquad P_a\equiv\ketbra{a}{a}.
+\]
+非対角成分が完全に消え、対角成分だけが残る。
+すなわち「環境に基底の情報が漏れる」ことは、系にとっては
+「重ね合わせの位相情報（コヒーレンス）の完全な喪失」として現れる。
+これがデコヒーレンスの原型であり、後で導入する位相ダンピング（§8.3.6）の
+\(\lambda=1\) の極限に他ならない。
+最後の表式に現れた \(P_0, P_1\) が、次項で一般的に定義する Kraus 演算子の例である。
+</div>
+
+<h3 id="sec-8-2-3">§8.2.3 演算子和表現</h3>
+
+<p>
+系・環境モデルの表式から環境の自由度を陽に消去すると、
+量子操作を<strong>系の演算子だけ</strong>で書く便利な表現が得られる。
+環境の正規直交基底を \(\{\ket{e_k}\}\)、環境の初期状態を \(\ket{e_0}\) として、
+部分トレースを基底で書き下すだけである：
+\[
+\mathcal E(\rho)
+= \tr_E\!\left[U(\rho\otimes\ketbra{e_0}{e_0})U^\dagger\right]
+= \sum_k \bra{e_k}\,U\,(\rho\otimes\ketbra{e_0}{e_0})\,U^\dagger\,\ket{e_k}
+= \sum_k E_k\,\rho\,E_k^\dagger .
+\]
+ここで
+\[
+E_k \equiv \bra{e_k}U\ket{e_0}
+\]
+と定義した。\(\bra{e_k}\cdot\ket{e_0}\) は環境の自由度についてだけ取った
+「部分内積」であり、\(E_k\) は<strong>系の Hilbert 空間上の演算子</strong>である
+（\(U\) の行列要素を環境の添字についてだけ抜き出したもの、と思えばよい）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（演算子和表現・Kraus 演算子）</span>
+量子操作 \(\mathcal E\) が演算子の集合 \(\{E_k\}\) によって
+\[
+\mathcal E(\rho) = \sum_k E_k\,\rho\,E_k^\dagger
+\]
+と書けるとき、これを \(\mathcal E\) の<strong>演算子和表現 (operator-sum representation)</strong>
+と呼び、\(E_k\) を <strong>Kraus 演算子</strong>（操作要素）と呼ぶ。
+Kraus 演算子は<strong>完全性関係</strong>
+\[
+\sum_k E_k^\dagger E_k \le I
+\]
+を満たす。等号が成り立つとき \(\mathcal E\) はトレース保存である。
+</div>
+
+<p>
+完全性関係を確かめる。トレース保存の場合、
+\[
+\sum_k E_k^\dagger E_k
+= \sum_k \bra{e_0}U^\dagger\ket{e_k}\bra{e_k}U\ket{e_0}
+= \bra{e_0}U^\dagger \Big(\sum_k \ketbra{e_k}{e_k}\Big) U\ket{e_0}
+= \bra{e_0}U^\dagger U\ket{e_0} = I
+\]
+となる（途中で環境の完全性 \(\sum_k\ketbra{e_k}{e_k}=I_E\) を使った。
+両端の \(\bra{e_0}\cdot\ket{e_0}\) も環境についての部分内積であり、結果は系の恒等演算子である）。
+逆に \(\sum_k E_k^\dagger E_k = I\) なら、任意の \(\rho\) に対して
+\(\tr\mathcal E(\rho) = \tr[\sum_k E_k^\dagger E_k \rho] = \tr\rho = 1\) となり
+トレースが保存される。
+</p>
+
+<p>
+<strong>測定を含む場合。</strong>
+ユニタリ発展の後に環境を射影 \(\{P_m\}\) で測定し、結果 \(m\) を得たときの
+系の（規格化されていない）状態は
+\[
+\mathcal E_m(\rho) = \tr_E\!\left[(I\otimes P_m)\,U(\rho\otimes\ketbra{e_0}{e_0})U^\dagger\,(I\otimes P_m)\right]
+= \sum_{k} E_{mk}\,\rho\,E_{mk}^\dagger,
+\qquad E_{mk} = \bra{e_{mk}}U\ket{e_0}
+\]
+となる。ここで \(\{\ket{e_{mk}}\}_k\) は \(P_m\) の像の正規直交基底である。
+このとき \(\tr\mathcal E_m(\rho)\) が結果 \(m\) の確率であり、
+\(\sum_m \tr\mathcal E_m(\rho) = 1\)、すなわち
+各 \(\mathcal E_m\) はトレース非増加で、全体を足すとトレース保存になる。
+これが「トレースが確率を表す」規約の由来である。
+</p>
+
+<div class="remark-box">
+<span class="box-title">物理的解釈：測定したが結果を知らない</span>
+トレース保存の演算子和表現には次の読み方ができる。
+環境と相互作用した後、誰かが環境を基底 \(\{\ket{e_k}\}\) で測定したとしよう。
+結果 \(k\) が出る確率は \(p(k) = \tr[E_k\rho E_k^\dagger]\)、
+そのときの系の状態は \(\rho_k = E_k\rho E_k^\dagger / p(k)\) である。
+測定結果を<em>知らされていない</em>観測者にとって、系の状態はアンサンブル平均
+\[
+\rho' = \sum_k p(k)\,\rho_k = \sum_k E_k\rho E_k^\dagger = \mathcal E(\rho)
+\]
+である。つまり量子ノイズとは
+「環境が系を測定したが、その結果が我々には知らされていない」
+状況だとみなせる。実際に誰かが環境を測るかどうかは系の状態に影響しない
+（部分トレースの結果は環境側の操作に依存しない）から、
+この解釈はいつでも使ってよい心的モデルである。
+逆に、環境の測定結果を<em>入手できる</em>なら、各 \(k\) ごとの条件付き状態 \(\rho_k\)
+が使える——これが量子誤り訂正（第10章）でシンドローム測定が機能する理由の原型である。
+</div>
+
+<p><strong>逆向きの構成：演算子和表現から系・環境モデルへ。</strong>
+系・環境モデルが演算子和表現を与えることは上で見た。
+逆に、完全性関係を満たす任意の \(\{E_k\}\) が与えられたとき、
+それを実現する環境とユニタリが必ず存在する。
+したがって両者は同じクラスの写像を定める。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（演算子和表現のユニタリによる実現）</span>
+\(\sum_k E_k^\dagger E_k = I\) を満たす系上の演算子の組 \(\{E_k\}_{k=1}^{m}\) に対し、
+\(m\) 次元（以上）の環境系 \(E\)、その状態 \(\ket{e_0}\)、
+および全体系のユニタリ \(U\) が存在して
+\(\mathcal E(\rho)=\sum_k E_k\rho E_k^\dagger = \tr_E[U(\rho\otimes\ketbra{e_0}{e_0})U^\dagger]\)
+が成り立つ。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+環境の正規直交基底を \(\{\ket{e_k}\}_{k=1}^m\) とし、系の任意のベクトル \(\ket\psi\) に対して
+\[
+U\,\ket\psi\ket{e_0} \equiv \sum_k (E_k\ket\psi)\ket{e_k}
+\]
+と定める（\(\ket{e_0}\) は基底の 1 つに取ればよい）。
+この定義は部分空間 \(\mathcal H_S\otimes\ket{e_0}\) 上でのみ \(U\) を定める。
+そこでは内積が保たれる：
+\[
+\big(\bra\varphi\bra{e_0}U^\dagger\big)\big(U\ket\psi\ket{e_0}\big)
+= \sum_{k,l}\bra\varphi E_l^\dagger E_k\ket\psi\,\braket{e_l}{e_k}
+= \bra\varphi\Big(\sum_k E_k^\dagger E_k\Big)\ket\psi
+= \braket\varphi\psi .
+\]
+内積を保つ線形写像は、定義域の直交補空間上へ適当に拡張して全体のユニタリにできる
+（正規直交基底を正規直交系に写すので、残りの基底の行き先を埋めればよい）。
+このとき
+\[
+\tr_E\!\left[U(\ketbra\psi\psi\otimes\ketbra{e_0}{e_0})U^\dagger\right]
+= \sum_k \bra{e_k}\Big(\sum_{l,l'}E_l\ketbra\psi\psi E_{l'}^\dagger\otimes\ketbra{e_l}{e_{l'}}\Big)\ket{e_k}
+= \sum_k E_k\ketbra\psi\psi E_k^\dagger
+\]
+となり、線形性より一般の \(\rho\) にも成り立つ。<span class="qed">∎</span>
+</div>
+
+<p>
+この構成は、Kraus 演算子が \(m\) 個なら環境は \(m\) 次元で足りることも示している。
+後で見るように（系の次元を \(d\) として）Kraus 演算子は \(d^2\) 個あれば常に十分なので、
+<strong>環境は次元 \(d^2\) の系で常に足りる</strong>。
+ノイズの記述に「無限に大きな環境」は必要ないのである。
+</p>
+
+<p><strong>演算子和表現の非一意性。</strong>
+同じ量子操作が異なる Kraus 演算子の組で書けることがある。
+たとえば §8.2.2 の CNOT の例で得た \(\mathcal E(\rho)=P_0\rho P_0 + P_1\rho P_1\) は、
+\(F_1 = (P_0+P_1)/\sqrt2 = I/\sqrt2\)、\(F_2=(P_0-P_1)/\sqrt2 = Z/\sqrt2\) を使って
+\[
+\mathcal E(\rho) = \tfrac12\rho + \tfrac12 Z\rho Z
+\]
+とも書ける（展開すれば交差項が打ち消し合うことがすぐ確かめられる）。
+物理的には「環境を \(\{\ket0,\ket1\}\) で測るか \(\{\ket\pm\}\) で測るか」の違いに対応し、
+結果を知らない限り系の状態は同じ、という §8.2.3 の解釈とも整合する。
+この自由度は次の定理で完全に特徴づけられる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（演算子和表現のユニタリ自由度）</span>
+\(\{E_1,\dots,E_m\}\) と \(\{F_1,\dots,F_n\}\) をそれぞれ量子操作
+\(\mathcal E\)、\(\mathcal F\) の Kraus 演算子とする
+（短い方に零演算子を付け加えて \(m=n\) にそろえておく）。
+このとき \(\mathcal E = \mathcal F\) であるための必要十分条件は、
+複素ユニタリ行列 \(u=(u_{jk})\) が存在して
+\[
+F_j = \sum_k u_{jk} E_k
+\]
+と書けることである。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+（十分性）\(u\) のユニタリ性 \(\sum_j u_{jk}u_{jl}^* = \delta_{kl}\) より
+\[
+\sum_j F_j\rho F_j^\dagger
+= \sum_j\sum_{k,l} u_{jk}u_{jl}^*\,E_k\rho E_l^\dagger
+= \sum_{k,l}\delta_{kl}\,E_k\rho E_l^\dagger
+= \sum_k E_k\rho E_k^\dagger .
+\]
+</p>
+<p>
+（必要性）系の複製 \(R\) を用意し、規格化しない最大エンタングル状態
+\(\ket\alpha = \sum_i \ket{i}_R\ket{i}_Q\) を考える（\(\{\ket i\}\) は正規直交基底）。
+各 Kraus 演算子に対しベクトル
+\[
+\ket{\tilde e_k} \equiv (I_R\otimes E_k)\ket\alpha,
+\qquad
+\ket{\tilde f_j} \equiv (I_R\otimes F_j)\ket\alpha
+\]
+を対応させる。まず、この対応 \(A\mapsto (I\otimes A)\ket\alpha\) は線形かつ単射である。
+実際 \((I\otimes A)\ket\alpha = \sum_{i,i'}A_{i'i}\ket{i}\ket{i'}\) の成分は
+\(A\) の行列要素そのものだから、これが零ベクトルなら \(A=0\) である。
+次に
+\[
+\sum_k \ketbra{\tilde e_k}{\tilde e_k}
+= (I\otimes\mathcal E)(\ketbra\alpha\alpha)
+= (I\otimes\mathcal F)(\ketbra\alpha\alpha)
+= \sum_j \ketbra{\tilde f_j}{\tilde f_j}
+\]
+が成り立つ（真ん中の等号が仮定 \(\mathcal E=\mathcal F\)。
+厳密には \(\ketbra\alpha\alpha\) を規格化して密度演算子とみなし、
+線形性で戻せばよい）。
+同一の正演算子を生成する 2 つのベクトルの組はユニタリ行列で結ばれる。
+これは密度演算子に対するアンサンブルの自由度定理（第2章）と同じ主張であり、
+証明もそのまま使える。
+すなわち \(\ket{\tilde f_j} = \sum_k u_{jk}\ket{\tilde e_k}\) なるユニタリ \(u\) が存在する。
+対応の線形性と単射性から、これは演算子の関係
+\(F_j = \sum_k u_{jk}E_k\) に引き戻される。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+証明の途中で現れた演算子
+\[
+\sigma \equiv (I\otimes\mathcal E)(\ketbra\alpha\alpha) = \sum_k \ketbra{\tilde e_k}{\tilde e_k}
+\]
+は \(\mathcal E\) の情報をすべて含む重要な対象で（Choi 行列と呼ばれる。§8.2.4 でも主役になる）、
+ここからただちに次が従う。
+</p>
+
+<div class="thm-box">
+<span class="box-title">系（Kraus 演算子の個数の上界）</span>
+\(d\) 次元系上の任意の量子操作は、高々 \(d^2\) 個の Kraus 演算子による
+演算子和表現を持つ。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(\sigma\) は \(d^2\) 次元空間 \(\mathcal H_R\otimes\mathcal H_Q\) 上の正の演算子だから、
+スペクトル分解 \(\sigma = \sum_{k=1}^{r}\ketbra{s_k}{s_k}\)（固有ベクトルを規格化せず
+固有値を吸収させた形）の項数は \(r \le d^2\) である。
+各 \(\ket{s_k}\) は対応 \(A\mapsto(I\otimes A)\ket\alpha\) の全射性
+（成分を比較すれば任意のベクトルがこの形に書ける）によりある演算子 \(\tilde E_k\) を定め、
+ユニタリ自由度定理の証明と同じ計算で \(\{\tilde E_k\}_{k\le d^2}\) が
+\(\mathcal E\) の Kraus 演算子になる。<span class="qed">∎</span>
+</div>
+
+<h3 id="sec-8-2-4">§8.2.4 公理的アプローチ</h3>
+
+<p>
+ここまでは「環境とのユニタリ結合」という物理的な描像から出発した。
+逆に、物理的に許される状態変化が満たすべき最小限の要請を公理として置き、
+そこから演算子和表現を<em>導く</em>こともできる。
+このアプローチの利点は、系・環境という特定の実現方法に依存せずに
+量子操作のクラスを特徴づけられることである。
+</p>
+
+<div class="def-box">
+<span class="box-title">公理（量子操作の定義）</span>
+写像 \(\mathcal E\)（密度演算子から演算子への写像）が量子操作であるとは、
+次の 3 条件を満たすことをいう。
+<ul>
+<li><strong>A1（確率の解釈）</strong>：\(\tr\mathcal E(\rho)\) は「\(\mathcal E\) の表す過程が起こる確率」であり、
+任意の状態 \(\rho\) に対して \(0 \le \tr\mathcal E(\rho) \le 1\)。</li>
+<li><strong>A2（凸線形性）</strong>：確率混合に対して
+\[
+\mathcal E\Big(\sum_i p_i\rho_i\Big) = \sum_i p_i\,\mathcal E(\rho_i).
+\]
+「アンサンブルの平均を取ってから操作する」ことと
+「操作してから平均を取る」ことが一致せよ、という要請である。</li>
+<li><strong>A3（完全正値性）</strong>：\(\mathcal E\) は正値（\(A\ge0\Rightarrow\mathcal E(A)\ge0\)）
+であるだけでなく、任意の次元の補助系 \(R\) を付けた拡大写像も正値である：
+\[
+A \ge 0 \;\Longrightarrow\; (\mathcal I_R\otimes\mathcal E)(A) \ge 0 .
+\]</li>
+</ul>
+</div>
+
+<p>
+A1・A2 は古典の確率行列の条件（確率保存・分布に対する線形性）の自然な量子版である。
+非自明なのは A3 である。
+なぜ単なる正値性（密度演算子を密度演算子に写す）では足りないのか。
+理由は量子力学に固有の事情——エンタングルメント——にある。
+我々の系 \(Q\) が、操作 \(\mathcal E\) の作用を受けない傍観者系 \(R\) と
+エンタングルしているかもしれない。
+そのとき全体の状態変化は \(\mathcal I_R\otimes\mathcal E\) で記述されるが、
+これが密度演算子を密度演算子に写さないなら \(\mathcal E\) は物理的に実現不可能である。
+「\(R\) を付けても正値」という条件が完全正値性であり、
+次の例が示すように、これは正値性より真に強い。
+</p>
+
+<div class="example-box">
+<span class="box-title">例：転置写像は正値だが完全正値でない</span>
+1 量子ビット上の転置写像 \(\mathcal T(\rho) = \rho^T\)（計算基底での転置）を考える。
+転置は固有値を変えないから \(\mathcal T\) は正値であり、トレースも保つ。
+しかし系 \(R\)（1 量子ビット）とのエンタングル状態
+\(\ket{\Phi} = (\ket{00}+\ket{11})/\sqrt2\) に \(\mathcal I\otimes\mathcal T\) を作用させると
+\[
+(\mathcal I\otimes\mathcal T)(\ketbra\Phi\Phi)
+= \frac12\sum_{i,j}\ketbra ij\otimes(\ketbra ij)^T
+= \frac12\sum_{i,j}\ketbra ij\otimes\ketbra ji
+= \frac12\,\mathrm{SWAP}
+\]
+となる。SWAP 演算子は対称部分空間で固有値 \(+1\)、
+反対称状態 \((\ket{01}-\ket{10})/\sqrt2\) で固有値 \(-1\) を持つから、
+右辺は固有値 \(-1/2\) を持ち、正の演算子ではない。
+ゆえに \(\mathcal T\) は完全正値でなく、物理的な操作として実現できない。
+（この事実は逆手に取ると有用で、「部分転置して負の固有値が出るか」は
+エンタングルメントの検出条件として使われる。）
+</div>
+
+<p>
+公理的アプローチの主定理は、A1–A3 が演算子和表現とちょうど同値だという事実である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（公理系と演算子和表現の同値性）</span>
+写像 \(\mathcal E\) が公理 A1–A3 を満たすことと、
+\[
+\mathcal E(\rho) = \sum_k E_k\rho E_k^\dagger,
+\qquad \sum_k E_k^\dagger E_k \le I
+\]
+なる演算子の組 \(\{E_k\}\) が存在することは同値である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明の流れ</span>
+<p>
+（演算子和 ⇒ 公理）は易しい。
+A1：\(\tr\sum_k E_k\rho E_k^\dagger = \tr[(\sum_k E_k^\dagger E_k)\rho] \le \tr\rho = 1\)、
+非負性は各項の正値性から。A2：表式が \(\rho\) について線形だから。
+A3：\((\mathcal I\otimes\mathcal E)(A) = \sum_k (I\otimes E_k)A(I\otimes E_k)^\dagger\)
+であり、各項は \(A\ge0\) なら \(B A B^\dagger \ge 0\) の形で正値である。
+</p>
+<p>
+（公理 ⇒ 演算子和）が本体で、鍵は<strong>最大エンタングル状態が写像の情報をすべて記憶する</strong>
+ことである。系 \(Q\)（次元 \(d\)）の複製 \(R\) を取り、
+\(\ket\alpha = \sum_i\ket i_R\ket i_Q\) として <strong>Choi 演算子</strong>
+\[
+\sigma \equiv (\mathcal I_R\otimes\mathcal E)(\ketbra\alpha\alpha)
+\]
+を定義する。A3 により \(\sigma \ge 0\) である。
+</p>
+<p>
+<em>ステップ 1（\(\sigma\) から \(\mathcal E\) を復元する）。</em>
+\(\ket\psi = \sum_i \psi_i\ket i\) に対し、係数を複素共役にした
+\(R\) のベクトル \(\ket{\tilde\psi} = \sum_i \psi_i^*\ket i_R\) を対応させると、
+\(\braket{\tilde\psi}{\alpha} = \sum_i\psi_i\ket i_Q = \ket\psi\)
+（\(R\) についてだけの部分内積）となる。
+部分内積は \(Q\) 側に作用する \(\mathcal E\) と可換だから
+\[
+\bra{\tilde\psi}\,\sigma\,\ket{\tilde\psi}
+= \mathcal E\big(\braket{\tilde\psi}{\alpha}\bra\alpha\tilde\psi\rangle\big)
+= \mathcal E(\ketbra\psi\psi).
+\]
+つまり \(\sigma\) を知れば \(\mathcal E\) の純粋状態への作用がすべて分かる。
+</p>
+<p>
+<em>ステップ 2（Kraus 演算子の構成）。</em>
+\(\sigma\ge0\) をスペクトル分解して \(\sigma = \sum_k \ketbra{s_k}{s_k}\)
+（固有値は \(\ket{s_k}\) に吸収）と書き、各 \(k\) に対して系上の写像
+\[
+E_k\ket\psi \equiv \bra{\tilde\psi}s_k\rangle
+\]
+を定める（右辺は \(R\) についての部分内積で、\(Q\) のベクトル）。
+\(\psi\mapsto\tilde\psi\) の反線形性と内積の反線形性が打ち消し合うので
+\(E_k\) は線形演算子である。すると
+\[
+\sum_k E_k\ketbra\psi\psi E_k^\dagger
+= \sum_k \braket{\tilde\psi}{s_k}\braket{s_k}{\tilde\psi}
+= \bra{\tilde\psi}\sigma\ket{\tilde\psi}
+= \mathcal E(\ketbra\psi\psi)
+\]
+となり、純粋状態上で演算子和表現が成り立つ。
+A2（凸線形性）により混合状態へ拡張される。
+</p>
+<p>
+<em>ステップ 3（完全性関係）。</em>
+A1 より任意の \(\ket\psi\) に対して
+\(\tr\sum_k E_k\ketbra\psi\psi E_k^\dagger = \bra\psi(\sum_k E_k^\dagger E_k)\ket\psi \le 1\)。
+これがすべての単位ベクトルで成り立つことは
+\(\sum_k E_k^\dagger E_k \le I\) と同値である。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+こうして 3 つの視点の同値性が完成した：
+<strong>系・環境モデル ⇔ 演算子和表現 ⇔ 公理 A1–A3</strong>。
+とくに、抽象的な公理を満たす写像は必ず「環境とのユニタリ結合＋部分トレース」
+として物理的に実現でき、しかも環境は \(d^2\) 次元で足りる。
+以後は文脈に応じて最も便利な表現を使う。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-3">量子ノイズと量子操作の例<span class="en">Examples of quantum noise and quantum operations</span></h2>
+
+<p>
+形式が整ったので、具体例に取りかかる。
+まず一般論の補足として、トレース・部分トレースが量子操作であることを見る。
+次に、1 量子ビットのノイズを Bloch 球の幾何で可視化する方法を導入する。
+そのうえで、実際の物理でも重要な 4 つの基本チャネル
+（ビット反転／位相反転、脱分極、振幅ダンピング、位相ダンピング）を解析する。
+</p>
+
+<h3 id="sec-8-3-1">§8.3.1 トレースと部分トレース</h3>
+
+<p>
+量子操作の入力と出力の Hilbert 空間は同じでなくてもよい。
+Kraus 演算子 \(E_k\) を「入力空間から出力空間への線形写像」とすれば、
+演算子和表現も完全性関係もそのまま意味を持つ。
+この一般化のもとで、トレースそのものが量子操作になる。
+\(d\) 次元の入力空間の基底を \(\{\ket i\}\)、出力空間を 1 次元（基底 \(\ket 0\)）として
+\[
+\mathcal E(\rho) \equiv \sum_{i=1}^{d} \ketbra{0}{i}\,\rho\,\ketbra{i}{0}
+= \Big(\sum_i \bra i\rho\ket i\Big)\ketbra00 = \tr(\rho)\,\ketbra00
+\]
+は Kraus 演算子 \(E_i = \ketbra0i\) を持つ量子操作で、
+完全性 \(\sum_i E_i^\dagger E_i = \sum_i\ketbra ii = I\) も満たす。
+出力の 1 次元空間を無視すれば、これは「トレースを取る」操作に他ならない。
+</p>
+
+<p>
+より重要なのは<strong>部分トレース</strong>である。合成系 \(AB\) から \(A\) への写像として、
+\(B\) の基底 \(\{\ket j\}\) ごとに
+\[
+E_j \equiv I_A\otimes\bra{j},
+\qquad
+E_j\,(\ket a\ket b) = \braket jb\,\ket a
+\]
+と置くと（\(E_j\) は \(\mathcal H_A\otimes\mathcal H_B \to \mathcal H_A\) の線形写像）、
+\[
+\sum_j E_j\,\rho_{AB}\,E_j^\dagger = \sum_j (I\otimes\bra j)\rho_{AB}(I\otimes\ket j)
+= \tr_B[\rho_{AB}]
+\]
+となる。すなわち「サブシステムを捨てる」ことも正真正銘の量子操作である。
+第2章で部分トレースを天下り的に導入した際の
+「サブシステムの正しい状態記述は部分トレースしかない」という議論が、
+ここで公理的な枠組みに回収されたことになる。
+</p>
+
+<h3 id="sec-8-3-2">§8.3.2 1量子ビット量子操作の幾何学的描像</h3>
+
+<p>
+1 量子ビットの密度演算子は Bloch ベクトル \(\vec r\)（\(|\vec r|\le 1\)）で
+\[
+\rho = \frac{I + \vec r\cdot\vec\sigma}{2},
+\qquad \vec\sigma = (X, Y, Z)
+\]
+と一意に書ける（§2.4）。したがってトレース保存の量子操作は
+Bloch 球（単位球体）から自分自身への写像を定める。
+その形は驚くほど単純である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（1量子ビットチャネル＝Bloch 球のアフィン変換）</span>
+1 量子ビット上のトレース保存量子操作 \(\mathcal E\) は、Bloch ベクトルに対する
+<strong>アフィン変換</strong>
+\[
+\vec r \;\longmapsto\; \vec r{\,}' = M\vec r + \vec c
+\]
+として作用する。ここで \(M\) は実 \(3\times3\) 行列、\(\vec c\) は実 3 次元ベクトルである。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(\mathcal E\) は線形で、エルミート性とトレースを保つ
+（\(\mathcal E(A^\dagger) = \mathcal E(A)^\dagger\) は演算子和表現から明らか）。
+\(\rho = (I+\sum_k r_k\sigma_k)/2\) を代入すると
+\[
+\mathcal E(\rho) = \frac{\mathcal E(I)}{2} + \sum_k \frac{r_k}{2}\,\mathcal E(\sigma_k).
+\]
+\(\mathcal E(I)\)、\(\mathcal E(\sigma_k)\) はエルミートで、
+\(\tr\mathcal E(I)=2\)、\(\tr\mathcal E(\sigma_k)=0\) だから
+\[
+\mathcal E(I) = I + \vec c\cdot\vec\sigma\;\;(\vec c\in\mathbb R^3),
+\qquad
+\mathcal E(\sigma_k) = \sum_j M_{jk}\sigma_j + (\tr\text{部分は }0),
+\qquad
+M_{jk} = \tfrac12\tr[\sigma_j\,\mathcal E(\sigma_k)]\in\mathbb R
+\]
+と展開できる（実数性は両因子のエルミート性による）。まとめると
+\(\vec r{\,}' = M\vec r + \vec c\)。<span class="qed">∎</span>
+</div>
+
+<p>
+この描像から多くのことが読み取れる。
+</p>
+
+<ul>
+<li>\(M\) を特異値分解すれば \(M = O_1 D O_2\)（\(O_i\) は回転（と反転）、
+\(D=\mathrm{diag}(\lambda_1,\lambda_2,\lambda_3)\)）となる。
+つまり 1 量子ビットチャネルは、回転を除けば
+「Bloch 球を 3 つの主軸に沿って係数 \(\lambda_i\) で押しつぶし、\(\vec c\) だけ平行移動する」
+変形であり、<strong>球体の像は（ずれた）楕円体</strong>になる。</li>
+<li>\(\vec c = 0\) のチャネル（\(\mathcal E(I)=I\)）を<strong>ユニタル</strong>と呼ぶ。
+最大混合状態を不動点に持つチャネルである。振幅ダンピング（§8.3.5）は非ユニタルの代表例。</li>
+<li>像が Bloch 球に収まる（\(|M\vec r+\vec c|\le1\)）ことは正値性の要請だが、
+<strong>それだけでは完全正値性に足りない</strong>。
+たとえば反転 \(\vec r\mapsto -\vec r\)（普遍 NOT）は球を球に写すが量子操作ではない。
+実際、転置写像（§8.2.4）は Bloch 球上では \((r_x,r_y,r_z)\mapsto(r_x,-r_y,r_z)\)
+という鏡映であり、球は保つのに完全正値でなかった。
+どのアフィン変換が許されるかの完全な判定は Choi 行列 \(\sigma\ge0\) の条件に帰着する。</li>
+</ul>
+
+<h3 id="sec-8-3-3">§8.3.3 ビット反転チャネルと位相反転チャネル</h3>
+
+<p>
+古典ノイズ（§8.1）の最も素直な量子版は、確率 \(p\) で Pauli 演算子が作用するチャネルである。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（ビット反転チャネル）</span>
+\[
+\mathcal E(\rho) = (1-p)\,\rho + p\,X\rho X,
+\qquad
+E_0 = \sqrt{1-p}\,I,\quad E_1 = \sqrt{p}\,X .
+\]
+確率 \(p\) でビットの値（\(\ket0\leftrightarrow\ket1\)）が反転する。
+完全性：\(E_0^\dagger E_0 + E_1^\dagger E_1 = (1-p)I + pX^2 = I\)。
+</div>
+
+<p>
+Bloch 球での作用を求める。\(X\sigma_k X\) は \(\sigma_x\) を保ち
+\(\sigma_y,\sigma_z\) の符号を反転するから、
+\[
+(r_x, r_y, r_z) \;\longmapsto\; \big(r_x,\;(1-2p)\,r_y,\;(1-2p)\,r_z\big).
+\]
+すなわち Bloch 球は \(x\) 軸を対称軸とする回転楕円体（\(x\) 方向の半径 1、
+\(y,z\) 方向の半径 \(|1-2p|\)）に押しつぶされる。
+\(x\) 軸上の状態（\(\ket\pm\) の混合）は \(X\) の固有状態の混合だから影響を受けない、
+という直観と整合している。\(p=1/2\) では \(x\) 軸への完全な射影となる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（位相反転チャネル・ビット位相反転チャネル）</span>
+\(X\) を \(Z\)、\(Y\) に置き換えると、それぞれ
+<strong>位相反転 (phase flip)</strong> チャネル
+\[
+\mathcal E(\rho) = (1-p)\rho + p\,Z\rho Z,
+\qquad (r_x,r_y,r_z)\mapsto\big((1-2p)r_x,\,(1-2p)r_y,\,r_z\big),
+\]
+<strong>ビット位相反転 (bit–phase flip)</strong> チャネル
+\[
+\mathcal E(\rho) = (1-p)\rho + p\,Y\rho Y,
+\qquad (r_x,r_y,r_z)\mapsto\big((1-2p)r_x,\,r_y,\,(1-2p)r_z\big)
+\]
+が得られる。それぞれ \(z\) 軸・\(y\) 軸を保つ回転楕円体への収縮である。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 210" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="120" cy="105" rx="80" ry="80" class="line" stroke-dasharray="4 3"/>
+  <ellipse cx="120" cy="105" rx="80" ry="36" class="line accent" stroke-width="1.8"/>
+  <line x1="20" y1="105" x2="220" y2="105" class="line" stroke-dasharray="2 3"/>
+  <line x1="120" y1="10" x2="120" y2="200" class="line" stroke-dasharray="2 3"/>
+  <text x="226" y="109" class="label-muted">x</text>
+  <text x="126" y="18" class="label-muted">z</text>
+  <ellipse cx="345" cy="105" rx="80" ry="80" class="line" stroke-dasharray="4 3"/>
+  <ellipse cx="345" cy="105" rx="36" ry="80" class="line accent" stroke-width="1.8"/>
+  <line x1="245" y1="105" x2="445" y2="105" class="line" stroke-dasharray="2 3"/>
+  <line x1="345" y1="10" x2="345" y2="200" class="line" stroke-dasharray="2 3"/>
+  <text x="451" y="109" class="label-muted">x</text>
+  <text x="351" y="18" class="label-muted">z</text>
+  <text x="75" y="205" class="label">ビット反転</text>
+  <text x="305" y="205" class="label">位相反転</text>
+</svg>
+<figcaption>図 8.2：Bloch 球（破線）の断面で見たチャネルの像（実線）。
+ビット反転は \(x\) 軸を保って直交方向を縮め、位相反転は \(z\) 軸を保って赤道面を縮める。</figcaption>
+</figure>
+
+<p>
+位相反転は古典に対応物のない、純粋に量子的なノイズである点が重要である。
+計算基底の対角成分（測定確率）を一切変えず、
+非対角成分 \(\rho_{01}\) を \((1-2p)\rho_{01}\) に縮める。
+つまり「情報は壊さないがコヒーレンスだけを壊す」。
+§8.3.6 で見るように、物理的なデコヒーレンス過程（位相ダンピング）は
+実はこのチャネルと同一である。
+</p>
+
+<h3 id="sec-8-3-4">§8.3.4 脱分極チャネル</h3>
+
+<div class="def-box">
+<span class="box-title">定義（脱分極チャネル）</span>
+確率 \(p\) で状態を最大混合状態 \(I/2\) に置き換え、
+確率 \(1-p\) で元の状態を保つチャネル：
+\[
+\mathcal E(\rho) = p\,\frac{I}{2} + (1-p)\,\rho .
+\]
+</div>
+
+<p>
+この定義のままでは演算子和表現の形をしていないが、恒等式
+\[
+\frac{I}{2} = \frac{\rho + X\rho X + Y\rho Y + Z\rho Z}{4}
+\qquad(\forall \rho)
+\]
+を使って書き直せる。この恒等式は Bloch 表示で確かめるのが早い：
+\(\sigma_k\rho\sigma_k\) は \(\vec r\) の第 \(k\) 成分以外の符号を反転するから、
+4 項の和で \(\vec r\cdot\vec\sigma\) の項がすべて相殺し \(4\cdot I/2\) が残る。
+代入して整理すると
+\[
+\mathcal E(\rho) = \Big(1-\frac{3p}{4}\Big)\rho
++ \frac{p}{4}\big(X\rho X + Y\rho Y + Z\rho Z\big),
+\]
+すなわち Kraus 演算子は
+\(\{\sqrt{1-3p/4}\,I,\ \sqrt{p/4}\,X,\ \sqrt{p/4}\,Y,\ \sqrt{p/4}\,Z\}\) である。
+「確率 \(1-3p/4\) で何も起こらず、確率 \(p/4\) ずつで \(X,Y,Z\) の各エラーが起こる」
+チャネルと言ってもよい。
+</p>
+
+<p>
+Bloch 球での作用は等方的な収縮
+\[
+\vec r \;\longmapsto\; (1-p)\,\vec r
+\]
+である（\(I/2\) は \(\vec r = 0\)、\(\rho\) の項が \((1-p)\vec r\) を与える）。
+方向をえこひいきしない唯一の 1 量子ビットチャネルの族であり、
+「最悪ケースのノイズ」の標準モデルとして誤り訂正の解析で頻用される。
+なお、演算子和表現の係数が確率として意味を持つのは \(0\le p\le 1\) のときだが、
+完全正値性自体は \(p \le 4/3\) まで許す
+（\(p=4/3\) は \(\vec r\mapsto -\vec r/3\)、これが「反転」に最も近づける限界である）。
+\(d\) 次元系への一般化 \(\mathcal E(\rho) = p\,I/d + (1-p)\rho\) もよく使われる。
+</p>
+
+<h3 id="sec-8-3-5">§8.3.5 振幅ダンピング</h3>
+
+<p>
+ここからの 2 つは、実際の物理系のエネルギー緩和・位相緩和を記述する
+最も重要なチャネルである。
+まず<strong>振幅ダンピング (amplitude damping)</strong>：励起状態からのエネルギー散逸、
+典型的には二準位原子の<strong>自然放出</strong>のモデルである。
+</p>
+
+<p>
+\(\ket0\) を基底状態、\(\ket1\) を励起状態とし、
+環境を「光子の出ていく電磁場モード」とする。初期に光子はない（\(\ket0_E\)）。
+時間発展の間に、励起状態は確率 \(\gamma\) で光子を 1 個放出して基底状態に落ちる。
+これを全体のユニタリとして
+\[
+U\ket0_S\ket0_E = \ket0_S\ket0_E,
+\qquad
+U\ket1_S\ket0_E = \sqrt{1-\gamma}\,\ket1_S\ket0_E + \sqrt{\gamma}\,\ket0_S\ket1_E
+\]
+とモデル化する（基底状態は光子を出せない。励起状態は振幅 \(\sqrt\gamma\) で
+「系が \(\ket0\) に落ち、環境に光子が 1 個できる」状態へ遷移する。
+右辺のノルムは \((1-\gamma)+\gamma=1\) で保たれている）。
+Kraus 演算子は定義どおり \(E_k = \bra k_E U\ket0_E\) を読み取ればよい：
+\[
+E_0 = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; \sqrt{1-\gamma} \end{pmatrix},
+\qquad
+E_1 = \begin{pmatrix} 0 &amp; \sqrt{\gamma} \\ 0 &amp; 0 \end{pmatrix} = \sqrt\gamma\,\ketbra01 .
+\]
+完全性を確認する：
+\[
+E_0^\dagger E_0 + E_1^\dagger E_1
+= \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1-\gamma \end{pmatrix}
++ \begin{pmatrix} 0 &amp; 0 \\ 0 &amp; \gamma \end{pmatrix} = I .
+\]
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（振幅ダンピングチャネル）</span>
+\[
+\mathcal E_{\mathrm{AD}}(\rho) = E_0\rho E_0^\dagger + E_1\rho E_1^\dagger,
+\qquad
+E_0 = \ketbra00 + \sqrt{1-\gamma}\,\ketbra11,
+\quad
+E_1 = \sqrt\gamma\,\ketbra01 .
+\]
+\(\gamma\in[0,1]\) は「励起が失われる確率」である。
+</div>
+
+<p>
+成分で書くと、\(\rho=\begin{pmatrix}\rho_{00} &amp; \rho_{01}\\ \rho_{10} &amp; \rho_{11}\end{pmatrix}\) に対し
+\[
+\mathcal E_{\mathrm{AD}}(\rho)
+= \begin{pmatrix}
+\rho_{00} + \gamma\rho_{11} &amp; \sqrt{1-\gamma}\,\rho_{01} \\[2pt]
+\sqrt{1-\gamma}\,\rho_{10} &amp; (1-\gamma)\rho_{11}
+\end{pmatrix}.
+\]
+励起の占有確率 \(\rho_{11}\) が \((1-\gamma)\) 倍に減り、その分が \(\rho_{00}\) に移る。
+同時にコヒーレンス \(\rho_{01}\) も \(\sqrt{1-\gamma}\) 倍に減ることに注意
+——エネルギー緩和は必然的に位相緩和を伴う。
+Bloch ベクトルでは
+\[
+(r_x, r_y, r_z) \;\longmapsto\;
+\big(\sqrt{1-\gamma}\,r_x,\;\sqrt{1-\gamma}\,r_y,\;\gamma + (1-\gamma)\,r_z\big)
+\]
+という<strong>非ユニタル</strong>なアフィン変換（\(\vec c = (0,0,\gamma)\)）になる。
+</p>
+
+<figure>
+<svg viewBox="0 0 300 250" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="150" cy="125" rx="80" ry="80" class="line" stroke-dasharray="4 3"/>
+  <ellipse cx="150" cy="85" rx="56" ry="40" class="line accent" stroke-width="1.8"/>
+  <line x1="150" y1="15" x2="150" y2="235" class="line" stroke-dasharray="2 3"/>
+  <circle cx="150" cy="45" r="3.5" class="accent-fill"/>
+  <line x1="150" y1="185" x2="150" y2="140" class="line accent"/>
+  <path d="M 150 140 l -4 8 l 8 0 z" class="accent-fill"/>
+  <text x="158" y="40" class="label">|0⟩（不動点）</text>
+  <text x="140" y="248" class="label">|1⟩</text>
+  <text x="240" y="130" class="label-muted">γ = 1/2</text>
+</svg>
+<figcaption>図 8.3：振幅ダンピング（\(\gamma=1/2\)）による Bloch 球の変形。
+球全体が北極 \(\ket0\) に向かって吸い込まれ、\(\gamma\to1\) で 1 点につぶれる。</figcaption>
+</figure>
+
+<p>
+不動点を求めると、\(r_z = \gamma + (1-\gamma)r_z\) から \(r_z=1\)、
+\(r_{x,y}=0\)、すなわち<strong>唯一の不動点は基底状態 \(\ketbra00\)</strong> である。
+どんな初期状態も、チャネルを繰り返し通せば基底状態に漸近する。
+実際 \(n\) 回合成すると \(\rho_{11}\) は \((1-\gamma)^n\) 倍になるから、
+微小時間 \(\delta t\) ごとに \(\gamma = \Gamma\,\delta t\) のダンピングが起こる連続極限では
+\[
+\rho_{11}(t) = e^{-\Gamma t}\rho_{11}(0) = e^{-t/T_1}\,\rho_{11}(0),
+\qquad
+\rho_{01}(t) = e^{-t/2T_1}\,\rho_{01}(0)
+\]
+となる。\(T_1 \equiv 1/\Gamma\) が実験で「\(T_1\) 時間」と呼ばれる
+エネルギー緩和時間である（§8.4.1 でマスター方程式から再導出する）。
+</p>
+
+<div class="remark-box">
+<span class="box-title">「何も起こらない」ことも状態を変える</span>
+\(E_1\) は「光子が放出された（量子ジャンプ）」に対応し、
+作用後の状態は \(\ket0\) である。一方 \(E_0\) は「光子が出なかった」に対応するが、
+恒等演算子<em>ではない</em>：\(E_0\propto I\) でなく \(\ket1\) の振幅だけを縮める。
+光子が観測されなかったという事実自体が
+「系は \(\ket0\) 寄りだったらしい」という情報であり、
+ベイズ更新のように状態を \(\ket0\) 側へ傾けるのである。
+このような「ヌル測定による状態変化」は測定演算子の形式（§2.2）の帰結であり、
+連続測定・量子軌道の理論の出発点でもある。
+</div>
+
+<p><strong>有限温度への一般化。</strong>
+上のモデルでは環境（電磁場）は真空、すなわち温度ゼロで、
+エネルギーは系から環境へ一方的に流れた。
+温度が有限なら環境からの励起（吸収）も起こる。
+これを表すのが<strong>一般化振幅ダンピング (generalized amplitude damping)</strong> で、
+Kraus 演算子は 4 つになる：
+\[
+E_0 = \sqrt{p}\begin{pmatrix}1 &amp; 0\\ 0 &amp; \sqrt{1-\gamma}\end{pmatrix},\quad
+E_1 = \sqrt{p}\begin{pmatrix}0 &amp; \sqrt\gamma\\ 0 &amp; 0\end{pmatrix},\quad
+E_2 = \sqrt{1-p}\begin{pmatrix}\sqrt{1-\gamma} &amp; 0\\ 0 &amp; 1\end{pmatrix},\quad
+E_3 = \sqrt{1-p}\begin{pmatrix}0 &amp; 0\\ \sqrt\gamma &amp; 0\end{pmatrix}.
+\]
+\(E_0,E_1\) は放出（重み \(p\)）、\(E_2,E_3\) は吸収（重み \(1-p\)）を表す。
+不動点は混合状態
+\[
+\rho_\infty = \begin{pmatrix} p &amp; 0 \\ 0 &amp; 1-p \end{pmatrix}
+\]
+であり、環境が温度 \(T\) の熱浴なら \(p\) は Boltzmann 分布
+\(p/(1-p) = e^{\hbar\omega/k_BT}\) で決まる。
+すなわちこのチャネルは「系を環境温度へ熱平衡化させる」過程のモデルであり、
+\(T\to0\)（\(p\to1\)）で通常の振幅ダンピングに戻る。
+</p>
+
+<h3 id="sec-8-3-6">§8.3.6 位相ダンピング</h3>
+
+<p>
+エネルギーのやり取りを<em>伴わずに</em>量子的な位相情報だけが失われる過程を
+<strong>位相ダンピング (phase damping)</strong> と呼ぶ。
+物理的には、系のエネルギー固有状態を変えない散乱
+——たとえば光子が原子と弾性散乱して飛び去る、
+格子振動が量子ビットのエネルギー準位をランダムに揺らす——によって起こる。
+</p>
+
+<p>
+簡単なモデルとして「ランダムな位相キック」を考えよう。
+系に \(z\) 回転 \(R_z(\theta) = e^{-i\theta Z/2}\) が作用するが、
+角度 \(\theta\) は環境の揺らぎのせいでランダムだとする。
+\(\theta\) が平均 0、分散 \(2\lambda'\) の Gauss 分布に従うとして平均すると、
+非対角成分は
+\[
+\rho_{01} \;\longmapsto\; \overline{e^{-i\theta}}\,\rho_{01}
+= e^{-\lambda'}\rho_{01}
+\]
+と減衰し、対角成分は変わらない（\(\overline{e^{-i\theta}} = e^{-\lambda'}\) は
+Gauss 積分）。この振る舞いを再現する演算子和表現が次である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（位相ダンピングチャネル）</span>
+\[
+\mathcal E_{\mathrm{PD}}(\rho) = E_0\rho E_0^\dagger + E_1\rho E_1^\dagger,
+\qquad
+E_0 = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; \sqrt{1-\lambda} \end{pmatrix},
+\quad
+E_1 = \begin{pmatrix} 0 &amp; 0 \\ 0 &amp; \sqrt{\lambda} \end{pmatrix}.
+\]
+\(\lambda\in[0,1]\) は「位相情報が環境に漏れる確率」と解釈できる
+（環境が \(\ket1\) 経路の系を「見てしまう」確率、と読んでもよい）。
+</div>
+
+<p>
+成分での作用は
+\[
+\mathcal E_{\mathrm{PD}}(\rho)
+= \begin{pmatrix}
+\rho_{00} &amp; \sqrt{1-\lambda}\,\rho_{01} \\[2pt]
+\sqrt{1-\lambda}\,\rho_{10} &amp; \rho_{11}
+\end{pmatrix},
+\qquad
+(r_x,r_y,r_z)\mapsto\big(\sqrt{1-\lambda}\,r_x,\,\sqrt{1-\lambda}\,r_y,\,r_z\big).
+\]
+対角成分（エネルギー分布）は完全に保たれ、コヒーレンスだけが減衰する。
+振幅ダンピングとの対比で言えば、\(E_1\) が \(\ket1\) を \(\ket1\) に留める
+（\(\ketbra01\) でなく \(\ketbra11\) に比例する）点だけが違い、
+その一点がエネルギーを保つか失うかを分けている。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（位相ダンピング＝位相反転）</span>
+位相ダンピングチャネルは、位相反転チャネル（§8.3.3）と<strong>同一の量子操作</strong>である。
+具体的には
+\[
+\mathcal E_{\mathrm{PD}}(\rho) = (1-p)\,\rho + p\,Z\rho Z,
+\qquad
+p = \frac{1 - \sqrt{1-\lambda}}{2}.
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+量子操作は密度演算子への作用で決まるから、両辺の作用が任意の \(\rho\) で
+一致することを示せばよい。位相反転チャネルの作用は
+\[
+(1-p)\rho + pZ\rho Z
+= \begin{pmatrix}
+\rho_{00} &amp; (1-2p)\rho_{01} \\ (1-2p)\rho_{10} &amp; \rho_{11}
+\end{pmatrix}
+\]
+である（\(Z\rho Z\) は非対角成分の符号だけを変える）。
+一方、位相ダンピングの作用は非対角成分を \(\sqrt{1-\lambda}\) 倍する。
+よって \(1-2p = \sqrt{1-\lambda}\)、すなわち \(p=(1-\sqrt{1-\lambda})/2\) と取れば
+両者はすべての \(\rho\) で一致する。
+これは §8.2.3 のユニタリ自由度定理の実例でもある：
+Kraus 演算子の組 \(\{E_0,E_1\}\)（ダンピング型）と
+\(\{\sqrt{1-p}\,I,\ \sqrt p\,Z\}\)（反転型）は、
+あるユニタリ \(2\times2\) 行列 \(u\) で互いに結ばれている。<span class="qed">∎</span>
+</div>
+
+<p>
+この等価性は歴史的にも概念的にも重要である。
+位相ダンピングは「連続的で捉えどころのない、量子系に特有の劣化」と
+思われていた時期があったが、上の定理は
+<strong>「確率 \(p\) で離散的な \(Z\) エラーが起こった」のと完全に同じ</strong>
+であることを示す。連続的に見えるノイズが離散的なエラーの確率的発生に
+還元できる——この「エラーの離散化」こそ、
+量子誤り訂正（第10章）が有限個のエラーへの対処だけで
+あらゆるノイズを訂正できることの原型である。
+</p>
+
+<div class="remark-box">
+<span class="box-title">デコヒーレンス時間 \(T_2\)</span>
+微小時間 \(\delta t\) ごとに \(\lambda = 2\,\delta t/T_\varphi\) の位相ダンピングが
+起こる連続極限では、\(\rho_{01}(t) = e^{-t/T_\varphi}\rho_{01}(0)\) のように
+コヒーレンスが指数減衰する。ここで \(T_\varphi\) を<strong>純位相緩和時間</strong>と呼ぶ。
+実験では振幅ダンピング（\(\rho_{01}\) を \(e^{-t/2T_1}\) で減らす。§8.3.5）
+の寄与と合わせて
+\[
+\rho_{01}(t) = e^{-t/T_2}\,\rho_{01}(0),
+\qquad
+\frac{1}{T_2} = \frac{1}{2T_1} + \frac{1}{T_\varphi}
+\]
+と書く。\(T_2\) を<strong>デコヒーレンス時間（横緩和時間）</strong>と呼ぶ。
+この式から一般に \(T_2 \le 2T_1\) であり、
+多くの系では位相緩和が支配的で \(T_2 \ll T_1\) となる。
+重ね合わせ（コヒーレンス）はエネルギーよりずっと壊れやすい
+——量子計算の実装が難しい根本理由のひとつである。
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-4">量子操作の応用<span class="en">Applications of quantum operations</span></h2>
+
+<p>
+量子操作の形式の応用を 2 つ扱う。
+1 つは連続時間のノイズ記述（マスター方程式）との関係、
+もう 1 つは未知の量子操作を実験的に決定する手続き（プロセストモグラフィ）である。
+</p>
+
+<h3 id="sec-8-4-1">§8.4.1 マスター方程式</h3>
+
+<p>
+量子操作は「初期状態 → 終状態」という 2 時刻の関係を与えるが、
+物理ではしばしば状態の<strong>連続時間発展</strong>を微分方程式で書きたい。
+開放量子系の時間発展が（環境の記憶が無視できる Markov 近似のもとで）従う
+標準形が <strong>Lindblad 型マスター方程式</strong>である：
+\[
+\frac{d\rho}{dt}
+= -\frac{i}{\hbar}\,[H,\rho]
++ \sum_j \Big( L_j\rho L_j^\dagger - \frac12\{L_j^\dagger L_j,\ \rho\} \Big).
+\]
+第 1 項は通常のユニタリ発展（von Neumann 方程式）、
+第 2 項以降が散逸を表す。\(L_j\) は <strong>Lindblad 演算子</strong>
+（ジャンプ演算子）と呼ばれ、環境が引き起こす遷移の「種類」を表す。
+反交換子 \(\{A,B\}=AB+BA\) の項は、後で見るようにトレース保存を保証するための
+補正項である。
+</p>
+
+<p>
+この方程式と量子操作の関係は明快である：
+<strong>微小時間 \(\delta t\) の発展を演算子和表現で書くと Lindblad 形が出る</strong>。
+微小時間の Kraus 演算子を
+\[
+E_0 = I + \Big( -\frac{i}{\hbar}H - \frac12\sum_j L_j^\dagger L_j \Big)\delta t,
+\qquad
+E_j = \sqrt{\delta t}\; L_j \quad (j\ge1)
+\]
+と置いてみる（\(E_0\) が「ジャンプなし」、\(E_j\) が「ジャンプ \(j\) が起こった」
+に対応する。ジャンプの確率は \(\delta t\) に比例するので振幅は \(\sqrt{\delta t}\) 程度）。
+まず完全性を \(O(\delta t)\) で確認する：
+\[
+E_0^\dagger E_0 = I - \delta t\sum_j L_j^\dagger L_j + O(\delta t^2)
+\]
+（\(H\) の項は \(+iH^\dagger/\hbar - iH/\hbar\) で相殺する）だから
+\[
+\sum_{k\ge0} E_k^\dagger E_k = I - \delta t\sum_j L_j^\dagger L_j
++ \delta t\sum_j L_j^\dagger L_j + O(\delta t^2) = I + O(\delta t^2).
+\]
+反交換子項の係数 \(-\frac12\) は、まさにこの相殺のために必要だったのである。
+次に状態変化を計算すると
+\[
+\rho(t+\delta t) = \sum_k E_k\rho E_k^\dagger
+= \rho + \delta t\Big( -\frac{i}{\hbar}[H,\rho]
++ \sum_j L_j\rho L_j^\dagger - \frac12\{L_j^\dagger L_j,\rho\} \Big) + O(\delta t^2)
+\]
+となり、\(\delta t\to0\) で Lindblad 方程式に一致する。
+逆に、Lindblad 方程式の解 \(\rho(0)\mapsto\rho(t)\) は各 \(t\) で
+トレース保存の量子操作（完全正値写像）になることが知られている。
+すなわち Lindblad 形は、「Markov 的な連続時間発展であって常に完全正値性を保つもの」の
+最も一般的な形である。
+</p>
+
+<div class="example-box">
+<span class="box-title">例：自然放出のマスター方程式と振幅ダンピング</span>
+Lindblad 演算子を 1 つ、\(L = \sqrt\Gamma\,\ketbra01\)（下降演算子）に取り、
+\(H=0\) とする。\(L^\dagger L = \Gamma\ketbra11\) だから、成分で書くと
+\[
+\dot\rho_{11} = -\Gamma\rho_{11},
+\qquad
+\dot\rho_{01} = -\frac{\Gamma}{2}\rho_{01},
+\qquad
+\dot\rho_{00} = +\Gamma\rho_{11}.
+\]
+解は \(\rho_{11}(t) = e^{-\Gamma t}\rho_{11}(0)\)、
+\(\rho_{01}(t) = e^{-\Gamma t/2}\rho_{01}(0)\)。
+これは振幅ダンピングチャネル（§8.3.5）で
+\[
+\gamma(t) = 1 - e^{-\Gamma t}
+\]
+と置いたものに他ならない（\(\sqrt{1-\gamma} = e^{-\Gamma t/2}\) が
+コヒーレンスの減衰率を再現することに注意）。
+有限時間のチャネルと微分方程式が同じ物理の 2 つの顔であることがわかる。
+</div>
+
+<p>
+使い分けの目安：マスター方程式は「連続時間・Markov 的」な状況で強力だが、
+その導出には弱結合・環境相関時間が短いなどの近似が入る。
+量子操作の形式はより一般で、時間発展が Markov 的でなくても
+「準備してから読み出すまで」を 1 つの写像として正確に記述できる
+（ただし初期相関がないこと。§8.5）。
+</p>
+
+<h3 id="sec-8-4-2">§8.4.2 量子プロセストモグラフィ</h3>
+
+<p>
+実験装置が実現している変換 \(\mathcal E\) が未知のとき、
+それを測定によって完全に決定する手続きが
+<strong>量子プロセストモグラフィ (quantum process tomography)</strong> である。
+前提として、未知の<em>状態</em> \(\rho\) を多数のコピーへの測定から決定する
+<strong>状態トモグラフィ</strong>を思い出しておく：1 量子ビットなら
+\(\rho = \frac12(I + \langle X\rangle X + \langle Y\rangle Y + \langle Z\rangle Z)\)
+なので、\(X,Y,Z\) の期待値（各基底での測定統計）を推定すれば \(\rho\) が再構成できる。
+</p>
+
+<p>
+プロセストモグラフィの原理は線形性に尽きる：
+\(\mathcal E\) は線形写像だから、密度行列の空間の基底をなす \(d^2\) 個の入力に対する
+出力が分かれば、任意の入力への作用が決まる。手続きは
+</p>
+<ol>
+<li>演算子空間の基底をなす \(d^2\) 個の状態 \(\rho_1,\dots,\rho_{d^2}\) を用意する。</li>
+<li>各 \(\rho_j\) をチャネルに通し、出力 \(\mathcal E(\rho_j)\) を状態トモグラフィで推定する。</li>
+<li>線形代数で \(\mathcal E\) を再構成する。</li>
+</ol>
+
+<p>
+結果を整理する標準形が <strong>\(\chi\) 行列（プロセス行列）表示</strong>である。
+演算子の固定基底 \(\{\tilde E_m\}_{m=1}^{d^2}\)
+（1 量子ビットなら例えば \(\{I, X, -iY, Z\}\)）を選ぶと、Kraus 演算子は
+\(E_k = \sum_m a_{km}\tilde E_m\) と展開できるから
+\[
+\mathcal E(\rho) = \sum_{m,n} \chi_{mn}\,\tilde E_m\,\rho\,\tilde E_n^\dagger,
+\qquad
+\chi_{mn} \equiv \sum_k a_{km}a_{kn}^*
+\]
+と書ける。\(\chi\) は \(d^2\times d^2\) のエルミートかつ正の行列で、
+（基底を固定すれば）\(\mathcal E\) と 1 対 1 に対応する。
+Kraus 表現のユニタリ自由度（§8.2.3）で不変な、チャネルの「座標表示」である。
+\(\chi\) を対角化すれば Kraus 演算子の 1 組が読み出せる。
+実験データからの決定は、既知の展開係数
+\(\tilde E_m\rho_j\tilde E_n^\dagger = \sum_k \beta^{mn}_{jk}\rho_k\)
+（\(\beta\) は基底の選び方だけで決まる数）と、
+測定で得た \(\mathcal E(\rho_j) = \sum_k\lambda_{jk}\rho_k\) を比べて、
+線形方程式
+\[
+\sum_{m,n}\beta^{mn}_{jk}\,\chi_{mn} = \lambda_{jk}
+\]
+を \(\chi\) について解けばよい。
+</p>
+
+<div class="example-box">
+<span class="box-title">1 量子ビットのプロトコル</span>
+1 量子ビット（\(d=2\)）では \(d^2=4\) 個の入力で足りる。定番の選択は
+\[
+\ket0,\qquad \ket1,\qquad
+\ket+ = \frac{\ket0+\ket1}{\sqrt2},\qquad
+\ket{+i} = \frac{\ket0+i\ket1}{\sqrt2}
+\]
+の 4 状態である。密度行列の空間の基底として必要なのは
+\(\ketbra00,\ketbra01,\ketbra10,\ketbra11\) への作用だが、
+非エルミートな \(\ketbra01\) は状態として準備できない。
+そこで線形性を使う。恒等式
+\[
+\ketbra01 = \ketbra{+}{+} + i\,\ketbra{+i}{+i}
+- \frac{1+i}{2}\big(\ketbra00 + \ketbra11\big)
+\]
+（右辺を展開すれば確かめられる）から、
+\[
+\mathcal E(\ketbra01) = \mathcal E(\ketbra{+}{+}) + i\,\mathcal E(\ketbra{+i}{+i})
+- \frac{1+i}{2}\big(\mathcal E(\ketbra00) + \mathcal E(\ketbra11)\big)
+\]
+と、測定可能な 4 つの出力から合成できる（\(\mathcal E(\ketbra10)\) はそのエルミート共役）。
+必要な実験は「4 入力 × 各出力の状態トモグラフィ（3 基底の測定統計）」である。
+自由度の勘定も合っている。
+トレース保存の 1 量子ビットチャネルはアフィン変換 \((M,\vec c)\) の \(9+3=12\) 個の実数で決まる。
+4 入力 × Bloch ベクトル 3 成分 = 12 個の測定量が、ちょうどこれを決定する。
+</div>
+
+<p>
+プロセストモグラフィは装置の較正やエラー特性の診断の基本ツールだが、
+コストは \(d^2 = 4^n\)（\(n\) 量子ビット）と指数的に増える。
+また状態準備・測定自体のエラー（SPAM エラー）と
+チャネルのエラーを区別できないという実務上の限界もあり、
+大規模系ではランダム化ベンチマーキングなどの部分的な特性評価が併用される。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-5">量子操作形式の限界<span class="en">Limitations of the quantum operations formalism</span></h2>
+
+<p>
+量子操作は「物理的に許されるあらゆる状態変化」を記述する枠組みとして導入したが、
+その導出には目立たない仮定が入っていた：
+<strong>初期時刻に系と環境が無相関（積状態）である</strong>ことである（§8.2.2）。
+この仮定が破れると、系の状態変化が完全正値写像で書けないことがある。
+</p>
+
+<div class="example-box">
+<span class="box-title">例：初期相関があると転置写像が「実現」してしまう</span>
+<p>
+系 \(S\) と環境 \(E\)（各 1 量子ビット）が、実験の開始前から
+最大エンタングル状態 \(\ket{\Phi} = (\ket{00}+\ket{11})/\sqrt2\) にあるとしよう。
+実験者は \(S\) に入力状態 \(\ket\psi\) を「準備」するために、
+\(S\) を基底 \(\{\ket\psi, \ket{\psi^\perp}\}\) で測定し、
+結果が \(\ket\psi\) だった場合だけ実験を続けることにする（残りは捨てる）。
+このとき \(S\) は確かに \(\ket\psi\) に用意されるが、
+副作用として環境も収縮する。\(\ket\Phi\) の性質
+\[
+\ket\Phi = \frac{1}{\sqrt2}\sum_i \ket i\ket i
+= \frac{1}{\sqrt2}\big( \ket\psi\ket{\psi^*} + \ket{\psi^\perp}\ket{\psi^{\perp*}} \big)
+\]
+（\(\ket{\psi^*}\) は係数を複素共役にした状態。任意の基底についてこの形に展開できることは
+成分計算で確かめられる）より、環境は \(\ket{\psi^*}\) に収縮している。
+つまり<strong>準備の仕方が環境の状態に痕跡を残す</strong>。
+</p>
+<p>
+続いて系と環境が SWAP 型の相互作用 \(U=\mathrm{SWAP}\) で発展したとすると、
+終状態で系が持つのは元の環境の状態、すなわち
+\[
+\rho' = \ketbra{\psi^*}{\psi^*} = \big(\ketbra\psi\psi\big)^T .
+\]
+入力と出力の関係は \(\rho\mapsto\rho^T\)、<strong>転置写像</strong>である。
+§8.2.4 で見たとおり転置は正値だが完全正値ではないから、
+この入出力関係は<em>いかなる演算子和表現でも書けない</em>。
+系だけを見る観測者にとって、「量子操作でない状態変化」が現実に起こったことになる。
+</p>
+</div>
+
+<p>
+何が悪かったのかを整理しておく。
+量子操作の形式は「入力 \(\rho\) は自由に選べ、選び方はそれ以外の何にも影響しない」
+ことを暗黙に仮定している。初期相関があると、
+入力を準備する行為そのものが環境の状態を変えてしまい、
+「系の入力状態 → 系の出力状態」という対応が
+積状態から出発する完全正値写像の形に収まらなくなるのである。
+極端な場合には、この対応が線形にすらならない
+（準備の手続きに依存して同じ \(\rho\) から異なる出力が出る）こともある。
+</p>
+
+<p>
+この限界は実際にはどの程度深刻か。
+多くの実験では、系を初期化（リセット）する操作が環境との相関も同時に破壊するため、
+「準備直後は無相関」の仮定はよい近似で成り立ち、量子操作の形式が有効である。
+問題になるのは、系と環境の結合が強く相関がすぐ再生する場合や、
+環境の相関時間が長く記憶効果が残る場合である。
+後者は §8.1 で述べた Markov 性の破れの量子版であり、
+<strong>非 Markov 的 (non-Markovian)</strong> なダイナミクスと呼ばれる。
+非 Markov 的な状況では、途中の時刻 \(t_1\) から \(t_2\) への変化を
+それ単独の量子操作として書くことができない
+（環境が \(t_1\) 以前の系の情報を覚えているため）。
+</p>
+
+<p>
+ただし、これは量子力学そのものの限界ではないことを強調しておく。
+系と環境を合わせた全体は常にユニタリに発展しており、
+限界が生じるのは「系だけの状態を入力とする写像」という<em>縮約された記述</em>
+を求めたときだけである。
+必要なら、相関を含む拡大系で記述する、
+準備手続きまで含めて写像を定義し直す、といった一般化された枠組みが使える。
+実用上は、量子操作の形式は量子情報理論の言語として十分に広く、
+第9章以降の理論（距離尺度・誤り訂正・チャネル容量）はすべてこの土台の上に建てられる。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第8章のまとめ</span>
+<ul>
+<li>古典ノイズは確率ベクトルに作用する確率行列（非負・列和 1）で記述され、
+多段階の合成には Markov 性（環境の無記憶性）が要る。量子版がそのまま量子操作の構造になる。</li>
+<li>量子操作の 3 つの同値な定式化：
+(i) 環境と結合したユニタリ発展 \(\mathcal E(\rho)=\tr_E[U(\rho\otimes\rho_E)U^\dagger]\)、
+(ii) 演算子和表現 \(\mathcal E(\rho)=\sum_k E_k\rho E_k^\dagger\)（\(\sum_k E_k^\dagger E_k\le I\)、
+トレース保存なら等号）、
+(iii) 公理（確率解釈・凸線形性・完全正値性）。正値でも完全正値でない写像（転置）が存在し、
+完全正値性は本質的に強い条件である。</li>
+<li>演算子和表現は「環境を測定したが結果を知らない」と解釈でき、
+Kraus 演算子の組にはユニタリ混合の自由度 \(F_j=\sum_k u_{jk}E_k\) がある。
+\(d\) 次元系のチャネルは高々 \(d^2\) 個の Kraus 演算子（＝\(d^2\) 次元の環境）で書ける。</li>
+<li>1 量子ビットのトレース保存チャネルは Bloch 球のアフィン変換 \(\vec r\mapsto M\vec r+\vec c\)：
+球は（ずれた）楕円体につぶれる。
+ビット反転・位相反転は 1 軸を保つ収縮、脱分極は等方収縮 \(\vec r\mapsto(1-p)\vec r\)。</li>
+<li>振幅ダンピングはエネルギー緩和のモデル（不動点は基底状態、時定数 \(T_1\)。
+有限温度版の不動点は熱状態）。
+位相ダンピングはコヒーレンスだけを壊し（時定数 \(T_2\)、\(T_2\le 2T_1\)）、
+位相反転チャネルと同一——連続的なデコヒーレンスは離散的な \(Z\) エラーに還元される
+（誤りの離散化の原型）。</li>
+<li>Lindblad 型マスター方程式は微小時間の量子操作の連続極限であり、
+反交換子項がトレース保存を保証する。自然放出の Lindblad 方程式は
+\(\gamma(t)=1-e^{-\Gamma t}\) の振幅ダンピングを与える。</li>
+<li>プロセストモグラフィ：線形性より \(d^2\) 個の入力状態への出力（各々状態トモグラフィで推定）
+から \(\mathcal E\) が決まる。\(\chi\) 行列は Kraus の自由度によらないチャネルの表示。
+1 量子ビットでは入力 \(\ket0,\ket1,\ket+,\ket{+i}\) の 4 つで足りる。</li>
+<li>形式の限界：系と環境に初期相関があると、状態変化が完全正値写像で書けないことがある
+（準備が環境に痕跡を残すため）。これは縮約記述の限界であって、全体系は常にユニタリである。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

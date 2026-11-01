@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="量子 Fourier 変換、位相推定、位数発見と Shor の素因数分解アルゴリズム、隠れ部分群問題">
+  <title>第5章 量子 Fourier 変換とその応用 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter05" data-chapter="5">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第5章に対応</span>
+  第5章 量子 Fourier 変換とその応用
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本章の主役は<strong>量子 Fourier 変換 (quantum Fourier transform, QFT)</strong> である。
+これは離散 Fourier 変換をユニタリ演算として量子回路に実装したものである。
+古典の高速 Fourier 変換 (FFT) が \(\Theta(N\log N)\) ステップを要するのに対し、
+\(N=2^n\) 次元の QFT はわずか \(O(n^2)=O((\log N)^2)\) ゲートで実行できる（§5.1）。
+ただし変換後の振幅を直接読み出すことはできないので、この指数的な速さを計算力に変えるには工夫がいる。
+その工夫の核心が<strong>位相推定 (phase estimation)</strong> であり、
+ユニタリ演算の固有値の位相を系統的に読み出す手続きを与える（§5.2）。
+位相推定を「べき乗剰余演算」のユニタリに適用すると
+<strong>位数発見 (order-finding)</strong> が解ける。
+そこから初等整数論の2つの補題を介して<strong>素因数分解</strong>が多項式時間で解ける。
+これが Shor のアルゴリズムである（§5.3）。
+最後に、周期発見・離散対数・隠れ部分群問題という一般的な枠組みを概観し、
+QFT 系アルゴリズムの適用範囲と限界を整理する（§5.4）。
+本章の議論は第4章の量子回路の言語（ゲート・制御演算・回路図）を前提とする。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-5-1">量子 Fourier 変換<span class="en">The quantum Fourier transform</span></h2>
+
+<p>
+古典の信号処理で中心的な役割を果たす離散 Fourier 変換は、
+複素ベクトル \((x_0,\dots,x_{N-1})\) を
+\[
+y_k = \frac{1}{\sqrt N}\sum_{j=0}^{N-1} x_j\, e^{2\pi i jk/N}
+\]
+で定まるベクトル \((y_0,\dots,y_{N-1})\) に写す線形変換である。
+この変換行列は（\(1/\sqrt N\) の規格化を付ければ）ユニタリなので、
+そのまま量子状態の変換として実装できる。それが量子 Fourier 変換である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（量子 Fourier 変換）</span>
+\(N\) 次元 Hilbert 空間の正規直交基底 \(\ket0,\ket1,\dots,\ket{N-1}\) に対し、
+<strong>量子 Fourier 変換</strong> \(F_N\) を基底状態への作用
+\[
+F_N\ket{j} = \frac{1}{\sqrt N}\sum_{k=0}^{N-1} e^{2\pi i jk/N}\ket{k}
+\]
+で定義する（線形に拡張する）。一般の状態に対しては
+\[
+F_N\sum_{j} x_j\ket{j} = \sum_{k} y_k\ket{k},
+\qquad y_k = \frac{1}{\sqrt N}\sum_{j} e^{2\pi i jk/N} x_j
+\]
+となり、<strong>振幅の列が離散 Fourier 変換される</strong>。
+以下では \(n\) 量子ビット系を考え \(N=2^n\) とし、
+整数 \(j\in\{0,\dots,2^n-1\}\) をその2進表示 \(j=j_1 j_2\cdots j_n\)
+（\(j = j_1 2^{n-1} + j_2 2^{n-2} + \cdots + j_n 2^0\)）で基底状態 \(\ket{j_1\cdots j_n}\) と同一視する。
+</div>
+
+<div class="thm-box">
+<span class="box-title">命題（ユニタリ性）</span>
+\(F_N\) はユニタリである。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+基底状態の像どうしの内積を計算する。\(\omega = e^{2\pi i/N}\) とおくと
+\[
+\bra{j'}F_N^\dagger F_N\ket{j}
+= \frac{1}{N}\sum_{k,k'=0}^{N-1} \omega^{jk-j'k'}\braket{k'}{k}
+= \frac{1}{N}\sum_{k=0}^{N-1} \omega^{(j-j')k}.
+\]
+\(j=j'\) なら各項が 1 で和は \(N\)、よって内積は 1。
+\(j\neq j'\) なら \(\omega^{j-j'}\neq 1\) の等比級数なので
+\[
+\frac{1}{N}\cdot\frac{1-\omega^{(j-j')N}}{1-\omega^{j-j'}} = 0
+\]
+（\(\omega^N=1\) より分子が消える）。
+すなわち \(F_N\) は正規直交基底を正規直交基底に写すからユニタリである。<span class="qed">∎</span>
+</div>
+
+<p>
+この計算に現れた等比級数の恒等式
+\[
+\frac{1}{N}\sum_{k=0}^{N-1} e^{2\pi i (j-j')k/N} = \delta_{jj'}
+\]
+は本章全体で繰り返し使う基本公式である（振幅の「干渉」を定量化する式だと思えばよい）。
+</p>
+
+<h3 id="sec-5-1-product">積表示の導出</h3>
+
+<p>
+定義のままでは \(F_N\) は \(2^n\times 2^n\) の巨大な行列であり、
+効率よい回路が組めるかは自明でない。鍵になるのは、
+\(F_{2^n}\ket{j}\) が実は<strong>各量子ビットごとの積（テンソル積）に分解する</strong>という事実である。
+まず記法を用意する。
+</p>
+
+<div class="def-box">
+<span class="box-title">記法（2進小数）</span>
+ビット列 \(j_l, j_{l+1},\dots,j_m\) に対し
+\[
+0.j_l j_{l+1}\cdots j_m \equiv \frac{j_l}{2} + \frac{j_{l+1}}{4} + \cdots + \frac{j_m}{2^{m-l+1}}
+\]
+と書く。これは \([0,1)\) 内の2進小数である。
+例えば \(0.101 = 1/2 + 0/4 + 1/8 = 5/8\)。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（QFT の積表示）</span>
+\(N=2^n\)、\(j=j_1\cdots j_n\) に対し
+\[
+F_{2^n}\ket{j_1\cdots j_n}
+= \frac{\bigl(\ket0 + e^{2\pi i\,0.j_n}\ket1\bigr)
+       \bigl(\ket0 + e^{2\pi i\,0.j_{n-1}j_n}\ket1\bigr)\cdots
+       \bigl(\ket0 + e^{2\pi i\,0.j_1 j_2\cdots j_n}\ket1\bigr)}{2^{n/2}}
+\]
+が成り立つ。右辺の第 \(l\) 因子（左から数えて）が第 \(l\) 量子ビットの状態である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+和の変数 \(k\) を2進表示 \(k=k_1\cdots k_n\)（\(k=\sum_{l=1}^n k_l 2^{n-l}\)）で書き直すと
+\(k/2^n = \sum_{l=1}^n k_l 2^{-l}\) だから、
+\[
+\begin{aligned}
+F_{2^n}\ket{j}
+&amp;= \frac{1}{2^{n/2}}\sum_{k=0}^{2^n-1} e^{2\pi i jk/2^n}\ket{k}
+ = \frac{1}{2^{n/2}}\sum_{k_1=0}^{1}\cdots\sum_{k_n=0}^{1}
+   e^{2\pi i j\left(\sum_{l=1}^n k_l 2^{-l}\right)}\ket{k_1\cdots k_n}\\
+&amp;= \frac{1}{2^{n/2}}\sum_{k_1,\dots,k_n}
+   \bigotimes_{l=1}^{n} e^{2\pi i j k_l 2^{-l}}\ket{k_l}
+ = \frac{1}{2^{n/2}}\bigotimes_{l=1}^{n}
+   \left[\sum_{k_l=0}^{1} e^{2\pi i j k_l 2^{-l}}\ket{k_l}\right]\\
+&amp;= \frac{1}{2^{n/2}}\bigotimes_{l=1}^{n}
+   \Bigl(\ket0 + e^{2\pi i j 2^{-l}}\ket1\Bigr).
+\end{aligned}
+\]
+2行目では、指数関数が \(k_l\) ごとの因子の積に分かれるため、
+\(2^n\) 項の和が「各ビットについての2項和の積」に<strong>因数分解</strong>できることを使った
+（\(\sum_{k_1,\dots,k_n}\prod_l a_{k_l}^{(l)} = \prod_l\sum_{k_l} a_{k_l}^{(l)}\)）。
+最後に位相を整理する。
+\[
+j\,2^{-l} = \underbrace{j_1 2^{n-l-1} + \cdots + j_{n-l}2^0}_{\text{整数}}
+          + \underbrace{j_{n-l+1}2^{-1} + \cdots + j_n 2^{-l}}_{=\,0.j_{n-l+1}\cdots j_n}
+\]
+であり、整数部分は \(e^{2\pi i\times(\text{整数})}=1\) となって消えるので
+\(e^{2\pi i j2^{-l}} = e^{2\pi i\,0.j_{n-l+1}\cdots j_n}\)。
+\(l=1,\dots,n\) と並べればちょうど主張の積表示になる。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">積表示の読み方</span>
+積表示は2つの重要な事実を教えてくれる。
+(i) <strong>QFT の出力はエンタングルしていない</strong>（基底状態を入れた場合）。
+指数的に長い和に見えた \(F\ket j\) は、実は各量子ビットが独立に
+「赤道上の状態 \((\ket0+e^{i\phi}\ket1)/\sqrt2\)」にあるだけである。
+情報はすべて \(n\) 個の位相 \(0.j_n,\ 0.j_{n-1}j_n,\dots\) に載っている。
+(ii) 第 \(l\) 量子ビットの位相 \(0.j_{n-l+1}\cdots j_n\) は
+\(j\) の<strong>下位 \(l\) ビットだけ</strong>で決まる。
+この階層構造がそのまま効率的な回路（と、古典 FFT の再帰構造）に対応する。
+</div>
+
+<h3 id="sec-5-1-circuit">回路構成</h3>
+
+<p>
+積表示の各因子を作る回路を組もう。使う部品は Hadamard ゲート \(H\) と、位相回転ゲート
+\[
+R_k \equiv \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; e^{2\pi i/2^k} \end{pmatrix}
+\]
+の<strong>制御版</strong>（制御ビットが 1 のときだけ標的に \(R_k\) を掛ける）である。
+\(R_1=Z\)、\(R_2=S\)、\(R_3=T\) に相当する。
+</p>
+
+<p>
+第1量子ビット（\(j_1\)）に注目する。まず \(H\) を掛けると、
+\(H\ket{j_1}=(\ket0+(-1)^{j_1}\ket1)/\sqrt2\) を2進小数で書き直して
+\[
+H\ket{j_1} = \frac{\ket0 + e^{2\pi i\,0.j_1}\ket1}{\sqrt2}
+\]
+となる（\(j_1=1\) のとき \(e^{2\pi i\cdot 1/2}=-1\) なので確かに一致する）。
+次に第2量子ビットを制御とする制御-\(R_2\) を掛けると、
+第1ビットの \(\ket1\) 成分に位相 \(e^{2\pi i j_2/4}\) が付き
+\[
+\frac{\ket0 + e^{2\pi i\,0.j_1 j_2}\ket1}{\sqrt2}
+\]
+となる。以下同様に、第 \(m\) ビットを制御とする制御-\(R_m\)（\(m=3,\dots,n\)）を順に掛ければ、
+第1量子ビットは
+\[
+\frac{\ket0 + e^{2\pi i\,0.j_1 j_2\cdots j_n}\ket1}{\sqrt2}
+\]
+に到達する。これは積表示の<strong>最後の</strong>因子である。
+制御ビット側は計算基底の状態のまま変化しない
+（制御位相ゲートは対角行列なので、基底状態を制御に使う限り制御側に痕跡を残さない）点に注意。
+</p>
+
+<p>
+続いて第2量子ビットに \(H\)、そして第 \(m\) ビット（\(m=3,\dots,n\)）を制御とする
+制御-\(R_{m-1}\) を掛けると、第2量子ビットは
+\((\ket0 + e^{2\pi i\,0.j_2\cdots j_n}\ket1)/\sqrt2\) になる。
+これを繰り返し、最後の第 \(n\) 量子ビットには \(H\) だけを掛けて
+\((\ket0+e^{2\pi i\,0.j_n}\ket1)/\sqrt2\) を得る。全体として
+\[
+\frac{\bigl(\ket0+e^{2\pi i\,0.j_1\cdots j_n}\ket1\bigr)
+      \bigl(\ket0+e^{2\pi i\,0.j_2\cdots j_n}\ket1\bigr)\cdots
+      \bigl(\ket0+e^{2\pi i\,0.j_n}\ket1\bigr)}{2^{n/2}}
+\]
+が出力される。
+</p>
+
+<p>
+<strong>swap の扱い。</strong>
+これを積表示と見比べると、量子ビットの並び順が<strong>ちょうど逆</strong>になっている：
+回路の第1ビットが積表示の第 \(n\) 因子を、第 \(n\) ビットが第1因子を持っている。
+そこで回路の最後に \(\lfloor n/2\rfloor\) 個の swap ゲートで
+第 \(l\) ビットと第 \(n+1-l\) ビットを入れ替えれば、正確に \(F_{2^n}\) が実装される。
+実用上は swap を実行せず、「出力の番地付けが逆順である」と約束し直すだけで済ませることも多い
+（後段の回路や測定結果の解釈側でビット順を読み替えればよい）。
+</p>
+
+<figure>
+<svg viewBox="0 0 760 230" xmlns="http://www.w3.org/2000/svg">
+  <!-- wires -->
+  <line x1="42" y1="40" x2="720" y2="40" class="line"/>
+  <line x1="42" y1="90" x2="720" y2="90" class="line"/>
+  <line x1="42" y1="140" x2="720" y2="140" class="line"/>
+  <line x1="42" y1="190" x2="720" y2="190" class="line"/>
+  <text x="2" y="45" class="label">|j₁⟩</text>
+  <text x="2" y="95" class="label">|j₂⟩</text>
+  <text x="2" y="145" class="label">|j₃⟩</text>
+  <text x="2" y="195" class="label">|j₄⟩</text>
+  <!-- qubit 1: H, R2(from q2), R3(from q3), R4(from q4) -->
+  <rect x="56" y="26" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="64" y="46" class="label">H</text>
+  <line x1="112" y1="40" x2="112" y2="90" class="line" stroke-width="1.5"/>
+  <circle cx="112" cy="90" r="4.5" class="accent-fill"/>
+  <rect x="98" y="26" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="102" y="46" class="label">R₂</text>
+  <line x1="154" y1="40" x2="154" y2="140" class="line" stroke-width="1.5"/>
+  <circle cx="154" cy="140" r="4.5" class="accent-fill"/>
+  <rect x="140" y="26" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="144" y="46" class="label">R₃</text>
+  <line x1="196" y1="40" x2="196" y2="190" class="line" stroke-width="1.5"/>
+  <circle cx="196" cy="190" r="4.5" class="accent-fill"/>
+  <rect x="182" y="26" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="186" y="46" class="label">R₄</text>
+  <!-- qubit 2: H, R2(q3), R3(q4) -->
+  <rect x="246" y="76" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="254" y="96" class="label">H</text>
+  <line x1="302" y1="90" x2="302" y2="140" class="line" stroke-width="1.5"/>
+  <circle cx="302" cy="140" r="4.5" class="accent-fill"/>
+  <rect x="288" y="76" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="292" y="96" class="label">R₂</text>
+  <line x1="344" y1="90" x2="344" y2="190" class="line" stroke-width="1.5"/>
+  <circle cx="344" cy="190" r="4.5" class="accent-fill"/>
+  <rect x="330" y="76" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="334" y="96" class="label">R₃</text>
+  <!-- qubit 3: H, R2(q4) -->
+  <rect x="394" y="126" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="402" y="146" class="label">H</text>
+  <line x1="450" y1="140" x2="450" y2="190" class="line" stroke-width="1.5"/>
+  <circle cx="450" cy="190" r="4.5" class="accent-fill"/>
+  <rect x="436" y="126" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="440" y="146" class="label">R₂</text>
+  <!-- qubit 4: H -->
+  <rect x="494" y="176" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="502" y="196" class="label">H</text>
+  <!-- swaps: q1-q4, q2-q3 -->
+  <line x1="580" y1="40" x2="580" y2="190" class="line accent" stroke-width="1.5"/>
+  <text x="573" y="47" class="label">×</text>
+  <text x="573" y="197" class="label">×</text>
+  <line x1="620" y1="90" x2="620" y2="140" class="line accent" stroke-width="1.5"/>
+  <text x="613" y="97" class="label">×</text>
+  <text x="613" y="147" class="label">×</text>
+  <!-- output labels -->
+  <text x="648" y="34" class="label-muted" font-size="12">0.j₁…j₄ 因子</text>
+  <text x="648" y="215" class="label-muted" font-size="12">（swap 後は逆順が解消）</text>
+</svg>
+<figcaption>図 5.1：\(n=4\) の量子 Fourier 変換回路。各量子ビットに \(H\) と制御-\(R_k\)（黒丸が制御）を掛け、最後に swap（×–×）でビット順を反転する。位相ゲートの添字 \(k\) は制御ビットとの「距離+1」に等しい。</figcaption>
+</figure>
+
+<div class="example-box">
+<span class="box-title">例（\(n=1,2\) の QFT）</span>
+\(n=1\) では \(F_2\ket j = (\ket0 + e^{\pi i j}\ket1)/\sqrt2\)、すなわち \(F_2=H\)：
+Hadamard ゲートは最小の量子 Fourier 変換である。
+\(n=2\)（\(N=4\)、\(\omega=i\)）では定義から
+\[
+F_4 = \frac12
+\begin{pmatrix}
+1 &amp; 1 &amp; 1 &amp; 1\\
+1 &amp; i &amp; -1 &amp; -i\\
+1 &amp; -1 &amp; 1 &amp; -1\\
+1 &amp; -i &amp; -1 &amp; i
+\end{pmatrix}.
+\]
+一方、回路（\(H\)→制御-\(R_2\)→\(H\)→swap）で例えば \(\ket{j_1 j_2}=\ket{01}\)（\(j=1\)）を追うと
+\[
+\ket{0}\ket{1}
+\xrightarrow{H_1} \frac{\ket0+\ket1}{\sqrt2}\ket1
+\xrightarrow{cR_2} \frac{\ket0+i\ket1}{\sqrt2}\ket1
+\xrightarrow{H_2} \frac{\ket0+i\ket1}{\sqrt2}\cdot\frac{\ket0-\ket1}{\sqrt2}
+\xrightarrow{\text{swap}} \frac{(\ket0-\ket1)(\ket0+i\ket1)}{2}
+\]
+となり、展開すれば \(\frac12(\ket{00}+i\ket{01}-\ket{10}-i\ket{11})\)、
+すなわち行列 \(F_4\) の第2列（\(j=1\)）と一致する。
+</div>
+
+<h3 id="sec-5-1-fft">ゲート数と古典 FFT との対比</h3>
+
+<p>
+ゲート数を数える。第1量子ビットには \(H\) 1個と制御位相 \(n-1\) 個、
+第2ビットには \(H\) と制御位相 \(n-2\) 個、……、第 \(n\) ビットには \(H\) のみ。合計
+\[
+n + (n-1) + \cdots + 1 = \frac{n(n+1)}{2}
+\]
+個のゲートに swap が \(\lfloor n/2\rfloor\) 個加わり、全体で \(\Theta(n^2)\)、
+すなわち <strong>\(O((\log N)^2)\)</strong> である。
+</p>
+
+<div class="remark-box">
+<span class="box-title">近似 QFT</span>
+\(k\) が大きい \(R_k\) の回転角 \(2\pi/2^k\) は指数的に小さい。
+実は \(k \gtrsim \log_2(n/\varepsilon)\) の制御-\(R_k\) をすべて省略しても、
+実装される演算と厳密な QFT との誤差（作用素ノルム）は \(\varepsilon\) 以下に抑えられ、
+ゲート数は \(O(n\log(n/\varepsilon))\) に落ちる。
+ノイズのある実機ではむしろこの近似版が標準的である。
+</div>
+
+<p>
+古典の最良アルゴリズムである FFT は \(N=2^n\) 点の変換に \(\Theta(N\log N)=\Theta(n2^n)\)
+回の演算を要する。QFT の \(\Theta(n^2)\) はこれに対し指数的に速い。
+しかしこの比較には重大な注意が要る。
+</p>
+
+<ul>
+<li><strong>入力の問題：</strong>QFT が変換するのは量子状態の振幅である。
+手元の古典データ \((x_0,\dots,x_{N-1})\) を振幅に載せた状態
+\(\sum_j x_j\ket j\) を用意すること自体、一般には効率よくできない。</li>
+<li><strong>出力の問題：</strong>変換後の振幅 \(y_k\) は直接読み出せない。
+測定すれば確率 \(|y_k|^2\) でどれか1つの \(k\) が得られるだけで、
+複製不可能定理（§1.3.5）により状態を増やして統計を稼ぐこともできない。
+したがって QFT は「Fourier 係数を全部知りたい」という古典的な使い方には役立たない。</li>
+</ul>
+
+<p>
+それでも QFT が有用なのは、<strong>知りたい答えが Fourier 係数の「大域的パターン」
+——とくに周期性——に凝縮されている場合</strong>である。
+振幅列が周期 \(r\) をもつなら、Fourier 変換後の振幅は \(N/r\) の整数倍の近傍に鋭く集中し、
+1回の測定がその集中点をほぼ確実に教えてくれる。
+個々の係数ではなく「どこにピークがあるか」だけを問うなら、測定1回分の情報で足りるのである。
+この考え方を系統化した手続きが、次節の位相推定である。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-5-2">位相推定<span class="en">Phase estimation</span></h2>
+
+<p>
+QFT の最重要の使い道は、それ自体を逆向きに使って<strong>位相を2進小数として読み出す</strong>ことである。
+</p>
+
+<div class="def-box">
+<span class="box-title">問題設定（位相推定）</span>
+ユニタリ演算 \(U\) と、その固有状態 \(\ket u\) が与えられている：
+\[
+U\ket u = e^{2\pi i\varphi}\ket u, \qquad \varphi\in[0,1).
+\]
+\(\varphi\) は未知である。使える資源は、(i) \(\ket u\) を用意する（または供給される）こと、
+(ii) 非負整数 \(j\) に対する<strong>制御-\(U^{2^j}\)</strong> 演算をブラックボックスとして実行できること。
+このとき \(\varphi\) を所望の精度で推定したい。
+</div>
+
+<p>
+回路は2つのレジスタからなる。
+<strong>第1レジスタ</strong>は \(t\) 量子ビット（\(t\) の選び方は §5.2.1 で決める）で \(\ket0^{\otimes t}\) に初期化し、
+<strong>第2レジスタ</strong>は固有状態 \(\ket u\) を保持する。
+手続きは「Hadamard → 制御-\(U^{2^j}\) の列 → 逆QFT → 測定」の4段である。
+</p>
+
+<h3 id="sec-5-2-derivation">手順の導出</h3>
+
+<p>
+<strong>第1段。</strong>第1レジスタの全ビットに \(H\) を掛ける：
+\[
+\ket0^{\otimes t}\ket u \longrightarrow \frac{1}{2^{t/2}}\sum_{k=0}^{2^t-1}\ket k\,\ket u .
+\]
+</p>
+
+<p>
+<strong>第2段。</strong>第1レジスタの第 \(t-j\) 番目のビット（値 \(k_{t-j}\)、重み \(2^j\)）を制御として、
+第2レジスタに制御-\(U^{2^j}\) を掛ける（\(j=0,1,\dots,t-1\)）。
+\(\ket u\) は \(U\) の固有状態なので
+\[
+\ket{k_{t-j}}\ket u \longrightarrow e^{2\pi i\varphi\, 2^j k_{t-j}}\ket{k_{t-j}}\ket u ,
+\]
+つまり<strong>位相が制御ビット側に付く</strong>（位相キックバック：
+制御-\(U\) は \(\ket1\ket u\mapsto e^{2\pi i\varphi}\ket1\ket u\) とするが、
+この位相は積状態全体のものなので、\(\ket u\) が不変な分だけ制御レジスタの \(\ket1\) 成分の係数と解釈できる）。
+すべての \(j\) について実行すると、\(\ket k\) 成分の獲得位相は
+\(\prod_j e^{2\pi i\varphi 2^j k_{t-j}} = e^{2\pi i\varphi k}\)（\(k=\sum_j k_{t-j}2^j\)）となり、
+\[
+\frac{1}{2^{t/2}}\sum_{k=0}^{2^t-1} e^{2\pi i\varphi k}\,\ket k\,\ket u
+\]
+を得る。第2レジスタは終始 \(\ket u\) のままなので、以後は第1レジスタだけを考えればよい。
+</p>
+
+<p>
+<strong>第3段。</strong>いま得た状態を QFT の定義と見比べる。
+仮に \(\varphi\) がちょうど \(t\) ビットの2進小数 \(\varphi = b/2^t\)（\(b\) は整数）なら、
+\[
+\frac{1}{2^{t/2}}\sum_{k} e^{2\pi i bk/2^t}\ket k = F_{2^t}\ket{b}
+\]
+そのものである。よって<strong>逆量子 Fourier 変換</strong> \(F^{-1}_{2^t}\)
+（§5.1 の回路を逆順に、各ゲートを逆演算にして走らせればよく、コストは同じ \(O(t^2)\)）を施せば
+\[
+F^{-1}_{2^t}: \frac{1}{2^{t/2}}\sum_k e^{2\pi i\varphi k}\ket k
+\;\longmapsto\; \ket{b}, \qquad b = 2^t\varphi
+\]
+となり、<strong>第4段</strong>の計算基底での測定が \(\varphi=0.b_1 b_2\cdots b_t\) の全ビットを一発で返す。
+</p>
+
+<figure>
+<svg viewBox="0 0 780 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- first register wires -->
+  <line x1="70" y1="40" x2="700" y2="40" class="line"/>
+  <line x1="70" y1="85" x2="700" y2="85" class="line"/>
+  <line x1="70" y1="150" x2="700" y2="150" class="line"/>
+  <!-- second register wire -->
+  <line x1="70" y1="210" x2="620" y2="210" class="line" stroke-width="2"/>
+  <text x="2" y="45" class="label">|0⟩</text>
+  <text x="2" y="90" class="label">|0⟩</text>
+  <text x="2" y="155" class="label">|0⟩</text>
+  <text x="2" y="215" class="label">|u⟩</text>
+  <text x="80" y="122" class="label-muted">⋮</text>
+  <text x="30" y="122" class="label-muted" font-size="12">t 本</text>
+  <!-- H column -->
+  <rect x="96" y="26" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="104" y="46" class="label">H</text>
+  <rect x="96" y="71" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="104" y="91" class="label">H</text>
+  <rect x="96" y="136" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="104" y="156" class="label">H</text>
+  <!-- controlled U^{2^{t-1}} from top wire -->
+  <line x1="200" y1="40" x2="200" y2="196" class="line" stroke-width="1.5"/>
+  <circle cx="200" cy="40" r="4.5" class="accent-fill"/>
+  <rect x="168" y="188" width="64" height="34" class="gate" stroke-width="1.5"/>
+  <text x="174" y="211" class="label" font-size="13">U^(2^(t−1))</text>
+  <!-- controlled U^{2^{t-2}} from 2nd wire -->
+  <line x1="300" y1="85" x2="300" y2="196" class="line" stroke-width="1.5"/>
+  <circle cx="300" cy="85" r="4.5" class="accent-fill"/>
+  <rect x="268" y="188" width="64" height="34" class="gate" stroke-width="1.5"/>
+  <text x="274" y="211" class="label" font-size="13">U^(2^(t−2))</text>
+  <!-- dots -->
+  <text x="360" y="212" class="label-muted">…</text>
+  <!-- controlled U^{2^0} from bottom wire of register -->
+  <line x1="430" y1="150" x2="430" y2="196" class="line" stroke-width="1.5"/>
+  <circle cx="430" cy="150" r="4.5" class="accent-fill"/>
+  <rect x="404" y="188" width="52" height="34" class="gate" stroke-width="1.5"/>
+  <text x="412" y="211" class="label" font-size="13">U^(2⁰)</text>
+  <!-- inverse QFT box -->
+  <rect x="500" y="24" width="80" height="142" class="gate" stroke-width="1.5"/>
+  <text x="514" y="102" class="label">QFT†</text>
+  <!-- meters -->
+  <rect x="616" y="27" width="34" height="26" class="gate" stroke-width="1.5"/>
+  <path d="M 622 48 A 11 11 0 0 1 644 48" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="633" y1="48" x2="641" y2="34" class="line" stroke-width="1.5"/>
+  <rect x="616" y="72" width="34" height="26" class="gate" stroke-width="1.5"/>
+  <path d="M 622 93 A 11 11 0 0 1 644 93" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="633" y1="93" x2="641" y2="79" class="line" stroke-width="1.5"/>
+  <rect x="616" y="137" width="34" height="26" class="gate" stroke-width="1.5"/>
+  <path d="M 622 158 A 11 11 0 0 1 644 158" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="633" y1="158" x2="641" y2="144" class="line" stroke-width="1.5"/>
+  <text x="662" y="105" class="label">φ̃ の各ビット</text>
+</svg>
+<figcaption>図 5.2：位相推定回路。\(t\) 量子ビットの第1レジスタに \(H\)、第2レジスタ \(\ket u\) に制御-\(U^{2^j}\)（上位ビットほど大きいべき）を掛け、第1レジスタを逆QFTして測定する。</figcaption>
+</figure>
+
+<h3 id="sec-5-2-1">§5.2.1 性能解析：\(\varphi\) が \(t\) ビットで書けない場合</h3>
+
+<p>
+一般には \(\varphi\) は有限桁の2進小数ではない。このときも上の回路は
+「\(2^t\varphi\) に最も近い整数」を高い確率で返すことを示そう。ここが本節の技術的核心である。
+</p>
+
+<p>
+\(b\in\{0,1,\dots,2^t-1\}\) を \(b/2^t \le \varphi\) を満たす最良の \(t\) ビット近似とし、
+残差を \(\delta \equiv \varphi - b/2^t\)、\(0\le\delta&lt;2^{-t}\) とおく。
+第3段の逆QFT後の状態は
+\[
+\frac{1}{2^t}\sum_{k=0}^{2^t-1}\sum_{m=0}^{2^t-1}
+e^{-2\pi i km/2^t}\,e^{2\pi i\varphi k}\,\ket m
+\]
+である。測定結果 \(m=(b+l)\bmod 2^t\)（\(l\) は \(b\) からのずれで、
+\(-2^{t-1}&lt;l\le 2^{t-1}\) の範囲の整数と同一視する）の振幅は、\(k\) についての等比級数として
+\[
+\alpha_l = \frac{1}{2^t}\sum_{k=0}^{2^t-1}
+\Bigl(e^{2\pi i(\varphi - (b+l)/2^t)}\Bigr)^{k}
+= \frac{1}{2^t}\,
+\frac{1-e^{2\pi i(2^t\delta - l)}}{1-e^{2\pi i(\delta - l/2^t)}}
+\]
+と閉じた形で書ける（公比が 1 になるのは \(\delta=0,\ l=0\) の場合のみで、そのときは \(\alpha_0=1\)：
+これが前段落の「厳密に書ける場合」である）。
+</p>
+
+<p>
+この \(|\alpha_l|\) を評価する。分子は \(|1-e^{i\theta}|\le 2\) で押さえる。
+分母には、\(|\theta|\le\pi\) で成り立つ不等式
+\[
+|1-e^{i\theta}| = 2\left|\sin\frac{\theta}{2}\right| \ge \frac{2|\theta|}{\pi}
+\]
+（弦の長さは弧長の \(2/\pi\) 倍以上；\(\sin x \ge 2x/\pi\)（\(0\le x\le\pi/2\)）による）を使う。
+分母の位相は \(\theta = 2\pi(\delta - l/2^t)\) で、\(|l|\le 2^{t-1}\)、\(0\le\delta&lt;2^{-t}\) より
+\(|\theta|\le\pi\) が満たされる。よって
+\[
+|\alpha_l| \le \frac{1}{2^t}\cdot
+\frac{2}{\,2\cdot 2\pi|\delta - l/2^t|/\pi\,}
+= \frac{1}{2^{t+1}\,|\delta - l/2^t|}
+= \frac{1}{2\,|2^t\delta - l|}.
+\]
+つまり<strong>ずれ \(l\) が大きい結果の振幅は \(1/l\) のオーダーで減衰する</strong>。
+</p>
+
+<p>
+測定結果が \(b\) から \(e\) より大きくずれる確率 \(p(|l|&gt;e)\) を上から押さえる。
+\(0\le 2^t\delta&lt;1\) に注意すると、\(l\ge e+1\)（正側）では \(|2^t\delta - l|\ge l-1\)、
+\(l\le -(e+1)\)（負側）では \(|2^t\delta - l|\ge |l|\) なので
+\[
+p(|l|&gt;e)
+= \sum_{l=-2^{t-1}+1}^{-(e+1)}|\alpha_l|^2 + \sum_{l=e+1}^{2^{t-1}}|\alpha_l|^2
+\le \frac14\left[\sum_{l=e+1}^{\infty}\frac{1}{(l-1)^2} + \sum_{l=e+1}^{\infty}\frac{1}{l^2}\right]
+\le \frac12\sum_{l=e}^{\infty}\frac{1}{l^2}
+\le \frac12\int_{e-1}^{\infty}\frac{dl}{l^2}
+= \frac{1}{2(e-1)}.
+\]
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（位相推定の資源見積もり）</span>
+位相 \(\varphi\) を精度 \(2^{-n}\)（上位 \(n\) ビット）で、失敗確率 \(\epsilon\) 以下で推定するには、
+第1レジスタの量子ビット数を
+\[
+t = n + \left\lceil \log_2\!\Bigl(2+\frac{1}{2\epsilon}\Bigr)\right\rceil
+\]
+に取れば十分である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(t = n+p\) とおき、許容するずれを \(e = 2^p - 1\) とする。
+測定結果 \(m\) が \(|m-b|\le e\) を満たせば、推定値 \(\tilde\varphi = m/2^t\) の誤差は
+\[
+|\tilde\varphi - \varphi| \le \frac{|m-b|}{2^t} + \delta
+&lt; \frac{2^p-1}{2^{n+p}} + \frac{1}{2^{n+p}} = 2^{-n}
+\]
+となり、精度 \(2^{-n}\) が達成される。失敗確率は上の評価より
+\[
+p(|l|&gt;e) \le \frac{1}{2(e-1)} = \frac{1}{2(2^p-2)}
+\]
+であり、これが \(\epsilon\) 以下となる条件は \(2^p \ge 2 + 1/(2\epsilon)\)、
+すなわち \(p = \lceil\log_2(2+1/2\epsilon)\rceil\) で十分。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">固有状態が用意できないとき</span>
+第2レジスタに固有状態そのものではなく重ね合わせ \(\ket\psi=\sum_s c_s\ket{u_s}\)
+（\(U\ket{u_s}=e^{2\pi i\varphi_s}\ket{u_s}\)）を入れるとどうなるか。
+回路全体は線形なので、出力は
+\(\sum_s c_s\ket{\widetilde{\varphi_s}}\ket{u_s}\) に近い状態となり、
+測定すれば<strong>確率 \(|c_s|^2\) で固有値 \(\varphi_s\) の（良い）推定値</strong>が得られる。
+どの固有値が出るかは選べないが、「どれかの固有値が正確に読める」ことは保証される。
+次節の位数発見はこの性質を全面的に利用する：
+固有状態を1つも作れなくても、固有状態の一様な重ね合わせが自明に用意できるからである。
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-5-3">応用：位数発見と素因数分解<span class="en">Applications: order-finding and factoring</span></h2>
+
+<p>
+位相推定は「良い \(U\) を選べば面白い問題が解ける」という枠組みである。
+本節では \(U\) として<strong>剰余乗算</strong>を選ぶ。すると固有値の位相が
+整数論的な量（位数）を含み、位相推定＋古典後処理（連分数）で位数が求まる。
+さらに位数が分かれば、初等整数論の2つの補題によって合成数の因数が高確率で得られる。
+全体の還元の連鎖は次のとおりである。
+</p>
+
+<figure>
+<svg viewBox="0 0 740 90" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="25" width="140" height="40" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="30" y="50" class="label">素因数分解</text>
+  <line x1="150" y1="45" x2="195" y2="45" class="line accent" stroke-width="1.5"/>
+  <path d="M 195 45 l -9 -5 v 10 z" class="accent-fill"/>
+  <rect x="200" y="25" width="120" height="40" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="220" y="50" class="label">位数発見</text>
+  <line x1="320" y1="45" x2="365" y2="45" class="line accent" stroke-width="1.5"/>
+  <path d="M 365 45 l -9 -5 v 10 z" class="accent-fill"/>
+  <rect x="370" y="25" width="120" height="40" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="390" y="50" class="label">位相推定</text>
+  <line x1="490" y1="45" x2="535" y2="45" class="line accent" stroke-width="1.5"/>
+  <path d="M 535 45 l -9 -5 v 10 z" class="accent-fill"/>
+  <rect x="540" y="25" width="190" height="40" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="552" y="50" class="label" font-size="13">逆QFT ＋ 連分数展開</text>
+  <text x="155" y="20" class="label-muted" font-size="11">補題×2（古典）</text>
+  <text x="325" y="20" class="label-muted" font-size="11">固有値 e^(2πis/r)</text>
+  <text x="497" y="20" class="label-muted" font-size="11">s/r を復元</text>
+</svg>
+<figcaption>図 5.3：Shor のアルゴリズムにおける還元の連鎖。量子的なのは位相推定（と逆QFT）の部分だけで、両端は古典の整数論である。</figcaption>
+</figure>
+
+<h3 id="sec-5-3-1">§5.3.1 位数発見</h3>
+
+<div class="def-box">
+<span class="box-title">問題（位数発見）</span>
+互いに素な正整数 \(x&lt;N\)（\(\gcd(x,N)=1\)）が与えられたとき、
+\[
+x^r \equiv 1 \pmod N
+\]
+を満たす最小の正整数 \(r\) を <strong>\(x\) の（法 \(N\) での）位数 (order)</strong> と呼ぶ。
+これを求めよ。以下、入力サイズを \(L\equiv\lceil\log_2 N\rceil\)（\(N\) のビット数）とする。
+</div>
+
+<p>
+位数は必ず存在する（\(x, x^2, x^3,\dots \pmod N\) は有限集合内の列なのでいつか循環し、
+\(\gcd(x,N)=1\) より \(x\) は可逆だから循環は 1 に戻る）。
+例えば \(N=21,\ x=5\) なら
+\(5^1=5,\ 5^2=4,\ 5^3=20,\ 5^4=16,\ 5^5=17,\ 5^6=1 \pmod{21}\) で \(r=6\)。
+古典計算では、位数発見は素因数分解と同様に効率的な解法が知られていない。
+</p>
+
+<p><strong>ユニタリの選択。</strong>剰余乗算
+\[
+U\ket y \equiv \ket{xy \bmod N} \qquad (0\le y&lt;N)
+\]
+を考える（\(N\le y \le 2^L-1\) の「余った」基底状態には恒等的に作用させる、と約束しておけば
+\(2^L\) 次元でユニタリになる）。
+\(\gcd(x,N)=1\) より \(y\mapsto xy\bmod N\) は \(\{0,\dots,N-1\}\) 上の置換なので \(U\) はユニタリである。
+</p>
+
+<div class="thm-box">
+<span class="box-title">命題（\(U\) の固有状態）</span>
+\(r\) を \(x\) の位数とする。\(s=0,1,\dots,r-1\) に対し
+\[
+\ket{u_s} \equiv \frac{1}{\sqrt r}\sum_{k=0}^{r-1}
+e^{-2\pi i sk/r}\,\ket{x^k \bmod N}
+\]
+と定めると、これらは正規直交系をなし、
+\[
+U\ket{u_s} = e^{2\pi i s/r}\,\ket{u_s}
+\]
+を満たす。すなわち固有値の位相は \(\varphi_s = s/r\)：<strong>位数 \(r\) が固有値に埋め込まれている</strong>。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(U\) は \(\ket{x^k}\mapsto\ket{x^{k+1}}\)（添字は \(\bmod\ r\)、\(x^r\equiv1\) より \(k=r-1\) は \(k=0\) に戻る）
+という巡回シフトなので、
+\[
+U\ket{u_s} = \frac{1}{\sqrt r}\sum_{k=0}^{r-1} e^{-2\pi isk/r}\ket{x^{k+1}\bmod N}
+= \frac{1}{\sqrt r}\sum_{k'=1}^{r} e^{-2\pi is(k'-1)/r}\ket{x^{k'}\bmod N}
+= e^{2\pi is/r}\ket{u_s}
+\]
+（\(k'=k+1\) と置換し、\(k'=r\) の項は \(e^{-2\pi is(r-1)/r}\ket{x^0}=e^{2\pi is/r}\cdot e^{-2\pi i s\cdot 0/r}\ket{x^0}\)
+として \(k'=0\) の項に周回する）。
+正規直交性は、\(\{x^k \bmod N\}_{k=0}^{r-1}\) が相異なる（\(r\) の最小性による）ことと
+等比級数の公式 \(\frac1r\sum_k e^{2\pi i(s'-s)k/r}=\delta_{ss'}\) から従う。<span class="qed">∎</span>
+</div>
+
+<p>
+位相推定を適用するには2つの準備が要る：
+(a) 制御-\(U^{2^j}\) の効率的な実装、(b) 固有状態 \(\ket{u_s}\) の用意。
+順に片付ける。
+</p>
+
+<p>
+<strong>(a) べき乗剰余（modular exponentiation）。</strong>
+制御-\(U^{2^j}\) をゲート列として愚直に \(2^j\) 回反復するのは指数的で論外だが、
+実際に必要なのは第1レジスタ \(\ket z\)（\(z=z_1\cdots z_t\)）全体で制御された
+\[
+\ket z\ket y \longmapsto \ket z\,\ket{x^z y \bmod N}
+\]
+という一括の変換である。これは古典の<strong>繰り返し2乗法</strong>をそのまま可逆回路化すればよい：
+まず \(x^2, x^4, \dots, x^{2^{t-1}} \pmod N\) を順次2乗して作り（\(t-1\) 回の剰余乗算）、
+\(z_j=1\) に対応する因子だけを掛け合わせる（高々 \(t\) 回の剰余乗算）。
+\(L\) ビット整数の剰余乗算は素朴な筆算で \(O(L^2)\) ゲートだから、
+\(t=O(L)\) のとき全体で <strong>\(O(L^3)\)</strong> ゲートで済む
+（第3章の可逆計算の一般論により、古典回路は同じオーダーの可逆回路に変換できる。
+補助ビットの後始末も標準的な uncomputation でよい）。
+これがアルゴリズム全体の律速段階である。
+</p>
+
+<p>
+<strong>(b) 固有状態の用意——\(\ket1\) のトリック。</strong>
+\(\ket{u_s}\) を作るには \(r\) を知っている必要があり、一見循環論法に陥る。
+これを回避するのが次の観察である：
+\[
+\frac{1}{\sqrt r}\sum_{s=0}^{r-1}\ket{u_s}
+= \frac{1}{r}\sum_{s=0}^{r-1}\sum_{k=0}^{r-1} e^{-2\pi isk/r}\ket{x^k\bmod N}
+= \sum_{k=0}^{r-1}\left[\frac1r\sum_{s=0}^{r-1}e^{-2\pi isk/r}\right]\ket{x^k\bmod N}
+= \ket{x^0} = \ket{1}.
+\]
+（角括弧内は \(\delta_{k0}\)。）
+すなわち<strong>全固有状態の一様重ね合わせは、ただの計算基底状態 \(\ket1\) である</strong>。
+\(\ket1\) は自明に用意できる。§5.2 末尾の注意により、
+第2レジスタに \(\ket1\) を入れて位相推定を走らせれば、
+\(s\in\{0,\dots,r-1\}\) が<strong>一様ランダム</strong>に選ばれた上で、
+位相 \(\varphi_s = s/r\) の推定値が高確率で得られる。
+</p>
+
+<p>
+<strong>精度の設定。</strong>後段の連分数展開（下記）が正しく働くためには、
+推定値 \(\tilde\varphi\) が \(|\tilde\varphi - s/r|\le 1/2r^2\) を満たす必要がある。
+\(r\le N\le 2^L\) だから \(1/2r^2 \ge 2^{-(2L+1)}\)、
+つまり <strong>\(2L+1\) ビットの精度</strong>があれば十分である。§5.2.1 の定理より
+\[
+t = 2L+1+\left\lceil\log_2\Bigl(2+\frac{1}{2\epsilon}\Bigr)\right\rceil
+\]
+と取れば、失敗確率 \(\epsilon\) 以下でこの精度が達成される。
+</p>
+
+<h4>連分数アルゴリズム</h4>
+
+<p>
+測定で得られるのは \(2^t\tilde\varphi\) という \(t\) ビットの整数、
+すなわち有理数 \(\tilde\varphi\) であり、欲しいのは近くにある「分母の小さい」有理数 \(s/r\) である。
+これを効率よく（しかも厳密に）見つける古典アルゴリズムが連分数展開である。
+実数 \(\varphi\) の連分数展開とは
+\[
+\varphi = a_0 + \cfrac{1}{a_1+\cfrac{1}{a_2+\cfrac{1}{\ddots}}}
+\qquad (a_0\in\mathbb{Z}_{\ge0},\ a_1,a_2,\dots\in\mathbb{Z}_{\ge1})
+\]
+という表示で、有限段で打ち切った有理数 \([a_0;a_1,\dots,a_m]\) を
+<strong>第 \(m\) 近似分数 (convergent)</strong> と呼ぶ。
+展開は「整数部分を取る→逆数を取る」の反復（実質 Euclid の互除法）で計算でき、
+\(\tilde\varphi\) が \(t\) ビットの有理数なら全近似分数の列挙は \(O(t^3)\) の古典演算で終わる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（連分数による有理数の復元）</span>
+\(s/r\) を有理数、\(\tilde\varphi\) を実数とし、
+\[
+\left|\frac{s}{r} - \tilde\varphi\right| \le \frac{1}{2r^2}
+\]
+が成り立つとする。このとき \(s/r\)（既約分数として）は
+\(\tilde\varphi\) の連分数展開の近似分数のどれかに一致する。
+</div>
+
+<p>
+証明は<a href="appendixA4.html">付録A4</a>（§A4.4 連分数）で与える。
+近似分数の最良近似性、すなわち \(|q_m\varphi - p_m|\) の単調性を使う議論である。
+<strong>使い方</strong>はこうである：測定値 \(\tilde\varphi=m/2^t\) の連分数展開を計算し、
+近似分数 \(p/q\) を分母の小さい順に調べ、\(q&lt;N\) かつ \(x^q\equiv1\pmod N\)
+を満たすものがあれば \(r=q\)（の候補）として採用する。
+検証 \(x^q\bmod N\) は繰り返し2乗法で \(O(L^3)\) の古典演算ででき、
+<strong>答えが正しいことを確認してから出力できる</strong>点が重要である
+（乱択アルゴリズムだが、出力は検証済みにできる）。
+</p>
+
+<p>
+<strong>\(s/r\) の既約性の問題。</strong>連分数が返すのは既約分数 \(s'/r'\)
+（\(s'/r' = s/r\)、\(\gcd(s',r')=1\)）である。
+運悪く \(s\) と \(r\) が公約数を持つと \(r'\) は \(r\) の真の約数にとどまり、
+\(x^{r'}\not\equiv1\) となって検証で弾かれる。対策は複数ある。
+</p>
+
+<ul>
+<li><strong>単純な反復：</strong>\(s\) は \(\{0,\dots,r-1\}\) から一様に出るので、
+\(\gcd(s,r)=1\) となる確率は \(\phi(r)/r\)（\(\phi\) は Euler の totient）。
+初等的な評価 \(\phi(r)/r \ge c/\log\log r\)（ある定数 \(c&gt;0\)）が知られているので、
+\(O(\log\log N)\) 回繰り返せば高確率で既約な \(s/r\) を引く。</li>
+<li><strong>2回走らせて lcm：</strong>2回の実行で \(r'_1 = r/\gcd(s_1,r)\)、
+\(r'_2 = r/\gcd(s_2,r)\) を得たとき、\(s_1,s_2\) が互いに素（一様独立なら確率は
+\(\sum_q 1/q^2\) の議論により \(1/4\) 以上）であれば
+\(\mathrm{lcm}(r'_1,r'_2)=r\) が成り立つ。定数回の反復で \(r\) に到達できる。</li>
+</ul>
+
+<p>
+以上をまとめると、位数発見は
+量子部分 \(O(L^3)\)（べき乗剰余が支配的、逆QFTは \(O(L^2)\)）＋古典後処理 \(O(L^3)\) の
+繰り返し定数回（ないし \(O(\log\log N)\) 回）で、高確率で成功する。
+</p>
+
+<h3 id="sec-5-3-2">§5.3.2 素因数分解への還元</h3>
+
+<p>
+次に「位数が求まれば因数が求まる」ことを示す。橋渡しをするのは
+<strong>1 の非自明な平方根</strong>という概念である。
+以下 \(N\) は奇数の合成数とする（偶数なら因数 2 が自明に取れる）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題 1（非自明な平方根から因数）</span>
+\(y\) が \(y^2\equiv 1\pmod N\) の<strong>非自明な</strong>解、すなわち
+\(y\not\equiv\pm1\pmod N\) を満たすとする。このとき
+\(\gcd(y-1,N)\) と \(\gcd(y+1,N)\) の少なくとも一方は \(N\) の非自明な因数
+（\(1\) でも \(N\) でもない約数）である。しかも \(\gcd\) は \(O(L^2)\) で計算できる。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(y^2-1=(y-1)(y+1)\equiv0\pmod N\) なので \(N\mid(y-1)(y+1)\)。
+\(1\le y\le N-1\) の代表を取れば、\(y\not\equiv1\) より \(y-1\not\equiv 0\)、
+\(y\not\equiv-1\) より \(y+1\not\equiv0\pmod N\)、
+すなわち \(N\) は \(y-1\) も \(y+1\) も割り切らない。
+\(N\) の任意の素因数 \(p\) は積 \((y-1)(y+1)\) を割るので \(y-1\) か \(y+1\) の少なくとも一方を割る。
+したがって \(\gcd(y-1,N)&gt;1\) または \(\gcd(y+1,N)&gt;1\)。
+一方どちらの \(\gcd\) も \(N\) 自身にはなれない（\(N\nmid y\mp1\)）。
+ゆえに少なくとも一方が \(1&lt;d&lt;N\) の真の約数である。
+\(\gcd\) は Euclid の互除法で \(O(L^2)\)。<span class="qed">∎</span>
+</div>
+
+<p>
+では非自明な平方根はどう手に入れるか。ランダムに選んだ \(y\) の位数 \(r\) が
+<strong>偶数</strong>であれば、\(w \equiv y^{r/2}\) は \(w^2 = y^r \equiv 1\) を満たす平方根である。
+\(w\equiv1\) はありえない（\(r/2 &lt; r\) が位数になってしまい \(r\) の最小性に反する）。
+残る心配は \(w\equiv-1\) の場合だけで、それが起きにくいことを保証するのが次の補題である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題 2（良い \(y\) は多い）</span>
+\(N\) を奇合成数とし、相異なる素数 \(p_1,\dots,p_m\) により
+\(N=p_1^{\alpha_1}\cdots p_m^{\alpha_m}\) と素因数分解されるとする。
+\(y\) を \(\{1,\dots,N-1\}\) のうち \(N\) と互いに素なものから一様ランダムに選び、
+その位数を \(r\) とすると
+\[
+P\Bigl(r\ \text{が偶数、かつ}\ y^{r/2}\not\equiv-1\pmod N\Bigr)
+\;\ge\; 1-\frac{1}{2^{m-1}}.
+\]
+とくに \(N\) が素数べき \(p^\alpha\) でなければ \(m\ge2\) なので、この確率は \(1/2\) 以上。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+中国剰余定理により、\(y\) を一様に選ぶことは、各 \(j\) について
+\(y_j \equiv y \pmod{p_j^{\alpha_j}}\) を \(\mathbb{Z}_{p_j^{\alpha_j}}^*\) から
+<strong>独立に一様に</strong>選ぶことと同値である。
+\(r_j\) を \(y_j\) の（法 \(p_j^{\alpha_j}\) での）位数とすると \(r=\mathrm{lcm}(r_1,\dots,r_m)\)。
+整数 \(a\) の 2 進付値（\(a\) を割り切る 2 の最大べきの指数）を \(v_2(a)\) と書く。
+<br><br>
+<strong>ステップ1：失敗は「全付値の一致」を含意する。</strong>
+失敗とは「\(r\) が奇数」または「\(y^{r/2}\equiv-1\pmod N\)」である。
+\(r\) が奇数なら全 \(r_j\) が奇数なので \(v_2(r_1)=\cdots=v_2(r_m)=0\)。
+\(y^{r/2}\equiv-1\pmod N\) なら各 \(j\) で \(y_j^{r/2}\equiv-1\pmod{p_j^{\alpha_j}}\)、
+とくに \(y_j^{r/2}\not\equiv1\) だから \(r_j\nmid r/2\)。
+一方 \(r_j\mid r\) は常に成り立つ。「\(r\) は割るが \(r/2\) は割らない」は
+\(v_2(r_j)=v_2(r)\) を意味する（奇数部分は \(r/2\) でも割り切れるため、障害は 2 のべきにしかない）。
+これが全 \(j\) で成り立つ。いずれの場合も
+\[
+v_2(r_1)=v_2(r_2)=\cdots=v_2(r_m)
+\]
+が成り立つ。よって \(P(\text{失敗})\le P(\text{全付値が一致})\)。
+<br><br>
+<strong>ステップ2：各成分で付値が特定の値を取る確率は高々 \(1/2\)。</strong>
+\(p\) を奇素数とすると \(\mathbb{Z}_{p^\alpha}^*\) は位数
+\(\phi=p^{\alpha-1}(p-1)\) の巡回群で、\(p-1\) は偶数だから \(v_2(\phi)=c\ge1\)。
+生成元 \(g\) を取り \(y_j=g^k\)（\(k\) は \(\{1,\dots,\phi\}\) から一様）と書くと、
+位数は \(r_j=\phi/\gcd(k,\phi)\) なので
+\[
+v_2(r_j) = c - \min(v_2(k),\,c).
+\]
+任意に固定した値 \(d\) に対して：
+\(d=c\) となるのは \(k\) が奇数のとき（確率ちょうど \(1/2\)）；
+\(0&lt;d&lt;c\) となるのは \(v_2(k)=c-d\ge1\) のとき（確率 \(2^{-(c-d+1)}\le 1/4\)）；
+\(d=0\) となるのは \(v_2(k)\ge c\) のとき（確率 \(2^{-c}\le1/2\)）；
+\(d&gt;c\) は確率 0。いずれにせよ
+\[
+P\bigl(v_2(r_j)=d\bigr) \le \frac12 .
+\]
+<br>
+<strong>ステップ3：合わせる。</strong>成分は独立なので、第1成分の付値 \(v_2(r_1)\) を
+どんな値に条件付けても、残り \(m-1\) 成分がそれに一致する確率は各々高々 \(1/2\)：
+\[
+P(\text{全付値が一致})
+= \sum_d P\bigl(v_2(r_1)=d\bigr)\prod_{j=2}^{m}P\bigl(v_2(r_j)=d\bigr)
+\le \sum_d P\bigl(v_2(r_1)=d\bigr)\cdot\frac{1}{2^{m-1}}
+= \frac{1}{2^{m-1}} .
+\]
+よって成功確率は \(1-2^{-(m-1)}\) 以上。<span class="qed">∎</span>
+</div>
+
+<p>
+以上を組み立てると、素因数分解アルゴリズムの全体像は次のようになる。
+</p>
+
+<div class="def-box">
+<span class="box-title">アルゴリズム（Shor：合成数 \(N\) の非自明な因数を求める）</span>
+<ol>
+<li>\(N\) が偶数なら 2 を返す。</li>
+<li>\(N=a^b\)（\(a\ge2,\ b\ge2\)）の形（素数べきを含む完全べき）かを古典的に検査する：
+各 \(b\le\log_2 N\) について \(N^{1/b}\) を数値的に求め整数か確かめればよく \(O(L^3)\)。
+該当すれば \(a\) を返す。</li>
+<li>\(y\) を \(\{2,\dots,N-1\}\) から一様ランダムに選ぶ。
+\(\gcd(y,N)&gt;1\) ならそれが因数（幸運なケース）なので返す。</li>
+<li><strong>位数発見サブルーチン（量子）</strong>で \(y\) の法 \(N\) での位数 \(r\) を求める。</li>
+<li>\(r\) が奇数、または \(y^{r/2}\equiv-1\pmod N\) なら失敗：ステップ 3 に戻る。</li>
+<li>\(\gcd(y^{r/2}-1,\,N)\) と \(\gcd(y^{r/2}+1,\,N)\) を計算し、
+非自明な方（補題 1 により必ず存在）を返す。</li>
+</ol>
+ステップ 1–2 を抜けた \(N\) は「奇数・合成・素数べきでない」ので補題 2 が適用でき、
+1回の試行の成功確率は \(1/2\) 以上（位数発見自体の失敗を込めても定数）。
+期待して定数回の反復で因数が得られ、総コストは<strong>べき乗剰余が支配する \(O(L^3)\)</strong>
+——すなわち \(N\) の桁数の多項式——である。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（\(N=15\) を分解する）</span>
+\(y=7\) を選んだとする。\(\gcd(7,15)=1\) なので位数発見へ進む。
+\(7^1=7,\ 7^2=49\equiv4,\ 7^3\equiv28\equiv13,\ 7^4\equiv91\equiv1\pmod{15}\) より \(r=4\)。
+\(r\) は偶数で、\(w=7^{r/2}=7^2\equiv4\not\equiv-1\pmod{15}\)。
+補題 1 を適用して
+\[
+\gcd(4-1,\,15)=3,\qquad \gcd(4+1,\,15)=5
+\]
+——両方とも因数が出て \(15=3\times5\) を得る。
+量子サブルーチン側の視点では、\(L=4\)、精度 \(2L+1=9\) ビットの位相推定が
+\(\tilde\varphi\approx s/4\)（\(s=0,1,2,3\) が等確率）を返し、
+例えば \(s=1\) なら連分数展開が \(1/4\) を復元して \(r=4\) が判明する、という流れである
+（\(s=2\) なら既約化で \(1/2\) となり \(r'=2\) は検証で弾かれる——反復が要る場合の実例）。
+</div>
+
+<div class="remark-box">
+<span class="box-title">RSA への含意</span>
+RSA 暗号の安全性は「大きな半素数 \(N=pq\) の素因数分解は現実的時間で不可能」という
+計算量的仮定に立脚している。既知の最良の古典アルゴリズム（数体篩法）は
+\(\exp\!\bigl(O(L^{1/3}(\log L)^{2/3})\bigr)\) と準指数的だが、
+Shor のアルゴリズムは \(O(L^3)\) の多項式時間でこれを解く。
+したがって<strong>大規模な誤り耐性量子計算機が実現すれば RSA（および §5.4.2 の離散対数に基づく
+Diffie–Hellman・楕円曲線暗号）は破られる</strong>。
+これが耐量子計算機暗号（格子暗号など）への移行が進められている理由であり、
+また「物理法則に安全性を置く」量子鍵配送（§12.6）の動機の一つでもある。
+ただし必要な量子ビット数は誤り訂正込みで膨大であり（第10章）、
+現行の小規模デバイスで RSA が破れるわけではない。
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-5-4">QFT の一般的応用<span class="en">General applications of the QFT</span></h2>
+
+<p>
+位数発見・素因数分解は、より一般的な問題族の特殊例である。
+本節では抽象度を一段ずつ上げながら、「QFT で解ける問題」の輪郭を描く。
+</p>
+
+<h3 id="sec-5-4-1">§5.4.1 周期発見</h3>
+
+<p>
+関数 \(f:\mathbb{Z}\to\{0,1,\dots\}\) が周期 \(r\) をもつとする：
+\(f(x+r)=f(x)\) であり、1周期内では値がすべて異なるとする。
+\(f\) はユニタリなオラクル \(U_f\ket x\ket y=\ket x\ket{y\oplus f(x)}\) としてだけ触れる。
+このとき \(r\) を求める問題が<strong>周期発見 (period-finding)</strong> である。
+位数発見は \(f(k)=x^k\bmod N\) という特定の \(f\) に対する周期発見にほかならない。
+</p>
+
+<p>
+アルゴリズムは位数発見と同型である。\(t\approx 2\lceil\log r\rceil+1+O(1)\) ビットの第1レジスタで
+\[
+\frac{1}{2^{t/2}}\sum_{x=0}^{2^t-1}\ket x\ket{f(x)}
+\]
+を作る。ここで第2レジスタの状態を \(f\) の「Fourier 双対」
+\[
+\ket{\hat f(l)} \equiv \frac{1}{\sqrt r}\sum_{x=0}^{r-1} e^{-2\pi ilx/r}\ket{f(x)}
+\]
+で展開すると（逆変換 \(\ket{f(x)}=\frac{1}{\sqrt r}\sum_l e^{2\pi ilx/r}\ket{\hat f(l)}\) を代入して）
+\[
+\frac{1}{2^{t/2}}\sum_x\ket x\ket{f(x)}
+\approx \frac{1}{\sqrt r}\sum_{l=0}^{r-1}
+\left[\frac{1}{2^{t/2}}\sum_x e^{2\pi i (l/r) x}\ket x\right]\ket{\hat f(l)}
+\]
+となる。角括弧内は位相 \(\varphi=l/r\) をもつ位相推定第2段後の状態と同じ形なので、
+第1レジスタに逆QFTを掛けて測定すれば \(l/r\)（\(l\) はランダム）の良い近似が得られ、
+連分数展開で \(r\) が復元される。
+「\(f\) の中身を知らなくても、周期だけならオラクル1回分の重ね合わせ評価＋逆QFTで抜き出せる」
+というのが量子並列性（§1.4.2）のここでの現れ方である。
+</p>
+
+<h3 id="sec-5-4-2">§5.4.2 離散対数</h3>
+
+<p>
+巡回群でのべき乗の逆問題を<strong>離散対数問題 (discrete logarithm)</strong> という：
+位数 \(r\) の元 \(a\)（例えば \(\mathbb{Z}_p^*\) の生成元）と \(b=a^s\) が与えられたとき、
+指数 \(s\) を求めよ。古典では効率的な解法が知られておらず、
+Diffie–Hellman 鍵共有や ElGamal・楕円曲線暗号の安全性の根拠である。
+</p>
+
+<p>
+量子アルゴリズムは2変数関数
+\[
+f(x_1,x_2) = b^{x_1}a^{x_2} = a^{sx_1+x_2} \pmod N
+\]
+を使う。\(f\) は \(sx_1+x_2 \bmod r\) だけで決まるので、
+2次元格子 \(\mathbb{Z}_r\times\mathbb{Z}_r\) 上で「方向 \((1,-s)\) に並進不変」な周期構造をもつ：
+\(f(x_1+\ell,\ x_2-\ell s)=f(x_1,x_2)\)。
+そこで2つの指数レジスタそれぞれを一様重ね合わせにして \(f\) を評価し、
+<strong>両レジスタに逆QFT</strong>を掛けて測定すると、
+周期構造の双対格子に対応する組——理想化すれば
+\((\ell/r,\ \ell s/r \bmod 1)\) の形の対——がサンプルされる。
+1つの成分から \(\ell\) を（連分数で）読み、もう1つの成分と組み合わせれば
+\(s \equiv (\ell s)\cdot \ell^{-1} \pmod r\) が復元できる（\(\gcd(\ell,r)=1\) となるまで定数〜
+\(O(\log\log r)\) 回繰り返す）。
+コストは位数発見と同様、べき乗剰余が支配して \(O(L^3)\) 程度である。
+つまり「1次元の周期＝位数発見、2次元の周期＝離散対数」という対応で、
+同じ機構（重ね合わせ評価＋QFT＋連分数）がそのまま働く。
+</p>
+
+<h3 id="sec-5-4-3">§5.4.3 隠れ部分群問題</h3>
+
+<p>
+ここまでの問題（Deutsch–Jozsa、Simon、周期発見、位数発見、離散対数）は、
+すべて次の1つの問題の実例として統一できる。
+</p>
+
+<div class="def-box">
+<span class="box-title">問題（隠れ部分群問題, hidden subgroup problem; HSP）</span>
+群 \(G\) と有限集合 \(X\)、および関数 \(f:G\to X\) が与えられる。
+\(f\) はある部分群 \(K\le G\) について
+\[
+f(g_1)=f(g_2) \iff g_1 K = g_2 K
+\]
+を満たす、すなわち<strong>\(K\) の剰余類ごとに一定で、異なる剰余類では異なる値を取る</strong>とする
+（\(K\) は \(f\) に「隠されている」）。
+\(f\) のオラクル評価を使って、部分群 \(K\)（の生成系）を
+\(\mathrm{poly}(\log|G|)\) の資源で特定せよ。
+</div>
+
+<p>
+主要な例を表にまとめる。
+</p>
+
+<figure>
+<table>
+<thead>
+<tr><th>問題</th><th>群 \(G\)</th><th>隠れた部分群 \(K\)</th><th>備考</th></tr>
+</thead>
+<tbody>
+<tr><td>Deutsch</td><td>\(\mathbb{Z}_2\)</td><td>\(\{0\}\) か \(\mathbb{Z}_2\)</td><td>\(f\) が平衡か定数か</td></tr>
+<tr><td>Simon</td><td>\(\mathbb{Z}_2^n\)</td><td>\(\{0,a\}\)</td><td>XOR マスク \(a\) を求める</td></tr>
+<tr><td>周期発見</td><td>\(\mathbb{Z}\)</td><td>\(r\mathbb{Z}\)</td><td>周期 \(r\)</td></tr>
+<tr><td>位数発見</td><td>\(\mathbb{Z}\)</td><td>\(r\mathbb{Z}\)</td><td>\(f(k)=x^k\bmod N\)</td></tr>
+<tr><td>離散対数</td><td>\(\mathbb{Z}_r\times\mathbb{Z}_r\)</td><td>\(\{(\ell,-\ell s)\}\)</td><td>傾き \(s\) が答え</td></tr>
+<tr><td>グラフ同型（に帰着）</td><td>対称群 \(S_n\)</td><td>自己同型群由来</td><td><strong>非 Abel・未解決</strong></td></tr>
+<tr><td>格子最短ベクトル（に関連）</td><td>二面体群 \(D_n\)</td><td>鏡映を含む部分群</td><td><strong>非 Abel・未解決</strong></td></tr>
+</tbody>
+</table>
+<figcaption>表 5.1：隠れ部分群問題の実例。上5行（Abel 群）は多項式時間で解ける。</figcaption>
+</figure>
+
+<p>
+<strong>Abel 群の場合は解ける。</strong>骨子は周期発見の素直な一般化である。
+有限 Abel 群 \(G\) には指標（1次元表現）\(\chi_h:G\to\mathbb{C}^\times\) の完全系があり
+（<a href="appendixA2.html">付録A2</a>）、
+「\(G\) 上の QFT」を \(\ket g\mapsto \frac{1}{\sqrt{|G|}}\sum_h \chi_h(g)\ket h\) で定義できる
+（\(G=\mathbb{Z}_{2^n}\) なら本章の QFT、\(G=\mathbb{Z}_2^n\) なら \(H^{\otimes n}\)）。
+一様重ね合わせで \(f\) を評価した状態は、剰余類 \(gK\) 上の一様重ね合わせ
+\(\frac{1}{\sqrt{|K|}}\sum_{k\in K}\ket{gk}\) の混合と見なせる。
+これに QFT を掛けて測定すると、<strong>\(K\) 上で自明な指標</strong>
+（\(\chi_h(k)=1\ \forall k\in K\)）だけが生き残ってサンプルされる
+（\(K\) 上の位相和が \(\sum_{k\in K}\chi_h(k)=0\) になる指標は干渉で消える——
+等比級数の公式の群論版である）。
+そのような指標を \(O(\log|G|)\) 個集めれば、線形代数（合同式の求解）で \(K\) が決定できる。
+位数発見で「\(s/r\) がランダムにサンプルされ、集めると \(r\) が分かる」ことの一般形である。
+</p>
+
+<p>
+<strong>非 Abel 群の場合は未解決。</strong>QFT 自体は非可換群にも（表現論を使って）定義でき、
+オラクル呼び出し回数だけなら多項式回で \(K\) を情報理論的に特定できることが知られている。
+しかし測定結果から \(K\) を<strong>効率よく計算で復元する</strong>方法が見つかっていない。
+特に重要な2例が表の下2行である。
+対称群 \(S_n\) 上の HSP が解ければ<strong>グラフ同型性判定</strong>が効率よく解ける。
+二面体群上の HSP（の適切な変種）が解ければ、
+<strong>格子の最短ベクトル問題</strong>（耐量子暗号の安全性の根拠）が効率よく解ける。
+どちらも長年の努力にもかかわらず未解決であり、
+「量子計算が指数加速を与える構造とは何か」を測る試金石になっている。
+</p>
+
+<h3 id="sec-5-4-4">§5.4.4 他の量子アルゴリズムを探して</h3>
+
+<p>
+第5章のアルゴリズム群（QFT 系）と第6章の探索アルゴリズム（振幅増幅系、加速は2次）が、
+発見から長らく量子アルゴリズムの2大血統であり続けたのはなぜか。いくつかの視点を挙げる。
+</p>
+
+<ul>
+<li><strong>干渉を大域構造に集める必要。</strong>指数加速には、指数個の計算経路の位相を
+少数の測定結果に建設的に干渉させる仕掛けが要る。周期性（＝群の対称性）は
+その仕掛けが厳密に働く稀有な構造であり、QFT はその専用機である。
+同様の「使える構造」を新しく見つけること自体が難しい。</li>
+<li><strong>古典アルゴリズムという動く標的。</strong>量子加速の主張は
+最良の古典法との比較で決まる。量子アルゴリズムに触発されて高速な古典アルゴリズム
+（「脱量子化」）が見つかり、加速が縮む・消える例も少なくない。</li>
+<li><strong>下界の存在。</strong>オラクル模型では、構造のない問題に対して
+量子計算機でも2次を超える加速が不可能なことが証明できる（§6.6 で触れる）。
+指数加速はあくまで「問題の構造」への報酬である。</li>
+</ul>
+
+<p>
+その後もいくつかの系統が発見されている。
+量子系そのもののシミュレーション（第4章末・第7章の動機でもあり、
+おそらく最も自然な指数加速の応用先である）、量子ウォークに基づくアルゴリズム、
+連立一次方程式系の解のサンプリングなどである。
+それでも「素因数分解級のインパクトをもつ新血統」の探索は、現在も続く研究課題である。
+本書の範囲では、次章で第2の血統——探索の2次加速——を詳しく見る。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第5章のまとめ</span>
+<ul>
+<li>QFT は \(\ket j\mapsto\frac{1}{\sqrt N}\sum_k e^{2\pi ijk/N}\ket k\) を実現するユニタリ変換。
+積表示 \(F\ket{j}=\bigotimes_l(\ket0+e^{2\pi i\,0.j_{n-l+1}\cdots j_n}\ket1)/\sqrt2\)
+のおかげで、\(H\) と制御-\(R_k\) による \(\Theta(n^2)\) ゲートの回路（＋ビット順反転の swap）で実装できる。</li>
+<li>古典 FFT の \(\Theta(n2^n)\) に対し指数的に速いが、振幅は直接読み出せない。
+役立つのは答えが「振幅のどこにピークがあるか」に凝縮される場合＝周期性のある問題。</li>
+<li>位相推定：固有値 \(e^{2\pi i\varphi}\) の位相を、\(H\) 列＋制御-\(U^{2^j}\)（位相キックバック）＋逆QFTで
+2進小数として読む。\(t=n+\lceil\log_2(2+1/2\epsilon)\rceil\) ビットで
+精度 \(n\) ビット・成功確率 \(1-\epsilon\)（振幅の等比級数評価 \(|\alpha_l|\le 1/2|2^t\delta-l|\) が鍵）。</li>
+<li>位数発見：\(U\ket y=\ket{xy\bmod N}\) の固有値は \(e^{2\pi is/r}\)。
+固有状態は作れなくても \(\frac{1}{\sqrt r}\sum_s\ket{u_s}=\ket1\) のトリックで位相推定が走り、
+連分数展開（\(|s/r-\tilde\varphi|\le1/2r^2\) なら近似分数に \(s/r\) が現れる）で \(r\) を復元。
+コストはべき乗剰余の \(O(L^3)\) が支配。</li>
+<li>素因数分解：位数が偶数で \(y^{r/2}\not\equiv-1\) なら \(\gcd(y^{r/2}\pm1,N)\) が因数（補題1）。
+ランダムな \(y\) がそうなる確率は \(\ge1-2^{-(m-1)}\ge1/2\)（補題2、2進付値の議論）。
+全体 \(O((\log N)^3)\) で、実現すれば RSA を破る。</li>
+<li>一般化の階段：周期発見（\(\mathbb Z\)）→ 離散対数（2次元周期）→ 隠れ部分群問題（HSP）。
+Abel 群の HSP は群上の QFT による指標サンプリングで解けるが、
+非 Abel（対称群＝グラフ同型、二面体群＝格子問題）は未解決。
+指数加速は問題の代数的構造への報酬であり、新構造の発見が新アルゴリズムの発見である。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

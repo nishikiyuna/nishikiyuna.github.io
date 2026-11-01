@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="群交換子による誤差の2乗縮小と再帰による Solovay–Kitaev 定理の完全な証明（SU(2)）、および指数 c の最良値">
+  <title>付録A3 Solovay–Kitaev の定理 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="appendixA3" data-chapter="A3">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 付録3 に対応</span>
+  付録A3 Solovay–Kitaev の定理
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この付録の概要</span>
+§4.5 で、有限のゲート集合 {H, T, CNOT} が近似的に万能であることを示した。
+しかし「任意精度で近似できる」だけでは不十分で、
+<strong>近似のコストが安い</strong>ことまで言えなければ実用にならない。
+それを保証するのが <strong>Solovay–Kitaev の定理</strong>であり、
+精度 \(\varepsilon\) の近似に必要なゲート数が \(O(\log^c(1/\varepsilon))\)——
+\(1/\varepsilon\) の多重対数——で済むことを主張する。
+本付録ではこれを \(SU(2)\) について完全に証明する。
+証明の中心は<strong>群交換子が誤差を縮める</strong>という一点であり（§A3.3）、
+そこから幾何級数的な再帰（§A3.4）で定理が出る。
+最後に指数 \(c\) の最良値についての現状を整理する（§A3.5）。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a3-1">設定と主張<span class="en">Statement of the theorem</span></h2>
+
+<p>
+1 量子ビットのユニタリはすべて、行列式 1 のもの（\(SU(2)\) の元）と
+大域位相の積に書ける。大域位相は物理的に意味を持たない（§2.2.7）ので、
+以下では \(SU(2)\) だけを相手にする。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（生成集合と語）</span>
+\(G\subset SU(2)\) を有限集合とし、<strong>逆元について閉じている</strong>とする
+（\(U\in G \Rightarrow U^\dagger\in G\)）。
+\(G\) の元の積 \(g_1g_2\cdots g_l\)（\(g_i\in G\)）を長さ \(l\) の<strong>語 (word)</strong> と呼び、
+長さ \(l\) 以下の語全体を \(G_l\)、有限長の語全体を \(\langle G\rangle\) と書く。
+</div>
+
+<div class="remark-box">
+<span class="box-title">逆元について閉じているという仮定</span>
+フォールトトレラントなゲート集合 \(\{H,S,T\}\) はこの仮定を自動的に満たす。
+\(H^\dagger=H\)、\(S^\dagger=S^3\)、\(T^\dagger=T^7\) であり、
+逆元は元の集合の語としてすでに書けているからである。
+したがってこの仮定は実用上まったく制約にならない。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（距離と \(\varepsilon\)-網）</span>
+本付録では \(SU(2)\) の元の間の距離として
+\[
+D(U,V) \equiv \tr|U-V|,\qquad |X|\equiv\sqrt{X^\dagger X}
+\]
+を使う。<strong>第9章のトレース距離とは係数 2 だけ違う</strong>
+（第9章は \(\frac12\tr|\cdot|\) だった）。
+この規格化を採るのは、後で見るように \(SU(2)\) の元を空間の点とみなしたときの
+ユークリッド距離とそのまま一致するからである。
+<br>
+部分集合 \(S\subseteq SU(2)\) が集合 \(W\) の <strong>\(\varepsilon\)-網 (\(\varepsilon\)-net)</strong> であるとは、
+\(W\) のどの点も \(S\) のある点から距離 \(\varepsilon\) 以内にあることをいう。
+\(\langle G\rangle\) が \(SU(2)\) の<strong>稠密</strong>な部分集合であるとは、
+任意の \(\varepsilon&gt;0\) について \(\langle G\rangle\) が \(SU(2)\) の \(\varepsilon\)-網になることである。
+さらに、単位元の近傍
+\[
+S_\varepsilon \equiv \{\, U\in SU(2) : D(U,I)\le\varepsilon \,\}
+\]
+を導入する。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理A3.1（Solovay–Kitaev）</span>
+\(G\) を \(SU(2)\) の有限部分集合で、逆元について閉じており、
+\(\langle G\rangle\) が \(SU(2)\) で稠密であるとする。
+任意の \(\varepsilon&gt;0\) に対し、\(G_l\) が \(SU(2)\) の \(\varepsilon\)-網となる語長は
+\[
+l = O\!\left(\log^{c}\frac{1}{\varepsilon}\right),
+\qquad c = \frac{\log 5}{\log(3/2)} \approx 3.97
+\]
+で足りる。
+</div>
+
+<p>
+問いの立て方が肝心である。単に「\(G_l\) はいずれ \(SU(2)\) を埋め尽くす」ことは
+稠密性の仮定そのものだが、それだけでは埋め尽くす<em>速さ</em>が分からない。
+定理は「語長 \(l\) を伸ばすと網の目が<strong>二重指数的に</strong>細かくなる」ことを主張している。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a3-2">幾何の準備<span class="en">Geometry of SU(2)</span></h2>
+
+<p>
+証明では \(SU(2)\) の元を 3 次元空間の点とみなすのが本質的である。
+そのための対応と、距離の公式を用意する。
+</p>
+
+<div class="def-box">
+<span class="box-title">記法</span>
+実ベクトル \(\vec a\in\mathbb R^3\) に対し
+\[
+u(\vec a) \equiv \exp\!\left(-\frac{i}{2}\,\vec a\cdot\vec\sigma\right)
+= \cos\frac{a}{2}\,I - i\sin\frac{a}{2}\,\hat a\cdot\vec\sigma,
+\qquad a\equiv\|\vec a\|,\ \hat a\equiv\vec a/a
+\]
+と書く（§4.2 の \(R_{\hat a}(a)\) と同じもの）。
+\(SU(2)\) の任意の元はこの形に書ける。
+</div>
+
+<div class="thm-box">
+<span class="box-title">補題A3.2（単位元からの距離）</span>
+\[
+D\bigl(u(\vec x),\,I\bigr) = 4\left|\sin\frac{x}{4}\right|,
+\qquad x=\|\vec x\|.
+\]
+とくに \(x\) が小さいとき
+\[
+D\bigl(u(\vec x),\,I\bigr) = x + O(x^3).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(\hat x\cdot\vec\sigma\) はエルミートかつトレース 0 で 2 乗が \(I\) なので、
+固有値は \(\pm1\) がひとつずつである。その固有基底で
+\[
+u(\vec x)-I = \mathrm{diag}\Bigl(
+\cos\tfrac{x}{2}-1-i\sin\tfrac{x}{2},\;\;
+\cos\tfrac{x}{2}-1+i\sin\tfrac{x}{2}\Bigr).
+\]
+各対角成分の絶対値の2乗は
+\[
+\Bigl(\cos\tfrac x2-1\Bigr)^2+\sin^2\tfrac x2
+= 2-2\cos\tfrac x2 = 4\sin^2\tfrac x4
+\]
+だから、2 つの特異値はともに \(2|\sin(x/4)|\)。
+トレースノルムは特異値の和なので \(D=4|\sin(x/4)|\)。
+\(\sin\theta=\theta-\theta^3/6+\cdots\) を代入すれば漸近形を得る。<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">系A3.3（近距離ではユークリッド距離）</span>
+\(x=\|\vec x\|\le\varepsilon\)、\(y=\|\vec y\|\le\varepsilon\) のとき
+\[
+D\bigl(u(\vec x),\,u(\vec y)\bigr) = \|\vec x-\vec y\| + O(\varepsilon^3).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+トレースノルムはユニタリ不変（\(\tr|UA|=\tr|AU|=\tr|A|\)）なので、
+\(W\equiv u(\vec y)^\dagger u(\vec x)\in SU(2)\) と置けば
+\[
+D\bigl(u(\vec x),u(\vec y)\bigr) = \tr\bigl|u(\vec y)\bigl(W - I\bigr)\bigr|
+= D(W,\,I).
+\]
+\(W=u(\vec w)\) と書けば、補題A3.2 より \(D(W,I)=4|\sin(w/4)| = w + O(w^3)\)。
+したがって \(\|\vec w\|\) を評価すればよい。
+</p>
+<p>
+Baker–Campbell–Hausdorff の公式を 2 次まで使う。
+\(X\equiv-\frac i2\vec x\cdot\vec\sigma\)、\(Y\equiv-\frac i2\vec y\cdot\vec\sigma\) と置くと
+\[
+-\frac i2\,\vec w\cdot\vec\sigma = \log\bigl(e^{-Y}e^{X}\bigr)
+= X - Y + \frac12[-Y,X] + O(\varepsilon^3).
+\]
+Pauli 行列の交換関係 \([\vec y\cdot\vec\sigma,\vec x\cdot\vec\sigma]=2i(\vec y\times\vec x)\cdot\vec\sigma\)
+（§2.1.9）を使うと \(\frac12[-Y,X] = -\frac i2\cdot\frac12(\vec x\times\vec y)\cdot\vec\sigma\) となるので、
+ベクトルとしては
+\[
+\vec w = \vec d + \frac12\,\vec x\times\vec y + O(\varepsilon^3),
+\qquad \vec d \equiv \vec x-\vec y .
+\]
+</p>
+<p>
+ここが要点である。\(\vec x\times\vec y = \vec x\times(\vec y-\vec x) = -\,\vec x\times\vec d\) なので、
+補正項は
+<strong>(a) \(\vec d\) と直交し</strong>、
+<strong>(b) ノルムが \(\|\vec x\|\,\|\vec d\|/2\le\varepsilon\|\vec d\|/2\) 以下</strong>である。
+直交する成分はノルムに 2 次でしか効かないから
+\[
+\|\vec w\|^2 = \|\vec d\|^2 + O\bigl(\varepsilon^2\|\vec d\|^2\bigr) + O(\varepsilon^4)
+\quad\Longrightarrow\quad
+\|\vec w\| = \|\vec d\|\bigl(1+O(\varepsilon^2)\bigr) + O(\varepsilon^3).
+\]
+\(\|\vec d\|\le2\varepsilon\) なので \(\|\vec w\| = \|\vec x-\vec y\| + O(\varepsilon^3)\)、
+これを \(D(W,I)=\|\vec w\|+O(\varepsilon^3)\) に代入すれば主張を得る。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+以上により、<strong>単位元の近くでは \(SU(2)\) は 3 次元ユークリッド空間と同一視できる</strong>。
+これが「\(SU(2)\) の元を空間の点とみなす」ことの正確な意味である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a3-3">群交換子が誤差を縮める<span class="en">The group commutator</span></h2>
+
+<p>
+証明全体の心臓部がここである。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（群交換子）</span>
+\[
+[U,V]_{\mathrm{gp}} \equiv U V U^\dagger V^\dagger .
+\]
+\(U,V\) が可換なら \([U,V]_{\mathrm{gp}}=I\) であり、
+一般に「どれだけ非可換か」を測る量である。
+</div>
+
+<div class="thm-box">
+<span class="box-title">補題A3.4（群交換子と行列交換子）</span>
+\(A,B\) をエルミート行列で \(\tr|A|,\tr|B|\le\varepsilon\) とし、
+\(U=e^{-iA}\)、\(V=e^{-iB}\) と置く。十分小さい \(\varepsilon\) に対し、ある定数 \(d\) が存在して
+\[
+D\Bigl([U,V]_{\mathrm{gp}},\ e^{-[A,B]}\Bigr) \ \le\ d\,\varepsilon^3 .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+\(X\equiv-iA\)、\(Y\equiv-iB\) と置くと \(\|X\|,\|Y\|=O(\varepsilon)\) で、
+\[
+[U,V]_{\mathrm{gp}} = e^{X}e^{Y}e^{-X}e^{-Y}.
+\]
+各因子を 2 次まで展開して掛け合わせる：
+\[
+e^Xe^Y = I + X+Y+\tfrac12X^2+XY+\tfrac12Y^2+O(\varepsilon^3),
+\]
+\[
+e^{-X}e^{-Y} = I -X-Y+\tfrac12X^2+XY+\tfrac12Y^2+O(\varepsilon^3).
+\]
+この 2 つを掛けると、1 次の項は打ち消し合い、2 次の項は
+\[
+\bigl(\tfrac12X^2+XY+\tfrac12Y^2\bigr)
+- (X+Y)^2
++ \bigl(\tfrac12X^2+XY+\tfrac12Y^2\bigr)
+= XY-YX = [X,Y]
+\]
+だけが残る（\((X+Y)^2=X^2+XY+YX+Y^2\) を使った）。よって
+\[
+[U,V]_{\mathrm{gp}} = I + [X,Y] + O(\varepsilon^3) .
+\]
+一方 \(e^{[X,Y]} = I+[X,Y]+O(\varepsilon^4)\)（\([X,Y]\) 自体が \(O(\varepsilon^2)\) なので
+その 2 乗は \(O(\varepsilon^4)\)）。両者の差は \(O(\varepsilon^3)\) である。
+</p>
+<p>
+最後に \([X,Y]=(-i)^2[A,B]=-[A,B]\) なので \(e^{[X,Y]}=e^{-[A,B]}\)。
+トレースノルムは行列の各成分について有界な線形汎関数なので、
+差が \(O(\varepsilon^3)\) ならトレース距離も \(O(\varepsilon^3)\) である。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+1 量子ビットでは、行列交換子がベクトルの<strong>外積</strong>という具体的な形を取る。
+</p>
+
+<div class="thm-box">
+<span class="box-title">系A3.5（外積としての群交換子）</span>
+\(\|\vec y\|,\|\vec z\|\le\varepsilon\) のとき
+\[
+D\Bigl(\bigl[u(\vec y),u(\vec z)\bigr]_{\mathrm{gp}},\ u(\vec y\times\vec z)\Bigr)
+\ =\ O(\varepsilon^3).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(A=\vec y\cdot\vec\sigma/2\)、\(B=\vec z\cdot\vec\sigma/2\) と取ると
+\(u(\vec y)=e^{-iA}\)、\(u(\vec z)=e^{-iB}\) で、
+\(\tr|A|,\tr|B|=O(\varepsilon)\)。Pauli 行列の交換関係
+\[
+[\vec y\cdot\vec\sigma,\ \vec z\cdot\vec\sigma] = 2i\,(\vec y\times\vec z)\cdot\vec\sigma
+\]
+（成分で書けば \([\sigma_a,\sigma_b]=2i\epsilon_{abc}\sigma_c\)。§2.1.9）を使うと
+\[
+[A,B] = \frac14\cdot 2i\,(\vec y\times\vec z)\cdot\vec\sigma
+= \frac{i}{2}\,(\vec y\times\vec z)\cdot\vec\sigma,
+\]
+したがって
+\[
+e^{-[A,B]} = \exp\!\left(-\frac i2(\vec y\times\vec z)\cdot\vec\sigma\right)
+= u(\vec y\times\vec z).
+\]
+補題A3.4 に代入すればよい。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">なぜこれで誤差が縮むのか</span>
+系A3.5 が証明の急所である。\(\vec y,\vec z\) の長さが \(\varepsilon\) 程度なら、
+外積 \(\vec y\times\vec z\) の長さは<strong>\(\varepsilon^2\) 程度</strong>になる。
+つまり
+\[
+\underbrace{S_\varepsilon \text{ の 2 元}}_{\text{距離 }\varepsilon\text{ の点}}
+\ \xrightarrow{\ \text{群交換子}\ }\
+\underbrace{S_{\varepsilon^2}\text{ の元}}_{\text{距離 }\varepsilon^2\text{ の点}}
+\]
+という<strong>2 乗の縮小</strong>が起こる。
+しかも \(u(\vec y),u(\vec z)\) をそれぞれ精度 \(\varepsilon^2\) で近似しておけば、
+外積の側の誤差も（外積の双線形性により）\(\varepsilon\cdot\varepsilon^2=\varepsilon^3\) にとどまる。
+「粗い網を交換子に通すと、より狭い領域のより細かい網が得られる」——
+これを繰り返すのが Solovay–Kitaev のアルゴリズムである。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a3-4">縮小補題と定理の証明<span class="en">The shrinking lemma and the proof</span></h2>
+
+<h3 id="sec-a3-4-1">縮小補題</h3>
+
+<div class="thm-box">
+<span class="box-title">補題A3.6（縮小補題）</span>
+上の設定の下で、\(G\) に依らない普遍定数 \(\varepsilon_0\) と定数 \(C\) が存在して、
+任意の \(\varepsilon\le\varepsilon_0\) について次が成り立つ。
+<div style="margin:.6em 0 0">
+<strong>\(G_l\) が \(S_\varepsilon\) の \(\varepsilon^2\)-網ならば、
+\(G_{5l}\) は \(S_{\sqrt C\,\varepsilon^{3/2}}\) の \(C\varepsilon^3\)-網である。</strong>
+</div>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>第1段：\([G_l,G_l]_{\mathrm{gp}}\) は \(S_{\varepsilon^2}\) の \(C\varepsilon^3\)-網である。</strong>
+</p>
+<p>
+\(U\in S_{\varepsilon^2}\) を任意に取り、\(U=u(\vec x)\) と書く。
+補題A3.2 より \(x=\|\vec x\|\le\varepsilon^2+O(\varepsilon^6)\) である。
+ここで、長さが高々 \(\varepsilon+O(\varepsilon^5)\) の 2 つのベクトル \(\vec y,\vec z\) で
+\[
+\vec x = \vec y\times\vec z
+\]
+となるものが必ず取れる。実際、\(\vec x\) に直交する互いに直交する単位ベクトル
+\(\hat u,\hat v\)（\(\hat u\times\hat v=\hat x\)）を選び、
+\(\vec y=\sqrt{x}\,\hat u\)、\(\vec z=\sqrt{x}\,\hat v\) と置けば
+\(\vec y\times\vec z = x\,\hat x=\vec x\) であり、
+長さはともに \(\sqrt x\le\varepsilon+O(\varepsilon^5)\) である。
+</p>
+<p>
+仮定より \(G_l\) は \(S_\varepsilon\) の \(\varepsilon^2\)-網だから、
+\(u(\vec y),u(\vec z)\in S_{\varepsilon+O(\varepsilon^5)}\) に対して
+\(U_1=u(\vec y_0),\ U_2=u(\vec z_0)\in G_l\) を
+\[
+D\bigl(U_1,u(\vec y)\bigr) &lt; \varepsilon^2+O(\varepsilon^5),\qquad
+D\bigl(U_2,u(\vec z)\bigr) &lt; \varepsilon^2+O(\varepsilon^5)
+\]
+となるように選べる。系A3.3 により、これは
+\(\|\vec y-\vec y_0\|,\|\vec z-\vec z_0\|\le\varepsilon^2+O(\varepsilon^3)\) を意味する。
+また \(\|\vec y_0\|,\|\vec z_0\|\le\varepsilon+O(\varepsilon^3)\)。
+</p>
+<p>
+三角不等式で目標を 2 つに分ける：
+\[
+D\bigl(U,[U_1,U_2]_{\mathrm{gp}}\bigr)
+\ \le\ \underbrace{D\bigl(U,\,u(\vec y_0\times\vec z_0)\bigr)}_{(\mathrm{i})}
+\ +\ \underbrace{D\bigl(u(\vec y_0\times\vec z_0),\,[U_1,U_2]_{\mathrm{gp}}\bigr)}_{(\mathrm{ii})} .
+\]
+</p>
+<p>
+(ii) は系A3.5 より \(d'\varepsilon^3\) 以下である
+（\(\|\vec y_0\|,\|\vec z_0\|\) が \(\varepsilon\) をわずかに超えうるので、定数は \(d\) より少し大きい \(d'\) を取る）。
+</p>
+<p>
+(i) は系A3.3 でユークリッド距離に直せる。
+\(\delta\vec y\equiv\vec y-\vec y_0\)、\(\delta\vec z\equiv\vec z-\vec z_0\) と置いて外積を展開すると
+\[
+\vec y\times\vec z-\vec y_0\times\vec z_0
+= \delta\vec y\times\vec z_0 + \vec y_0\times\delta\vec z + \delta\vec y\times\delta\vec z
+\]
+であり、各項のノルムは順に \(\varepsilon^2\cdot\varepsilon\)、\(\varepsilon\cdot\varepsilon^2\)、
+\(\varepsilon^2\cdot\varepsilon^2\) 程度だから
+\[
+(\mathrm{i}) = \bigl\|\vec x-\vec y_0\times\vec z_0\bigr\| + O(\varepsilon^3)
+= \bigl\|\vec y\times\vec z-\vec y_0\times\vec z_0\bigr\| + O(\varepsilon^3)
+\le 2\varepsilon^3 + O(\varepsilon^4).
+\]
+</p>
+<p>
+両者を合わせると、適当な定数 \(C\) について
+\(D(U,[U_1,U_2]_{\mathrm{gp}})\le C\varepsilon^3\)。
+群交換子は \(G_l\) の元 4 個の積なので \([U_1,U_2]_{\mathrm{gp}}\in G_{4l}\) である。
+これで第1段が示された。
+</p>
+<p>
+<strong>第2段：平行移動で領域を広げる。</strong>
+第1段が与えるのは \(S_{\varepsilon^2}\) 上の網だが、補題の主張はもっと広い
+\(S_{\sqrt C\varepsilon^{3/2}}\) 上の網である。差を埋めるのが次の一手である。
+</p>
+<p>
+\(U\in S_{\sqrt C\varepsilon^{3/2}}\) を取る。\(\varepsilon\) が十分小さければ
+\(\sqrt C\,\varepsilon^{3/2}\le\varepsilon\) なので \(U\in S_\varepsilon\) でもあり、
+仮定より \(D(U,V)\le\varepsilon^2\) となる \(V\in G_l\) が取れる。
+このとき
+\[
+D\bigl(UV^\dagger,\,I\bigr) = \tr\bigl|UV^\dagger-I\bigr|
+= \tr\bigl|(U-V)V^\dagger\bigr| = \tr|U-V| \le \varepsilon^2
+\]
+（トレースノルムのユニタリ不変性）であり、\(UV^\dagger\in S_{\varepsilon^2}\)。
+第1段より、\(W_1,W_2\in G_l\) を
+\(D\bigl([W_1,W_2]_{\mathrm{gp}},\,UV^\dagger\bigr)\le C\varepsilon^3\) となるように選べる。
+ふたたびユニタリ不変性から
+\[
+D\bigl([W_1,W_2]_{\mathrm{gp}}V,\ U\bigr)
+= \tr\bigl|\bigl([W_1,W_2]_{\mathrm{gp}}-UV^\dagger\bigr)V\bigr|
+= D\bigl([W_1,W_2]_{\mathrm{gp}},\,UV^\dagger\bigr) \le C\varepsilon^3 .
+\]
+\([W_1,W_2]_{\mathrm{gp}}V\) は \(G_l\) の元 5 個の積、すなわち \(G_{5l}\) の元である。
+これで補題が示された。<span class="qed">∎</span>
+</p>
+</div>
+
+<h3 id="sec-a3-4-2">縮小補題から定理へ</h3>
+
+<div class="proof-box">
+<span class="box-title">定理A3.1 の証明</span>
+<p>
+<strong>ステップ1：出発点を取る。</strong>
+\(\langle G\rangle\) は稠密だから、ある語長 \(l_0\) が存在して
+\(G_{l_0}\) は \(SU(2)\) 全体の \(\varepsilon_0^2\)-網になる。とくに \(S_{\varepsilon_0}\) の
+\(\varepsilon_0^2\)-網である。ここで \(\varepsilon_0\) は補題A3.6 の普遍定数で、
+さらに \(C\varepsilon_0&lt;1\) となるよう十分小さく取っておく。
+</p>
+<p>
+<strong>ステップ2：補題を反復する。</strong>
+補題A3.6 を \(\varepsilon=\varepsilon_0,\ l=l_0\) に適用すると、
+\(G_{5l_0}\) は \(S_{\varepsilon(1)}\) の \(\varepsilon(1)^2\)-網である。ここで
+\[
+\varepsilon(1) \equiv \sqrt C\,\varepsilon_0^{3/2}
+\]
+と置いた（\(C\varepsilon^3 = (\sqrt C\varepsilon^{3/2})^2\) なので、
+たしかに「\(\varepsilon(1)^2\)-網」の形になっている）。
+同じ操作を繰り返すと、\(k\) 回目には
+\[
+G_{5^k l_0}\ \text{が}\ S_{\varepsilon(k)}\ \text{の}\ \varepsilon(k)^2\text{-網},
+\qquad
+\varepsilon(k+1) = \sqrt C\,\varepsilon(k)^{3/2}
+\]
+が成り立つ。この漸化式は \(q_k\equiv C\,\varepsilon(k)\) と置くと
+\(q_{k+1} = C\sqrt C\,\varepsilon(k)^{3/2} = q_k^{3/2}\) と簡単になり、
+\[
+\boxed{\ \varepsilon(k) = \frac{\bigl(C\varepsilon_0\bigr)^{(3/2)^k}}{C}\ }
+\]
+と解ける。\(C\varepsilon_0&lt;1\) なので \(\varepsilon(k)\) は \(k\) について
+<strong>二重指数的に</strong> 0 へ向かう。
+</p>
+<p>
+<strong>ステップ3：平行移動で \(SU(2)\) 全体へ。</strong>
+ステップ2 が与えるのは単位元の近傍 \(S_{\varepsilon(k)}\) 上の網である。
+これを \(SU(2)\) 全体の近似に変換する。目標の \(U\in SU(2)\) を任意に取る。
+</p>
+<ul>
+<li>\(G_{l_0}\) は \(SU(2)\) の \(\varepsilon(0)^2\)-網なので、
+\(U_0\in G_{l_0}\) を \(D(U,U_0)&lt;\varepsilon(0)^2\) と取れる。</li>
+<li>\(V\equiv UU_0^\dagger\) と置くと、ユニタリ不変性から
+\(D(V,I)=\tr|(U-U_0)U_0^\dagger|=\tr|U-U_0|&lt;\varepsilon(0)^2\)。
+\(\varepsilon_0\) を十分小さく取れば \(\varepsilon(k)^2&lt;\varepsilon(k+1)\) が成り立つので、
+\(V\in S_{\varepsilon(1)}\)。</li>
+<li>ステップ2 より \(U_1\in G_{5l_0}\) を \(D(V,U_1)&lt;\varepsilon(1)^2\) と取れる。すると
+\(D(U,U_1U_0)=\tr|(V-U_1)U_0|=\tr|V-U_1|&lt;\varepsilon(1)^2\)：
+<strong>近似が 1 段良くなった</strong>。</li>
+<li>同じことを繰り返す。\(V'\equiv U U_0^\dagger U_1^\dagger\in S_{\varepsilon(2)}\) に対して
+\(U_2\in G_{5^2l_0}\) を取れば \(U_2U_1U_0\) は \(U\) の \(\varepsilon(2)^2\)-近似になる。</li>
+</ul>
+<p>
+\(k\) 段まで進めると、\(U_k\cdots U_1U_0\) は \(U\) の \(\varepsilon(k)^2\)-近似であり、
+使った語長の合計は
+\[
+l_0 + 5l_0 + \cdots + 5^kl_0 = l_0\,\frac{5^{k+1}-1}{4} &lt; \frac54\,5^k l_0 .
+\]
+</p>
+<p>
+<strong>ステップ4：語長を \(\varepsilon\) で表す。</strong>
+目標精度 \(\varepsilon\) を達成するには \(\varepsilon(k)^2&lt;\varepsilon\) が要る。
+ステップ2 の解を代入して両辺の対数を取ると、\(C\varepsilon_0&lt;1\) に注意して
+\[
+\Bigl(\frac32\Bigr)^{k} \ &gt;\ \frac{\log\bigl(1/(C^2\varepsilon)\bigr)}
+{2\log\bigl(1/(C\varepsilon_0)\bigr)} .
+\]
+右辺は \(\log(1/\varepsilon)\) のオーダーである。
+一方 \(5 = (3/2)^{c}\)（\(c=\log5/\log(3/2)\)）なので
+\(5^k = \bigl((3/2)^k\bigr)^{c}\)。したがって必要な語長は
+\[
+l \ &lt;\ \frac54\,5^kl_0
+= \frac54\Bigl(\bigl(\tfrac32\bigr)^{k}\Bigr)^{c} l_0
+= O\!\left(\log^{c}\frac1\varepsilon\right),
+\qquad c=\frac{\log5}{\log(3/2)}\approx 3.97 .
+\]
+<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">証明は構成的である</span>
+上の証明はそのまま<strong>アルゴリズム</strong>として読める。
+目標 \(U\) と精度 \(\varepsilon\) が与えられたら、
+(1) 必要な段数 \(k\) を計算し、
+(2) 事前に用意した \(G_{l_0}\) の表から \(U_0\) を引き、
+(3) 残差 \(V=UU_0^\dagger\) に対して<strong>再帰的に</strong>同じ手続きを呼ぶ
+（各段では、残差を外積分解して 2 つの部分問題に分け、群交換子で組み直す）、
+という再帰である。段数は \(k=O(\log\log(1/\varepsilon))\) で、
+各段の仕事は多項式時間なので、全体として \(\varepsilon\) の多重対数時間で
+ゲート列が求まる。§4.5.3 で「この列は効率的に求められる」と述べたのはこの意味である。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a3-5">指数 \(c\) について<span class="en">On the best exponent</span></h2>
+
+<p>
+上の証明が与える \(c\approx3.97\) は最良ではない。現状を整理しておく。
+</p>
+
+<div class="thm-box">
+<span class="box-title">命題（下界 \(c\ge1\)）</span>
+どんな有限生成集合 \(G\) を使っても、精度 \(\varepsilon\) の近似に要するゲート数は
+\(\Omega\bigl(\log(1/\varepsilon)\bigr)\) である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（体積による数え上げ）</span>
+\(SU(2)\) は 3 次元の多様体である（\(u(\vec a)\) の \(\vec a\) が 3 つの実パラメータ）。
+半径 \(\varepsilon\) の球の体積は \(\varepsilon^3\) に比例するので、
+\(SU(2)\) を \(\varepsilon\)-球で覆うには \(\Omega(1/\varepsilon^{3})\) 個の球が要る。
+一方、長さ \(g\) 以下の語の総数は高々 \(|G|^{g}\) 個しかない。
+覆えるためには
+\[
+|G|^{g} \ =\ \Omega\!\left(\frac{1}{\varepsilon^{3}}\right)
+\quad\Longrightarrow\quad
+g \ =\ \Omega\!\left(\log\frac1\varepsilon\right).
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">上界の改良と現状</span>
+<ul>
+<li>本付録の証明は、縮小補題を「\(\varepsilon\)-網 → \(\varepsilon^{3/2}\) 網」という形で使い、
+語長を 1 段につき 5 倍にした。これが \(c=\log5/\log(3/2)\approx3.97\) の由来である。</li>
+<li>より丁寧な設計では、群交換子を \(k\) 重に入れ子にして
+「1 段あたり語長 4 倍で \(\varepsilon\to\varepsilon^{2}\)」に近い縮小を実現でき、
+必要なゲート数を \(O\bigl(\log^2(1/\varepsilon)\,\log^{c'}\log(1/\varepsilon)\bigr)\)
+（任意の \(c'&gt;2\)）まで下げられることが知られている。
+すなわち<strong>実質的に \(c\) を 2 の近くまで下げられる</strong>。
+§4.5.3 で「\(c\approx2\)」と述べたのはこの改良版の値である。</li>
+<li>上の命題より \(c\ge1\) であり、<strong>1 と 2 の間のどこが最良かは未解決</strong>である。
+特定のゲート集合（たとえば \(\{H,T\}\) や、数論的な構造を持つ集合）については
+\(c\to1\) に近い構成が知られており、この方向は現在も研究が続いている。</li>
+</ul>
+</div>
+
+<div class="remark-box">
+<span class="box-title">SU(d) への一般化</span>
+本付録は \(SU(2)\) についてのみ証明した。
+議論のうち幾何に依存するのは §A3.2（\(u(\vec a)\) と外積の対応）だけであり、
+それ以外——群交換子による誤差の 2 次縮小、再帰、平行移動——は
+一般の連結コンパクト Lie 群でそのまま通る。
+外積の役割は Lie 環の交換子 \([A,B]\) が果たし、
+「長さ \(\varepsilon\) の 2 元の交換子は長さ \(\varepsilon^2\)」という評価も一般に成り立つ。
+したがって Solovay–Kitaev の定理は \(SU(d)\)（および \(SU(d)\) の稠密な部分群を生成する
+任意の有限集合）に対して同じ形で成立する。
+本文 §4.5 で「万能ゲート集合の選択は多項式的にしか効かない」と結論できたのは、
+この一般化のおかげである。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">付録A3 のまとめ</span>
+<ul>
+<li>距離を \(D(U,V)=\tr|U-V|\)（第9章の 2 倍の規格化）で測ると、
+単位元の近くで \(D(u(\vec x),u(\vec y))=\|\vec x-\vec y\|+O(\varepsilon^3)\)：
+\(SU(2)\) は局所的に 3 次元ユークリッド空間と同一視できる。</li>
+<li><strong>群交換子 \([U,V]_{\mathrm{gp}}=UVU^\dagger V^\dagger\) が誤差を 2 乗に縮める</strong>
+のが証明の急所である。\(u(\vec y),u(\vec z)\) の群交換子は
+\(u(\vec y\times\vec z)\) を \(O(\varepsilon^3)\) の精度で与え、
+外積の長さは \(\varepsilon^2\) だから、\(S_\varepsilon\) の網から
+\(S_{\varepsilon^2}\) のより細かい網が作れる。</li>
+<li><strong>縮小補題</strong>：\(G_l\) が \(S_\varepsilon\) の \(\varepsilon^2\)-網なら、
+\(G_{5l}\) は \(S_{\sqrt C\varepsilon^{3/2}}\) の \(C\varepsilon^3\)-網
+（交換子で 4 倍、平行移動で 1 倍、合わせて語長 5 倍）。</li>
+<li>反復すると \(\varepsilon(k)=(C\varepsilon_0)^{(3/2)^k}/C\) と二重指数的に精度が上がり、
+平行移動で \(SU(2)\) 全体へ広げられる。語長は \(\frac54 5^kl_0\) で、
+\(5=(3/2)^{c}\) より <strong>\(l=O(\log^{c}(1/\varepsilon))\), \(c=\log5/\log(3/2)\approx3.97\)</strong>。
+証明はそのまま多重対数時間の再帰アルゴリズムになる。</li>
+<li>体積の数え上げから \(c\ge1\)。改良された構成では実質 \(c\approx2\) まで下がる。
+最良の \(c\) は未解決である。議論は \(SU(d)\) へそのまま一般化される。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

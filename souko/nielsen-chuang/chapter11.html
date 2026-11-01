@@ -1,0 +1,1396 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Shannon エントロピーと von Neumann エントロピー、相対エントロピー、強劣加法性">
+  <title>第11章 エントロピーと情報 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter11" data-chapter="11">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第11章に対応</span>
+  第11章 エントロピーと情報
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本章は Part III（量子情報理論）の数学的土台を据える章である。
+「情報の量」を測る基本量として、まず古典の <strong>Shannon エントロピー</strong>を
+動機付けから導入する（§11.1）。
+続いて相対エントロピー・条件付きエントロピー・相互情報量からデータ処理不等式まで、
+古典情報理論の道具一式を証明付きで整備する（§11.2）。
+続いてその量子版である <strong>von Neumann エントロピー</strong>を定義し、
+Klein の不等式・劣加法性・三角不等式・凹性など基本性質を系統的に証明する（§11.3）。
+最後に、量子情報理論で最も深く、最もよく使われる不等式である
+<strong>強劣加法性</strong>を、Lieb の定理を出発点として証明し、その帰結を並べる（§11.4）。
+本章はほとんど「不等式のカタログ」である。
+しかし、ここで揃える不等式が第12章（データ圧縮・チャネル容量・エンタングルメント理論）の
+すべての定理の部品になる。
+なお本書の慣例に従い、<strong>対数 \(\log\) はすべて底 2</strong>（単位はビット）、
+自然対数は \(\ln\) と書く。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-11-1">Shannon エントロピー<span class="en">Shannon entropy</span></h2>
+
+<p>
+「情報の量」をどう測ればよいか。出発点となる直観は、
+<strong>情報とは驚きの度合いである</strong>、というものだ。
+明日も太陽が昇る、という知らせにはほとんど情報がない——ほぼ確実に起こることだからである。
+一方「宝くじの1等が当たった」という知らせは莫大な情報を運ぶ——めったに起こらないからである。
+つまり、事象 \(x\) が確率 \(p(x)\) で起こるとき、\(x\) が実際に起きたと知ったときの
+「驚き」は \(p(x)\) の減少関数であるべきだ。
+</p>
+
+<p>
+驚きの関数形は、次の2つの自然な要請でほぼ決まってしまう。
+独立な2つの事象 \(x,y\)（同時確率 \(p(x)p(y)\)）をまとめて知ったときの驚きは
+個々の驚きの<strong>和</strong>であってほしい（加法性）。
+そして驚きは確率の連続関数であってほしい。
+「積を和に変える連続関数」は対数しかないから、驚きの度合い（<strong>自己情報量</strong>）は
+\[
+-\log p(x)
+\]
+と置くのが唯一の選択である（底の選択は単位の選択にすぎない。底 2 なら単位はビット）。
+確率 \(1/2\) の事象を知ると 1 ビット、確率 \(1/2^{10}\) の事象なら 10 ビット、という勘定になる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Shannon エントロピー）</span>
+確率変数 \(X\) が値 \(x\) を確率 \(p(x)\) で取るとき、\(X\) の
+<strong>Shannon エントロピー (Shannon entropy)</strong> を、自己情報量の期待値
+\[
+H(X) \equiv H(p(x)) \equiv -\sum_x p(x)\log p(x)
+\]
+で定義する。エントロピーは個々の値のラベルにはよらず、確率分布 \(\{p(x)\}\) だけで決まる。
+そこで分布を明示して \(H(p_1,\dots,p_n)\) とも書く。
+</div>
+
+<p>
+\(p(x)=0\) の項については <strong>\(0\log 0 \equiv 0\) という規約</strong>を採用する。
+これは場当たり的な約束ではなく、\(\lim_{x\to 0^+} x\log x = 0\) による連続的な拡張である
+（起こり得ない事象は、驚き自体は無限大でも「期待値への寄与」はゼロ、と読める）。
+この規約により \(H\) は確率単体上の連続関数になる。
+</p>
+
+<p>
+\(H(X)\) には表裏一体の2つの読み方がある。
+</p>
+
+<ul>
+<li><strong>知る前の不確かさ</strong>：\(X\) の値を知る前に、我々がどれだけ「分かっていない」か。</li>
+<li><strong>知った後の情報量</strong>：\(X\) の値を知ったとき、平均してどれだけの情報を得るか。</li>
+</ul>
+
+<p>
+極端な場合で感覚を確かめる。確定した変数（ある値の確率が 1）では
+\(H = -1\log 1 = 0\)：不確かさはない。
+公平なコインでは \(H = -\frac12\log\frac12 - \frac12\log\frac12 = 1\) ビット。
+\(d\) 通りの値が等確率なら \(H = \log d\) で、これが最大値であることを §11.2.2 で証明する。
+</p>
+
+<div class="remark-box">
+<span class="box-title">操作的な意味と公理的特徴づけ</span>
+エントロピーの本当の正当化は、上のような発見法的議論ではなく<strong>操作的な定理</strong>にある。
+Shannon のノイズなし符号化定理（§12.2 で量子版とともに扱う）によれば、
+i.i.d. 情報源 \(X\) の出力 \(n\) 文字は、\(n\to\infty\) で
+\(nH(X)\) ビットまで圧縮でき、それ未満には圧縮できない。
+すなわち \(H(X)\) は「\(X\) を蓄えるのに必要な物理資源の量」そのものである。
+また、(i) 分布の連続関数、(ii) 一様分布で \(n\) について単調増加、
+(iii) 選択を2段階に分けても値が整合する（グループ化の合成則）、
+という要請だけから \(H\) の関数形が定数倍を除いて一意に決まることも知られている
+（Shannon による公理的特徴づけ）。本書ではこの一意性は使わないので証明は割愛し、
+以下では定義から出発して性質を導いていく。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-11-2">エントロピーの基本性質<span class="en">Basic properties of entropy</span></h2>
+
+<h3 id="sec-11-2-1">§11.2.1 二値エントロピー</h3>
+
+<p>
+最も基本的な例は2値の確率変数（コイン投げ）である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（二値エントロピー）</span>
+\[
+H_2(p) \equiv -p\log p - (1-p)\log(1-p), \qquad 0\le p\le 1
+\]
+を<strong>二値エントロピー (binary entropy)</strong> と呼ぶ（\(H_2(0)=H_2(1)=0\)）。
+文脈から明らかなときは単に \(H(p)\) とも書く。
+</div>
+
+<figure>
+<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+  <!-- axes -->
+  <line x1="50" y1="220" x2="360" y2="220" class="line"/>
+  <line x1="50" y1="220" x2="50" y2="30" class="line"/>
+  <!-- ticks -->
+  <line x1="200" y1="220" x2="200" y2="225" class="line"/>
+  <line x1="350" y1="220" x2="350" y2="225" class="line"/>
+  <line x1="45" y1="40" x2="50" y2="40" class="line"/>
+  <!-- dashed guides -->
+  <line x1="50" y1="40" x2="200" y2="40" class="line" stroke-dasharray="4 3"/>
+  <line x1="200" y1="220" x2="200" y2="40" class="line" stroke-dasharray="4 3"/>
+  <!-- curve of H2(p) -->
+  <polyline class="line accent" stroke-width="2" fill="none" points="
+    50,220 65,168.5 80,135.6 95,110.2 110,90.0 125,74.0 140,61.4 155,51.9
+    170,45.2 185,41.3 200,40 215,41.3 230,45.2 245,51.9 260,61.4 275,74.0
+    290,90.0 305,110.2 320,135.6 335,168.5 350,220"/>
+  <!-- labels -->
+  <text x="46" y="238" class="label-muted">0</text>
+  <text x="192" y="238" class="label-muted">1/2</text>
+  <text x="346" y="238" class="label-muted">1</text>
+  <text x="30" y="44" class="label-muted">1</text>
+  <text x="360" y="224" class="label">p</text>
+  <text x="58" y="44" class="label">H₂(p)</text>
+</svg>
+<figcaption>図 11.1：二値エントロピー \(H_2(p)\)。\(p=1/2\) で最大値 1 を取り、上に凸である。</figcaption>
+</figure>
+
+<p>
+グラフから読み取れる（そして計算で確かめられる）性質をまとめる。
+</p>
+
+<ul>
+<li><strong>対称性</strong>：\(H_2(p) = H_2(1-p)\)。0 と 1 のラベルの付け替えに対する不変性である。</li>
+<li><strong>最大値</strong>：\(H_2'(p) = \log\frac{1-p}{p}\) は \(p=1/2\) でのみゼロになり、
+\(H_2(1/2)=1\) が最大値。最も予測しにくいコインが最も情報を運ぶ。</li>
+<li><strong>凹性（上に凸）</strong>：
+\[
+H_2''(p) = -\frac{1}{p(1-p)\ln 2} &lt; 0 \qquad (0 &lt; p &lt; 1)
+\]
+より \(H_2\) は狭義に凹である。凹性の意味を言葉で述べると
+「表の出る確率が \(p\) のコインと \(q\) のコインを混ぜて使う（どちらを使ったか忘れる）と、
+不確かさは平均以上に増える」：
+\(H_2(\lambda p + (1-\lambda)q) \ge \lambda H_2(p) + (1-\lambda)H_2(q)\)。
+この「混合はエントロピーを平均以上に増やす」という構図は、
+量子版の凹性（§11.3.5）でそのまま再登場する。</li>
+</ul>
+
+<p>
+\(H_2\) は本書の残りで至るところに顔を出す
+（チャネル容量、エンタングルメント濃縮のレートなど）。以後は既知の関数として扱う。
+</p>
+
+<h3 id="sec-11-2-2">§11.2.2 相対エントロピー</h3>
+
+<p>
+2つの分布の「隔たり」を測る量を導入する。これは距離の公理を満たさないが、
+エントロピー関係の不等式を<strong>ほとんど一手で</strong>生成する母体として絶大な威力を持つ。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（相対エントロピー）</span>
+同じ添字集合上の2つの確率分布 \(p(x), q(x)\) に対し、\(q\) に対する \(p\) の
+<strong>相対エントロピー (relative entropy, Kullback–Leibler ダイバージェンス)</strong> を
+\[
+H(p(x)\,\|\,q(x)) \equiv \sum_x p(x)\log\frac{p(x)}{q(x)}
+= -H(p(x)) - \sum_x p(x)\log q(x)
+\]
+で定義する。規約として \(0\log\frac{0}{q}\equiv 0\)、また \(p&gt;0\) の点で \(q=0\) なら
+\(H(p\|q)\equiv+\infty\) とする。
+</div>
+
+<p>
+直観としては「真の分布が \(p\) なのに、\(q\) だと思い込んで符号を設計したときに
+1文字あたり余計に払うビット数」である。実際
+\(-\sum_x p(x)\log q(x)\) は「\(q\) 用の最適符号（長さ \(-\log q(x)\)）」で
+\(p\) からの出力を符号化したときの平均長であり、そこから真の最適値 \(H(p)\) を引いたものが
+\(H(p\|q)\) に他ならない。余計なコストが負になるはずはない——それが次の不等式である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（相対エントロピーの非負性；Gibbs の不等式）</span>
+\[
+H(p(x)\,\|\,q(x)) \ge 0
+\]
+であり、等号は \(p(x)=q(x)\)（すべての \(x\)）のとき、かつそのときに限る。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+鍵は対数の凹性を接線で押さえる初等不等式
+\[
+\ln x \le x - 1 \qquad (x &gt; 0),\quad \text{等号は } x=1 \text{ のみ}
+\]
+である（\(f(x)=x-1-\ln x\) は \(f(1)=0\)、\(f'(x)=1-1/x\) が \(x=1\) を境に負から正へ
+転じるので \(x=1\) が最小点であることから従う。これは Jensen の不等式の最簡例でもある）。
+底を 2 に直すと \(\log x \le (x-1)/\ln 2\)。これを \(x=q(x)/p(x)\) に使う。
+\(p(x)&gt;0\) の項だけ和を取れば十分で、
+\[
+-H(p\|q) = \sum_{x:\,p(x)&gt;0} p(x)\log\frac{q(x)}{p(x)}
+\le \frac{1}{\ln 2}\sum_{x:\,p(x)&gt;0} p(x)\Bigl(\frac{q(x)}{p(x)}-1\Bigr)
+= \frac{1}{\ln 2}\Bigl(\textstyle\sum_{x:\,p(x)&gt;0} q(x) - 1\Bigr)
+\le 0 .
+\]
+最後は \(\sum_{x:\,p(x)&gt;0} q(x)\le \sum_x q(x) = 1\) を使った。
+等号成立には、まず接線不等式の等号条件から \(p(x)&gt;0\) なるすべての \(x\) で
+\(q(x)=p(x)\) が必要で、するとそれらの \(q(x)\) だけで和が 1 になるから、
+残りの点では \(q(x)=0=p(x)\)。すなわち \(p=q\)。<span class="qed">∎</span>
+</div>
+
+<p>
+この一つの不等式から、エントロピーの基本的な上界がすべて落ちてくる。
+</p>
+
+<div class="example-box">
+<span class="box-title">応用1：エントロピーの最大値</span>
+\(X\) の取りうる値が \(d\) 個のとき、\(q\) を一様分布 \(q(x)=1/d\) に取ると
+\[
+0 \le H(p\,\|\,\text{一様}) = -H(X) + \log d
+\qquad\Longrightarrow\qquad H(X) \le \log d ,
+\]
+等号は \(p\) が一様分布のとき、かつそのときに限る。
+「何も知らない」状態が一番エントロピーが高い、という直観の定式化である。
+</div>
+
+<div class="example-box">
+<span class="box-title">応用2：劣加法性</span>
+組 \((X,Y)\) の<strong>結合エントロピー</strong>を
+\(H(X,Y)\equiv -\sum_{x,y}p(x,y)\log p(x,y)\) とする。
+\(p=p(x,y)\)、\(q=p(x)p(y)\)（周辺分布の積）と取ると
+\[
+0 \le H\bigl(p(x,y)\,\|\,p(x)p(y)\bigr)
+= -H(X,Y) - \sum_{x,y}p(x,y)\bigl[\log p(x)+\log p(y)\bigr]
+= H(X) + H(Y) - H(X,Y).
+\]
+すなわち<strong>劣加法性 (subadditivity)</strong>
+\[
+H(X,Y) \le H(X) + H(Y)
+\]
+が成り立ち、等号は \(X\) と \(Y\) が独立のとき、かつそのときに限る。
+相関があるぶんだけ、全体の不確かさは部分の不確かさの和より小さい。
+この差がまさに次項の相互情報量である。
+</div>
+
+<h3 id="sec-11-2-3">§11.2.3 条件付きエントロピーと相互情報量</h3>
+
+<p>
+2変数になると「片方を知ったとき、もう片方にどれだけ不確かさが残るか」
+「2変数はどれだけ情報を共有しているか」という問いが立てられる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（条件付きエントロピー・相互情報量）</span>
+\[
+H(X|Y) \equiv H(X,Y) - H(Y)
+\]
+を \(Y\) を知ったもとでの \(X\) の<strong>条件付きエントロピー (conditional entropy)</strong>、
+\[
+I(X;Y) \equiv H(X) + H(Y) - H(X,Y)
+\]
+を \(X\) と \(Y\) の<strong>相互情報量 (mutual information)</strong> と呼ぶ。
+定義から直ちに \(I(X;Y) = H(X) - H(X|Y) = H(Y) - H(Y|X)\) であり、
+\(I(X;Y)=I(Y;X)\)（<strong>対称性</strong>）も明らかである。
+</div>
+
+<p>
+\(H(X|Y)\) の定義を「全体の不確かさから \(Y\) の分を差し引いた残り」と読んだが、
+これが「\(Y\) の値ごとの \(X\) のエントロピーの平均」に一致することを確かめておく。
+\(p(x|y)=p(x,y)/p(y)\) を使って
+\[
+H(X,Y)-H(Y) = -\sum_{x,y}p(x,y)\log p(x,y) + \sum_{y}p(y)\log p(y)
+= -\sum_{x,y}p(x,y)\log\frac{p(x,y)}{p(y)}
+= \sum_y p(y)\,H(X|Y=y),
+\]
+ここで \(H(X|Y=y)\equiv-\sum_x p(x|y)\log p(x|y)\) は分布 \(p(\cdot|y)\) のエントロピーである。
+各項が非負だから、直ちに次を得る：
+\[
+H(X|Y) \ge 0 ,
+\]
+等号は \(Y\) の値から \(X\) の値が確定するとき。
+<strong>この「あたりまえ」の不等式が量子では破れる</strong>（§11.4 冒頭）ことを
+記憶に留めておいてほしい。古典と量子の分岐点のひとつである。
+</p>
+
+<p>
+定義を移項した
+\[
+H(X,Y) = H(Y) + H(X|Y) = H(X) + H(Y|X)
+\]
+は<strong>連鎖律 (chain rule)</strong> と呼ばれる：「組の不確かさ＝先に知る方の不確かさ＋残りの条件付き不確かさ」。
+繰り返し適用すれば多変数版
+\[
+H(X_1,\dots,X_n) = \sum_{i=1}^{n} H(X_i\,|\,X_1,\dots,X_{i-1})
+\]
+が帰納法で従う（各ステップで組 \((X_1,\dots,X_{i-1})\) をひとつの変数とみなせばよい）。
+</p>
+
+<p>
+相互情報量の非負性は §11.2.2 応用2 で既に示した：
+\[
+I(X;Y) = H\bigl(p(x,y)\,\|\,p(x)p(y)\bigr) \ge 0,
+\]
+等号は独立のとき。これを \(I(X;Y)=H(X)-H(X|Y)\ge 0\) と読み替えると
+\[
+H(X|Y) \le H(X)
+\]
+すなわち<strong>条件付けはエントロピーを減らす</strong>（余計な情報を知って不確かさが増えることはない）。
+以上の量たちの関係は、集合の Venn 図の類推で整理するのが便利である。
+</p>
+
+<figure>
+<svg viewBox="0 0 420 230" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="165" cy="110" r="80" class="line" stroke-width="1.5"/>
+  <circle cx="255" cy="110" r="80" class="line accent" stroke-width="1.5"/>
+  <text x="120" y="20" class="label">H(X)</text>
+  <line x1="140" y1="25" x2="150" y2="45" class="line" stroke-dasharray="2 3"/>
+  <text x="275" y="20" class="label">H(Y)</text>
+  <line x1="290" y1="25" x2="278" y2="45" class="line" stroke-dasharray="2 3"/>
+  <text x="102" y="115" class="label">H(X|Y)</text>
+  <text x="182" y="115" class="label">I(X;Y)</text>
+  <text x="268" y="115" class="label">H(Y|X)</text>
+  <path d="M 85 205 L 85 212 L 335 212 L 335 205" class="line"/>
+  <text x="175" y="228" class="label-muted">H(X,Y)</text>
+</svg>
+<figcaption>図 11.2：エントロピーの Venn 図。2つの円の合併が \(H(X,Y)\)、重なりが \(I(X;Y)\)。
+古典では各領域がすべて非負の値を持つ。</figcaption>
+</figure>
+
+<p>
+最後に、次項で使う<strong>条件付き相互情報量</strong>を定義しておく：
+\[
+I(X;Y|Z) \equiv H(X|Z) - H(X|Y,Z).
+\]
+「\(Z\) を知った上で、さらに \(Y\) を知ることで減る \(X\) の不確かさ」である。これも非負である。
+実際、条件付きエントロピーが \(z\) ごとの平均だったのと同様に
+\[
+I(X;Y|Z) = \sum_z p(z)\, I(X;Y|Z=z)
+\]
+と書け（両辺を \(H(X|Z=z)-H(X|Y,Z=z)\) の平均として展開すれば一致する）、
+各項は条件付き分布 \(p(x,y|z)\) に対する通常の相互情報量だから非負である。よって
+\[
+I(X;Y|Z) \ge 0
+\qquad\Longleftrightarrow\qquad
+H(X|Y,Z) \le H(X|Z).
+\]
+</p>
+
+<h3 id="sec-11-2-4">§11.2.4 データ処理不等式</h3>
+
+<p>
+情報理論の教えのなかで最も「物理法則」らしいのが次の主張である：
+<strong>一度失われた情報は、その後どんなに巧妙にデータを加工しても回復できない。</strong>
+これを定式化するには、「加工」の連なりを表す言葉が要る。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Markov 連鎖）</span>
+確率変数の列 \(X\to Y\to Z\) が <strong>Markov 連鎖 (Markov chain)</strong> であるとは、
+\(Y\) を与えたとき \(Z\) が \(X\) と条件付き独立になること、すなわち
+\[
+p(z\,|\,y,x) = p(z\,|\,y)
+\]
+が成り立つことをいう。典型例：\(X\) が元データ、\(Y=f(X)+\text{ノイズ}\) が観測値、
+\(Z=g(Y)\) が観測値だけから計算した推定量。\(Z\) の作り方が
+「\(Y\) だけを見て決める」ものである限り（決定的でも確率的でもよい）、
+\(X\to Y\to Z\) は Markov 連鎖になる。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（データ処理不等式）</span>
+\(X\to Y\to Z\) が Markov 連鎖ならば
+\[
+H(X) \;\ge\; I(X;Y) \;\ge\; I(X;Z).
+\]
+特に \(Z=g(Y)\)（決定的な後処理）なら常に \(I(X;Z)\le I(X;Y)\)：
+後段の処理は \(X\) についての情報を増やせない。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+最初の不等式は \(I(X;Y)=H(X)-H(X|Y)\le H(X)\)（\(H(X|Y)\ge0\)）そのものである。
+本体は第2の不等式である。まず、恒等式として成り立つ
+<strong>相互情報量の連鎖律</strong>を確認する。定義を代入するだけで
+\[
+I(X;Y,Z) = H(X)-H(X|Y,Z),
+\qquad
+I(X;Z) + I(X;Y|Z) = H(X)-H(X|Z) + H(X|Z)-H(X|Y,Z)
+\]
+の右辺同士が等しいから
+\[
+I(X;Y,Z) = I(X;Z) + I(X;Y|Z)
+\]
+であり、\(Y\) と \(Z\) の役割を入れ替えれば
+\(I(X;Y,Z) = I(X;Y) + I(X;Z|Y)\) も成り立つ。2つの展開を等置して
+\[
+I(X;Z) + I(X;Y|Z) = I(X;Y) + I(X;Z|Y).
+\]
+ここで Markov 性を使う。\(Y\) を与えると \(X\) と \(Z\) は条件付き独立だから、
+各 \(y\) に対する相互情報量 \(I(X;Z|Y=y)\) はゼロ、よって \(I(X;Z|Y)=0\)。
+一方 \(I(X;Y|Z)\ge 0\)（§11.2.3）。したがって
+\[
+I(X;Z) \le I(X;Z) + I(X;Y|Z) = I(X;Y).
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足</span>
+<ul>
+<li>Markov 性 \(p(z|y,x)=p(z|y)\) は、Bayes 則を使うと \(p(x|y,z)=p(x|y)\) と同値であることが
+確かめられる。つまり \(X\to Y\to Z\) なら \(Z\to Y\to X\) も Markov 連鎖であり
+（Markov 連鎖の反転）、同じ定理から \(I(Z;X)\le I(Z;Y)\)、すなわち
+<strong>パイプラインの下流は上流より多くを知らない</strong>という対称な結論も出る。</li>
+<li>データ処理不等式は推定理論の限界（Fano の不等式と組んで誤り確率の下界を与える）や、
+チャネルを継ぎ足しても容量が増えないことの証明などに使われる。
+量子版——量子操作を繰り返すと状態についての情報が単調に劣化する——は
+強劣加法性から従う（§11.4.2、および第12章）。</li>
+</ul>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-11-3">von Neumann エントロピー<span class="en">Von Neumann entropy</span></h2>
+
+<p>
+量子力学では、確率分布の役割を密度演算子 \(\rho\)（§2.4）が引き受ける。
+Shannon エントロピーの \(p(x)\) を \(\rho\) に、和をトレースに置き換えるのが
+量子版エントロピーである。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（von Neumann エントロピー）</span>
+密度演算子 \(\rho\) の <strong>von Neumann エントロピー</strong>を
+\[
+S(\rho) \equiv -\tr(\rho\log\rho)
+\]
+で定義する。\(\rho\) のスペクトル分解を \(\rho=\sum_x \lambda_x\ketbra{x}{x}\)
+（\(\lambda_x\ge0,\ \sum\lambda_x=1\)、\(\{\ket x\}\) は正規直交）とすると
+\[
+S(\rho) = -\sum_x \lambda_x\log\lambda_x = H(\lambda_1,\lambda_2,\dots),
+\]
+すなわち<strong>固有値の分布の Shannon エントロピー</strong>である。
+ここでも \(0\log0\equiv0\) の規約を使う。系 \(A\) の状態 \(\rho_A\) のエントロピーを
+\(S(A)\)、合成系 \(AB\) の状態 \(\rho_{AB}\) のそれを \(S(A,B)\) あるいは \(S(AB)\) と略記する。
+</div>
+
+<div class="remark-box">
+<span class="box-title">数学的準備：演算子の関数と凸性の言葉</span>
+本章で使う演算子計算をまとめておく。
+エルミート演算子 \(A=\sum_i a_i\ketbra{i}{i}\) に対し、実関数 \(f\) の演算子版を
+<strong>スペクトル分解で定義</strong>する：\(f(A)\equiv\sum_i f(a_i)\ketbra{i}{i}\)。
+したがって \(\tr f(A)=\sum_i f(a_i)\) であり、\(\rho\log\rho\) は固有値 0 の方向では
+\(0\log0=0\) として（連続極限で）定義される。
+\(A\) と \(B\) が可換でないとき \(\log(AB)\ne\log A+\log B\) である点には常に注意が要る
+（本章の不等式の多くは、この非可換性をどう飼い慣らすかの技術である）。
+また、演算子の組に対する関数 \(f(A,B)\) が<strong>同時凹 (jointly concave)</strong> であるとは、
+\(0\le\lambda\le1\) と2組 \((A_1,B_1),(A_2,B_2)\) に対し
+\[
+f\bigl(\lambda A_1+(1-\lambda)A_2,\ \lambda B_1+(1-\lambda)B_2\bigr)
+\ \ge\ \lambda f(A_1,B_1)+(1-\lambda)f(A_2,B_2)
+\]
+が成り立つことをいう（各引数ごとの凹性より真に強い）。
+スカラーの Jensen の不等式（凹関数 \(f\) に対し \(\mathbb E[f(X)]\le f(\mathbb E[X])\)）は
+既知とする。§11.4 の Lieb の定理がこの言葉で述べられる。
+</div>
+
+<p>
+基本例を並べる。
+</p>
+
+<div class="example-box">
+<span class="box-title">例</span>
+<ul>
+<li><strong>純粋状態</strong> \(\rho=\ketbra\psi\psi\)：固有値は \(1,0,\dots,0\) なので
+\(S=0\)。純粋状態は「量子的に完全に既知」の状態である。</li>
+<li><strong>最大混合状態</strong> \(\rho=I/d\)：固有値がすべて \(1/d\) なので \(S=\log d\)。
+量子ビット（\(d=2\)）なら 1 ビット。これが最大値であることを §11.3.2 で示す。</li>
+<li><strong>対角的な量子ビット</strong> \(\rho=p\ketbra00+(1-p)\ketbra11\)：\(S(\rho)=H_2(p)\)。
+固有基底に乗ってしまえば von Neumann エントロピーは Shannon エントロピーに退化する。
+量子固有の現象はすべて「非可換性」と「エンタングルメント」から来る。</li>
+<li><strong>Bell 状態の部分系</strong>：\(\ket{\beta_{00}}=(\ket{00}+\ket{11})/\sqrt2\) は純粋なので
+\(S(AB)=0\)。しかし部分トレースを取ると \(\rho_A=\tr_B\ketbra{\beta_{00}}{\beta_{00}}=I/2\) で
+\(S(A)=1\)。<strong>全体を完全に知っているのに部分は最大限に不確か</strong>——
+古典の \(H(X)\le H(X,Y)\) では決して起こらないことが量子では起こる。
+エンタングルメントのエントロピー的な顔である。</li>
+</ul>
+</div>
+
+<h3 id="sec-11-3-1">§11.3.1 量子相対エントロピー</h3>
+
+<p>
+古典（§11.2.2）と同じく、不等式の生成源として相対エントロピーの量子版を先に用意する。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（量子相対エントロピー）</span>
+密度演算子 \(\rho,\sigma\) に対し
+\[
+S(\rho\,\|\,\sigma) \equiv \tr(\rho\log\rho) - \tr(\rho\log\sigma).
+\]
+\(\rho\) の台（supp、固有値正の固有空間）が \(\sigma\) の台に含まれないときは
+\(S(\rho\|\sigma)\equiv+\infty\) とする（古典の \(p&gt;0,\ q=0\) の場合に対応）。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（Klein の不等式）</span>
+\[
+S(\rho\,\|\,\sigma) \ge 0,
+\]
+等号は \(\rho=\sigma\) のとき、かつそのときに限る。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+両者をスペクトル分解する：
+\(\rho=\sum_i p_i\ketbra{i}{i}\)、\(\sigma=\sum_j q_j\ketbra{j}{j}\)
+（それぞれ正規直交固有基底、\(+\infty\) の場合は不等式が自明なので
+\(q_j&gt;0\) がすべての関与する \(j\) で成り立つ場合を考える）。定義に代入すると
+\[
+S(\rho\|\sigma) = \sum_i p_i\log p_i - \sum_i \bra{i}\rho\log\sigma\ket{i}
+= \sum_i p_i\Bigl(\log p_i - \bra{i}\log\sigma\ket{i}\Bigr).
+\]
+ここで \(\log\sigma=\sum_j(\log q_j)\ketbra jj\) だから
+\[
+\bra{i}\log\sigma\ket{i} = \sum_j P_{ij}\log q_j,
+\qquad P_{ij}\equiv|\braket{i}{j}|^2 .
+\]
+行列 \(P_{ij}\) は非負で、\(\{\ket i\},\{\ket j\}\) がともに正規直交基底であることから
+\(\sum_j P_{ij}=1\) かつ \(\sum_i P_{ij}=1\)（<strong>二重確率行列</strong>）。
+各 \(i\) を固定すると \(\{P_{ij}\}_j\) は確率分布なので、\(\log\) の凹性（Jensen の不等式）より
+\[
+\sum_j P_{ij}\log q_j \ \le\ \log\Bigl(\sum_j P_{ij}q_j\Bigr) \equiv \log r_i,
+\qquad r_i \equiv \sum_j P_{ij}q_j = \bra{i}\sigma\ket{i}.
+\]
+したがって
+\[
+S(\rho\|\sigma) \ \ge\ \sum_i p_i\log\frac{p_i}{r_i} = H(p\,\|\,r).
+\]
+ここで \(\{r_i\}\) は確率分布である：\(r_i\ge0\) かつ
+\(\sum_i r_i=\sum_j q_j\sum_i P_{ij}=\sum_j q_j=1\)（二重確率性を使った）。
+よって Gibbs の不等式（§11.2.2）から \(H(p\|r)\ge0\)、すなわち \(S(\rho\|\sigma)\ge0\)。
+</p>
+<p>
+等号条件を追う。等号には (a) 各 \(i\)（\(p_i&gt;0\)）での Jensen の等号と
+(b) \(H(p\|r)=0\) すなわち \(p_i=r_i\) が必要である。
+(a) の等号は、\(\log\) が狭義凹だから「\(P_{ij}\ne0\) なるすべての \(j\) で \(q_j\) が同一の値
+（\(=r_i\)）」を意味する。すると
+\[
+\sigma\ket{i} = \sum_j q_j\ketbra jj\,\ket{i}
+= \sum_{j:\,\braket ji\ne0} q_j\braket ji\,\ket{j}
+= r_i\sum_j \braket ji\,\ket{j} = r_i\ket{i},
+\]
+つまり \(\ket i\) は \(\sigma\) の固有ベクトルで固有値 \(r_i=p_i\)（(b) を使った）。
+\(p_i&gt;0\) の固有ベクトルたちがこれを満たし、両者ともトレース 1 なので残りの部分も一致し、
+\(\rho=\sigma\) が従う。逆に \(\rho=\sigma\) なら明らかに \(S(\rho\|\sigma)=0\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+証明の構造を振り返ると、非可換性はすべて二重確率行列 \(P_{ij}=|\braket ij|^2\) に
+吸収され、あとは古典の Gibbs の不等式に帰着した。
+「固有基底のズレを二重確率行列で古典化する」のは量子情報でよく使う手筋である。
+</p>
+
+<h3 id="sec-11-3-2">§11.3.2 エントロピーの基本性質</h3>
+
+<div class="thm-box">
+<span class="box-title">定理（von Neumann エントロピーの基本性質）</span>
+<ol>
+<li>\(S(\rho)\ge0\)。等号は \(\rho\) が純粋状態のとき、かつそのときに限る。</li>
+<li>\(d\) 次元の系で \(S(\rho)\le\log d\)。等号は \(\rho=I/d\) のとき、かつそのときに限る。</li>
+<li>ユニタリ不変性：\(S(U\rho U^\dagger)=S(\rho)\)。</li>
+<li>合成系 \(AB\) が<strong>純粋状態</strong>なら \(S(A)=S(B)\)。</li>
+<li>結合エントロピー定理：\(\{\ket i\}\) を系 \(B'\) の正規直交系、\(p_i\) を確率分布、
+\(\rho_i\) を系 \(A\) の任意の状態として
+\[
+S\Bigl(\sum_i p_i\,\rho_i\otimes\ketbra ii\Bigr) = H(p) + \sum_i p_i\,S(\rho_i).
+\]
+特に \(S(\rho\otimes\sigma)=S(\rho)+S(\sigma)\)（加法性）。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>1.</strong> \(S(\rho)=H(\lambda)\) は固有値分布の Shannon エントロピーなので非負。
+ゼロになるのは分布が確定的、すなわち固有値が \(1,0,\dots,0\) のときで、これは純粋状態を意味する。
+</p>
+<p>
+<strong>2.</strong> Klein の不等式で \(\sigma=I/d\) と取る。\(\log(I/d)=-(\log d)\,I\) だから
+\[
+0 \le S(\rho\,\|\,I/d) = -S(\rho) - \tr\bigl(\rho\,(-\log d)I\bigr) = -S(\rho) + \log d .
+\]
+等号条件も Klein のそれ（\(\rho=I/d\)）をそのまま引き継ぐ。
+古典の応用1（§11.2.2）と一字一句同じ構造であることに注意。
+</p>
+<p>
+<strong>3.</strong> \(U\rho U^\dagger\) は \(\rho\) と同じ固有値を持つ（固有ベクトルが
+\(U\ket x\) に回るだけ）。エントロピーは固有値だけの関数なので不変。
+物理的には「可逆な時間発展は情報を失わない」ことの表現である。
+</p>
+<p>
+<strong>4.</strong> 純粋状態 \(\ket\psi_{AB}\) の <strong>Schmidt 分解</strong>（§2.5）を使う：
+正規直交系 \(\{\ket{a_k}\}\subset A\)、\(\{\ket{b_k}\}\subset B\) と非負実数
+\(\sqrt{\lambda_k}\)（\(\sum_k\lambda_k=1\)）が存在して
+\[
+\ket\psi = \sum_k \sqrt{\lambda_k}\,\ket{a_k}\ket{b_k}.
+\]
+部分トレースを実行すると
+\[
+\rho_A = \sum_k \lambda_k\ketbra{a_k}{a_k},
+\qquad
+\rho_B = \sum_k \lambda_k\ketbra{b_k}{b_k}
+\]
+となり、<strong>両者は同一の固有値集合 \(\{\lambda_k\}\) を持つ</strong>。
+よって \(S(A)=H(\lambda)=S(B)\)。Bell 状態の例（\(S(A)=S(B)=1\)）はこの特別な場合である。
+</p>
+<p>
+<strong>5.</strong> \(\rho_i=\sum_j\lambda_i^{(j)}\ketbra{e_i^{(j)}}{e_i^{(j)}}\) と
+各 \(\rho_i\) をスペクトル分解すると、
+\[
+\sum_i p_i\,\rho_i\otimes\ketbra ii
+= \sum_{i,j} p_i\lambda_i^{(j)}\;\ketbra{e_i^{(j)}}{e_i^{(j)}}\otimes\ketbra ii .
+\]
+右辺に現れるベクトル \(\ket{e_i^{(j)}}\ket{i}\) たちは、第2因子の直交性のおかげで
+（\(i\) が異なれば自動的に直交するから）全体として正規直交系をなす。
+つまりこれがスペクトル分解そのもので、固有値は \(\{p_i\lambda_i^{(j)}\}\)。よって
+\[
+S = -\sum_{i,j}p_i\lambda_i^{(j)}\log\bigl(p_i\lambda_i^{(j)}\bigr)
+= -\sum_i p_i\log p_i\underbrace{\sum_j\lambda_i^{(j)}}_{=1}
+  -\sum_i p_i\sum_j\lambda_i^{(j)}\log\lambda_i^{(j)}
+= H(p) + \sum_i p_i S(\rho_i).
+\]
+加法性は、\(\sigma=\sum_i q_i\ketbra ii\)（固有分解）として
+\(\rho\otimes\sigma=\sum_i q_i\,\rho\otimes\ketbra ii\) に上式を適用すれば
+\(S(\rho\otimes\sigma)=H(q)+S(\rho)=S(\sigma)+S(\rho)\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+性質 4 は見かけによらず深い。合成系が純粋である限り、
+部分系 \(A,B\) の次元がどれほど違っても不確かさは等量である。
+これは「純粋状態における部分系のエントロピーは、状態そのものの性質というより
+<strong>\(A\) と \(B\) の間のエンタングルメントの量</strong>である」ことを示唆する。
+実際 \(S(A)\) は純粋状態のエンタングルメント測度（エンタングルメント・エントロピー）として
+第12章で主役になる。
+</p>
+
+<h3 id="sec-11-3-3">§11.3.3 射影測定はエントロピーを増やす</h3>
+
+<p>
+測定はエントロピーをどう変えるか。結果を読まずに射影測定を行う
+（<strong>非選択的測定</strong>：状態は各結果の混合になる）と、不確かさは必ず増える。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（射影測定によるエントロピー増大）</span>
+\(\{P_i\}\) を完全な直交射影の族（\(P_iP_j=\delta_{ij}P_i\)、\(\sum_iP_i=I\)）とし、
+測定後の状態を
+\[
+\rho' = \sum_i P_i\,\rho\,P_i
+\]
+とすると
+\[
+S(\rho') \ge S(\rho),
+\]
+等号は \(\rho'=\rho\) のとき、かつそのときに限る。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+Klein の不等式を \(S(\rho\,\|\,\rho')\ge0\) の形で使う：
+\[
+0 \le S(\rho\,\|\,\rho') = -S(\rho) - \tr(\rho\log\rho').
+\]
+あとは \(-\tr(\rho\log\rho')=S(\rho')\) を示せばよい。鍵は
+<strong>\(\rho'\) がすべての \(P_i\) と可換</strong>なことである。実際
+\[
+P_k\rho' = P_k\sum_iP_i\rho P_i = P_k\rho P_k = \sum_iP_i\rho P_i\,P_k = \rho'P_k
+\]
+（\(P_kP_i=\delta_{ki}P_k\) を2回使った）。可換なら関数計算も可換なので
+\([\log\rho',P_i]=0\)。これと \(\sum_iP_i=I\)、トレースの巡回性、\(P_i^2=P_i\) を使って
+\[
+\tr(\rho\log\rho')
+= \sum_i\tr(P_i\,\rho\log\rho')
+= \sum_i\tr(P_i\,\rho\log\rho'\,P_i)
+= \sum_i\tr(P_i\,\rho\,P_i\log\rho')
+= \tr(\rho'\log\rho') = -S(\rho').
+\]
+（2つ目の等号は \(\tr(P_iM)=\tr(P_iMP_i)\)、3つ目は \(\log\rho'\) を \(P_i\) と交換した。）
+代入して \(0\le -S(\rho)+S(\rho')\)。等号は Klein の等号条件から \(\rho=\rho'\)。<span class="qed">∎</span>
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意：一般の測定では減ることもある</span>
+この定理は<strong>射影</strong>測定に固有で、一般化測定（POVM とその測定演算子）では
+エントロピーが減りうる。極端な例：量子ビットの測定演算子を
+\(M_1=\ketbra00,\ M_2=\ketbra01\) と取る
+（\(M_1^\dagger M_1+M_2^\dagger M_2=\ketbra00+\ketbra11=I\) で正当な測定である）。
+どんな入力 \(\rho\) に対しても測定後の非選択的状態は
+\[
+\rho' = M_1\rho M_1^\dagger + M_2\rho M_2^\dagger
+= \bigl(\bra0\rho\ket0+\bra1\rho\ket1\bigr)\ketbra00 = \ketbra00
+\]
+となり \(S(\rho')=0\le S(\rho)\)。系を「リセット」する操作は不確かさを捨てられる
+（そのぶん環境にエントロピーを押し付けている、と読むのが熱力学的に正しい）。
+</div>
+
+<h3 id="sec-11-3-4">§11.3.4 劣加法性と三角不等式</h3>
+
+<p>
+2体系のエントロピーの上下の限界を確定する。上からの限界は古典と同じ形、
+下からの限界は古典と似て非なる形になる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（劣加法性）</span>
+合成系の任意の状態 \(\rho_{AB}\) に対し
+\[
+S(A,B) \le S(A) + S(B),
+\]
+等号は \(\rho_{AB}=\rho_A\otimes\rho_B\) のとき、かつそのときに限る。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+Klein の不等式で \(\rho=\rho_{AB}\)、\(\sigma=\rho_A\otimes\rho_B\) と取る。
+テンソル積の対数は（両因子が可換に作用するので）
+\[
+\log(\rho_A\otimes\rho_B) = (\log\rho_A)\otimes I_B + I_A\otimes(\log\rho_B)
+\]
+と分解する（スペクトル分解 \(\rho_A\otimes\rho_B=\sum_{k,l}\lambda_k\mu_l\,
+\ketbra{a_k}{a_k}\otimes\ketbra{b_l}{b_l}\) に \(\log(\lambda\mu)=\log\lambda+\log\mu\) を
+適用すれば直ちに出る）。よって
+\[
+\tr\bigl(\rho_{AB}\log(\rho_A\otimes\rho_B)\bigr)
+= \tr\bigl(\rho_{AB}(\log\rho_A\otimes I)\bigr) + \tr\bigl(\rho_{AB}(I\otimes\log\rho_B)\bigr)
+= \tr(\rho_A\log\rho_A) + \tr(\rho_B\log\rho_B),
+\]
+最後の等号は部分トレースの定義（\(\tr(\rho_{AB}(M_A\otimes I))=\tr(\rho_AM_A)\)）による。
+したがって
+\[
+0 \le S(\rho_{AB}\,\|\,\rho_A\otimes\rho_B) = -S(A,B) + S(A) + S(B),
+\]
+等号は Klein の等号条件より \(\rho_{AB}=\rho_A\otimes\rho_B\)。<span class="qed">∎</span>
+</div>
+
+<p>
+古典の劣加法性（§11.2.2 応用2）とまったく同じ論法である。
+量子相互情報量を
+\[
+I(A;B) \equiv S(A)+S(B)-S(A,B) = S(\rho_{AB}\,\|\,\rho_A\otimes\rho_B) \ge 0
+\]
+と定義すれば、これが「\(AB\) 間の相関の総量」を測る非負量になることも同時に分かる。
+</p>
+
+<p>
+下からの限界はどうか。古典では \(H(X,Y)\ge\max(H(X),H(Y))\)（部分は全体を超えない）だが、
+量子では Bell 状態が \(S(AB)=0&lt;1=S(A)\) を与えるのでこの形は<strong>偽</strong>である。
+正しい下界は次で与えられる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（三角不等式；Araki–Lieb の不等式）</span>
+\[
+S(A,B) \ \ge\ \bigl|S(A)-S(B)\bigr| .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<strong>純粋化</strong>を使う。任意の \(\rho_{AB}\) に対し、参照系 \(R\) を導入して
+合成系 \(ABR\) の純粋状態 \(\ket\psi_{ABR}\) で \(\tr_R\ketbra\psi\psi=\rho_{AB}\) と
+なるものが取れる（§2.5）。\(ABR\) が純粋であることから、性質 4（§11.3.2）を
+分割 \((AB|R)\) と \((AR|B)\) に適用して
+\[
+S(R) = S(A,B), \qquad S(A,R) = S(B).
+\]
+劣加法性を系 \(A\) と \(R\) に使うと
+\[
+S(B) = S(A,R) \le S(A) + S(R) = S(A) + S(A,B)
+\qquad\Longrightarrow\qquad
+S(A,B) \ge S(B) - S(A).
+\]
+\(A\) と \(B\) の役割を入れ替えれば \(S(A,B)\ge S(A)-S(B)\) も得られ、合わせて主張を得る。
+<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">純粋化という手筋</span>
+この証明は本章で繰り返し使う型の初出である：
+<strong>足りない不等式は、系を純粋化して既知の不等式を別の分割に適用すると出てくる</strong>。
+純粋状態では「どの分割で切っても両側のエントロピーが等しい」（性質 4）ため、
+純粋化はエントロピーたちの間の「両替」を可能にする。
+Bell 状態で三角不等式の等号（\(1=|1-0|\)…ではなく \(0=|1-1|\)）が成り立つことも
+確かめられる：\(S(AB)=0\)、\(S(A)=S(B)=1\) で確かに \(0=|1-1|\)。
+</div>
+
+<h3 id="sec-11-3-5">§11.3.5 エントロピーの凹性</h3>
+
+<p>
+状態を確率的に混ぜると不確かさは増える——ただし「どれを混ぜたか」の分だけ増え方には
+上限もある（次項）。まず下からの評価、すなわち凹性を示す。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（凹性）</span>
+確率分布 \(\{p_i\}\) と状態 \(\{\rho_i\}\) に対し
+\[
+S\Bigl(\sum_i p_i\rho_i\Bigr) \ \ge\ \sum_i p_i\,S(\rho_i),
+\]
+等号は \(p_i&gt;0\) なるすべての \(\rho_i\) が等しいとき、かつそのときに限る。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（補助系を使う）</span>
+どの状態を混ぜたかを記録する<strong>補助系</strong> \(B\)（正規直交基底 \(\{\ket i\}\)）を導入し、
+合成状態
+\[
+\rho_{AB} \equiv \sum_i p_i\,\rho_i\otimes\ketbra ii
+\]
+を考える。各周辺状態は
+\[
+\rho_A = \sum_i p_i\rho_i,
+\qquad
+\rho_B = \sum_i p_i\ketbra ii,
+\]
+であり、結合エントロピー定理（§11.3.2 性質 5）から
+\[
+S(A,B) = H(p) + \sum_i p_iS(\rho_i),
+\qquad S(B) = H(p).
+\]
+劣加法性 \(S(A,B)\le S(A)+S(B)\) に代入すると
+\[
+H(p) + \sum_i p_iS(\rho_i) \ \le\ S\Bigl(\sum_i p_i\rho_i\Bigr) + H(p)
+\]
+となり、\(H(p)\) を消去すれば主張の不等式を得る。
+等号は劣加法性の等号条件 \(\rho_{AB}=\rho_A\otimes\rho_B\)、すなわち
+\(\sum_ip_i\rho_i\otimes\ketbra ii=\rho_A\otimes\sum_ip_i\ketbra ii\) と同値で、
+両辺の \(\ketbra ii\) 成分を比べると \(p_i\rho_i=p_i\rho_A\)、
+つまり \(p_i&gt;0\) なるすべての \(i\) で \(\rho_i=\rho_A\)（すべて同一）となる。<span class="qed">∎</span>
+</div>
+
+<p>
+証明の発想を言葉にしておく：「混ぜて忘れる」ことによる不確かさの増加を測りたければ、
+<strong>忘れる前の状態（ラベル付きの状態 \(\rho_{AB}\)）をあらわに作ってから、
+ラベルを部分トレースで捨てればよい</strong>。
+補助系にいったん情報を書き出すこの手法は、量子情報の証明技術の定番であり、
+次項でも §11.4 でも使う。
+</p>
+
+<h3 id="sec-11-3-6">§11.3.6 混合状態のエントロピーの上限</h3>
+
+<p>
+凹性と対になる上からの評価を示す。増え方の上限は「ラベルのエントロピー \(H(p)\)」である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（混合のエントロピーの上界）</span>
+\[
+S\Bigl(\sum_i p_i\rho_i\Bigr) \ \le\ \sum_i p_i\,S(\rho_i) + H(p),
+\]
+等号は \(\rho_i\) たちの台が互いに直交するとき、かつそのときに限る。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>ステップ1：純粋状態の混合の場合。</strong>
+まず \(\rho=\sum_ip_i\ketbra{\psi_i}{\psi_i}\)（\(\ket{\psi_i}\) は正規化されているが
+直交している必要はない）に対して \(S(\rho)\le H(p)\) を示す。
+補助系 \(B\)（正規直交基底 \(\{\ket i\}\)）を使って純粋状態
+\[
+\ket{\Psi}_{AB} \equiv \sum_i \sqrt{p_i}\,\ket{\psi_i}_A\ket{i}_B
+\]
+を作る（\(\braket\Psi\Psi=\sum_ip_i=1\) で正規化されている）。\(B\) を部分トレースすると、
+\(\{\ket i\}\) の直交性から交差項が消えて
+\[
+\tr_B\ketbra\Psi\Psi = \sum_i p_i\ketbra{\psi_i}{\psi_i} = \rho,
+\]
+すなわち \(\ket\Psi\) は \(\rho\) の純粋化である。性質 4（§11.3.2）より
+\[
+S(\rho) = S(\rho_B),
+\qquad
+\rho_B = \tr_A\ketbra\Psi\Psi = \sum_{i,j}\sqrt{p_ip_j}\,\braket{\psi_j}{\psi_i}\,\ketbra ij .
+\]
+ここで \(\rho_B\) に基底 \(\{\ket i\}\) への射影測定 \(\{P_i=\ketbra ii\}\) を施すと、
+非対角成分が消えて
+\[
+\rho_B' = \sum_i P_i\rho_BP_i = \sum_i p_i\ketbra ii
+\]
+となる（対角成分は \(\bra i\rho_B\ket i=p_i\braket{\psi_i}{\psi_i}=p_i\)）。
+射影測定はエントロピーを増やす（§11.3.3）から
+\[
+S(\rho) = S(\rho_B) \ \le\ S(\rho_B') = H(p).
+\]
+</p>
+<p>
+<strong>ステップ2：一般の場合。</strong>
+各 \(\rho_i\) をスペクトル分解する：
+\(\rho_i=\sum_j\lambda_i^{(j)}\ketbra{e_i^{(j)}}{e_i^{(j)}}\)。すると
+\[
+\rho = \sum_i p_i\rho_i = \sum_{i,j} p_i\lambda_i^{(j)}\,\ketbra{e_i^{(j)}}{e_i^{(j)}}
+\]
+は、確率 \(\{p_i\lambda_i^{(j)}\}_{i,j}\) による純粋状態
+\(\{\ket{e_i^{(j)}}\}\) の混合である。ステップ1をこのアンサンブルに適用して
+\[
+S(\rho) \ \le\ H\bigl(\{p_i\lambda_i^{(j)}\}\bigr)
+= -\sum_{i,j}p_i\lambda_i^{(j)}\bigl(\log p_i+\log\lambda_i^{(j)}\bigr)
+= H(p) + \sum_i p_i\,S(\rho_i)
+\]
+（\(\sum_j\lambda_i^{(j)}=1\) を使って和を整理した。§11.3.2 性質 5 の計算と同一である）。
+</p>
+<p>
+<strong>等号条件。</strong>台が互いに直交するなら、\(\rho\) の上の表示はそのまま
+スペクトル分解であり（異なる \(i\) のベクトルも直交するから）、
+固有値が \(\{p_i\lambda_i^{(j)}\}\) と確定して等号が成り立つ
+——これは結合エントロピー定理の計算そのものである。
+逆に等号が成り立つとき台が直交することは、ステップ1の等号条件
+（射影測定で \(\rho_B\) が不変、すなわち \(\rho_B\) が \(\{\ket i\}\) 基底で対角
+\(\Leftrightarrow\) \(\sqrt{p_ip_j}\braket{\psi_j}{\psi_i}=0\)（\(i\ne j\)）、
+すなわち混合される純粋状態が互いに直交）を
+ステップ2のアンサンブルに適用すれば従う。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+凹性と合わせると、混合状態のエントロピーは
+\[
+\sum_i p_iS(\rho_i) \ \le\ S\Bigl(\sum_i p_i\rho_i\Bigr) \ \le\ \sum_i p_iS(\rho_i) + H(p)
+\]
+と挟まれる。右の等号（直交する台）は「どの \(\rho_i\) だったかを測定で完全に識別できる」
+場合であり、そのときラベルの不確かさ \(H(p)\) が丸ごとエントロピーに加算される。
+逆に識別が不完全（台が重なる）だと加算は \(H(p)\) 未満に目減りする。
+この「量子状態は識別できる分しか情報を運べない」という定量的教訓は、
+Holevo 限界（第12章）の心臓部になる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-11-4">強劣加法性<span class="en">Strong subadditivity</span></h2>
+
+<p>
+3体系になると、エントロピーの不等式は一段深くなる。本節の主定理は次である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（強劣加法性, strong subadditivity; SSA）</span>
+任意の3体状態 \(\rho_{ABC}\) に対して
+\[
+S(A,B,C) + S(B) \ \le\ S(A,B) + S(B,C).
+\]
+同値な形として、任意の \(\rho_{ABC}\) に対して
+\[
+S(A) + S(B) \ \le\ S(A,C) + S(B,C)
+\]
+も成り立つ（同値性は証明の中で示す）。
+</div>
+
+<p>
+形の覚え方：第1の形は「真ん中の系 \(B\) を共有する2つの塊 \(AB,BC\) に分けると、
+全体＋共有部分のエントロピーは塊の和で抑えられる」。
+条件付きエントロピー \(S(A|B)\equiv S(A,B)-S(B)\)、
+量子相互情報量 \(I(A;B)=S(A)+S(B)-S(A,B)\) を使って書き直すと
+\[
+S(A|B,C) \le S(A|B),
+\qquad
+I(A;B) \le I(A;B,C)
+\]
+とも読める（移項するだけである。§11.4.2 で改めて掲げる）。
+</p>
+
+<div class="remark-box">
+<span class="box-title">なぜ古典のようには証明できないか</span>
+古典の対応物 \(H(X,Y,Z)+H(Y)\le H(X,Y)+H(Y,Z)\) は
+\(I(X;Z|Y)\ge0\)（§11.2.3）の書き換えにすぎず、
+「\(y\) ごとに分解して各点で相互情報量が非負」という<strong>点ごとの議論</strong>で済んだ。
+量子では \(B\) の値で条件付けた「\(y\) ごとの状態」への分解が一般には存在しない
+（\(\rho_{ABC}\) は \(B\) の基底について非対角成分を持つ）。
+さらに量子の条件付きエントロピーは<strong>負になりうる</strong>：
+Bell 状態では \(S(A|B)=S(A,B)-S(B)=0-1=-1\)。
+古典の直観（Venn 図の各領域が非負）はここで完全に破綻しており、
+SSA が成り立つこと自体が非自明な定理である。
+実際、その証明は長らく未解決で、1973年に Lieb と Ruskai によって初めて与えられた。
+以下では原書に沿い、Lieb の定理を出発点とする証明を行間を埋めて再構成する。
+</div>
+
+<h3 id="sec-11-4-1">§11.4.1 証明の構成</h3>
+
+<p>
+証明は3段のリレーである：
+<strong>(0) Lieb の定理</strong>（演算子の同時凹性。証明は<a href="appendixA6.html">付録A6</a>）
+→ <strong>(1) 条件付きエントロピーの凹性</strong>
+→ <strong>(2) 鍵補題 \(S(C|A)+S(C|B)\ge0\)</strong>
+→ <strong>(3) 純粋化による SSA の導出</strong>。
+</p>
+
+<p><strong>ステップ0：Lieb の定理。</strong></p>
+
+<div class="thm-box">
+<span class="box-title">定理（Lieb, 1973）</span>
+任意の行列 \(X\) と \(0\le t\le1\) に対し、正半定値行列の組 \((A,B)\) の関数
+\[
+f(A,B) \equiv \tr\bigl(X^\dagger A^{t}\,X\,B^{1-t}\bigr)
+\]
+は \((A,B)\) について<strong>同時凹</strong>である（§11.3 冒頭の remark-box の意味で）。
+</div>
+
+<p>
+この定理の証明は解析的でやや長く、本章の流れからは独立なので、
+<a href="appendixA6.html"><strong>付録A6</strong></a> に委ねる。
+特別な場合 \(t=1/2,\ X=I\) は「\(\tr(\sqrt A\sqrt B)\) の同時凹性」で、
+すでに忠実度の性質（第9章）の裏で働いていた種類の主張である。
+以下で使うのは \(X=I\) の場合だけである。
+</p>
+
+<p><strong>ステップ1：条件付きエントロピーの凹性。</strong></p>
+
+<div class="thm-box">
+<span class="box-title">補題1（\(S(A|B)\) の凹性）</span>
+\(S(A|B)=S(A,B)-S(B)\) は \(\rho_{AB}\) の凹関数である：
+\(\rho_{AB}=\sum_k q_k\,\rho_{AB}^{(k)}\) ならば
+\(S(A|B)_{\rho}\ \ge\ \sum_k q_k\,S(A|B)_{\rho^{(k)}}\)。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+\(0\le t\le 1\) に対して補間関数
+\[
+I_t(\rho_{AB}) \equiv \tr\Bigl(\rho_{AB}^{\,t}\,\bigl(I_A\otimes\rho_B\bigr)^{1-t}\Bigr),
+\qquad \rho_B = \tr_A\rho_{AB}
+\]
+を定義する（以下しばらく \(\rho_{AB}\) は正定値（フルランク）と仮定する。
+一般の場合は \(\rho\to(1-\epsilon)\rho+\epsilon I/d\) と正則化して
+\(\epsilon\to0\) の連続極限を取ればよい）。
+</p>
+<p>
+<em>(i) \(I_t\) は \(\rho_{AB}\) の凹関数である。</em>
+Lieb の定理（\(X=I\)）より \((M,N)\mapsto\tr(M^tN^{1-t})\) は同時凹。
+一方、\(\rho_{AB}\mapsto\bigl(\rho_{AB},\,I_A\otimes\tr_A\rho_{AB}\bigr)\) は
+<strong>線形</strong>写像である。同時凹関数と線形写像の合成は凹だから、
+\(I_t\) は \(\rho_{AB}\) について凹である。
+（各引数ごとの凹性では足りず、同時凹性が本質的に必要な箇所がここである：
+第2引数 \(I\otimes\rho_B\) が第1引数と連動して動くからである。）
+</p>
+<p>
+<em>(ii) \(t\to1\) の傾きが条件付きエントロピーを与える。</em>
+まず \(I_1=\tr\rho_{AB}=1\)（\(\rho\) によらない定数）。
+正定値行列 \(M\) に対する微分公式 \(\frac{d}{dt}M^{\,t}=M^{\,t}\ln M\) を使うと
+\[
+\frac{d}{dt}I_t
+= \tr\Bigl(\rho^{\,t}(\ln\rho)\,(I\otimes\rho_B)^{1-t}\Bigr)
+- \tr\Bigl(\rho^{\,t}\,(I\otimes\rho_B)^{1-t}\ln(I\otimes\rho_B)\Bigr)
+\]
+（\(\rho\equiv\rho_{AB}\) と略記。\((I\otimes\rho_B)^{1-t}\) と \(\ln(I\otimes\rho_B)\) は
+可換なので順序の曖昧さはない）。\(t=1\) で評価すると
+\((I\otimes\rho_B)^{0}=I\) だから
+\[
+\frac{d}{dt}I_t\Big|_{t=1}
+= \tr(\rho\ln\rho) - \tr\bigl(\rho\,(I\otimes\ln\rho_B)\bigr)
+= \bigl[-S(A,B) + S(B)\bigr]\ln 2
+= -S(A|B)\,\ln 2 ,
+\]
+ここで \(\ln(I\otimes\rho_B)=I\otimes\ln\rho_B\)、
+\(\tr(\rho_{AB}(I\otimes\ln\rho_B))=\tr(\rho_B\ln\rho_B)\)（部分トレース）、
+および底の変換 \(\tr(\rho\log\rho)=\tr(\rho\ln\rho)/\ln2\) を使った。
+</p>
+<p>
+<em>(iii) 凹性の受け渡し。</em>
+微分を左からの差分商の極限として書くと
+\[
+S(A|B)\,\ln 2 = -\frac{d}{dt}I_t\Big|_{t=1}
+= \lim_{t\to1^-}\frac{I_t(\rho_{AB}) - 1}{1-t}.
+\]
+各 \(t&lt;1\) に対し、写像 \(\rho_{AB}\mapsto\bigl(I_t(\rho_{AB})-1\bigr)/(1-t)\) は
+「凹関数から定数を引いて正数で割ったもの」なので凹である。
+凹関数の各点収束極限は凹だから、\(S(A|B)\ln2\)、
+したがって \(S(A|B)\) も \(\rho_{AB}\) の凹関数である。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+凹性の意味を確認しておく：状態を混ぜたとき、「\(B\) を知った上での \(A\) の残り不確かさ」は
+平均以上に増える。古典なら \(H(X|Y)=\sum_yp(y)H(X|Y=y)\) の凹性として初等的に示せるが、
+量子では上のとおり Lieb の定理という重い機械が要る。
+</p>
+
+<p><strong>ステップ2：鍵補題。</strong></p>
+
+<div class="thm-box">
+<span class="box-title">補題2</span>
+任意の3体状態 \(\rho_{ABC}\) に対して
+\[
+S(C|A) + S(C|B) \ \ge\ 0 .
+\]
+（各項は負になりうるのに、この組み合わせは常に非負、という主張である。）
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+\(T(\rho_{ABC}) \equiv S(C|A)+S(C|B)\) と置き、2つの性質を示す。
+</p>
+<p>
+<em>(i) \(T\) は \(\rho_{ABC}\) の凹関数。</em>
+第1項 \(S(C|A)\) は \(\rho_{AC}=\tr_B\rho_{ABC}\) だけの凹関数（補題1）であり、
+部分トレース \(\rho_{ABC}\mapsto\rho_{AC}\) は線形だから、
+合成 \(\rho_{ABC}\mapsto S(C|A)\) は凹。第2項も同様。凹関数の和は凹である。
+</p>
+<p>
+<em>(ii) 純粋状態では \(T=0\)。</em>
+\(\rho_{ABC}=\ketbra\psi\psi\) が純粋なら、性質 4（§11.3.2）を分割 \((AC|B)\) と
+\((BC|A)\) に適用して \(S(A,C)=S(B)\)、\(S(B,C)=S(A)\)。よって
+\[
+T = \bigl[S(A,C)-S(A)\bigr] + \bigl[S(B,C)-S(B)\bigr]
+= \bigl[S(B)-S(A)\bigr] + \bigl[S(A)-S(B)\bigr] = 0 .
+\]
+</p>
+<p>
+仕上げに、任意の \(\rho_{ABC}\) を純粋状態に分解する：
+\(\rho_{ABC}=\sum_k q_k\ketbra{\psi_k}{\psi_k}\)（例えばスペクトル分解）。凹性 (i) と (ii) から
+\[
+T(\rho_{ABC}) \ \ge\ \sum_k q_k\,T\bigl(\ketbra{\psi_k}{\psi_k}\bigr) = 0 .
+\]
+<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+補題2を移項すると \(S(A)+S(B)\le S(A,C)+S(B,C)\)、
+すなわち定理の<strong>第2の形はこの時点で証明済み</strong>である
+（\(S(C|A)+S(C|B) = S(A,C)+S(B,C)-S(A)-S(B)\) に注意）。
+</p>
+
+<p><strong>ステップ3：純粋化で第1の形を得る。</strong></p>
+
+<div class="proof-box">
+<span class="box-title">証明（SSA 第1形）</span>
+与えられた \(\rho_{ABC}\) に参照系 \(R\) を付けて純粋化する：\(ABCR\) が純粋。
+すると性質 4 より
+\[
+S(A,B,C) = S(R), \qquad S(A,B) = S(C,R).
+\]
+示すべき不等式 \(S(A,B,C)+S(B)\le S(A,B)+S(B,C)\) は、これらを代入すると
+\[
+S(R) + S(B) \ \le\ S(C,R) + S(B,C),
+\]
+すなわち
+\[
+0 \ \le\ \bigl[S(C,R)-S(R)\bigr] + \bigl[S(B,C)-S(B)\bigr] = S(C|R) + S(C|B)
+\]
+と同値になる。これは補題2を（4体状態 \(\rho_{BCR}=\tr_A\) に対し、
+系の名前を \(A\to R\) と読み替えて）適用したものに他ならない。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">証明の見取り図（何が効いたか）</span>
+<ol>
+<li>非可換性の核心的困難は「\(\tr(M^tN^{1-t})\) の同時凹性」（Lieb）に集約され、そこだけが解析的に重い。</li>
+<li>Lieb から条件付きエントロピーの凹性へは、「\(t\to1\) の差分商」という補間トリックで渡る。
+エントロピーは \(\tr\rho^t\) 型の量の \(t=1\) での微分係数として現れる、という視点は
+他の場面（Rényi エントロピー、レプリカ法）でも有用である。</li>
+<li>凹性は「純粋状態で成り立つ等式を混合状態の不等式に格上げする」ために使われた（補題2）。</li>
+<li>最後は例によって純粋化がエントロピーを両替した。</li>
+</ol>
+なお、SSA の等号成立条件（\(B\) を挟んで \(A\) と \(C\) が「量子 Markov 連鎖」をなす、
+という構造定理）はさらに後年の結果であり、本書の範囲を超えるので触れるにとどめる。
+</div>
+
+<h3 id="sec-11-4-2">§11.4.2 初等的応用</h3>
+
+<p>
+SSA は量子情報理論の「万能ドライバー」である。よく使う帰結を証明付きで列挙する。
+</p>
+
+<div class="thm-box">
+<span class="box-title">系1（条件付けはエントロピーを減らす）</span>
+\[
+S(A|B,C) \ \le\ S(A|B).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+定義を代入すると
+\(S(A|B,C)=S(A,B,C)-S(B,C)\)、\(S(A|B)=S(A,B)-S(B)\) なので、主張は
+\[
+S(A,B,C)+S(B) \le S(A,B)+S(B,C)
+\]
+すなわち SSA そのものの書き換えである。<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">系2（系を捨てると相互情報量は増えない）</span>
+\[
+I(A;B) \ \le\ I(A;B,C).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\[
+I(A;B,C)-I(A;B)
+= \bigl[S(A)+S(B,C)-S(A,B,C)\bigr]-\bigl[S(A)+S(B)-S(A,B)\bigr]
+= S(B,C)+S(A,B)-S(A,B,C)-S(B) \ \ge\ 0
+\]
+で、最後の不等号が SSA である。<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">系3（量子操作は相互情報量を増やさない）</span>
+系 \(AB\) の状態 \(\rho_{AB}\) に対し、\(B\) だけにトレース保存量子操作
+\(\mathcal E\)（§8.2）を施して \(B'\) を得たとする（\(A\) には何もしない）。このとき
+\[
+I(A;B') \ \le\ I(A;B).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+量子操作の環境モデル（§8.2.2）を使う：純粋状態 \(\ket0\) に初期化した環境 \(C\) を付け、
+\(BC\) にユニタリ \(U\) を作用させ、最後に環境を捨てれば \(\mathcal E\) が実現できる。
+この3段階で \(I(A;\cdot)\) を追跡する。
+</p>
+<p>
+(1) <em>環境の付加</em>：\(\rho_{ABC}=\rho_{AB}\otimes\ketbra00_C\) では、
+純粋因子はエントロピーに寄与しない（§11.3.2 性質 5 で \(H=0\) の場合、あるいは
+加法性）ので \(S(B,C)=S(B)\)、\(S(A,B,C)=S(A,B)\)。よって
+\(I(A;B,C)=I(A;B)\)：無相関な環境を付けても相互情報量は変わらない。
+</p>
+<p>
+(2) <em>\(BC\) 上のユニタリ</em>：\(U_{BC}\) は \(\rho_A\) を変えず、
+\(\rho_{BC}\) と \(\rho_{ABC}\) をユニタリ共役するだけなので、
+ユニタリ不変性（§11.3.2 性質 3）より \(I(A;B,C)\) は不変。
+</p>
+<p>
+(3) <em>環境を捨てる</em>：系2より \(I(A;B')\le I(A;B',C')\)。
+</p>
+<p>
+つなげると
+\[
+I(A;B') \ \le\ I(A;B',C') \ = \ I(A;B,C) \ = \ I(A;B).
+\]
+<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+系3は古典のデータ処理不等式（§11.2.4）の「片側版」の量子化と読める：
+\(B\) 側でどんな局所処理をしても、\(A\) との相関は増やせない。
+</p>
+
+<div class="thm-box">
+<span class="box-title">系4（条件付きエントロピーの劣加法性）</span>
+4体状態 \(\rho_{ABCD}\) に対し
+\[
+S(A,B\,|\,C,D) \ \le\ S(A|C) + S(B|D).
+\]
+また3体状態に対して
+\[
+S(A,B\,|\,C) \ \le\ S(A|C) + S(B|C),
+\qquad
+S(A\,|\,B,C) \ \le\ S(A|B).
+\]
+（条件を付けても、劣加法性の形は保たれる。）
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+第1式：SSA を2回使う。まず分割 \((A,\,C,\,BD)\)（真ん中が \(C\)）への SSA から
+\[
+S(A,B,C,D) + S(C) \ \le\ S(A,C) + S(B,C,D),
+\]
+次に分割 \((B,\,D,\,C)\)（真ん中が \(D\)）への SSA から
+\[
+S(B,C,D) + S(D) \ \le\ S(B,D) + S(C,D).
+\]
+辺々加えて \(S(B,C,D)\) を消去すると
+\[
+S(A,B,C,D) + S(C) + S(D) \ \le\ S(A,C) + S(B,D) + S(C,D),
+\]
+移項して
+\[
+\underbrace{S(A,B,C,D)-S(C,D)}_{=\,S(A,B|C,D)}
+\ \le\ \underbrace{S(A,C)-S(C)}_{=\,S(A|C)} + \underbrace{S(B,D)-S(D)}_{=\,S(B|D)} .
+\]
+第2式：分割 \((A,\,C,\,B)\) への SSA \(S(A,B,C)+S(C)\le S(A,C)+S(B,C)\) の両辺から
+\(2S(C)\) を引けばよい。第3式は系1である。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">予告：量子データ処理不等式</span>
+古典のデータ処理不等式 \(H(X)\ge I(X;Y)\ge I(X;Z)\) の完全な量子版は第12章で扱う。
+主役は<strong>コヒーレント情報 (coherent information)</strong>
+\[
+I(A\rangle B) \equiv S(B) - S(A,B) = -S(A|B)
+\]
+——まさに「条件付きエントロピーの負値」であり、これが正であることが
+量子相関（エンタングルメント）の存在の証書になる。
+量子操作の列 \(\rho\to\mathcal E_1(\rho)\to(\mathcal E_2\circ\mathcal E_1)(\rho)\) に沿って
+コヒーレント情報が単調に減少するという<strong>量子データ処理不等式</strong>が成り立ち、
+その証明の要は本節の SSA（系1〜3の変形）である。
+コヒーレント情報は量子チャネル容量（どれだけの量子ビットをノイズのあるチャネルで
+送れるか）を支配する量であり、SSA が量子 Shannon 理論全体を支えていることが
+そこで明らかになる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第11章のまとめ</span>
+<ul>
+<li>Shannon エントロピー \(H(X)=-\sum p\log p\) は「驚き \(-\log p\) の期待値」であり、
+データ圧縮の限界という操作的意味を持つ。規約 \(0\log0=0\) は連続極限による。</li>
+<li>相対エントロピー \(H(p\|q)\ge0\)（Gibbs の不等式）が古典不等式の生成源：
+\(H\le\log d\)、劣加法性、相互情報量の非負性が一斉に従う。
+条件付きエントロピーは古典では非負で、連鎖律 \(H(X,Y)=H(Y)+H(X|Y)\) が成り立つ。</li>
+<li>データ処理不等式：Markov 連鎖 \(X\to Y\to Z\) で \(I(X;Z)\le I(X;Y)\)。
+失った情報は後処理で戻らない。</li>
+<li>von Neumann エントロピー \(S(\rho)=-\tr\rho\log\rho\) は固有値分布の Shannon エントロピー。
+純粋状態で 0、最大混合で \(\log d\)、ユニタリ不変。
+量子相対エントロピーの非負性（Klein の不等式）が量子不等式の生成源になる。</li>
+<li>合成系が純粋なら \(S(A)=S(B)\)（Schmidt 分解）。Bell 状態では \(S(AB)=0\) なのに
+\(S(A)=1\)：「部分が全体より不確か」は量子固有で、\(S(A|B)&lt;0\) が可能。</li>
+<li>非選択的射影測定はエントロピーを増やす。劣加法性 \(S(AB)\le S(A)+S(B)\) と
+三角不等式 \(S(AB)\ge|S(A)-S(B)|\)（Araki–Lieb；純粋化で証明）が2体系の限界を与える。</li>
+<li>混合のエントロピーは
+\(\sum p_iS(\rho_i)\le S(\sum p_i\rho_i)\le\sum p_iS(\rho_i)+H(p)\) と挟まれる
+（下限＝凹性は補助系＋劣加法性、上限は純粋化＋測定エントロピー増大で証明。
+上限の等号は台が直交するとき）。</li>
+<li>強劣加法性 \(S(ABC)+S(B)\le S(AB)+S(BC)\)：
+Lieb の定理 → 条件付きエントロピーの凹性 → 補題 \(S(C|A)+S(C|B)\ge0\) → 純粋化、
+という段取りで証明される。帰結として、条件付けはエントロピーを減らし、
+系を捨てても・量子操作を施しても相互情報量は増えず、
+条件付きエントロピーも劣加法的。これらが第12章の量子 Shannon 理論の全基盤となる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

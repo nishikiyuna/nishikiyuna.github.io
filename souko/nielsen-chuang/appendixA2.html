@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="群・部分群・剰余類と Lagrange の定理、Schur の補題と指標の直交関係、正則表現、有限群上の Fourier 変換">
+  <title>付録A2 群論 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="appendixA2" data-chapter="A2">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 付録2 に対応</span>
+  付録A2 群論
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この付録の概要</span>
+群論は本ノートの2箇所で本質的に効く。
+§5.4.3 の<strong>隠れ部分群問題</strong>——量子 Fourier 変換で解ける問題の統一的な枠組み——と、
+§10.5 の<strong>スタビライザー形式</strong>——Pauli 群の可換部分群で符号を定義する——である。
+本付録は、そのために必要な群論を自己完結に整備する。
+まず群・部分群・剰余類と Lagrange の定理を扱う（§A2.1）。
+次に表現論の中核である Schur の補題と直交関係を証明する（§A2.2）。
+最後に<strong>有限群上の Fourier 変換</strong>を定義し、
+本文の量子 Fourier 変換（§5.1）がその特別な場合であることを確かめる（§A2.3）。
+扱うのは<strong>有限群</strong>だけであり、表現はすべて複素数体上の有限次元表現とする。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a2-1">基本的な定義<span class="en">Basic definitions</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（群）</span>
+集合 \(G\) と二項演算 \(\cdot\)（積と呼び、\(g\cdot h\) を \(gh\) と略記する）の組が
+<strong>群 (group)</strong> であるとは、次の4条件を満たすことをいう。
+<ol>
+<li><strong>閉性</strong>：\(g,h\in G \Rightarrow gh\in G\)。</li>
+<li><strong>結合律</strong>：\((gh)k = g(hk)\)。</li>
+<li><strong>単位元</strong>：ある \(e\in G\) が存在して、すべての \(g\) で \(eg=ge=g\)。</li>
+<li><strong>逆元</strong>：各 \(g\) に対し \(g^{-1}\in G\) が存在して \(gg^{-1}=g^{-1}g=e\)。</li>
+</ol>
+すべての \(g,h\) で \(gh=hg\) が成り立つとき \(G\) は<strong>アーベル群 (Abelian group)</strong>、
+元の個数 \(|G|\) が有限のとき<strong>有限群</strong>といい、\(|G|\) を群の<strong>位数 (order)</strong> と呼ぶ。
+</div>
+
+<div class="example-box">
+<span class="box-title">例</span>
+<ul>
+<li>\(\mathbb Z_N=\{0,1,\dots,N-1\}\)、演算は法 \(N\) の加法。位数 \(N\) のアーベル群。</li>
+<li>\(\mathbb Z_2^n=\{0,1\}^n\)、演算はビットごとの XOR。位数 \(2^n\) のアーベル群。
+§5.4.3 の Simon の問題の舞台である。</li>
+<li>\(\mathbb Z_n^*\)：\(n\) と互いに素な \(\{1,\dots,n-1\}\) の元、演算は法 \(n\) の乗法。
+位数は Euler の \(\varphi(n)\)（<a href="appendixA4.html">付録A4</a>）。
+§5.3 の位数発見はこの群の元の位数を求める問題である。</li>
+<li><strong>Pauli 群</strong> \(G_n\)（§10.5.1）：位相 \(\pm1,\pm i\) を許した Pauli 行列のテンソル積。
+位数 \(4\cdot4^n\) の非アーベル群である。</li>
+<li><strong>対称群</strong> \(S_n\)：\(n\) 個の対象の置換全体、演算は合成。位数 \(n!\)。
+\(n\ge3\) で非アーベルであり、§5.4.3 のグラフ同型問題の舞台になる。</li>
+</ul>
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（元の位数・部分群・共役類）</span>
+<ul>
+<li>元 \(g\in G\) の<strong>位数</strong>とは、\(g^r=e\) を満たす最小の正整数 \(r\) である。
+有限群では必ず存在する（\(g,g^2,g^3,\dots\) は有限集合内の列なのでいつか重複し、
+\(g^i=g^j\ (i&lt;j)\) から \(g^{j-i}=e\) が出る）。</li>
+<li>部分集合 \(H\subseteq G\) がそれ自身群の公理を満たすとき、\(H\) を \(G\) の
+<strong>部分群 (subgroup)</strong> と呼び \(H\le G\) と書く。</li>
+<li>\(g\in G\) の<strong>共役類 (conjugacy class)</strong> とは
+\(G_g\equiv\{hgh^{-1} : h\in G\}\) のことである。
+共役は同値関係なので、\(G\) は共役類の非交和に分割される。
+アーベル群では \(G_g=\{g\}\)（各元が単独で1つの類）。</li>
+</ul>
+</div>
+
+<h3 id="sec-a2-1-1">§A2.1.1 生成元<span class="en">Generators</span></h3>
+
+<div class="def-box">
+<span class="box-title">定義（生成）</span>
+部分集合 \(\{g_1,\dots,g_l\}\subseteq G\) が \(G\) を<strong>生成する</strong>とは、
+\(G\) の任意の元が \(g_i\) たちとその逆元の有限積として書けることをいう。
+このとき \(G=\langle g_1,\dots,g_l\rangle\) と書き、\(g_i\) を<strong>生成元 (generator)</strong> と呼ぶ。
+</div>
+
+<p>
+生成元による記述が有用なのは、<strong>群の大きさに対して生成元の個数がずっと少なくて済む</strong>からである。
+これがスタビライザー形式（§10.5）の効率性の源であった：
+\(2^k\) 次元の符号空間を、\(n-k\) 個の生成元のリストという \(O(n^2)\) ビットの
+古典データで完全に指定できる。
+</p>
+
+<div class="example-box">
+<span class="box-title">例</span>
+\(\mathbb Z_2^n\) は \(n\) 個の元 \(e_1=10\cdots0,\ \dots,\ e_n=0\cdots01\) で生成される
+（位数 \(2^n\) に対して生成元は \(n\) 個）。
+Pauli 群 \(G_n\) は \(\{iI\}\cup\{X_j,Z_j\}_{j=1}^n\) で生成される
+（位数 \(4^{n+1}\) に対して生成元は \(2n+1\) 個）。
+</div>
+
+<h3 id="sec-a2-1-2">§A2.1.2 巡回群<span class="en">Cyclic groups</span></h3>
+
+<div class="def-box">
+<span class="box-title">定義（巡回群）</span>
+ただ1つの元で生成される群 \(G=\langle g\rangle=\{e,g,g^2,\dots,g^{r-1}\}\) を
+<strong>巡回群 (cyclic group)</strong> と呼ぶ。ここで \(r\) は \(g\) の位数であり \(|G|=r\)。
+巡回群は必ずアーベル群である（\(g^ig^j=g^{i+j}=g^jg^i\)）。
+</div>
+
+<p>
+位数 \(r\) の巡回群は \(\mathbb Z_r\)（法 \(r\) の加法群）と同型である：
+\(g^i\leftrightarrow i\) の対応が積を和に写す。
+すなわち<strong>巡回群は同型を除いて位数だけで決まる</strong>。
+</p>
+
+<div class="thm-box">
+<span class="box-title">命題</span>
+<ol>
+<li>巡回群の部分群はすべて巡回群である。</li>
+<li>位数が素数の群は巡回群である。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>1.</strong> \(G=\langle g\rangle\)、\(H\le G\) とする。\(H=\{e\}\) なら自明。
+そうでなければ \(g^m\in H\) となる最小の正整数 \(m\) を取る。
+任意の \(g^k\in H\) について \(k=qm+s\)（\(0\le s&lt;m\)）と割り算すると
+\(g^s=g^k(g^m)^{-q}\in H\) で、\(m\) の最小性から \(s=0\)。
+よって \(H=\langle g^m\rangle\) は巡回群である。
+</p>
+<p>
+<strong>2.</strong> \(|G|=p\)（素数）とする。単位元でない \(g\in G\) を取り、
+その位数を \(r\) とすると \(\langle g\rangle\) は位数 \(r\) の部分群である。
+次項の Lagrange の定理より \(r\) は \(p\) を割り、\(r&gt;1\) だから \(r=p\)。
+よって \(\langle g\rangle=G\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<h3 id="sec-a2-1-3">§A2.1.3 剰余類と Lagrange の定理<span class="en">Cosets</span></h3>
+
+<div class="def-box">
+<span class="box-title">定義（剰余類）</span>
+\(H\le G\) と \(g\in G\) に対し、
+\[
+gH \equiv \{gh : h\in H\}
+\]
+を \(H\) の<strong>左剰余類 (left coset)</strong> と呼ぶ（右剰余類 \(Hg\) も同様）。
+\(H\) 自身は \(eH\) として剰余類の1つである。
+</div>
+
+<div class="thm-box">
+<span class="box-title">命題（剰余類の性質）</span>
+<ol>
+<li>2つの剰余類 \(g_1H,g_2H\) は、一致するか互いに交わらないかのどちらかである。
+一致するのは \(g_1^{-1}g_2\in H\) のとき、かつそのときに限る。</li>
+<li>どの剰余類も \(|H|\) 個の元を持つ。</li>
+</ol>
+したがって \(G\) は互いに交わらない剰余類の和として分割される。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>1.</strong> \(g_1H\cap g_2H\ne\emptyset\) とし、共通元を \(g_1h_1=g_2h_2\) とする。
+すると \(g_1^{-1}g_2 = h_1h_2^{-1}\in H\) であり、任意の \(h\in H\) に対し
+\(g_2h = g_1(h_1h_2^{-1})h\in g_1H\)、すなわち \(g_2H\subseteq g_1H\)。
+対称性から逆の包含も成り立ち \(g_1H=g_2H\)。
+逆に \(g_1^{-1}g_2\in H\) なら \(g_2\in g_1H\) だから交わる。
+</p>
+<p>
+<strong>2.</strong> 写像 \(h\mapsto gh\) は \(H\to gH\) の全射で、
+\(gh_1=gh_2 \Rightarrow h_1=h_2\)（左から \(g^{-1}\) を掛ける）より単射。
+よって全単射で \(|gH|=|H|\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（Lagrange）</span>
+\(H\) が有限群 \(G\) の部分群なら、\(|H|\) は \(|G|\) を割り切る。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+上の命題より \(G\) は互いに交わらない剰余類に分割され、
+各剰余類の元数は \(|H|\)。剰余類の個数を \(k\) とすれば \(|G|=k|H|\)。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">系と本文への接続</span>
+<ul>
+<li><strong>元の位数は群の位数を割る。</strong>\(g\) の位数 \(r\) は部分群 \(\langle g\rangle\) の位数だから、
+Lagrange より \(r \mid |G|\)。この事実を \(G=\mathbb Z_n^*\) に適用したものが
+Euler の定理 \(a^{\varphi(n)}\equiv1\ (\mathrm{mod}\ n)\) である
+（<a href="appendixA4.html">付録A4</a>、§A4.2）。
+§5.3 の位数発見が「\(r\) は \(\varphi(N)\) を割る」という制約の下で働くのはこのためである。</li>
+<li><strong>剰余類は隠れ部分群問題の舞台である。</strong>
+§5.4.3 の HSP では、関数 \(f\) が「\(K\) の剰余類ごとに一定で、異なる剰余類では異なる値を取る」
+という約束を満たしていた。上の命題 1 は、その約束が矛盾なく置けること
+（剰余類が \(G\) をきれいに分割すること）を保証している。</li>
+</ul>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a2-2">表現<span class="en">Representations</span></h2>
+
+<p>
+群を「抽象的な積の規則」としてではなく「行列の集合」として実現するのが表現論である。
+量子力学では状態空間に群が作用するので、この視点が自然に要求される。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（表現）</span>
+群 \(G\) から \(d\) 次可逆複素行列のなす群 \(GL(d,\mathbb C)\) への写像 \(\rho\) が
+積を保つとき、すなわち
+\[
+\rho(g)\,\rho(h) = \rho(gh) \qquad (\forall g,h\in G)
+\]
+を満たすとき、\(\rho\) を \(G\) の <strong>\(d\) 次元表現 (representation)</strong> と呼び、
+\(d=d_\rho\) を表現の<strong>次元</strong>という。
+定義から \(\rho(e)=I\)、\(\rho(g^{-1})=\rho(g)^{-1}\) が従う。
+</div>
+
+<div class="thm-box">
+<span class="box-title">命題（ユニタリ化）</span>
+有限群の任意の表現は、適当な基底変換によってユニタリ表現
+（すべての \(\rho(g)\) がユニタリ行列）に取り替えられる。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+表現 \(\rho\) に対し、群平均で新しい内積を作る：
+\[
+\langle v, w\rangle_G \equiv \frac{1}{|G|}\sum_{g\in G}
+\bigl(\rho(g)v\bigr)^\dagger\bigl(\rho(g)w\bigr).
+\]
+これは正定値エルミート形式であり（各項が正定値、有限和）、
+かつ \(G\) 不変である：
+\(\langle \rho(h)v,\rho(h)w\rangle_G
+=\frac1{|G|}\sum_g(\rho(gh)v)^\dagger(\rho(gh)w)=\langle v,w\rangle_G\)
+（\(g\mapsto gh\) は \(G\) の置換）。
+この内積に関する正規直交基底へ移れば、すべての \(\rho(g)\) はユニタリになる。<span class="qed">∎</span>
+</div>
+
+<p>
+以後、表現はすべてユニタリであるとしてよい。とくに
+\(\rho(g^{-1}) = \rho(g)^{-1} = \rho(g)^\dagger\) である。
+</p>
+
+<h3 id="sec-a2-2-1">§A2.2.1 同値性と可約性<span class="en">Equivalence and reducibility</span></h3>
+
+<div class="def-box">
+<span class="box-title">定義（同値・可約・既約）</span>
+<ul>
+<li>2つの表現 \(\rho,\sigma\) が<strong>同値 (equivalent)</strong> であるとは、
+可逆行列 \(S\) が存在してすべての \(g\) で \(\sigma(g)=S\rho(g)S^{-1}\) となることをいう。
+基底の取り替えで移り合う表現は同じものとみなす、という意味である。</li>
+<li>表現 \(\rho\) が<strong>可約 (reducible)</strong> であるとは、
+自明でない部分空間 \(W\)（\(0\ne W\ne\mathbb C^{d}\)）で
+すべての \(\rho(g)\) が \(W\) を保つ（\(\rho(g)W\subseteq W\)）ものが存在することをいう。
+そうでないとき<strong>既約 (irreducible)</strong> という。</li>
+</ul>
+</div>
+
+<p>
+ユニタリ表現が可約なら、不変部分空間 \(W\) の直交補空間 \(W^\perp\) も不変である
+（\(v\in W^\perp,\ w\in W\) に対し
+\(\langle \rho(g)v,w\rangle = \langle v,\rho(g)^\dagger w\rangle
+= \langle v,\rho(g^{-1})w\rangle = 0\)）。
+したがって適当な基底でブロック対角
+\(\rho(g) = \rho_1(g)\oplus\rho_2(g)\) に分解できる。
+これを繰り返せば、<strong>有限群の任意の表現は既約表現の直和に分解される</strong>
+（<strong>完全可約性</strong>）。既約表現が表現論の「原子」である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（指標）</span>
+表現 \(\rho\) の<strong>指標 (character)</strong> を \(\chi_\rho(g)\equiv\tr\rho(g)\) で定義する。
+</div>
+
+<div class="thm-box">
+<span class="box-title">命題（指標の基本性質）</span>
+<ol>
+<li>\(\chi_\rho(e) = d_\rho\)。</li>
+<li>同値な表現は同じ指標を持つ（トレースは相似変換で不変）。</li>
+<li>指標は<strong>類関数</strong>である：\(\chi_\rho(hgh^{-1})=\chi_\rho(g)\)。
+すなわち共役類の上で一定値を取る。</li>
+<li>ユニタリ表現では \(\chi_\rho(g^{-1}) = \chi_\rho(g)^*\)。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+1 は \(\rho(e)=I\) から。2・3 はトレースの巡回性
+\(\tr(\rho(h)\rho(g)\rho(h)^{-1})=\tr\rho(g)\) から。
+4 は \(\rho(g^{-1})=\rho(g)^\dagger\) と \(\tr(A^\dagger)=(\tr A)^*\) から従う。<span class="qed">∎</span>
+</div>
+
+<h3 id="sec-a2-2-2">§A2.2.2 直交関係<span class="en">Orthogonality</span></h3>
+
+<p>
+表現論の中核をなす一連の直交関係を導く。すべての出発点が次の補題である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Schur の補題）</span>
+\(\rho,\sigma\) を \(G\) の既約表現（次元 \(d_\rho,d_\sigma\)）とし、
+行列 \(A\)（\(d_\rho\times d_\sigma\)）がすべての \(g\) について
+\[
+\rho(g)\,A = A\,\sigma(g)
+\]
+を満たすとする。このとき
+<ol>
+<li>\(\rho\) と \(\sigma\) が同値でなければ \(A=0\)。</li>
+<li>\(\rho=\sigma\)（同じ既約表現）なら \(A=\lambda I\)（\(\lambda\in\mathbb C\)）。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>1.</strong> \(A\) の核 \(\ker A=\{v : Av=0\}\) を考える。
+\(v\in\ker A\) なら \(A\sigma(g)v = \rho(g)Av = 0\)、すなわち \(\sigma(g)v\in\ker A\)：
+\(\ker A\) は \(\sigma\) の不変部分空間である。\(\sigma\) は既約だから
+\(\ker A = 0\) または \(\ker A\) が全空間（すなわち \(A=0\)）。
+同様に像 \(\mathrm{im}\,A\) は \(\rho\) の不変部分空間なので、
+\(\mathrm{im}\,A=0\) または全空間である。
+\(A\ne0\) なら \(\ker A=0\) かつ \(\mathrm{im}\,A\) が全空間、すなわち \(A\) は全単射で
+\(d_\rho=d_\sigma\) かつ \(\sigma(g)=A^{-1}\rho(g)A\)：両者は同値になる。
+対偶を取れば主張を得る。
+</p>
+<p>
+<strong>2.</strong> \(\rho(g)A=A\rho(g)\) とする。\(A\) は複素行列なので固有値 \(\lambda\) を持つ
+（代数学の基本定理）。\(A-\lambda I\) も \(\rho(g)\) と可換で、しかも可逆でない。
+1 の議論（\(\rho=\sigma\) の場合）を \(A-\lambda I\) に適用すると、
+可逆でないので \(A-\lambda I=0\)、すなわち \(A=\lambda I\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（行列要素の直交関係）</span>
+\(\rho,\sigma\) を互いに同値でない既約<strong>ユニタリ</strong>表現とすると、
+\(N\equiv|G|\) として
+\[
+\frac{1}{N}\sum_{g\in G}\rho(g)_{ij}\;\sigma(g)_{kl}^{*} = 0,
+\]
+また同じ既約表現 \(\rho\) については
+\[
+\frac{1}{N}\sum_{g\in G}\rho(g)_{ij}\;\rho(g)_{kl}^{*}
+= \frac{1}{d_\rho}\,\delta_{ik}\,\delta_{jl}.
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+任意の行列 \(X\)（\(d_\rho\times d_\sigma\)）に対し、群平均
+\[
+A \equiv \frac{1}{N}\sum_{g\in G}\rho(g)\,X\,\sigma(g)^{-1}
+\]
+を作る。すると任意の \(h\in G\) について
+\[
+\rho(h)A\sigma(h)^{-1}
+= \frac1N\sum_g \rho(hg)X\sigma(hg)^{-1} = A
+\]
+（\(g\mapsto hg\) は置換）、すなわち \(\rho(h)A=A\sigma(h)\)。Schur の補題が使える。
+</p>
+<p>
+<strong>異なる既約表現の場合。</strong>\(A=0\)。
+\(X\) として行列単位 \(E_{jk}\)（\((j,k)\) 成分だけ 1）を選ぶと、
+\(A\) の \((i,l)\) 成分は
+\[
+0 = A_{il} = \frac1N\sum_g \rho(g)_{ij}\,\sigma(g^{-1})_{kl}
+= \frac1N\sum_g \rho(g)_{ij}\,\sigma(g)_{lk}^{*}
+\]
+（ユニタリ性 \(\sigma(g^{-1})=\sigma(g)^\dagger\) を使った）。
+添字を付け替えれば第1式である。
+</p>
+<p>
+<strong>同じ既約表現の場合。</strong>\(A=\lambda I\) で、トレースを取ると
+\[
+\lambda\,d_\rho = \tr A = \frac1N\sum_g \tr\bigl(\rho(g)E_{jk}\rho(g)^{-1}\bigr)
+= \tr E_{jk} = \delta_{jk},
+\]
+よって \(\lambda=\delta_{jk}/d_\rho\)。成分で書くと
+\[
+\frac1N\sum_g \rho(g)_{ij}\,\rho(g)_{lk}^{*} = \frac{\delta_{jk}\,\delta_{il}}{d_\rho}.
+\]
+添字 \(k\leftrightarrow l\) を付け替えれば主張の第2式になる。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="thm-box">
+<span class="box-title">系（指標の直交関係）</span>
+既約表現の指標について
+\[
+\frac{1}{N}\sum_{g\in G}\chi_\rho(g)\,\chi_\sigma(g)^{*} = \delta_{\rho\sigma}
+\]
+（\(\delta_{\rho\sigma}\) は \(\rho,\sigma\) が同値なら 1、そうでなければ 0）。
+すなわち<strong>既約指標は \(G\) 上の関数空間の正規直交系をなす</strong>。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(\chi_\rho=\sum_i\rho(\cdot)_{ii}\) なので、行列要素の直交関係で
+\(i=j\)、\(k=l\) と置いて和を取ればよい。同じ表現では
+\[
+\frac1N\sum_g\sum_{i,k}\rho(g)_{ii}\rho(g)_{kk}^{*}
+= \sum_{i,k}\frac{\delta_{ik}\delta_{ik}}{d_\rho} = \frac{d_\rho}{d_\rho} = 1 .
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">指標で表現を分解する</span>
+表現 \(\rho\) を既約表現の直和 \(\rho\cong\bigoplus_p m_p\,\rho_p\) に分解したとき、
+指標は加法的（\(\tr\) が加法的）なので \(\chi_\rho=\sum_p m_p\chi_{\rho_p}\)。
+直交関係を使えば重複度が
+\[
+m_p = \frac1N\sum_{g}\chi_\rho(g)\,\chi_{\rho_p}(g)^{*}
+\]
+と<strong>内積として読み出せる</strong>。指標表さえあれば、任意の表現の分解が計算になる。
+</div>
+
+<h3 id="sec-a2-2-3">§A2.2.3 正則表現<span class="en">The regular representation</span></h3>
+
+<p>
+すべての既約表現を一度に含む、特別な表現がある。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（正則表現）</span>
+\(G\) の元でラベル付けした正規直交基底 \(\{\ket g\}_{g\in G}\) が張る \(N\) 次元空間の上で、
+\[
+R(h)\,\ket{g} \equiv \ket{hg}
+\]
+と定めた表現 \(R\) を<strong>正則表現 (regular representation)</strong> と呼ぶ。
+各 \(R(h)\) は基底を置換するので置換行列（したがってユニタリ）である。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（正則表現の分解）</span>
+<ol>
+<li>正則表現の指標は
+\[
+\chi_R(g) = N\,\delta_{g,e}
+\]
+である。</li>
+<li>\(R\) はすべての既約表現 \(\rho\) をちょうど \(d_\rho\) 回だけ含む。すなわち
+\[
+R \;\cong\; \bigoplus_{\rho\in\hat G} d_\rho\,\rho ,
+\]
+ここで \(\hat G\) は互いに同値でない既約表現の完全な集合である。</li>
+<li>したがって
+\[
+\sum_{\rho\in\hat G} d_\rho^2 = N,
+\qquad
+\sum_{\rho\in\hat G} d_\rho\,\chi_\rho(g) = N\,\delta_{g,e}.
+\]</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>1.</strong> \(R(g)\) の対角成分は \(\bra{h}R(g)\ket{h}=\braket{h}{gh}\) であり、
+\(gh=h\)、すなわち \(g=e\) のときだけ 1 になる。
+よって \(g=e\) なら \(\chi_R(e)=N\)、\(g\ne e\) なら \(\chi_R(g)=0\)。
+</p>
+<p>
+<strong>2.</strong> 重複度の公式（前の remark-box）に 1 を代入すると
+\[
+m_\rho = \frac1N\sum_g \chi_R(g)\,\chi_\rho(g)^{*}
+= \frac1N\cdot N\cdot\chi_\rho(e)^{*} = d_\rho .
+\]
+</p>
+<p>
+<strong>3.</strong> 2 の分解で次元を数えると \(N=\dim R=\sum_\rho d_\rho\cdot d_\rho\)。
+指標を取れば \(\chi_R(g)=\sum_\rho d_\rho\chi_\rho(g)\) で、1 と合わせて第2式を得る。
+<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">既約表現の個数と共役類</span>
+本付録では使わないが、表現論の基本定理として次が知られている：
+<strong>互いに同値でない既約表現の個数は、\(G\) の共役類の個数に等しい</strong>。
+証明の骨子は、指標が類関数であること（§A2.2.1 命題 3）に加えて、
+既約指標が<em>すべての</em>類関数を張ることを示すものである
+（類関数の空間の次元が共役類の個数であることと、
+既約指標が正規直交系であること（§A2.2.2 系）を組み合わせる）。
+<br>
+アーベル群では各元が単独の共役類なので、既約表現の個数は \(|G|=N\) である。
+一方 \(\sum_\rho d_\rho^2=N\) だから、\(N\) 個の表現の次元の2乗和が \(N\)、
+すなわち<strong>アーベル群の既約表現はすべて 1 次元である</strong>。
+この事実が次節の Fourier 変換を簡単にする。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a2-3">群上の Fourier 変換<span class="en">Fourier transforms over groups</span></h2>
+
+<p>
+既約表現が「群上の関数」の直交基底を与える、という §A2.2 の結果を使うと、
+通常の離散 Fourier 変換を任意の有限群に一般化できる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（群上の Fourier 変換）</span>
+位数 \(N\) の有限群 \(G\) と関数 \(f:G\to\mathbb C\) に対し、
+既約表現 \(\rho\in\hat G\)（次元 \(d_\rho\)、ユニタリに取る）ごとに<strong>行列</strong>
+\[
+\hat f(\rho) \equiv \frac{\sqrt{d_\rho}}{\sqrt N}\sum_{g\in G} f(g)\,\rho(g)
+\]
+を対応させる写像を、\(G\) 上の <strong>Fourier 変換</strong>と呼ぶ。
+逆変換は
+\[
+f(g) = \frac{1}{\sqrt N}\sum_{\rho\in\hat G}\sqrt{d_\rho}\;
+\tr\Bigl(\hat f(\rho)\,\rho(g^{-1})\Bigr)
+\]
+で与えられる。
+</div>
+
+<p>
+定義域と値域の次元が合っていることを確認しておく。
+\(f\) は \(N\) 個の複素数の組であり、
+\(\hat f\) は各 \(\rho\) について \(d_\rho\times d_\rho\) 行列だから成分の総数は
+\(\sum_\rho d_\rho^2 = N\)（§A2.2.3）。
+両者はともに \(N\) 次元のベクトルであり、
+上の係数は<strong>変換がユニタリになる</strong>ように選んである。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（反転公式）</span>
+上の逆変換の式は実際に \(f\) を復元する。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+逆変換の式に \(\hat f\) の定義を代入する：
+\[
+\frac{1}{\sqrt N}\sum_{\rho}\sqrt{d_\rho}\,
+\tr\Bigl(\hat f(\rho)\rho(g^{-1})\Bigr)
+= \frac{1}{N}\sum_{\rho}\sum_{g'\in G} d_\rho\, f(g')\,
+\tr\bigl(\rho(g')\rho(g^{-1})\bigr).
+\]
+表現の性質 \(\rho(g')\rho(g^{-1})=\rho(g'g^{-1})\) を使い、
+トレースを指標に書き換えると
+\[
+= \frac{1}{N}\sum_{g'\in G} f(g')\sum_{\rho\in\hat G} d_\rho\,\chi_\rho(g'g^{-1}).
+\]
+ここで §A2.2.3 の第2式 \(\sum_\rho d_\rho\chi_\rho(k)=N\delta_{k,e}\) を
+\(k=g'g^{-1}\) に適用すると、\(g'g^{-1}=e\) すなわち \(g'=g\) の項だけが残り、
+\[
+= \frac{1}{N}\sum_{g'} f(g')\cdot N\,\delta_{g',g} = f(g).
+\]
+<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="example-box">
+<span class="box-title">例（アーベル群：量子 Fourier 変換の正体）</span>
+<p>
+\(G=\mathbb Z_N=\{0,1,\dots,N-1\}\)（法 \(N\) の加法）とする。
+アーベル群なので既約表現はすべて1次元（§A2.2.3 の注意）であり、
+\(N\) 個ある。それらは
+\[
+\rho_h(g) = e^{-2\pi i g h/N} \qquad (h=0,1,\dots,N-1)
+\]
+で尽くされる。実際 \(\rho_h(g)\rho_h(g')=e^{-2\pi i(g+g')h/N}=\rho_h(g+g')\) で
+表現になっており、\(h\) が異なれば同値でない（1次元なので指標＝表現そのものであり、
+指標の直交関係が \(\frac1N\sum_g e^{-2\pi ig(h-h')/N}=\delta_{hh'}\) に他ならない）。
+</p>
+<p>
+\(d_{\rho_h}=1\) なので、定義はそのまま
+\[
+\hat f(h) = \frac{1}{\sqrt N}\sum_{g=0}^{N-1} f(g)\,e^{-2\pi i gh/N},
+\qquad
+f(g) = \frac{1}{\sqrt N}\sum_{h=0}^{N-1} \hat f(h)\,e^{+2\pi i gh/N}
+\]
+となる（逆変換では \(\rho_h(g^{-1})=\rho_h(-g)=e^{+2\pi igh/N}\)）。
+これは<strong>離散 Fourier 変換そのもの</strong>である。
+§5.1 の量子 Fourier 変換
+\(F_N\ket j = \frac1{\sqrt N}\sum_k e^{2\pi ijk/N}\ket k\) は、
+この変換（の複素共役、すなわち符号の向きを取り替えたもの）をユニタリ演算として
+量子回路に載せたものにほかならない。
+</p>
+<p>
+同様に \(G=\mathbb Z_2^n\) では、既約表現は
+\(\rho_h(g)=(-1)^{g\cdot h}\)（\(g\cdot h=\sum_ig_ih_i \bmod 2\)）で与えられ、
+Fourier 変換は
+\[
+\hat f(h) = \frac{1}{\sqrt{2^n}}\sum_{g\in\{0,1\}^n}(-1)^{g\cdot h}f(g),
+\]
+すなわち <strong>\(H^{\otimes n}\)</strong>（Hadamard 変換）である（§1.4.4 の公式と一致する）。
+Deutsch–Jozsa と Simon のアルゴリズムが Hadamard 変換だけで動くのは、
+それが \(\mathbb Z_2^n\) 上の Fourier 変換だからである。
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">隠れ部分群問題との接続</span>
+§5.4.3 の隠れ部分群問題では、剰余類 \(gK\) 上の一様重ね合わせに Fourier 変換を掛けると
+「\(K\) 上で自明な表現だけが生き残る」と述べた。
+本付録の言葉でその理由が明確になる。剰余類上の一様重ね合わせの Fourier 係数には
+\[
+\sum_{k\in K}\rho(k)
+\]
+という因子が現れる。\(K\) 上に制限した \(\rho\) が自明（\(\rho(k)=I\ \forall k\in K\)）なら
+この和は \(|K|\,I\) で最大になるが、そうでなければ——
+\(K\) 上の表現 \(\rho|_K\) を既約分解したとき自明表現を含まない成分については——
+指標の直交関係により和は 0 になる。
+これが「干渉で消える」ことの群論的な内容であり、
+アーベル群では 1 次元表現（指標）だけを相手にすればよいので、
+生き残った指標を \(O(\log|G|)\) 個集めて連立合同式を解けば \(K\) が決まる。
+非アーベル群では \(\rho\) が高次元になる。
+測定で得られる情報（どの \(\rho\) が出たか）から \(K\) を復元する古典的手続きは、
+一般には知られていない。これが §5.4.3 で述べた「非アーベル HSP は未解決」の中身である。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">付録A2 のまとめ</span>
+<ul>
+<li>群は閉性・結合律・単位元・逆元で定義される。剰余類 \(gH\) は \(G\) を等分割し、
+そこから <strong>Lagrange の定理</strong>（\(|H|\) は \(|G|\) を割る）と
+「元の位数は群の位数を割る」が従う。後者が Euler の定理（付録A4）と位数発見（§5.3）の背景にある。</li>
+<li>有限群の表現はユニタリに取れ、既約表現の直和に完全分解される。
+<strong>Schur の補題</strong>から行列要素と指標の直交関係が出る：
+\(\frac1N\sum_g\chi_\rho(g)\chi_\sigma(g)^*=\delta_{\rho\sigma}\)。
+指標との内積で任意の表現の既約分解が読み出せる。</li>
+<li><strong>正則表現</strong> \(R(h)\ket g=\ket{hg}\) は指標 \(\chi_R(g)=N\delta_{g,e}\) を持ち、
+各既約表現を \(d_\rho\) 回含む。ゆえに \(\sum_\rho d_\rho^2=N\) と
+\(\sum_\rho d_\rho\chi_\rho(g)=N\delta_{g,e}\)。
+アーベル群では既約表現がすべて 1 次元になる。</li>
+<li>群上の Fourier 変換 \(\hat f(\rho)=\sqrt{d_\rho/N}\sum_g f(g)\rho(g)\) は
+上の恒等式によって反転公式を持つユニタリ変換である。
+\(G=\mathbb Z_N\) では離散 Fourier 変換（＝§5.1 の QFT）、
+\(G=\mathbb Z_2^n\) では \(H^{\otimes n}\) に退化する。
+隠れ部分群問題で「\(K\) 上自明な表現だけが生き残る」のは指標の直交関係の帰結である。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

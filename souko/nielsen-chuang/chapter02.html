@@ -1,0 +1,1869 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Dirac 記法による線形代数と、量子力学の4つの要請、密度演算子、Schmidt 分解、Bell 不等式">
+  <title>第2章 量子力学入門 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter02" data-chapter="2">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第2章に対応</span>
+  第2章 量子力学入門
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本章は本書全体の数学的土台である。前半（§2.1）では、量子力学の言語である線形代数を
+Dirac 記法で組み立て直す。内積・スペクトル分解・テンソル積・交換子・極分解といった道具を、
+量子情報で使う形に整えて手元に置くことが目標である。
+後半（§2.2）では量子力学を<strong>4つの要請</strong>——状態空間・ユニタリ発展・測定・合成系——として
+公理的に定式化する。量子力学は「世界がどんな法則に従うか」を直接教える理論ではなく、
+「物理理論を書くための数学的枠組み」であり、この4要請がその枠組みのすべてである。
+残りの節は要請の応用と拡張である。
+エンタングルメントの威力を示す超高密度符号化（§2.3）、
+状態の知識が不完全な場合や部分系だけを見る場合の言語である密度演算子（§2.4）、
+合成系の構造定理である Schmidt 分解と純粋化（§2.5）を扱う。
+最後の §2.6 では、量子力学が古典的な世界像（局所実在論）と実験で区別できることを
+Bell 不等式によって示す。本章の内容は以降のすべての章で暗黙に使われる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-1">線形代数<span class="en">Linear algebra</span></h2>
+
+<p>
+量子力学の状態空間は複素ベクトル空間であり、量子情報で現れるのはほとんどの場合
+<strong>有限次元</strong>の空間 \(\mathbb{C}^d\) である（量子ビット \(n\) 個なら \(d=2^n\)）。
+有限次元に限れば、関数解析の微妙な問題（非有界演算子、スペクトルの連続部分など）は一切現れず、
+必要なのは線形代数だけである。本節では、線形代数の標準的な内容を
+<strong>Dirac 記法</strong>という物理の方言で語り直す。既に線形代数を知っている読者にとっても、
+記法の運用（外積による演算子の表示、完全性関係の挿入、など）には固有の技術があるので、
+手を動かして慣れる価値がある。
+</p>
+
+<p>まず記法の対応表を掲げる。</p>
+
+<table>
+<tr><th>記法</th><th>意味</th></tr>
+<tr><td>\(\ket{\psi}\)</td><td>ベクトル（ケット）。列ベクトルとして表示できる</td></tr>
+<tr><td>\(\bra{\psi}\)</td><td>\(\ket\psi\) の双対ベクトル（ブラ）。行ベクトル \((\ket\psi\text{ の成分の複素共役})\)</td></tr>
+<tr><td>\(\braket{\varphi}{\psi}\)</td><td>内積</td></tr>
+<tr><td>\(\ketbra{\varphi}{\psi}\)</td><td>外積（演算子）</td></tr>
+<tr><td>\(\ket\varphi\otimes\ket\psi\)</td><td>テンソル積。\(\ket{\varphi}\ket{\psi}\), \(\ket{\varphi\psi}\) とも略記</td></tr>
+<tr><td>\(A^*\), \(A^T\), \(A^\dagger\)</td><td>複素共役、転置、随伴（\(A^\dagger=(A^T)^*\)）</td></tr>
+<tr><td>\(z^*\)</td><td>複素数 \(z\) の複素共役</td></tr>
+</table>
+
+<h3 id="sec-2-1-1">§2.1.1 基底と線形独立</h3>
+
+<p>
+ベクトル空間 \(V=\mathbb{C}^d\) の元を \(\ket{v}\) と書く。
+ベクトルの組 \(\ket{v_1},\dots,\ket{v_n}\) が<strong>張る (span)</strong> 空間とは、
+線形結合 \(\sum_i a_i\ket{v_i}\)（\(a_i\in\mathbb{C}\)）全体のことである。
+組が<strong>線形独立</strong>であるとは、
+\[
+a_1\ket{v_1}+\cdots+a_n\ket{v_n}=0 \;\Longrightarrow\; a_1=\cdots=a_n=0
+\]
+が成り立つこと、すなわちどのベクトルも他の線形結合で書けないことをいう。
+空間全体を張る線形独立な組を<strong>基底</strong>と呼び、基底の元の個数はどの基底でも共通で、
+これを空間の<strong>次元</strong> \(\dim V\) という。
+</p>
+
+<div class="example-box">
+<span class="box-title">例</span>
+\(\mathbb{C}^2\) の計算基底は
+\[
+\ket{0}=\begin{pmatrix}1\\0\end{pmatrix},\qquad
+\ket{1}=\begin{pmatrix}0\\1\end{pmatrix}
+\]
+である。任意の \(\ket\psi=\alpha\ket0+\beta\ket1\) は成分表示 \((\alpha,\beta)^T\) を持つ。
+一方 \(\ket{\pm}=(\ket0\pm\ket1)/\sqrt2\) も基底をなす。
+同じベクトルでも成分表示は基底に依存する——「状態」と「その成分表示」を区別する癖を
+ここでつけておくと、基底変換が絡む議論（§1.3.3 の基底を変えた測定など）で混乱しない。
+</div>
+
+<h3 id="sec-2-1-2">§2.1.2 線形演算子と行列</h3>
+
+<p>
+写像 \(A:V\to W\) が<strong>線形演算子</strong>であるとは、線形結合を保つこと、すなわち
+\[
+A\Bigl(\sum_i a_i \ket{v_i}\Bigr) = \sum_i a_i\, A\ket{v_i}
+\]
+が成り立つことをいう。恒等演算子 \(I\)（\(I\ket v=\ket v\)）と零演算子はその自明な例である。
+線形演算子の合成 \(BA\)（先に \(A\)）もまた線形演算子である。
+</p>
+
+<p>
+線形演算子と行列は同じものの二つの顔である。\(V\) の基底 \(\ket{v_1},\dots,\ket{v_m}\) と
+\(W\) の基底 \(\ket{w_1},\dots,\ket{w_n}\) を選ぶと、線形性より \(A\) は
+基底ベクトルの行き先で完全に決まり、その行き先を
+\[
+A\ket{v_j} = \sum_i A_{ij}\ket{w_i}
+\]
+と展開した係数 \(A_{ij}\) を並べたものが \(A\) の<strong>行列表示</strong>である。
+逆に行列を与えれば線形演算子が定まる。以後、基底を固定した文脈では
+演算子と行列を同一視して書く。
+</p>
+
+<div class="remark-box">
+<span class="box-title">確認のポイント</span>
+行列表示は<strong>両側の基底の選択に依存する</strong>。
+「演算子そのもの」の性質（固有値、トレース、ユニタリ性など）と
+「表示」の性質を区別することが、この章を通じての基本姿勢である。
+</div>
+
+<h3 id="sec-2-1-3">§2.1.3 Pauli 行列</h3>
+
+<p>
+2次元（1量子ビット）で圧倒的に重要な演算子が <strong>Pauli 行列</strong>である。
+記法の流儀が複数あるのでまとめて定義する：
+\[
+\sigma_0 \equiv I = \begin{pmatrix}1&amp;0\\0&amp;1\end{pmatrix},\qquad
+\sigma_1 \equiv \sigma_x \equiv X = \begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix},
+\]
+\[
+\sigma_2 \equiv \sigma_y \equiv Y = \begin{pmatrix}0&amp;-i\\i&amp;0\end{pmatrix},\qquad
+\sigma_3 \equiv \sigma_z \equiv Z = \begin{pmatrix}1&amp;0\\0&amp;-1\end{pmatrix}.
+\]
+</p>
+
+<p>
+よく使う性質を挙げる（すべて直接計算で確認できる）：
+</p>
+
+<ul>
+<li>各 Pauli 行列は Hermite（\(\sigma_i^\dagger=\sigma_i\)）かつユニタリ（\(\sigma_i^\dagger\sigma_i=I\)）で、
+\(X^2=Y^2=Z^2=I\)。したがって固有値は \(\pm1\)。</li>
+<li>積の関係：\(XY=iZ,\ YZ=iX,\ ZX=iY\)。順序を逆にすると符号が反転する
+（反交換：\(XY=-YX\) など。§2.1.9）。</li>
+<li>\(\{I,X,Y,Z\}\) は \(2\times2\) 複素行列全体の空間（4次元）の基底をなす。
+任意の \(2\times2\) 行列は \(A = a_0 I + a_1 X + a_2 Y + a_3 Z\) と一意に展開できる。</li>
+<li>固有ベクトル：\(Z\) は \(\ket0,\ket1\)（固有値 \(+1,-1\)）、
+\(X\) は \(\ket\pm\)、\(Y\) は \((\ket0\pm i\ket1)/\sqrt2\)。
+Bloch 球でいえば \(x,y,z\) 各軸の両極である。</li>
+</ul>
+
+<p>
+Pauli 行列は、1量子ビットの回転の生成子（§2.1.8, §4.2）、量子誤りの基本要素（第10章）、
+スタビライザー形式の土台（§10.5）として本書の全域に現れる。ここで手に馴染ませておくこと。
+</p>
+
+<h3 id="sec-2-1-4">§2.1.4 内積</h3>
+
+<div class="def-box">
+<span class="box-title">定義（内積）</span>
+写像 \((\cdot,\cdot):V\times V\to\mathbb{C}\) が<strong>内積</strong>であるとは、次を満たすことをいう。
+<ol>
+<li><strong>第2引数について線形</strong>：\(\bigl(\ket v,\ \sum_i a_i\ket{w_i}\bigr) = \sum_i a_i\,(\ket v,\ket{w_i})\)。</li>
+<li><strong>共役対称</strong>：\((\ket v,\ket w) = (\ket w,\ket v)^*\)。</li>
+<li><strong>正定値</strong>：\((\ket v,\ket v)\ge 0\) で、等号は \(\ket v=0\) のときに限る。</li>
+</ol>
+1. と 2. から第1引数については<strong>反線形</strong>（係数が複素共役になる）であることが従う。
+物理の慣例に合わせて第2引数線形を採用している（数学書では逆が多い）。
+内積を \(\braket{v}{w}\) と書く。内積を備えたベクトル空間（有限次元では完備性は自動）を
+<strong>Hilbert 空間</strong>と呼ぶ。
+</div>
+
+<p>
+\(\mathbb{C}^d\) の標準内積は、成分表示で
+\[
+\braket{v}{w} = \sum_i v_i^*\, w_i
+= \begin{pmatrix} v_1^* &amp; \cdots &amp; v_d^* \end{pmatrix}
+\begin{pmatrix} w_1 \\ \vdots \\ w_d \end{pmatrix}
+\]
+である。この式が Dirac 記法の視覚的な意味を与える：
+ブラ \(\bra v\) は「成分を複素共役して横に倒した行ベクトル」であり、
+ブラとケットを並べる（bra-ket = bracket）と内積になる。
+</p>
+
+<p>
+ノルムを \(\|\ket v\| \equiv \sqrt{\braket vv}\) で定義する。
+\(\|\ket v\|=1\) のベクトルを<strong>単位ベクトル</strong>（規格化されたベクトル）と呼ぶ。
+\(\braket vw=0\) のとき \(\ket v\) と \(\ket w\) は<strong>直交</strong>するといい、
+互いに直交する単位ベクトルの組を<strong>正規直交系</strong>、それが基底なら<strong>正規直交基底</strong>と呼ぶ：
+\[
+\braket{i}{j} = \delta_{ij}.
+\]
+</p>
+
+<p>
+任意の基底から正規直交基底を作るのが <strong>Gram–Schmidt の直交化</strong>である。
+線形独立な \(\ket{w_1},\dots,\ket{w_d}\) から、\(\ket{v_1}=\ket{w_1}/\|\ket{w_1}\|\) とおき、以後
+\[
+\ket{v_{k+1}} = \frac{\ket{w_{k+1}} - \sum_{i=1}^{k}\braket{v_i}{w_{k+1}}\,\ket{v_i}}
+{\bigl\|\ket{w_{k+1}} - \sum_{i=1}^{k}\braket{v_i}{w_{k+1}}\,\ket{v_i}\bigr\|}
+\]
+と帰納的に定めればよい（分子は \(\ket{w_{k+1}}\) から既に作った方向への射影を引いたもの。
+線形独立性より分子は零にならない）。したがって<strong>どの有限次元内積空間にも
+正規直交基底が存在する</strong>。以後、基底といえば正規直交基底を指す。
+</p>
+
+<p><strong>外積表示と完全性関係。</strong>
+\(\ket w\bra v\) は「\(\ket u\) を食べて \(\braket vu\,\ket w\) を返す」線形演算子と定義する：
+\[
+\bigl(\ketbra{w}{v}\bigr)\ket{u} \equiv \braket{v}{u}\,\ket{w}.
+\]
+正規直交基底 \(\{\ket i\}\) に対して次の<strong>完全性関係 (completeness relation)</strong> が成り立つ：
+\[
+\sum_i \ketbra{i}{i} = I.
+\]
+実際、任意の \(\ket v=\sum_i v_i\ket i\) に左辺を作用させると
+\(\sum_i \ket i\braket iv = \sum_i v_i\ket i = \ket v\) となる。
+完全性関係は「都合のよい場所に \(I=\sum_i\ketbra ii\) を挿入する」形で絶えず使う。
+たとえば演算子 \(A\) の行列表示は
+\[
+A = I\,A\,I = \sum_{ij} \ket i\bra i A\ket j\bra j
+= \sum_{ij} \bra{i}A\ket{j}\; \ketbra{i}{j}
+\]
+と直ちに得られ、行列要素が \(A_{ij}=\bra iA\ket j\) であることが分かる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Cauchy–Schwarz の不等式）</span>
+任意の \(\ket v,\ket w\) に対して
+\[
+|\braket{v}{w}|^2 \le \braket{v}{v}\,\braket{w}{w},
+\]
+等号は一方が他方のスカラー倍のときに限る。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(\ket w=0\) なら自明なので \(\ket w\neq0\) とする。
+\(\ket w\) 方向を含む正規直交基底 \(\{\ket i\}\)（\(\ket 1 = \ket w/\|\ket w\|\)）をとり、
+完全性関係を \(\braket vv\) に挿入すると
+\[
+\braket{v}{v}\braket{w}{w}
+= \sum_i \braket{v}{i}\braket{i}{v}\,\braket ww
+\ge \braket{v}{1}\braket{1}{v}\,\braket ww
+= \frac{|\braket vw|^2}{\braket ww}\braket ww
+= |\braket vw|^2
+\]
+となる（和の各項 \(|\braket vi|^2\braket ww\ge0\) なので第1項だけ残して下から評価した）。
+等号成立は \(i\ge2\) の全成分 \(\braket iv\) が零、すなわち
+\(\ket v\) が \(\ket w\) に平行なときに限る。<span class="qed">∎</span>
+</div>
+<h3 id="sec-2-1-5">§2.1.5 固有値と固有ベクトル</h3>
+
+<p>
+演算子 \(A:V\to V\) に対し、\(A\ket v=\lambda\ket v\) を満たす非零ベクトル \(\ket v\) を
+<strong>固有ベクトル</strong>、\(\lambda\in\mathbb{C}\) を対応する<strong>固有値</strong>と呼ぶ。
+固有値は<strong>特性方程式</strong> \(\det(A-\lambda I)=0\) の根であり、
+これは複素係数の \(d\) 次多項式だから、代数学の基本定理により
+<strong>複素ベクトル空間上の演算子は必ず少なくとも1つ固有値を持つ</strong>。
+この事実（実空間では成り立たない）が、後のスペクトル分解定理の証明の入口になる。
+固有値 \(\lambda\) に属する固有ベクトル全体（と零ベクトル）がなす部分空間を
+<strong>固有空間</strong>と呼び、その次元が 2 以上のとき固有値は<strong>縮退している</strong>という。
+</p>
+
+<p>
+演算子 \(A\) が<strong>対角化可能</strong>であるとは、
+\(A\) の固有ベクトルからなる<strong>正規直交</strong>基底 \(\{\ket i\}\) が存在して
+\[
+A = \sum_i \lambda_i \ketbra{i}{i}
+\]
+と書けることをいう。この形を \(A\) の<strong>対角表示</strong>またはスペクトル表示と呼ぶ。
+本書では「対角化可能」を、この正規直交基底による対角化ができることの意味で使う
+（線形代数の一般的な用法では固有基底が直交しなくてもよいが、
+量子力学で必要になるのは正規直交の場合だけである）。
+すべての演算子が対角化できるわけではない。たとえば
+\[
+N = \begin{pmatrix} 0 &amp; 1 \\ 0 &amp; 0 \end{pmatrix}
+\]
+は固有値 0 のみを持ち、固有空間は 1 次元（\(\ket0\) の張る空間）しかないので、
+固有ベクトルだけでは空間を張れない。どのクラスの演算子が対角化可能かは
+§2.1.6 のスペクトル分解定理で完全に答える。
+</p>
+
+<h3 id="sec-2-1-6">§2.1.6 随伴と Hermite 演算子</h3>
+
+<p>
+演算子 \(A\) に対し、任意の \(\ket v,\ket w\) について
+\[
+(\ket v,\ A\ket w) = (A^\dagger\ket v,\ \ket w)
+\]
+を満たす演算子 \(A^\dagger\) がただ1つ存在する（行列表示では \((A^\dagger)_{ij}=A_{ji}^*\)、
+すなわち転置して複素共役）。これを \(A\) の<strong>随伴 (adjoint)</strong>
+または Hermite 共役と呼ぶ。基本性質：
+\[
+(AB)^\dagger = B^\dagger A^\dagger,\qquad
+(\ket v)^\dagger = \bra v,\qquad
+(a A + b B)^\dagger = a^* A^\dagger + b^* B^\dagger,\qquad
+(A^\dagger)^\dagger = A.
+\]
+「積の順序が反転し、スカラーは複素共役、ケットはブラになる」と覚えれば、
+\(\bigl(A\ket v\bigr)^\dagger = \bra v A^\dagger\) のような式変形が機械的にできる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（演算子のクラス）</span>
+<ul>
+<li>\(A^\dagger = A\) のとき \(A\) は <strong>Hermite (自己随伴)</strong>。</li>
+<li>\(A^\dagger A = A A^\dagger\) のとき \(A\) は<strong>正規 (normal)</strong>。Hermite なら正規である。</li>
+<li>\(U^\dagger U = I\)（有限次元では \(UU^\dagger=I\) も同値）のとき \(U\) は<strong>ユニタリ</strong>。
+ユニタリも正規である。</li>
+<li>任意の \(\ket v\) に対し \(\bra v A\ket v\) が実かつ \(\ge 0\) のとき \(A\) は
+<strong>正 (positive)</strong>、常に \(&gt;0\)（\(\ket v\neq0\)）なら<strong>正定値</strong>。</li>
+<li>部分空間 \(W\subseteq V\) の正規直交基底 \(\ket 1,\dots,\ket k\) に対し
+\(P \equiv \sum_{i=1}^k \ketbra ii\) を \(W\) への<strong>射影演算子 (projector)</strong> と呼ぶ。
+\(P^\dagger = P\), \(P^2 = P\) を満たす。\(Q\equiv I-P\) は直交補空間への射影である。</li>
+</ul>
+</div>
+
+<p>
+重要な事実をいくつか。まず <strong>Hermite 演算子の固有値は実数</strong>である
+（\(A\ket v=\lambda\ket v\) なら
+\(\lambda\braket vv = \bra vA\ket v = \bra vA^\dagger\ket v = (\bra vA\ket v)^* = \lambda^*\braket vv\)）。
+また <strong>Hermite 演算子の異なる固有値に属する固有ベクトルは直交</strong>する：
+\(A\ket v=\lambda\ket v\), \(A\ket w=\mu\ket w\), \(\lambda\neq\mu\) なら
+\[
+\lambda\braket wv = \bra wA\ket v = (A\ket w)^\dagger\ket v = \mu^*\braket wv = \mu\braket wv
+\]
+より \(\braket wv=0\)。さらに<strong>正の演算子は自動的に Hermite</strong> である
+（\(A=B+iC\), \(B=(A+A^\dagger)/2\), \(C=(A-A^\dagger)/(2i)\) と Hermite 部分に分けると、
+\(\bra vA\ket v = \bra vB\ket v + i\bra vC\ket v\) が全 \(\ket v\) で実
+\(\Rightarrow \bra vC\ket v=0\) が全 \(\ket v\) で成立 \(\Rightarrow C=0\)。
+最後の含意は複素空間特有で、偏極恒等式から従う）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（スペクトル分解定理）</span>
+\(V\) 上の演算子 \(M\) が正規直交基底で対角化可能であることと、
+\(M\) が正規（\(M^\dagger M=MM^\dagger\)）であることは同値である。
+このとき、相異なる固有値を \(\lambda_1,\dots,\lambda_k\)、
+それぞれの固有空間への射影を \(P_1,\dots,P_k\) として
+\[
+M = \sum_{m=1}^{k} \lambda_m P_m,
+\qquad P_m P_{m'} = \delta_{mm'}P_m,
+\qquad \sum_m P_m = I
+\]
+と一意に分解できる。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+（\(\Leftarrow\)）\(M\) を正規とし、\(\dim V\) についての帰納法で
+「\(M\) の固有ベクトルからなる正規直交基底が存在する」ことを示す。
+\(\dim V=1\) では自明である。\(\dim V=d\) とする。
+複素性より \(M\) は固有値 \(\lambda\) を持つ。その固有空間への射影を \(P\)、
+\(Q=I-P\) とおき、\(V = PV \oplus QV\) と直交分解する。方針は
+「\(M\) がこの分解をブロック対角に保つ」ことを示し、\(QV\) 上で帰納法を回すことである。
+<br><br>
+(i) \(PMP = \lambda P\)：\(PV\) 上で \(M\) は \(\lambda\) 倍で作用するから明らか。
+<br>
+(ii) \(QMP = 0\)：固有空間の元 \(\ket v\)（\(P\ket v = \ket v\)）に対し
+\(M\ket v = \lambda\ket v \in PV\) なので \(QMP=0\)。
+<br>
+(iii) \(PMQ = 0\)：ここで正規性を使う。まず「\(M\) が正規なら、\(M\ket v = \lambda\ket v\)
+\(\Rightarrow M^\dagger\ket v = \lambda^*\ket v\)」を示す。
+\(A \equiv M - \lambda I\) も正規で \(A\ket v = 0\) だから
+\[
+\|A^\dagger \ket v\|^2 = \bra v A A^\dagger \ket v = \bra v A^\dagger A \ket v = \|A\ket v\|^2 = 0,
+\]
+すなわち \(M^\dagger \ket v = \lambda^*\ket v\)。
+よって固有空間の元 \(\ket v\) に対し \(M^\dagger\ket v\in PV\)、すなわち \(QM^\dagger P=0\)。
+その随伴をとると \(PMQ = (QM^\dagger P)^\dagger = 0\)。
+<br><br>
+以上より \(M = (P+Q)M(P+Q) = \lambda P + QMQ\) とブロック対角化される。
+\(QMQ\) を \(QV\) 上の演算子とみなすと、\(P,Q\) が \(M,M^\dagger\) と可換
+（(ii)(iii) の帰結）であることから
+\[
+(QMQ)(QMQ)^\dagger = QMQM^\dagger Q = QMM^\dagger Q = QM^\dagger MQ = (QMQ)^\dagger(QMQ)
+\]
+となり \(QMQ\) も正規である。帰納法の仮定より \(QV\) には \(QMQ\) の固有ベクトルからなる
+正規直交基底があり、\(PV\) の任意の正規直交基底（すべて固有値 \(\lambda\) の固有ベクトル）と
+合わせれば \(V\) 全体の求める基底になる。
+<br><br>
+（\(\Rightarrow\)）\(M = \sum_i \lambda_i\ketbra ii\)（\(\{\ket i\}\) 正規直交）なら
+\(M^\dagger = \sum_i \lambda_i^*\ketbra ii\) であり、
+\(M^\dagger M = \sum_i|\lambda_i|^2\ketbra ii = MM^\dagger\)。
+固有値ごとに固有ベクトルをまとめれば主張の \(P_m\) による表示を得る。
+直交性 \(P_mP_{m'}=\delta_{mm'}P_m\) と完全性 \(\sum_mP_m=I\) は基底の正規直交性・完全性の言い換えである。
+<span class="qed">∎</span>
+</div>
+
+<p>
+スペクトル分解の帰結として、正規演算子のクラス分けが固有値の言葉でできる：
+</p>
+
+<ul>
+<li><strong>Hermite \(\iff\) 正規かつ固有値がすべて実。</strong></li>
+<li><strong>ユニタリ \(\iff\) 正規かつ固有値がすべて絶対値 1</strong>（\(\lambda = e^{i\theta}\)）。
+実際ユニタリなら \(U\ket v=\lambda\ket v\) に対し
+\(\braket vv = \bra vU^\dagger U\ket v = |\lambda|^2\braket vv\)。
+またユニタリは内積を保つ：\((U\ket v)^\dagger(U\ket w) = \bra vU^\dagger U\ket w = \braket vw\)。</li>
+<li><strong>正 \(\iff\) Hermite かつ固有値がすべて \(\ge 0\)。</strong>
+また任意の演算子 \(A\) に対し \(A^\dagger A\) は正である
+（\(\bra vA^\dagger A\ket v = \|A\ket v\|^2\ge0\)）。</li>
+<li><strong>射影 \(\iff\) Hermite かつ固有値が 0 と 1 のみ。</strong></li>
+</ul>
+
+<h3 id="sec-2-1-7">§2.1.7 テンソル積</h3>
+
+<p>
+<strong>テンソル積</strong>は、小さな系のベクトル空間から合成系の空間を作る操作である。
+\(V\)（次元 \(m\)）と \(W\)（次元 \(n\)）のテンソル積 \(V\otimes W\) は \(mn\) 次元の空間で、
+元は \(\ket v\otimes\ket w\) の形のベクトルの線形結合である。テンソル積は次の規則に従う：
+\[
+(a\ket v)\otimes\ket w = \ket v\otimes(a\ket w) = a(\ket v\otimes\ket w),
+\]
+\[
+(\ket{v_1}+\ket{v_2})\otimes\ket w = \ket{v_1}\otimes\ket w + \ket{v_2}\otimes\ket w
+\]
+（第2因子についても同様）。つまり<strong>各因子について線形</strong>である。
+\(V,W\) の正規直交基底 \(\{\ket i\},\{\ket j\}\) に対し \(\{\ket i\otimes\ket j\}\) が
+\(V\otimes W\) の正規直交基底になる。内積は
+\[
+\bigl(\ket{v_1}\otimes\ket{w_1},\ \ket{v_2}\otimes\ket{w_2}\bigr)
+\equiv \braket{v_1}{v_2}\,\braket{w_1}{w_2}
+\]
+を線形に拡張して定める。
+</p>
+
+<p>
+<strong>重要な注意</strong>：\(V\otimes W\) の元がすべて \(\ket v\otimes\ket w\) の形（積状態）に
+書けるわけではない。たとえば
+\(\bigl(\ket0\otimes\ket0 + \ket1\otimes\ket1\bigr)/\sqrt2\) は積の形に書けない
+（書けたとして係数を比較すると矛盾する。§1.2.1）。
+この「積に書けない元の存在」こそがエンタングルメントであり、
+テンソル積が直和（次元が \(m+n\)）と決定的に違う点である。
+</p>
+
+<p>
+演算子のテンソル積は
+\[
+(A\otimes B)(\ket v\otimes\ket w) \equiv (A\ket v)\otimes(B\ket w)
+\]
+を線形に拡張して定義する。性質：
+\((A\otimes B)(C\otimes D) = AC\otimes BD\)、
+\((A\otimes B)^\dagger = A^\dagger\otimes B^\dagger\)。
+したがってユニタリ同士・Hermite 同士・正同士・射影同士のテンソル積は
+それぞれ再びユニタリ・Hermite・正・射影である。
+</p>
+
+<p>
+成分表示では、テンソル積は <strong>Kronecker 積</strong>になる：
+\(A\) が \(m\times m\)、\(B\) が \(n\times n\) のとき、\(A\otimes B\) は
+\(A\) の各成分 \(A_{ij}\) をブロック \(A_{ij}B\) に置き換えた \(mn\times mn\) 行列である。
+</p>
+
+<div class="example-box">
+<span class="box-title">例</span>
+\[
+X\otimes Z =
+\begin{pmatrix} 0\cdot Z &amp; 1\cdot Z \\ 1\cdot Z &amp; 0\cdot Z \end{pmatrix}
+=
+\begin{pmatrix}
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; -1 \\
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; -1 &amp; 0 &amp; 0
+\end{pmatrix},
+\qquad
+\ket0\otimes\ket1 =
+\begin{pmatrix}1\\0\end{pmatrix}\otimes\begin{pmatrix}0\\1\end{pmatrix}
+=
+\begin{pmatrix}0\\1\\0\\0\end{pmatrix}.
+\]
+また \(\ket\psi^{\otimes k}\) は \(\ket\psi\) を \(k\) 個テンソルしたものを表す略記である。
+</div>
+
+<h3 id="sec-2-1-8">§2.1.8 演算子関数</h3>
+
+<p>
+正規演算子にはスペクトル分解を通じて関数を定義できる。
+\(A = \sum_a a\,\ketbra aa\)（固有値 \(a\)、固有ベクトル \(\ket a\)）と分解されるとき、
+関数 \(f:\mathbb{C}\to\mathbb{C}\) に対して
+\[
+f(A) \equiv \sum_a f(a)\,\ketbra{a}{a}
+\]
+と定める。<strong>固有値に関数を当て、固有ベクトルは据え置く</strong>——これだけである。
+\(\sqrt A\)（正の演算子に対し）、\(\exp A\)、\(\log A\)（正定値に対し）などがこの方法で定義され、
+べき級数の定義（\(e^A = \sum_k A^k/k!\)）と正規演算子上では一致する。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（Pauli 行列の指数関数）</span>
+実単位ベクトル \(\hat n=(n_x,n_y,n_z)\) に対し
+\(\hat n\cdot\vec\sigma \equiv n_xX+n_yY+n_zZ\) とおくと
+\((\hat n\cdot\vec\sigma)^2 = I\) が成り立つ（Pauli 行列の反交換関係から従う。§2.1.9）。
+固有値は \(\pm1\) なので、\(\theta\in\mathbb{R}\) に対し
+\[
+e^{i\theta\, \hat n\cdot\vec\sigma}
+= \cos\theta\; I + i\sin\theta\; (\hat n\cdot\vec\sigma)
+\]
+となる。実際、べき級数を偶数次と奇数次に分ければ
+\((\hat n\cdot\vec\sigma)^{2k}=I\), \((\hat n\cdot\vec\sigma)^{2k+1}=\hat n\cdot\vec\sigma\) より
+\(\cos,\sin\) の級数が現れる。この式は Bloch 球上の回転
+\(R_{\hat n}(\theta) = e^{-i\theta\,\hat n\cdot\vec\sigma/2}\)（\(\hat n\) 軸まわり角 \(\theta\)）の
+基礎であり、第4章で全面的に使う。
+</div>
+
+<p><strong>トレース。</strong>
+演算子関数と並ぶ基本操作が<strong>トレース</strong> \(\tr A \equiv \sum_i \bra iA\ket i\)
+（対角成分の和）である。トレースは
+</p>
+
+<ul>
+<li><strong>巡回性</strong>：\(\tr(AB)=\tr(BA)\)。より一般に \(\tr(ABC)=\tr(CAB)\)（巡回置換のみ許される）。</li>
+<li><strong>線形性</strong>：\(\tr(aA+bB) = a\tr A + b\tr B\)。</li>
+<li><strong>基底不変性</strong>：巡回性より \(\tr(UAU^\dagger) = \tr(AU^\dagger U) = \tr A\)。
+したがってトレースは演算子自身の量であり、正規演算子では固有値の和に等しい。</li>
+</ul>
+
+<p>
+特に便利な公式として、単位ベクトル \(\ket\psi\) と任意の \(A\) に対し
+\[
+\tr\bigl(A\,\ketbra\psi\psi\bigr) = \bra\psi A\ket\psi
+\]
+が成り立つ（\(\ket\psi\) を含む正規直交基底でトレースを評価すればよい）。
+「期待値はトレースで書ける」というこの一行が、§2.4 の密度演算子形式の鍵になる。
+</p>
+
+<h3 id="sec-2-1-9">§2.1.9 交換子と反交換子</h3>
+
+<div class="def-box">
+<span class="box-title">定義</span>
+\[
+[A,B] \equiv AB - BA \quad（\textbf{交換子}）,\qquad
+\{A,B\} \equiv AB + BA \quad（\textbf{反交換子}）.
+\]
+\([A,B]=0\) のとき \(A,B\) は<strong>可換</strong>、\(\{A,B\}=0\) のとき<strong>反可換</strong>という。
+</div>
+
+<p>
+Pauli 行列はこの両方の見本市である：
+\[
+[\sigma_a,\sigma_b] = 2i\sum_c \epsilon_{abc}\,\sigma_c,\qquad
+\{\sigma_a,\sigma_b\} = 2\delta_{ab}\,I \qquad (a,b,c\in\{1,2,3\})
+\]
+（\(\epsilon_{abc}\) は完全反対称テンソル）。両者を足し合わせると積の公式
+\(\sigma_a\sigma_b = \delta_{ab}I + i\sum_c\epsilon_{abc}\sigma_c\) が得られる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（同時対角化定理）</span>
+Hermite 演算子 \(A,B\) に対し、\([A,B]=0\) であることと、
+\(A,B\) を同時に対角化する正規直交基底（両方の固有ベクトルからなる基底）が存在することは同値である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明の要点</span>
+（\(\Leftarrow\)）共通基底 \(\{\ket i\}\) で \(A=\sum_ia_i\ketbra ii\), \(B=\sum_ib_i\ketbra ii\) なら
+\(AB = \sum_i a_ib_i\ketbra ii = BA\)。
+（\(\Rightarrow\)）\(A\) の固有値 \(a\) の固有空間を \(V_a\) とする。\(\ket v\in V_a\) に対し
+\[
+A(B\ket v) = BA\ket v = a\,(B\ket v)
+\]
+なので \(B\ket v\in V_a\)、すなわち <strong>\(B\) は各固有空間 \(V_a\) を保つ</strong>。
+\(V_a\) 上に制限した \(B\) は Hermite だから、スペクトル分解定理により
+\(V_a\) 内に \(B\) の固有ベクトルからなる正規直交基底がとれる。
+これらは（\(V_a\) の元なので）自動的に \(A\) の固有ベクトルでもある。
+すべての \(a\) について集めれば \(V\) 全体の共通固有基底になる。<span class="qed">∎</span>
+</div>
+
+<p>
+物理的には、この定理は「可換な観測量は同時に確定値を持ちうる」ことを意味し、
+逆に非可換性が不確定性関係（§2.2.5）の源泉になる。
+交換子は本書では、不確定性関係のほか、スタビライザー形式（可換な Pauli 積の族、§10.5）や
+Hamiltonian の対称性の議論で繰り返し現れる。
+</p>
+
+<h3 id="sec-2-1-10">§2.1.10 極分解と特異値分解</h3>
+
+<p>
+最後に、<strong>一般の</strong>（正規とは限らない）演算子の構造定理を2つ与える。
+標語で言えば「任意の演算子 = 回転 × 引き伸ばし」である。
+複素数の極表示 \(z = e^{i\theta}|z|\) の演算子版と思えばよい：
+ユニタリが位相 \(e^{i\theta}\)、正の演算子が絶対値 \(|z|\) に対応する。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（極分解）</span>
+\(V\) 上の任意の演算子 \(A\) に対し、ユニタリ \(U\) と正の演算子 \(J,K\) が存在して
+\[
+A = UJ = KU,
+\qquad J = \sqrt{A^\dagger A},\quad K = \sqrt{AA^\dagger}
+\]
+と書ける（左極分解・右極分解）。\(J,K\) は一意であり、\(A\) が可逆なら \(U\) も一意である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(J \equiv \sqrt{A^\dagger A}\) は正の演算子の平方根として定義できる（\(A^\dagger A\) は正）。
+スペクトル分解 \(J = \sum_i\lambda_i\ketbra ii\)（\(\lambda_i\ge0\)）をとる。
+鍵となる等式は
+\[
+\|A\ket\psi\|^2 = \bra\psi A^\dagger A\ket\psi = \bra\psi J^2\ket\psi = \|J\ket\psi\|^2,
+\]
+つまり <strong>\(A\) と \(J\) はすべてのベクトルの長さを同じだけ変える</strong>。
+そこで \(\lambda_i&gt;0\) の \(i\) に対し \(\ket{e_i} \equiv A\ket i/\lambda_i\) とおくと
+\[
+\braket{e_i}{e_j} = \frac{\bra iA^\dagger A\ket j}{\lambda_i\lambda_j}
+= \frac{\bra iJ^2\ket j}{\lambda_i\lambda_j} = \delta_{ij}
+\]
+となり \(\{\ket{e_i}\}\) は正規直交系である。これを正規直交基底に延長し
+（\(\lambda_i=0\) の添字にも \(\ket{e_i}\) を割り当て）、\(U \equiv \sum_i \ketbra{e_i}{i}\) と定めると
+\(U\) はユニタリ（正規直交基底を正規直交基底に移す）で、
+\[
+UJ\ket i = \lambda_i\ket{e_i} = A\ket i \quad(\lambda_i&gt;0),\qquad
+UJ\ket i = 0 = A\ket i \quad(\lambda_i=0)
+\]
+（後者は \(\|A\ket i\| = \|J\ket i\| = 0\) による）。基底上で一致するので \(A = UJ\)。
+右極分解は \(A = UJ = (UJU^\dagger)U \equiv KU\) とおけばよく、
+\(K = UJU^\dagger\) は正で \(K^2 = UJ^2U^\dagger = AA^\dagger\)、
+すなわち \(K=\sqrt{AA^\dagger}\)。<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">系（特異値分解, SVD）</span>
+任意の正方行列 \(A\) は、ユニタリ \(U,V\) と非負対角行列 \(D\) により
+\[
+A = UDV
+\]
+と書ける。\(D\) の対角成分（\(\sqrt{A^\dagger A}\) の固有値）を \(A\) の<strong>特異値</strong>と呼ぶ。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+極分解 \(A = SJ\)（\(S\) ユニタリ、\(J\ge0\)）をとり、
+\(J\) をスペクトル分解でユニタリ対角化する：\(J = TDT^\dagger\)。すると
+\(A = (ST)\,D\,T^\dagger\) となり、\(U=ST\), \(V=T^\dagger\) とおけばよい。<span class="qed">∎</span>
+</div>
+
+<p>
+極分解・SVD は、§2.5 の Schmidt 分解の証明でそのまま使うほか、
+量子操作の解析（第8章）や距離尺度（第9章）でも顔を出す。
+「対角化できない演算子でも、両側からユニタリで挟めば必ず対角化できる」と覚えておくとよい。
+</p>
+</section>
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-2">量子力学の要請<span class="en">The postulates of quantum mechanics</span></h2>
+
+<p>
+量子力学そのものは特定の物理系の理論ではなく、<strong>物理理論を記述するための枠組み</strong>である。
+枠組みは少数の<strong>要請 (postulate)</strong> にまとめられる。
+問いは4つである。系の状態をどう表すか、状態は時間とともにどう変わるか、
+測定すると何が起きるか、複数の系を合わせるとどうなるか。
+以下でこの4つを順に定式化する。要請は実験との突き合わせで正当化されるものであり、
+導出はできない。しかし一度受け入れれば、量子情報のすべてはここから演繹される。
+</p>
+
+<h3 id="sec-2-2-1">§2.2.1 状態空間</h3>
+
+<div class="def-box">
+<span class="box-title">要請1（状態空間）</span>
+任意の孤立した物理系には、複素内積空間（<strong>Hilbert 空間</strong>）が付随する。
+これを系の<strong>状態空間</strong>と呼ぶ。系の状態は状態空間の単位ベクトル
+（<strong>状態ベクトル</strong>）で完全に記述される。
+</div>
+
+<p>
+量子力学の枠組み自身は「どの系にどんな状態空間が付くか」「どの Hamiltonian が働くか」を
+教えてくれない。それを決めるのは個別の物理（量子電磁気学など）である。
+量子情報では最も単純な選択、すなわち<strong>量子ビット：状態空間 \(\mathbb{C}^2\)</strong> を
+基本単位として理論を組む。状態は
+\[
+\ket\psi = \alpha\ket0 + \beta\ket1,\qquad |\alpha|^2+|\beta|^2 = 1
+\]
+であり、規格化条件はこの後の測定の要請で「確率の和が 1」と読まれることになる。
+状態の線形結合（規格化したもの）がまた状態である——
+この<strong>重ね合わせの原理</strong>が状態空間をベクトル空間に選んだことの中身である。
+</p>
+
+<h3 id="sec-2-2-2">§2.2.2 時間発展</h3>
+
+<div class="def-box">
+<span class="box-title">要請2（ユニタリ発展）</span>
+閉じた（外界と相互作用しない）量子系の時間発展は<strong>ユニタリ変換</strong>で記述される。
+すなわち時刻 \(t_1\) の状態 \(\ket\psi\) と時刻 \(t_2\) の状態 \(\ket{\psi'}\) は、
+時刻のみに依存するユニタリ演算子 \(U\) によって
+\[
+\ket{\psi'} = U\ket{\psi}
+\]
+と結ばれる。
+</div>
+
+<p>
+なぜユニタリか。状態は単位ベクトルでなければならないから、発展はノルムを保つ必要があり、
+線形性（重ね合わせの原理と整合する最小の仮定）と合わせると内積の保存、
+すなわちユニタリ性に行き着く。逆に、第4章で見るように
+<strong>任意のユニタリが適当な物理系で原理的に実現できる</strong>。
+したがって1量子ビットでは、Pauli ゲート \(X,Y,Z\)、Hadamard \(H\)、位相ゲート
+\[
+S = \begin{pmatrix}1&amp;0\\0&amp;i\end{pmatrix},\qquad
+T = \begin{pmatrix}1&amp;0\\0&amp;e^{i\pi/4}\end{pmatrix}
+\]
+などすべてが正当な時間発展である。
+</p>
+
+<p>
+要請2は離散的な2時刻の記述である。連続時間版が <strong>Schrödinger 方程式</strong>
+\[
+i\hbar\,\frac{d\ket{\psi(t)}}{dt} = H\,\ket{\psi(t)}
+\]
+であり、\(H\) は系に固有の Hermite 演算子（<strong>Hamiltonian</strong>）である。
+両者の関係を確認する。\(H\) が時間に依らないとき、スペクトル分解
+\(H = \sum_E E\,\ketbra EE\)（固有値 \(E\) は<strong>エネルギー</strong>、
+\(\ket E\) は<strong>エネルギー固有状態</strong>、最小の \(E\) の状態を基底状態と呼ぶ）を使うと、
+解は
+\[
+\ket{\psi(t_2)} = \exp\!\Bigl[\frac{-iH(t_2-t_1)}{\hbar}\Bigr]\ket{\psi(t_1)}
+\equiv U(t_1,t_2)\,\ket{\psi(t_1)}
+\]
+と書ける。ここで \(H\) が Hermite（固有値が実）だから
+\[
+U^\dagger U = e^{iH(t_2-t_1)/\hbar}\,e^{-iH(t_2-t_1)/\hbar} = I
+\]
+となり \(U\) は確かにユニタリである。逆に任意のユニタリ \(U\) は
+\(U = e^{iK}\)（\(K\) は Hermite）と書けるから、
+<strong>「Hamiltonian を指定すること」と「ユニタリ発展を指定すること」は同じ情報</strong>である。
+量子情報では時々刻々の力学より正味の変換だけが問題になることが多いので、
+もっぱらユニタリの言葉（ゲートの言葉）で語る。
+なお現実の装置では \(H\) を時間的に切り替えて所望の \(U\) を合成するが、
+外部制御場は「近似的に古典的な系」として扱えば閉じた系の記述に押し込められる。
+</p>
+
+<h3 id="sec-2-2-3">§2.2.3 量子測定</h3>
+
+<p>
+測定は、系が測定装置（外界）と相互作用する過程であり、閉じた系ではないから
+要請2の外にある。そこで測定の統計と状態変化を独立の要請として置く。
+</p>
+
+<div class="def-box">
+<span class="box-title">要請3（測定）</span>
+量子測定は<strong>測定演算子</strong>の集合 \(\{M_m\}\) で記述される。
+\(M_m\) は状態空間に働く線形演算子で、添字 \(m\) は起こりうる測定結果を表す。
+測定直前の状態が \(\ket\psi\) のとき、結果 \(m\) が得られる確率は
+\[
+p(m) = \bra{\psi}M_m^\dagger M_m\ket{\psi},
+\]
+そのときの測定直後の状態は
+\[
+\frac{M_m\ket{\psi}}{\sqrt{\bra\psi M_m^\dagger M_m\ket\psi}}
+\]
+である。測定演算子は<strong>完全性条件</strong>
+\[
+\sum_m M_m^\dagger M_m = I
+\]
+を満たす。
+</div>
+
+<p>
+完全性条件は確率の和が 1 になることの表現である：
+\[
+\sum_m p(m) = \sum_m \bra\psi M_m^\dagger M_m\ket\psi = \bra\psi I\ket\psi = 1
+\quad(\text{任意の }\ket\psi).
+\]
+逆に任意の \(\ket\psi\) で確率和が 1 になることを要求すると完全性条件が出る。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（計算基底での測定）</span>
+\(M_0 = \ketbra00,\ M_1 = \ketbra11\) とおく。各 \(M_m\) は Hermite で
+\(M_m^2 = M_m\) だから \(M_0^\dagger M_0 + M_1^\dagger M_1 = M_0+M_1 = I\) となり
+完全性条件を満たす。状態 \(\ket\psi = \alpha\ket0+\beta\ket1\) に対し
+\[
+p(0) = \bra\psi M_0\ket\psi = |\alpha|^2,\qquad
+p(1) = |\beta|^2,
+\]
+結果 0 のときの測定後状態は
+\[
+\frac{M_0\ket\psi}{|\alpha|} = \frac{\alpha}{|\alpha|}\,\ket0.
+\]
+係数 \(\alpha/|\alpha|\) は絶対値 1 の位相因子であり、§2.2.7 で見るように
+観測に影響しないので \(\ket0\) と同一視してよい。
+第1章で天下りに使った測定規則が要請3の特別な場合として再現された。
+</div>
+
+<p>
+要請3の一般性（\(M_m\) は射影でなくてよい）は冗長に見えるかもしれない。
+しかし、測定装置が理想的でない場合や補助系を使った間接測定を記述するには
+この一般性が要る。§2.2.6 の POVM、第8章の量子操作へもそのままつながる。
+射影測定（§2.2.5）はこの一般測定の特別な場合である。
+</p>
+
+<h3 id="sec-2-2-4">§2.2.4 非直交状態は識別できない</h3>
+
+<p>
+要請3の最初の本格的な応用として、量子情報の基本制限のひとつを証明する。
+設定：Alice は既知の状態の集合 \(\{\ket{\psi_1},\dots,\ket{\psi_n}\}\) から
+1つを選んで Bob に渡す。Bob はどれかを言い当てたい。
+状態たちが互いに直交していれば話は簡単で、
+\(M_i \equiv \ketbra{\psi_i}{\psi_i}\)（\(i=1,\dots,n\)）と
+残りの空間への射影 \(M_0 \equiv I - \sum_i\ketbra{\psi_i}{\psi_i}\) からなる測定を行えば、
+状態が \(\ket{\psi_i}\) のとき結果 \(i\) が確率 1 で得られる。
+すなわち<strong>直交状態は確実に識別できる</strong>（これが「古典情報」の量子的な姿である）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（非直交状態の識別不可能性）</span>
+\(\braket{\psi_1}{\psi_2}\neq0\) かつ \(\ket{\psi_1}\not\parallel\ket{\psi_2}\)
+（非直交で相異なる）2状態を、確率 1 で正しく識別する測定は存在しない。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+確実に識別できたと仮定して矛盾を導く。識別の手続きは一般に
+「測定 \(\{M_m\}\) を行い、結果 \(m\) から規則 \(f\) で答え \(f(m)\in\{1,2\}\) を宣言する」
+と書ける。答えごとに測定演算子をまとめて
+\[
+E_i \equiv \sum_{m:\,f(m)=i} M_m^\dagger M_m \qquad (i=1,2)
+\]
+とおくと、\(E_i\ge0\) かつ \(E_1+E_2 = I\)（完全性条件）であり、
+「確実に識別できる」とは
+\[
+\bra{\psi_1}E_1\ket{\psi_1} = 1,\qquad \bra{\psi_2}E_2\ket{\psi_2} = 1
+\]
+を意味する。第1式と \(E_1+E_2=I\) から
+\(\bra{\psi_1}E_2\ket{\psi_1} = 0\)。\(E_2\ge0\) なので \(\sqrt{E_2}\) が定義でき、
+\(\|\sqrt{E_2}\ket{\psi_1}\|^2 = \bra{\psi_1}E_2\ket{\psi_1} = 0\)、すなわち
+\[
+\sqrt{E_2}\,\ket{\psi_1} = 0.
+\]
+一方、\(\ket{\psi_2}\) を分解する：
+\(\ket{\psi_2} = \alpha\ket{\psi_1} + \beta\ket{\varphi}\)
+（\(\ket\varphi\) は \(\ket{\psi_1}\) に直交する単位ベクトル、
+\(|\alpha|^2+|\beta|^2=1\)）。非直交性より \(\alpha = \braket{\psi_1}{\psi_2}\neq0\)、
+相異なることより \(|\beta| &lt; 1\)。すると
+\[
+\sqrt{E_2}\ket{\psi_2} = \alpha\underbrace{\sqrt{E_2}\ket{\psi_1}}_{=0} + \beta\sqrt{E_2}\ket\varphi
+= \beta\sqrt{E_2}\ket{\varphi}
+\]
+なので
+\[
+1 = \bra{\psi_2}E_2\ket{\psi_2} = |\beta|^2\,\bra\varphi E_2\ket\varphi
+\le |\beta|^2\,\bra\varphi (E_1+E_2)\ket\varphi = |\beta|^2 &lt; 1
+\]
+（\(E_1\ge0\) を使った）となり矛盾する。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">直観と含意</span>
+直観的には、非直交な \(\ket{\psi_2}\) は「\(\ket{\psi_1}\) の成分」を含んでおり、
+測定はこの成分を \(\ket{\psi_1}\) 本体と区別する術を持たない、ということである。
+この制限は複製不可能定理（§1.3.5）と表裏一体である：
+もし識別できるなら、識別してから状態を作り直すことで複製ができてしまう。
+一方で「確率 1」を諦めれば話は変わる。誤りを許して最良の推測をする方法や、「答えないこと」を許して
+<strong>間違えない</strong>識別をする方法がある（どちらも §2.2.6 で扱う）。
+量子暗号（§12.6）は、この微妙な識別可能性の隙間の上に建っている。
+</div>
+<h3 id="sec-2-2-5">§2.2.5 射影測定</h3>
+
+<p>
+一般測定（要請3）のうち、測定演算子が<strong>直交射影</strong>である場合を
+<strong>射影測定 (projective measurement)</strong> と呼ぶ。多くの教科書で
+「測定」といえばこれを指す（von Neumann 測定）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（射影測定・観測量）</span>
+<strong>観測量 (observable)</strong> とは状態空間上の Hermite 演算子 \(M\) のことである。
+スペクトル分解
+\[
+M = \sum_m m\,P_m
+\]
+（\(m\) は固有値、\(P_m\) は固有空間への射影）に対し、
+測定演算子を \(\{P_m\}\) に選んだ測定を「観測量 \(M\) の測定」と呼ぶ。
+結果は固有値 \(m\) のいずれかであり、
+\[
+p(m) = \bra\psi P_m\ket\psi,\qquad
+\text{測定後状態} = \frac{P_m\ket\psi}{\sqrt{p(m)}}.
+\]
+</div>
+
+<p>
+これが要請3の特別な場合であることの確認：\(P_m^\dagger P_m = P_m^2 = P_m\) であり、
+完全性条件 \(\sum_mP_m=I\) はスペクトル分解の完全性そのものである。
+射影測定に固有の便利さは2つある。
+第一に<strong>反復可能性</strong>：結果 \(m\) を得た直後にもう一度同じ測定をすると、
+\(P_m(P_m\ket\psi) = P_m\ket\psi\) より確率 1 で再び \(m\) が出る
+（Stern–Gerlach 実験の 1. の性質。一般測定はこの性質を持たない——
+たとえば測定後に状態が壊れる光子検出など）。
+第二に<strong>期待値の計算が代数的にできる</strong>こと：
+\[
+\langle M\rangle_\psi \equiv \mathbb{E}(m) = \sum_m m\,p(m) = \sum_m m\bra\psi P_m\ket\psi
+= \bra{\psi}M\ket{\psi}.
+\]
+分散も同様に
+\[
+[\Delta(M)]^2 = \langle (M - \langle M\rangle)^2\rangle = \langle M^2\rangle - \langle M\rangle^2
+\]
+と演算子の期待値だけで書ける。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(\hat n\cdot\vec\sigma\) の測定）</span>
+単位ベクトル \(\hat n\) 方向のスピン測定は観測量 \(\hat n\cdot\vec\sigma\) の射影測定である。
+固有値は \(\pm1\)（\((\hat n\cdot\vec\sigma)^2=I\) とトレース零より）、射影は
+\[
+P_\pm = \frac{I \pm \hat n\cdot\vec\sigma}{2}
+\]
+と書ける（\(P_\pm^2 = P_\pm\), \(P_++P_-=I\), \((\hat n\cdot\vec\sigma)P_\pm = \pm P_\pm\) を確認せよ）。
+たとえば状態 \(\ket0\) で \(X = \hat x\cdot\vec\sigma\) を測ると、
+\(p(\pm) = \bra0\frac{I\pm X}2\ket0 = 1/2\)、期待値は \(\bra0X\ket0 = 0\) である。
+Stern–Gerlach の直列実験（§1.5.1）の定量的な記述がこれで完成する。
+</div>
+
+<p><strong>不確定性関係。</strong>
+非可換な2つの観測量は、同一の状態で同時に鋭い値を持てない。これを定量化する。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Heisenberg の不確定性関係）</span>
+Hermite 演算子 \(A,B\) と状態 \(\ket\psi\) に対し、
+\(\Delta(A),\Delta(B)\) を \(\ket\psi\) における標準偏差とすると
+\[
+\Delta(A)\,\Delta(B) \;\ge\; \frac{\bigl|\bra\psi[A,B]\ket\psi\bigr|}{2}.
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+まず平均を引いていない形の補題を示す。Hermite な \(A,B\) に対し
+\(\bra\psi AB\ket\psi = x+iy\)（\(x,y\in\mathbb{R}\)）とおくと、
+\(\bra\psi BA\ket\psi = (\bra\psi AB\ket\psi)^* = x-iy\) だから
+\[
+\bra\psi[A,B]\ket\psi = 2iy,\qquad
+\bra\psi\{A,B\}\ket\psi = 2x.
+\]
+したがって
+\[
+\bigl|\bra\psi[A,B]\ket\psi\bigr|^2 + \bigl|\bra\psi\{A,B\}\ket\psi\bigr|^2
+= 4|\bra\psi AB\ket\psi|^2 .
+\]
+右辺を Cauchy–Schwarz（\(\ket u = A\ket\psi\), \(\ket v = B\ket\psi\)）で評価すると
+\[
+|\bra\psi AB\ket\psi|^2 \le \bra\psi A^2\ket\psi\,\bra\psi B^2\ket\psi .
+\]
+左辺第2項（反交換子の項）を落とすと
+\[
+\bigl|\bra\psi[A,B]\ket\psi\bigr|^2 \le 4\,\bra\psi A^2\ket\psi\,\bra\psi B^2\ket\psi .
+\]
+ここで \(A\to A - \langle A\rangle I\), \(B\to B - \langle B\rangle I\) と置き換える。
+交換子は定数のシフトで変わらず（\([A-a I,\,B-b I]=[A,B]\)）、
+\(\bra\psi(A-\langle A\rangle)^2\ket\psi = [\Delta(A)]^2\) なので、主張の不等式を得る。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">不確定性関係の正しい読み方</span>
+この不等式は「測定が状態を乱す」ことを直接述べているのではない。
+主張は統計的なものである：<strong>同じ状態 \(\ket\psi\) を多数用意し、
+半分で \(A\) を、残り半分で \(B\) を測ると、両ヒストグラムの幅の積には下限がある</strong>。
+例：\(\ket0\) に対し \([X,Y] = 2iZ\) より
+\(\Delta(X)\Delta(Y) \ge |\bra0Z\ket0| = 1\)。
+実際 \(\Delta(X)=\Delta(Y)=1\) で等号が成り立つ。
+下限が状態依存（\(\bra\psi[A,B]\ket\psi\)）である点も、位置・運動量の場合
+（\([x,p]=i\hbar\) が定数）と違って注意を要する。
+</div>
+
+<h3 id="sec-2-2-6">§2.2.6 POVM 測定</h3>
+
+<p>
+測定後の状態に興味がなく、<strong>結果の確率分布だけ</strong>が問題になる場面
+（実験の最終読み出しなど）では、要請3を簡略化した便利な形式がある。
+一般測定 \(\{M_m\}\) に対し
+\[
+E_m \equiv M_m^\dagger M_m
+\]
+とおくと、確率は \(p(m) = \bra\psi E_m\ket\psi\) と \(E_m\) だけで決まる。
+\(E_m\) は正の演算子で \(\sum_mE_m = I\) を満たす。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（POVM）</span>
+正の演算子の集合 \(\{E_m\}\) が \(\sum_m E_m = I\) を満たすとき、
+これを <strong>POVM</strong> (positive operator-valued measure) と呼び、
+各 \(E_m\) を POVM 要素と呼ぶ。逆に任意の POVM は
+\(M_m \equiv \sqrt{E_m}\) とおくことで要請3の測定として実現できる
+（\(M_m^\dagger M_m = E_m\)）。つまり <strong>POVM ＝「起こりうる測定統計」の完全な記述</strong>である。
+</div>
+
+<p>
+射影測定は \(E_m = P_m\) の特別な場合である。POVM の本領は、
+<strong>要素数が空間の次元を超えてよい</strong>こと、
+要素が互いに直交しなくてよいことにある。次の例がその威力を示す。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（間違えない状態識別）</span>
+Alice が \(\ket{\psi_1} = \ket0\) か \(\ket{\psi_2} = \ket+ = (\ket0+\ket1)/\sqrt2\) の
+どちらかを Bob に送る。§2.2.4 より確実な識別は不可能だが、
+「<strong>答えるときは絶対に間違えない</strong>（ただし『分からない』と答えることがある）」
+識別なら可能である。次の3要素 POVM を使う：
+\[
+E_1 = \frac{\sqrt2}{1+\sqrt2}\,\ketbra11,\qquad
+E_2 = \frac{\sqrt2}{1+\sqrt2}\,\frac{(\ket0-\ket1)(\bra0-\bra1)}{2},\qquad
+E_3 = I - E_1 - E_2 .
+\]
+<ul>
+<li>\(E_1\) は \(\ket0\) に直交する方向への（縮めた）射影なので、
+\(\bra{\psi_1}E_1\ket{\psi_1} = 0\)。
+つまり<strong>結果 1 が出たなら状態は \(\ket{\psi_1}\) ではあり得ず、\(\ket{\psi_2}=\ket+\) と断定できる</strong>。
+実際 \(\bra{+}E_1\ket{+} = \frac{\sqrt2}{1+\sqrt2}\cdot\frac12 = \frac{1}{2+\sqrt2}&gt;0\) なので
+この結果は実際に起こる。</li>
+<li>同様に \(E_2\) は \(\ket-\) 方向への縮めた射影で \(\bra{+}E_2\ket{+} = 0\)。
+<strong>結果 2 なら \(\ket{\psi_1}=\ket0\) と断定できる</strong>
+（\(\bra{0}E_2\ket{0} = \frac{1}{2+\sqrt2}&gt;0\)）。</li>
+<li>結果 3 のときは何も言わない（どちらの状態でも起こりうる）。</li>
+</ul>
+残るは \(E_3\ge0\) の確認である。\(E_1+E_2\) は
+\(\ket1\) 方向と \(\ket-\) 方向（なす角 45°）への射影の \(\frac{\sqrt2}{1+\sqrt2}\) 倍の和で、
+計算すると（\(\ketbra11 + \ketbra--\) の固有値は \(1\pm\cos45^\circ = 1\pm\tfrac1{\sqrt2}\)）
+\(E_1+E_2\) の最大固有値は
+\[
+\frac{\sqrt2}{1+\sqrt2}\Bigl(1+\frac{1}{\sqrt2}\Bigr) = \frac{\sqrt2+1}{1+\sqrt2} = 1
+\]
+となる。よって \(E_3 = I-(E_1+E_2)\ge0\) であり、正当な POVM である
+（係数 \(\frac{\sqrt2}{1+\sqrt2}\) は「間違えない」条件を保ったまま
+成功確率を最大にするぎりぎりの選択になっている）。
+非直交状態でも、「誤答ゼロ・時々棄権」なら識別できる——
+射影測定だけを考えていては着想しにくい戦略であり、POVM 形式の実用性を示している。
+</div>
+
+<h3 id="sec-2-2-7">§2.2.7 位相</h3>
+
+<p>
+「位相」という語は2つの異なる意味で使われるので、ここで峻別しておく。
+</p>
+
+<p>
+<strong>全体位相 (global phase)。</strong>
+\(\ket\psi\) と \(e^{i\theta}\ket\psi\)（\(\theta\in\mathbb{R}\)）は物理的に同一の状態である。
+実際、任意の測定演算子 \(M_m\) に対し
+\[
+\bra\psi e^{-i\theta}\,M_m^\dagger M_m\,e^{i\theta}\ket\psi = \bra\psi M_m^\dagger M_m\ket\psi
+\]
+であり、どんな測定統計にも差が現れない。ユニタリ発展でも差は保たれたままなので、
+将来にわたって観測不可能である。したがって状態ベクトルは
+全体位相の分だけ冗長な記述であり、計算の途中で \(e^{i\theta}\) を自由に捨ててよい。
+</p>
+
+<p>
+<strong>相対位相 (relative phase)。</strong>
+これに対し、重ね合わせの<strong>係数間の</strong>位相は物理的である。たとえば
+\[
+\frac{\ket0+\ket1}{\sqrt2} = \ket+
+\qquad\text{と}\qquad
+\frac{\ket0-\ket1}{\sqrt2} = \ket-
+\]
+は、\(\ket1\) の係数が \(e^{i\pi}\) 倍違うだけだが、直交する別の状態である
+（\(X\) の測定で完全に区別できる）。一般に、ある基底での展開係数
+\(\alpha_j = |\alpha_j|e^{i\varphi_j}\) の位相差 \(\varphi_j-\varphi_k\) を相対位相と呼ぶ。
+相対位相は<strong>基底に依存する</strong>概念であることに注意
+（計算基底で位相が違っても、別の基底では振幅の違いに化ける）。
+量子アルゴリズムの干渉（§1.4）は、相対位相を演算で制御し、
+最後に基底を変えて振幅の差として読み出す操作にほかならない。
+</p>
+
+<h3 id="sec-2-2-8">§2.2.8 合成系</h3>
+
+<div class="def-box">
+<span class="box-title">要請4（合成系）</span>
+物理系 \(1,\dots,n\) を合わせた合成系の状態空間は、成分系の状態空間の
+<strong>テンソル積</strong> \(H_1\otimes\cdots\otimes H_n\) である。
+系 \(i\) が状態 \(\ket{\psi_i}\) に準備されているとき、合成系の状態は
+\(\ket{\psi_1}\otimes\cdots\otimes\ket{\psi_n}\) である。
+</div>
+
+<p>
+なぜ直和でなくテンソル積か。重ね合わせの原理から要請される、と考えるのが分かりやすい。
+系 A が \(\ket0,\ket1\) の2状態を、系 B も2状態を取れるとする。
+このとき組 \((a,b)\) の4通りの「古典的な組み合わせ」はすべて識別可能な状態として存在し、
+さらにそれらの任意の重ね合わせも許されるべきである。
+4つの独立な基底ベクトルを持つ空間はまさに \(H_A\otimes H_B\) である
+（直和では次元が \(2+2=4\) だが「組み合わせ」の構造を持たない）。
+</p>
+
+<p>
+要請4は他の要請と組み合わさって初めて内容を持つ。
+</p>
+
+<ul>
+<li><strong>部分系への操作</strong>：系 A だけにユニタリ \(U\) を作用させることは、
+合成系のユニタリ \(U\otimes I\) で記述される。測定も同様に \(M_m\otimes I\)。
+第1章で使った「第1ビットだけ測る」規則はここから導出される。</li>
+<li><strong>エンタングルメント</strong>：合成系の状態には、積状態
+\(\ket{\psi_A}\otimes\ket{\psi_B}\) に書けないものがある。たとえば Bell 状態
+\[
+\ket{\beta_{00}} = \frac{\ket{00}+\ket{11}}{\sqrt2}
+\]
+がそうである（積に書けたとすると
+\((\alpha\ket0+\beta\ket1)(\gamma\ket0+\delta\ket1)\) の展開係数について
+\(\alpha\gamma = \delta\beta = 1/\sqrt2\), \(\alpha\delta = \beta\gamma = 0\)
+となるが、後者より \(\alpha,\delta\) の少なくとも一方が 0 で前者に矛盾）。
+このような状態を<strong>エンタングルした状態</strong>と呼ぶ。
+定義自体は「積に書けない」という消極的なものだが、
+テレポーテーション（§1.3.7）・超高密度符号化（§2.3）・Bell 不等式の破れ（§2.6）と、
+その帰結は量子情報の中心にある。</li>
+<li><strong>間接測定と一般測定</strong>：要請4があれば、
+「補助系を付けて合成系をユニタリ発展させ、補助系を射影測定する」
+という手続きが記述できる。実は任意の一般測定 \(\{M_m\}\)（要請3）は
+この形で実現できることが示せる。つまり要請3の一般性は、
+「射影測定＋ユニタリ＋補助系」から導出可能でもある。
+どちらを公理に取るかは趣味の問題で、本書は使い勝手のよい一般測定を公理に置く流儀を採る。</li>
+</ul>
+
+<h3 id="sec-2-2-9">§2.2.9 量子力学：全体像</h3>
+
+<p>
+要請を一望する。
+</p>
+
+<table>
+<tr><th>要請</th><th>内容</th><th>数学的対象</th></tr>
+<tr><td>1. 状態</td><td>孤立系の状態は状態空間の単位ベクトル</td><td>Hilbert 空間 \(H\), \(\ket\psi\)</td></tr>
+<tr><td>2. 発展</td><td>閉じた系の時間発展はユニタリ</td><td>\(U\)（連続版は Schrödinger 方程式）</td></tr>
+<tr><td>3. 測定</td><td>結果 \(m\) の確率と測定後状態</td><td>\(\{M_m\}\), \(\sum_mM_m^\dagger M_m=I\)</td></tr>
+<tr><td>4. 合成</td><td>合成系の状態空間はテンソル積</td><td>\(H_1\otimes\cdots\otimes H_n\)</td></tr>
+</table>
+
+<p>
+2つの所感を述べておく。第一に、この枠組みは<strong>徹底して線形代数的</strong>であり、
+波動関数・微分方程式といった伝統的な量子力学の道具立ては
+（有限次元では）一切不要である。量子情報が物理の予備知識なしに学べる理由がここにある。
+第二に、要請の中で異質なのは測定（要請3）である。
+ユニタリ発展は決定論的・可逆なのに、測定は確率的・不可逆であり、
+両者の境界（測定装置もまた量子系ではないのか？）をどう理解するかは
+量子力学の解釈問題として残っている。
+本書の立場は実用主義である：要請3は実験と完全に整合する計算規則であり、
+その使い方に習熟することが先決である。
+なお第8章で、測定や開放系のダイナミクスを「大きな閉じた系のユニタリ発展の一部」として
+記述する枠組み（量子操作）を学ぶと、この境界の見え方はかなり整理される。
+</p>
+</section>
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-3">応用：超高密度符号化<span class="en">Superdense coding</span></h2>
+
+<p>
+4つの要請だけで完結する、驚くほど簡潔な応用を1つ示す。
+<strong>超高密度符号化 (superdense coding)</strong> は、
+「量子ビット1個の送信で古典2ビットを伝える」プロトコルである。
+</p>
+
+<div class="def-box">
+<span class="box-title">問題設定</span>
+Alice は Bob に 2 ビットの古典情報 \(b_1b_2\in\{00,01,10,11\}\) を伝えたい。
+ただし Alice が送れるのは<strong>量子ビット1個だけ</strong>である。
+事前資源として、二人は Bell 状態
+\[
+\ket{\beta_{00}} = \frac{\ket{00}+\ket{11}}{\sqrt2}
+\]
+の第1量子ビットを Alice が、第2量子ビットを Bob が持っている
+（この対は事前に、伝えたい情報が決まる前に配っておけばよい）。
+</div>
+
+<p>
+<strong>手順1（Alice の符号化）。</strong>
+Alice は伝えたいビット列に応じて、<strong>自分の量子ビットだけ</strong>に次のゲートを掛ける：
+\[
+00 \mapsto I,\qquad 01 \mapsto X,\qquad 10 \mapsto Z,\qquad 11 \mapsto iY\;(=ZX).
+\]
+それぞれの場合の合成系の状態を計算する（作用するのは \(G\otimes I\) の形である）：
+</p>
+
+<ul>
+<li>\(00\)：そのまま
+\(\dfrac{\ket{00}+\ket{11}}{\sqrt2} = \ket{\beta_{00}}\)。</li>
+<li>\(01\)：\(X\otimes I\) は第1ビットを反転し
+\(\dfrac{\ket{10}+\ket{01}}{\sqrt2} = \ket{\beta_{01}}\)。</li>
+<li>\(10\)：\(Z\otimes I\) は第1ビットが \(\ket1\) の項の符号を変え
+\(\dfrac{\ket{00}-\ket{11}}{\sqrt2} = \ket{\beta_{10}}\)。</li>
+<li>\(11\)：\(ZX\otimes I\) は反転してから符号を変え
+\(\dfrac{\ket{01}-\ket{10}}{\sqrt2} = \ket{\beta_{11}}\)。</li>
+</ul>
+
+<p>
+すなわち、<strong>片側への局所操作だけで、4つの Bell 状態のどれへでも移れる</strong>。
+これがプロトコルの核心である（§1.3.6 の Bell 基底の記法 \(\ket{\beta_{xy}}\) を使った）。
+</p>
+
+<p>
+<strong>手順2（送信）。</strong>Alice は自分の量子ビットを Bob に送る。
+これで Bob は対の両方を手にする。
+</p>
+
+<p>
+<strong>手順3（Bob の復号）。</strong>
+4つの Bell 状態は互いに直交する（正規直交基底をなす。§1.3.6）から、
+§2.2.4 の冒頭で見たとおり<strong>確実に識別できる</strong>。
+具体的な回路としては、Bell 状態生成回路（図1.2）の逆を掛ければよい：
+CNOT（第1→第2）を作用させると
+\[
+\ket{\beta_{b_1b_2}} \longmapsto \frac{\ket{0}+(-1)^{b_1}\ket{1}}{\sqrt2}\otimes\ket{b_2},
+\]
+（4つの場合を各自確認せよ。たとえば
+\(\ket{\beta_{01}}=(\ket{01}+\ket{10})/\sqrt2 \mapsto (\ket{01}+\ket{11})/\sqrt2
+= \frac{\ket0+\ket1}{\sqrt2}\otimes\ket1\)。）
+続いて第1ビットに \(H\) を掛けると \(H\ket\pm = \ket{b_1}\) の形になり、
+\[
+\ket{\beta_{b_1b_2}} \xrightarrow{\text{CNOT}}\xrightarrow{H\otimes I} \ket{b_1}\ket{b_2}.
+\]
+最後に計算基底で両ビットを測定すれば、確率 1 で \(b_1b_2\) が読み出せる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">何が「超高密度」なのか</span>
+Alice が物理的に運んだのは量子ビット1個である。
+量子ビット1個を単独で使う限り、確実に伝えられる古典情報は1ビットが上限である
+（直交状態は2つしか取れないから。厳密な証明は Holevo 限界、§12.1）。
+事前共有されたエンタングルメントがこの上限を2倍に引き上げた。
+テレポーテーション（§1.3.7）と見比べると美しい双対になっている：
+<ul>
+<li>テレポーテーション：1 EPR 対 ＋ 古典2ビット \(\Rightarrow\) 量子1ビットの伝送</li>
+<li>超高密度符号化：1 EPR 対 ＋ 量子1ビット \(\Rightarrow\) 古典2ビットの伝送</li>
+</ul>
+また盗聴耐性もある：送信中の量子ビット単体の状態は（§2.4.3 で示すように）
+4つの場合すべてで完全にランダムな混合状態 \(I/2\) であり、
+対の片割れを持たない盗聴者は何の情報も得られない。
+エンタングルメントが「情報を2つの粒子の相関の中に隠す」様子が見て取れる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-4">密度演算子<span class="en">The density operator</span></h2>
+
+<p>
+ここまで量子状態は状態ベクトル \(\ket\psi\) で記述してきた。
+しかし現実には「系がどの状態にあるか確率的にしか分からない」場面が絶えず現れる：
+装置の出力に古典的な揺らぎがある、測定結果を読まずに捨てた、
+エンタングルした対の片割れだけを見ている、など。
+こうした状況を扱う言語が<strong>密度演算子 (density operator)</strong>
+（密度行列とも呼ぶ）である。
+状態ベクトルの定式化と数学的に等価だが、混合状態と部分系を扱うには圧倒的に便利であり、
+第8章以降はほぼ全面的にこちらの言葉を使う。
+</p>
+
+<h3 id="sec-2-4-1">§2.4.1 状態のアンサンブルと密度演算子</h3>
+
+<div class="def-box">
+<span class="box-title">定義（アンサンブルと密度演算子）</span>
+系が状態 \(\ket{\psi_i}\) に確率 \(p_i\) である（\(\sum_ip_i=1\)）とき、
+組 \(\{p_i,\ket{\psi_i}\}\) を<strong>純粋状態のアンサンブル</strong>と呼び、
+\[
+\rho \equiv \sum_i p_i\,\ketbra{\psi_i}{\psi_i}
+\]
+を系の<strong>密度演算子</strong>と定義する。
+\(\rho = \ketbra\psi\psi\)（1項のみ）のとき<strong>純粋状態</strong>、
+そうでないとき<strong>混合状態</strong>という。
+</div>
+
+<p>
+定義の意図は、「量子力学のすべての規則が \(\rho\) だけで書ける」ことにある。
+順に確認する。
+</p>
+
+<p><strong>測定。</strong>
+測定 \(\{M_m\}\) を行う。系が \(\ket{\psi_i}\) だったとすれば結果 \(m\) の確率は
+\(\bra{\psi_i}M_m^\dagger M_m\ket{\psi_i} = \tr(M_m^\dagger M_m\ketbra{\psi_i}{\psi_i})\)
+（§2.1.8 の公式）なので、全体では
+\[
+p(m) = \sum_i p_i\,\tr\bigl(M_m^\dagger M_m\ketbra{\psi_i}{\psi_i}\bigr)
+= \tr\bigl(M_m^\dagger M_m\,\rho\bigr)
+\]
+（トレースの線形性）。測定後は、系が \(\ket{\psi_i}\) だった場合の測定後状態が
+\(M_m\ket{\psi_i}/\sqrt{p(m|i)}\) であることと、結果 \(m\) を見た後の
+条件付き確率 \(p(i|m) = p_ip(m|i)/p(m)\)（Bayes 則）を合わせると、測定後のアンサンブルは
+\[
+\rho_m = \sum_i p(i|m)\,\frac{M_m\ketbra{\psi_i}{\psi_i}M_m^\dagger}{p(m|i)}
+= \frac{M_m\,\rho\,M_m^\dagger}{\tr(M_m^\dagger M_m\rho)}
+\]
+となる。確率も測定後状態も \(\rho\) のみに依存する。
+</p>
+
+<p><strong>ユニタリ発展。</strong>
+各 \(\ket{\psi_i}\) が \(U\ket{\psi_i}\) になるので
+\[
+\rho = \sum_ip_i\ketbra{\psi_i}{\psi_i}
+\;\xrightarrow{\ U\ }\;
+\sum_ip_i\,U\ketbra{\psi_i}{\psi_i}U^\dagger = U\rho\,U^\dagger .
+\]
+</p>
+
+<p>
+まとめると、要請1〜3は次のように書き換えられる（要請4は §2.4.3 で）：
+状態は密度演算子 \(\rho\)、発展は \(\rho\mapsto U\rho U^\dagger\)、
+測定は \(p(m)=\tr(M_m^\dagger M_m\rho)\)、
+測定後状態は \(M_m\rho M_m^\dagger/p(m)\)。
+なお、アンサンブルの各要素が混合状態でもよい：
+系が確率 \(q_j\) で密度演算子 \(\rho_j\) の状態に準備されるなら、
+全体は \(\rho = \sum_jq_j\rho_j\) で記述される（上と同じ計算で確認できる）。
+密度演算子の凸結合はまた密度演算子である。
+</p>
+
+<h3 id="sec-2-4-2">§2.4.2 密度演算子の一般的性質</h3>
+
+<p>
+どんな演算子が密度演算子になりうるかは、アンサンブルへの言及なしに特徴づけられる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（密度演算子の特徴づけ）</span>
+演算子 \(\rho\) がなんらかのアンサンブル \(\{p_i,\ket{\psi_i}\}\) の密度演算子であるための
+必要十分条件は、次の2つである：
+<ol>
+<li><strong>トレース条件</strong>：\(\tr\rho = 1\)。</li>
+<li><strong>正値条件</strong>：\(\rho\) は正の演算子である。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+（必要性）\(\rho = \sum_ip_i\ketbra{\psi_i}{\psi_i}\) とする。
+\(\tr\ketbra{\psi_i}{\psi_i} = \braket{\psi_i}{\psi_i} = 1\) より
+\(\tr\rho = \sum_ip_i = 1\)。また任意の \(\ket\varphi\) に対し
+\[
+\bra\varphi\rho\ket\varphi = \sum_ip_i\,\braket{\varphi}{\psi_i}\braket{\psi_i}{\varphi}
+= \sum_ip_i\,|\braket{\varphi}{\psi_i}|^2 \ge 0 .
+\]
+（十分性）\(\rho\) が正で \(\tr\rho=1\) とする。正の演算子は Hermite（§2.1.6）だから
+スペクトル分解でき、
+\[
+\rho = \sum_j \lambda_j\,\ketbra jj,\qquad \lambda_j\ge0,\quad
+\sum_j\lambda_j = \tr\rho = 1
+\]
+（\(\{\ket j\}\) は正規直交、\(\lambda_j\) は固有値）。
+これは \(\{\lambda_j,\ket j\}\) を確率分布と状態の組とするアンサンブルの
+密度演算子にほかならない。<span class="qed">∎</span>
+</div>
+
+<p>
+以後この2条件を密度演算子の定義として採用する。いくつか帰結を挙げる。
+</p>
+
+<ul>
+<li><strong>純粋性の判定</strong>：\(\tr(\rho^2) = \sum_j\lambda_j^2 \le \bigl(\sum_j\lambda_j\bigr)^2 = 1\)
+であり、等号は固有値が1つだけ 1 で残りが 0、すなわち \(\rho\) が純粋状態のときに限る。
+\(\tr(\rho^2)\) は<strong>純粋度</strong>と呼ばれ、純粋か混合かの簡便な判定式
+\(\tr(\rho^2)=1 \iff\) 純粋、を与える。</li>
+<li><strong>最大混合状態</strong>：\(d\) 次元で \(\rho = I/d\) はどの正規直交基底で測っても
+一様分布を返す「完全に無知」な状態である。1量子ビットの \(I/2\) が典型。</li>
+<li><strong>Bloch 球の内部</strong>：1量子ビットの任意の密度演算子は
+\[
+\rho = \frac{I + \vec r\cdot\vec\sigma}{2},\qquad \vec r\in\mathbb{R}^3,\ \ |\vec r\,|\le1
+\]
+と一意に書ける（\(\{I,X,Y,Z\}\) が基底であること、Hermite 性から係数が実であること、
+\(\tr\rho=1\) から \(I\) の係数が \(1/2\) であること、
+固有値 \((1\pm|\vec r|)/2\ge0\) から \(|\vec r|\le1\) が従う）。
+\(|\vec r|=1\) が純粋状態（球面）、\(|\vec r|&lt;1\) が混合状態（内部）、
+\(\vec r=0\) が最大混合状態（中心）である。
+Bloch「球面」が球体に拡張された。</li>
+</ul>
+
+<p><strong>アンサンブルの非一意性とユニタリ自由度。</strong>
+密度演算子の重要な——最初は不気味な——性質は、
+<strong>異なるアンサンブルが同じ \(\rho\) を与えうる</strong>ことである。例を見る。
+\[
+\rho = \frac34\ketbra00 + \frac14\ketbra11
+\]
+は「確率 3/4 で \(\ket0\)、1/4 で \(\ket1\)」のアンサンブルから作れるが、
+\[
+\ket a = \sqrt{\tfrac34}\ket0 + \sqrt{\tfrac14}\ket1,\qquad
+\ket b = \sqrt{\tfrac34}\ket0 - \sqrt{\tfrac14}\ket1
+\]
+として「確率 1/2 で \(\ket a\)、1/2 で \(\ket b\)」からも作れる：
+\[
+\frac12\ketbra aa + \frac12\ketbra bb
+= \frac34\ketbra00 + \frac14\ketbra11
+\]
+（交差項が相殺する）。§2.4.1 で見たとおり測定統計は \(\rho\) だけで決まるから、
+<strong>この2つのアンサンブルはどんな実験でも区別できない</strong>。
+「系は本当は \(\ket0\) か \(\ket1\) のどちらかにある」という言い方は、
+検証不可能な余計な仮定を含んでいることになる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（アンサンブルのユニタリ自由度）</span>
+規格化を確率に繰り込んだベクトル \(\ket{\tilde\psi_i} \equiv \sqrt{p_i}\ket{\psi_i}\) を使うと
+\(\rho = \sum_i\ketbra{\tilde\psi_i}{\tilde\psi_i}\) と書ける。2つの組
+\(\{\ket{\tilde\psi_i}\}_{i=1}^m\) と \(\{\ket{\tilde\varphi_j}\}_{j=1}^n\) が
+同じ密度演算子を生成する、すなわち
+\(\sum_i\ketbra{\tilde\psi_i}{\tilde\psi_i} = \sum_j\ketbra{\tilde\varphi_j}{\tilde\varphi_j}\)
+であるための必要十分条件は、複素数の行列 \(u_{ij}\) で
+「行と列を揃えるため短い方に零ベクトルを付け足したうえで」ユニタリになるものが存在して
+\[
+\ket{\tilde\psi_i} = \sum_j u_{ij}\,\ket{\tilde\varphi_j}
+\]
+と結ばれることである。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（十分性）と必要性の要点</span>
+（十分性）\(u\) がユニタリなら
+\[
+\sum_i\ketbra{\tilde\psi_i}{\tilde\psi_i}
+= \sum_{jk}\Bigl(\sum_i u_{ij}\,u_{ik}^*\Bigr)\,\ketbra{\tilde\varphi_j}{\tilde\varphi_k}
+= \sum_{jk}\delta_{kj}\,\ketbra{\tilde\varphi_j}{\tilde\varphi_k}
+= \sum_j\ketbra{\tilde\varphi_j}{\tilde\varphi_j}.
+\]
+（\(\sum_iu_{ij}u_{ik}^* = \sum_i(u^\dagger)_{ki}u_{ij} = (u^\dagger u)_{kj} = \delta_{kj}\) を使った。）
+（必要性）\(\rho\) のスペクトル分解を \(\rho = \sum_k\lambda_k\ketbra kk\)、
+\(\ket{\tilde k}\equiv\sqrt{\lambda_k}\ket k\) とおく。
+\(\rho = \sum_i\ketbra{\tilde\psi_i}{\tilde\psi_i}\) を与える任意の \(\{\ket{\tilde\psi_i}\}\) について、
+まず各 \(\ket{\tilde\psi_i}\) が \(\{\ket{\tilde k}\}\) の張る空間（\(\rho\) の台）に
+入ることを示す：台の直交補空間の元 \(\ket\chi\) に対し
+\(0 = \bra\chi\rho\ket\chi = \sum_i|\braket{\chi}{\tilde\psi_i}|^2\) だから
+すべての \(i\) で \(\braket\chi{\tilde\psi_i}=0\)。
+よって \(\ket{\tilde\psi_i} = \sum_k c_{ik}\ket{\tilde k}\) と展開できる。
+\(\rho\) に代入して \(\ketbra{\tilde k}{\tilde l}\) の係数を比較すると
+\(\sum_i c_{ik}c_{il}^* = \delta_{kl}\)、すなわち行列 \(c\) の列ベクトルが正規直交である。
+これは \(c\) をユニタリ行列に（列を付け足して）拡張できることを意味し、
+両方の組をスペクトル分解の組 \(\{\ket{\tilde k}\}\) と結ぶユニタリの積として
+主張のユニタリ \(u\) が得られる。<span class="qed">∎</span>
+</div>
+
+<div class="example-box">
+<span class="box-title">例</span>
+上の \(\rho = \frac34\ketbra00+\frac14\ketbra11\) では、
+\(\ket{\tilde a} = \ket a/\sqrt2\), \(\ket{\tilde b} = \ket b/\sqrt2\) と
+\(\ket{\tilde 0} = \sqrt{3/4}\,\ket0\), \(\ket{\tilde 1} = \sqrt{1/4}\,\ket1\) が
+\[
+\ket{\tilde a} = \frac{1}{\sqrt2}\bigl(\ket{\tilde0}+\ket{\tilde1}\bigr),\qquad
+\ket{\tilde b} = \frac{1}{\sqrt2}\bigl(\ket{\tilde0}-\ket{\tilde1}\bigr)
+\]
+と、ユニタリ行列 \(u = \frac{1}{\sqrt2}\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}\) で結ばれている。
+定理は「同じ \(\rho\) を与えるアンサンブルの全体」を完全に分類しており、
+たとえば固有値分解以外にどんな確率でどんな状態を混ぜれば同じ \(\rho\) になるかが
+系統的に構成できる。この定理は第9章（距離尺度）や第11章（エントロピー）で
+繰り返し使われる。
+</div>
+
+<h3 id="sec-2-4-3">§2.4.3 縮約密度演算子</h3>
+
+<p>
+密度演算子の言語が本領を発揮するのは、<strong>合成系の一部だけ</strong>を記述するときである。
+合成系 AB が状態 \(\rho^{AB}\) にあるとき、系 A だけに注目した記述は
+<strong>縮約密度演算子 (reduced density operator)</strong>
+\[
+\rho^A \equiv \tr_B\bigl(\rho^{AB}\bigr)
+\]
+で与えられる。ここで \(\tr_B\) は<strong>部分トレース (partial trace)</strong> と呼ばれる操作で、
+\[
+\tr_B\bigl(\ketbra{a_1}{a_2}\otimes\ketbra{b_1}{b_2}\bigr)
+\equiv \ketbra{a_1}{a_2}\;\tr\bigl(\ketbra{b_1}{b_2}\bigr)
+= \braket{b_2}{b_1}\,\ketbra{a_1}{a_2}
+\]
+を線形に拡張して定義する（\(\ket{a_i}\in H_A\), \(\ket{b_i}\in H_B\)。
+任意の演算子はこの形の線形結合なので定義は完結している）。
+B の正規直交基底 \(\{\ket j\}\) を使えば
+\(\tr_B(\rho^{AB}) = \sum_j (I\otimes\bra j)\,\rho^{AB}\,(I\otimes\ket j)\) とも書ける。
+</p>
+
+<div class="example-box">
+<span class="box-title">例1（積状態）</span>
+\(\rho^{AB} = \rho\otimes\sigma\) なら
+\(\rho^A = \rho\,\tr\sigma = \rho\)。独立に準備した系の片方の記述は
+その系自身の状態——当然そうあるべき結果である。
+</div>
+
+<div class="example-box">
+<span class="box-title">例2（Bell 状態）</span>
+\(\ket{\beta_{00}} = (\ket{00}+\ket{11})/\sqrt2\) の密度演算子は
+\[
+\rho^{AB} = \frac{\ketbra{00}{00} + \ketbra{00}{11} + \ketbra{11}{00} + \ketbra{11}{11}}{2}.
+\]
+部分トレースを取る。\(\tr_B\ketbra{00}{11} = \braket10\,\ketbra01 = 0\) など
+交差項は消え、
+\[
+\rho^A = \frac{\ketbra00\,\braket00 + \ketbra11\,\braket11}{2}
+= \frac{\ketbra00 + \ketbra11}{2} = \frac{I}{2}.
+\]
+<strong>合成系は純粋状態なのに、部分系は最大混合状態</strong>である
+（\(\tr[(\rho^A)^2] = 1/2 &lt; 1\)）。
+「全体を完全に知っていても部分については最大限無知でありうる」。
+これは古典確率論にはない、エンタングルメントの際立った特徴である。
+実は、部分系が混合になることとエンタングルしていることは同値である（§2.5）。
+超高密度符号化（§2.3）の盗聴耐性も、
+4つの Bell 状態すべてで \(\rho^A = I/2\) となることの帰結である。
+また第11章では \(\rho^A\) の混合の度合い（エントロピー）で
+エンタングルメントを定量化する。
+</div>
+
+<div class="remark-box">
+<span class="box-title">なぜ部分トレースが「正しい」記述なのか</span>
+部分トレースは天下りな定義に見えるが、次の意味で一意に正当化される。
+系 A の任意の観測量 \(M\) の測定は、合成系では \(M\otimes I\) の測定である（要請4）。
+「A だけの状態」\(\rho^A\) に要求すべきことは、
+<strong>A 上のあらゆる測定の統計を正しく再現する</strong>こと：
+\[
+\tr\bigl(M\,\rho^A\bigr) = \tr\bigl((M\otimes I)\,\rho^{AB}\bigr)
+\quad\text{がすべての Hermite } M \text{ で成立}.
+\]
+\(\rho^A = \tr_B\rho^{AB}\) がこれを満たすことは基底で書き下せば確認でき、
+逆にこの条件を満たす \(\rho^A\) は一意である
+（写像 \(\rho^A\mapsto\{\tr(M\rho^A)\}_M\) は Hilbert–Schmidt 内積に関する展開係数を
+すべて指定するから単射）。
+すなわち部分トレースは「局所測定の統計をすべて正しく与える唯一の局所状態」であり、
+これ以外の定義はあり得ない。
+</div>
+
+<div class="example-box">
+<span class="box-title">例3（テレポーテーション再訪）</span>
+量子テレポーテーション（§1.3.7）で、Alice の測定直後・古典通信前の Bob の状態を
+密度演算子で書いてみる。Alice の結果 \(m_1m_2\) は各確率 1/4 で、
+Bob の状態はそれぞれ \(\ket\psi,\ X\ket\psi,\ Z\ket\psi,\ XZ\ket\psi\) だから
+\[
+\rho^B = \frac14\Bigl[\ketbra\psi\psi + X\ketbra\psi\psi X + Z\ketbra\psi\psi Z + XZ\ketbra\psi\psi ZX\Bigr]
+\]
+となり、\(\ketbra\psi\psi = \frac{I+\vec r\cdot\vec\sigma}{2}\) を代入して
+Pauli 行列の反交換関係で整理すると \(\vec\sigma\) の各成分が相殺し \(\rho^B = I/2\) が得られる。
+Bob の状態は \(\ket\psi\) に依らない完全な混合であり、
+<strong>古典ビットが届く前には何の情報も伝わっていない</strong>——
+テレポーテーションが超光速通信でないことの、これが厳密な表現である。
+</div>
+</section>
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-5">Schmidt 分解と純粋化<span class="en">The Schmidt decomposition and purifications</span></h2>
+
+<p>
+2部合成系の純粋状態には、驚くほど強い標準形が存在する。
+本節の2つの道具——Schmidt 分解と純粋化——は、
+量子情報理論（Part III）で息をするように使われる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Schmidt 分解）</span>
+合成系 AB の任意の純粋状態 \(\ket\psi\) に対し、
+A の正規直交系 \(\{\ket{i_A}\}\)、B の正規直交系 \(\{\ket{i_B}\}\)、
+および非負実数 \(\lambda_i\)（\(\sum_i\lambda_i^2 = 1\)）が存在して
+\[
+\ket{\psi} = \sum_i \lambda_i\,\ket{i_A}\otimes\ket{i_B}
+\]
+と書ける。\(\lambda_i\) を <strong>Schmidt 係数</strong>と呼ぶ。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+簡単のため \(\dim H_A = \dim H_B = d\) とする（一般の場合も同様）。
+A, B の固定した正規直交基底 \(\{\ket j\},\{\ket k\}\) で
+\[
+\ket\psi = \sum_{jk} a_{jk}\,\ket j\otimes\ket k
+\]
+と展開する。係数を \(d\times d\) 行列 \(a = (a_{jk})\) とみなし、
+<strong>特異値分解</strong>（§2.1.10）\(a = u\,\mathrm{d}\,v\)
+（\(u,v\) ユニタリ、\(\mathrm d\) は非負対角で対角成分 \(\lambda_i\)）を適用する。
+成分で書けば \(a_{jk} = \sum_i u_{ji}\,\lambda_i\,v_{ik}\) なので
+\[
+\ket\psi = \sum_{ijk} u_{ji}\,\lambda_i\,v_{ik}\;\ket j\otimes\ket k
+= \sum_i \lambda_i\,
+\underbrace{\Bigl(\sum_j u_{ji}\ket j\Bigr)}_{\equiv\,\ket{i_A}}\otimes
+\underbrace{\Bigl(\sum_k v_{ik}\ket k\Bigr)}_{\equiv\,\ket{i_B}} .
+\]
+\(u\) がユニタリだから \(\{\ket{i_A}\}\) は正規直交
+（\(\braket{i_A}{i'_A} = \sum_ju_{ji}^*u_{ji'} = \delta_{ii'}\)）、
+\(v\) の<strong>行</strong>ベクトルも正規直交（\(vv^\dagger=I\)）だから \(\{\ket{i_B}\}\) も正規直交である。
+規格化は \(1 = \braket\psi\psi = \sum_i\lambda_i^2\)。<span class="qed">∎</span>
+</div>
+
+<p>
+帰結を並べる。
+</p>
+
+<ul>
+<li><strong>両部分系の縮約状態は同じ固有値を持つ。</strong>
+Schmidt 形から直接計算すると
+\[
+\rho^A = \tr_B\ketbra\psi\psi = \sum_i\lambda_i^2\,\ketbra{i_A}{i_A},\qquad
+\rho^B = \sum_i\lambda_i^2\,\ketbra{i_B}{i_B}.
+\]
+つまり \(\rho^A\) と \(\rho^B\) の固有値（スペクトル）は
+零を除いて完全に一致し、どちらも \(\{\lambda_i^2\}\) である。
+A と B の次元が違っても、物理的な内容（エントロピーなど固有値だけで決まる量）は
+両側で等しい——純粋状態の2部系に固有の対称性である。</li>
+<li><strong>Schmidt 基底の求め方</strong>：\(\ket{i_A}\) は \(\rho^A\) の固有基底、
+\(\ket{i_B}\) は \(\rho^B\) の固有基底に取ればよい（上の式から読み取れる）。</li>
+<li><strong>Schmidt 数</strong>：非零の Schmidt 係数の個数を <strong>Schmidt 数</strong>
+（Schmidt ランク）と呼ぶ。Schmidt 数は局所ユニタリ \(U\otimes V\) で不変であり、
+\[
+\text{Schmidt 数} = 1 \iff \ket\psi\text{ は積状態} \iff \rho^A\text{ が純粋}
+\]
+が成り立つ。すなわち<strong>「エンタングルしている」＝「Schmidt 数 \(\ge2\)」＝
+「部分系が混合状態」</strong>という3つの言い換えが得られた。
+エンタングルメントの定性的判定はこれで完全に機械化される。</li>
+</ul>
+
+<div class="example-box">
+<span class="box-title">例</span>
+(i) Bell 状態 \((\ket{00}+\ket{11})/\sqrt2\) は既に Schmidt 形であり、
+Schmidt 係数は \((1/\sqrt2,1/\sqrt2)\)、Schmidt 数 2。
+両方の係数が等しいという意味で「最大にエンタングルした」状態である。
+(ii) \((\ket{00}+\ket{01}+\ket{10}+\ket{11})/2 = \ket+\otimes\ket+\) は
+一見4項の重ね合わせだが Schmidt 数 1 の積状態である。
+見た目の項数はエンタングルメントの尺度にならず、Schmidt 分解して初めて構造が見える。
+(iii) \(\cos\theta\,\ket{00}+\sin\theta\,\ket{11}\) は Schmidt 係数
+\((\cos\theta,\sin\theta)\) を持ち、\(\theta\) を \(0\) から \(\pi/4\) へ動かすと
+積状態から最大エンタングル状態まで連続的に移る。
+</div>
+
+<p><strong>純粋化。</strong>
+Schmidt 分解が「純粋状態 → 混合した部分系」の方向なら、
+<strong>純粋化 (purification)</strong> はその逆である：
+任意の混合状態は、より大きな系の純粋状態の部分として実現できる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（純粋化の存在）</span>
+系 A の任意の密度演算子 \(\rho^A\) に対し、補助系 R（<strong>参照系</strong>と呼ぶ。
+\(\dim H_R = \dim H_A\) で足りる）と AR の純粋状態 \(\ket{AR}\) が存在して
+\[
+\tr_R\bigl(\ketbra{AR}{AR}\bigr) = \rho^A
+\]
+が成り立つ。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（構成）</span>
+\(\rho^A\) のスペクトル分解 \(\rho^A = \sum_ip_i\ketbra{i_A}{i_A}\) をとり、
+R の正規直交基底 \(\{\ket{i_R}\}\) を用意して
+\[
+\ket{AR} \equiv \sum_i \sqrt{p_i}\;\ket{i_A}\otimes\ket{i_R}
+\]
+と定める（規格化：\(\sum_ip_i=1\)）。部分トレースを計算すると
+\[
+\tr_R\ketbra{AR}{AR}
+= \sum_{ij}\sqrt{p_ip_j}\,\ketbra{i_A}{j_A}\;\braket{j_R}{i_R}
+= \sum_i p_i\,\ketbra{i_A}{i_A} = \rho^A .
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">純粋化の使い方と Schmidt 分解との関係</span>
+構成を見れば分かるとおり、\(\ket{AR}\) の Schmidt 分解がそのまま
+\(\rho^A\) のスペクトル分解に対応している：Schmidt 係数の2乗 ＝ \(\rho^A\) の固有値。
+純粋化は一意ではないが、任意の2つの純粋化は参照系側のユニタリ \(I\otimes U_R\) で
+移り合うことが示せる（§2.4.2 のアンサンブルのユニタリ自由度の言い換え）。
+概念的な効用は大きい。「混合状態」は常に「大きな純粋状態を部分的に見たもの」と
+思ってよいことになるからである。
+これにより、混合状態に関する主張を純粋状態の定理に帰着させる証明技法
+（第9章の忠実度、第11章のエントロピー不等式など）が使える。
+物理的にも、「系のランダムさは、見ていない環境とのエンタングルメントの現れ」
+という描像を与える。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-6">EPR と Bell 不等式<span class="en">EPR and the Bell inequality</span></h2>
+
+<p>
+最後に、量子力学が世界について何を語っているかを最も鋭く突く題材を扱う。
+問いはこうである：<strong>測定結果の確率的な振る舞いは、
+我々がまだ知らない「隠れた変数」で決まっている決定論的な世界の反映ではないのか？</strong>
+驚くべきことに、この問いは哲学ではなく<strong>実験</strong>で決着がつく。
+</p>
+
+<p><strong>EPR の議論。</strong>
+1935年、Einstein, Podolsky, Rosen は量子力学の記述が不完全だと論じた。
+議論を現代的な形（Bohm 版）で再構成する。2量子ビットのシングレット状態
+\[
+\ket{\Psi^-} = \frac{\ket{01}-\ket{10}}{\sqrt2}
+\]
+を Alice と Bob が1つずつ持って遠く離れる。この状態はどの方向 \(\hat n\) についても
+反相関を示す：両者が同じ観測量 \(\hat n\cdot\vec\sigma\) を測ると、結果は必ず逆になる
+（\(\ket{\Psi^-}\) が任意の基底で \((\ket{ab}-\ket{ba})/\sqrt2\) の形を保つことから従う）。
+すると Alice が \(\hat n\cdot\vec\sigma\) を測れば、Bob の系に触れずに
+Bob 側の測定結果を確実に予言できる。EPR はここで2つの前提を置く：
+</p>
+
+<ul>
+<li><strong>実在性 (realism)</strong>：系を乱さずに確実に予言できる物理量の値は、
+測定と無関係に「実在の要素」として系に備わっている。</li>
+<li><strong>局所性 (locality)</strong>：空間的に離れた Alice の測定の選択が、
+Bob の系の実在の要素を瞬時に変えることはない。</li>
+</ul>
+
+<p>
+2つを合わせると（<strong>局所実在論</strong>）、Bob の量子ビットは
+<strong>あらゆる方向のスピン値をあらかじめ持っている</strong>ことになる。
+しかし量子力学の状態ベクトルは非可換な観測量の値を同時には指定しない（§2.2.5）。
+ゆえに量子力学は不完全であり、値を指定する「隠れた変数」を補った理論があるはずだ——
+これが EPR の結論である。30年間、この対立は検証不可能な形而上学と見なされていた。
+1964年、Bell は局所実在論そのものが<strong>実験で検証可能な不等式</strong>を含意することを
+発見した。以下ではその代表である CHSH 不等式
+（Clauser–Horne–Shimony–Holt, 1969）を導く。
+</p>
+
+<p><strong>CHSH 不等式の導出——量子力学はどこにも使わない。</strong>
+次の実験を考える。発生源が粒子対を作り、1つを Alice、1つを Bob に送る。
+Alice はコイントスで観測量 \(Q\) か \(R\) のどちらかを選んで測り、
+Bob も独立に \(S\) か \(T\) を選んで測る。どの測定も結果は \(\pm1\) とする。
+測定は同時（因果的に切り離された状態）に行い、これを多数回繰り返す。
+</p>
+
+<p>
+局所実在論を仮定する。各粒子対は測定される前から4つの値
+\(q,r,s,t\in\{-1,+1\}\) を確率分布 \(p(q,r,s,t)\) に従って持っており、
+測定はその値を読み出すだけだとする。
+局所性より、Bob 側の値 \(s,t\) は Alice がどちらを測ったかに依存しない。ここで組み合わせ
+\[
+qs + rs + rt - qt = (q+r)\,s + (r-q)\,t
+\]
+を考える。\(q,r=\pm1\) だから \(q+r\) と \(r-q\) の<strong>一方は必ず \(0\)、
+他方は \(\pm2\)</strong> である。したがってどの \((q,r,s,t)\) に対しても
+\[
+qs + rs + rt - qt = \pm2 .
+\]
+期待値を取ると
+\[
+\mathbb{E}(QS) + \mathbb{E}(RS) + \mathbb{E}(RT) - \mathbb{E}(QT)
+= \mathbb{E}(QS+RS+RT-QT) \le 2 .
+\]
+これが <strong>CHSH 不等式</strong>である。各期待値 \(\mathbb{E}(QS)\) 等は
+実験で（測定の組ごとの標本平均として）測定できる量であることに注意。
+導出に使ったのは「値が測定前から存在する」ことと「相手の選択に依らない」ことだけである。
+</p>
+
+<div class="thm-box">
+<span class="box-title">CHSH 不等式（局所実在論の帰結）</span>
+\[
+\langle QS\rangle + \langle RS\rangle + \langle RT\rangle - \langle QT\rangle \;\le\; 2 .
+\]
+</div>
+
+<p><strong>量子力学による破れ。</strong>
+シングレット状態 \(\ket{\Psi^-} = (\ket{01}-\ket{10})/\sqrt2\) を使い、観測量を
+\[
+Q = Z_A,\quad R = X_A,\qquad
+S = \frac{-Z-X}{\sqrt2}\bigg|_B,\quad T = \frac{Z-X}{\sqrt2}\bigg|_B
+\]
+と選ぶ（すべて固有値 \(\pm1\) の Hermite 演算子である）。
+計算に必要なのはシングレットの相関関数
+\[
+\bra{\Psi^-}\,(\hat a\cdot\vec\sigma)\otimes(\hat b\cdot\vec\sigma)\,\ket{\Psi^-}
+= -\,\hat a\cdot\hat b
+\]
+だけである（成分ごとの計算：\(\bra{\Psi^-}\sigma_i\otimes\sigma_j\ket{\Psi^-} = -\delta_{ij}\)
+を確認すればよい。たとえば \(Z\otimes Z\) はシングレットの両項を固有値 \(-1\) で返し、
+\(X\otimes X\) は2項を入れ替えるので符号 \(-1\) が出る）。これを使うと
+\[
+\langle QS\rangle = -\,\hat z\cdot\frac{-\hat z-\hat x}{\sqrt2} = \frac{1}{\sqrt2},\qquad
+\langle RS\rangle = \frac{1}{\sqrt2},\qquad
+\langle RT\rangle = \frac{1}{\sqrt2},\qquad
+\langle QT\rangle = -\frac{1}{\sqrt2},
+\]
+したがって
+\[
+\langle QS\rangle + \langle RS\rangle + \langle RT\rangle - \langle QT\rangle
+= \frac{4}{\sqrt2} = 2\sqrt2 \;\approx\; 2.83 \;&gt;\; 2 .
+\]
+<strong>量子力学は CHSH 不等式を破る。</strong>
+</p>
+
+<div class="remark-box">
+<span class="box-title">Tsirelson 限界</span>
+\(2\sqrt2\) は偶然ではなく、量子力学が許す最大値である（<strong>Tsirelson の限界</strong>）。
+証明の概略：\(\mathcal{B} \equiv Q\otimes S + R\otimes S + R\otimes T - Q\otimes T\) とおくと、
+\(Q^2=R^2=S^2=T^2=I\) と \([Q\otimes S,\ R\otimes T]\) 型の交換子を使った直接計算で
+\[
+\mathcal{B}^2 = 4\,I\otimes I \;-\; [Q,R]\otimes[S,T]
+\]
+が得られる。演算子ノルムで \(\|[Q,R]\|\le2\|Q\|\|R\| = 2\) などと評価すると
+\(\|\mathcal B^2\|\le 4+4 = 8\)、よって
+\(|\langle\mathcal B\rangle| \le \|\mathcal B\| \le 2\sqrt2\)。
+古典（可換な場合：\([Q,R]=0\) または \([S,T]=0\)）では \(\|\mathcal B^2\|\le4\) となって
+上限 2 が回復する——<strong>破れの源泉が非可換性にある</strong>ことがこの式に凝縮されている。
+</div>
+
+<p><strong>実験と意義。</strong>
+CHSH 不等式は実験にかけられる。1980年代の Aspect らの光子対実験に始まり、測定基底を光子の飛行中に切り替える実験、
+検出効率と局所性の抜け穴 (loophole) を同時に塞いだ実験（2015年）へと精度が上がってきた。
+結果は一貫して量子力学の予言（\(2\sqrt2\) に迫る値）を支持しており、
+CHSH 不等式は破れている。結論は避けがたい：
+</p>
+
+<div class="remark-box">
+<span class="box-title">Bell の定理の教訓</span>
+<strong>世界は局所実在論では記述できない。</strong>
+すなわち「実在性」（測定前から値が決まっている）と「局所性」（遠隔の選択が瞬時に影響しない）の
+少なくとも一方を放棄しなければならない。
+どちらを捨てるかは解釈に依存するが、いずれにせよ
+エンタングルした状態の相関は、古典的な相関（共通原因で説明できる相関）の
+真に外側にある。
+なお、この相関は通信には使えない（Bob 単独の統計は Alice の選択に依らない。
+§2.4.3 例3と同種の計算で示せる）ので、相対論との直接の矛盾はない。
+</div>
+
+<p>
+量子情報の観点から強調すべきは、Bell の定理が「量子力学の奇妙さ」の証明で
+終わらないことである。CHSH の破れは、<strong>エンタングルメントが古典資源では複製できない相関資源である</strong>ことの
+定量的な証拠である。
+この資源がテレポーテーション（§1.3.7）・超高密度符号化（§2.3）・
+デバイス非依存の量子鍵配送などの能力の源になっている。
+「エンタングルメントには古典を超える力がある。それを情報処理に使え」——
+この教訓とともに Part I の物理的準備を終え、
+第3章では計算機科学の側の準備に移る。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第2章のまとめ</span>
+<ul>
+<li><strong>線形代数（§2.1）</strong>：Dirac 記法・完全性関係 \(\sum_i\ketbra ii=I\)・
+Cauchy–Schwarz。正規演算子はスペクトル分解 \(M=\sum_m\lambda_mP_m\) を持ち、
+Hermite ⇔ 固有値が実、ユニタリ ⇔ 固有値が位相、正 ⇔ 固有値 \(\ge0\)。
+テンソル積が合成系を、演算子関数 \(f(A)=\sum f(a)\ketbra aa\) と
+トレースが計算道具を与える。非可換性は \([A,B]\) で測り、
+可換な Hermite 演算子は同時対角化できる。任意の演算子は極分解 \(A=UJ\)・SVD \(A=UDV\) を持つ。</li>
+<li><strong>4つの要請（§2.2）</strong>：①状態＝Hilbert 空間の単位ベクトル、
+②閉じた系の発展＝ユニタリ（Schrödinger 方程式の積分形 \(U=e^{-iHt/\hbar}\)）、
+③測定＝\(\{M_m\}\)、\(p(m)=\bra\psi M_m^\dagger M_m\ket\psi\)、
+④合成系＝テンソル積。非直交状態は確実には識別できない。
+射影測定では \(\langle M\rangle=\bra\psi M\ket\psi\) で、非可換性から不確定性関係
+\(\Delta A\,\Delta B\ge|\langle[A,B]\rangle|/2\) が従う。
+統計だけ欲しければ POVM \(\{E_m\}\) で足り、
+「誤答ゼロ・時々棄権」の状態識別のような射影測定にない戦略が書ける。
+全体位相は無意味、相対位相は物理的。</li>
+<li><strong>超高密度符号化（§2.3）</strong>：Bell 対の片側への \(\{I,X,Z,ZX\}\) で
+4つの Bell 状態を作り分けられるので、量子1ビットの送信＋事前共有 EPR 対で古典2ビットが送れる。</li>
+<li><strong>密度演算子（§2.4）</strong>：\(\rho=\sum_ip_i\ketbra{\psi_i}{\psi_i}\)。
+特徴づけは「\(\tr\rho=1\) かつ \(\rho\ge0\)」。発展は \(U\rho U^\dagger\)、
+測定は \(p(m)=\tr(M_m^\dagger M_m\rho)\)。同じ \(\rho\) を与えるアンサンブルは
+ユニタリ行列の自由度でちょうど分類される。部分系は部分トレース
+\(\rho^A=\tr_B\rho^{AB}\) で記述され、これは局所測定統計を再現する唯一の選択。
+Bell 状態の部分系は \(I/2\)（純粋な全体・最大に無知な部分）。</li>
+<li><strong>Schmidt 分解と純粋化（§2.5）</strong>：2部純粋状態は
+\(\ket\psi=\sum_i\lambda_i\ket{i_A}\ket{i_B}\) と書け、\(\rho^A,\rho^B\) は同スペクトル。
+Schmidt 数 \(\ge2\) ⇔ エンタングル ⇔ 部分系が混合。
+逆に任意の混合状態は参照系を足せば純粋状態の部分トレースとして実現できる（純粋化）。</li>
+<li><strong>Bell 不等式（§2.6）</strong>：局所実在論は CHSH 不等式
+\(\langle QS\rangle+\langle RS\rangle+\langle RT\rangle-\langle QT\rangle\le2\) を含意する。
+量子力学はシングレットと適切な測定でこれを \(2\sqrt2\)（Tsirelson 限界）まで破り、
+実験は量子力学を支持する。エンタングルメントは古典相関の外にある資源である。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

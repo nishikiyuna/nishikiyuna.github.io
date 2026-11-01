@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="トレース距離と忠実度による量子状態の近さの測り方、および量子チャネルの情報保存性">
+  <title>第9章 量子情報の距離尺度 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter09" data-chapter="9">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第9章に対応</span>
+  第9章 量子情報の距離尺度
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+「2つの量子状態はどれくらい近いか」「量子チャネルは情報をどれくらい忠実に保つか」。
+量子誤り訂正（第10章）や量子情報理論（第11・12章）の定量的な議論は、
+すべてこの問いに答える<strong>距離尺度</strong>の上に建てられる。
+本章ではまず古典確率分布に対する2つの尺度（トレース距離と忠実度）を復習し（§9.1）、
+それぞれを量子状態に持ち上げる（§9.2）。
+量子版のトレース距離については変分公式と量子操作の下での縮小性を、
+忠実度については Uhlmann の定理と単調性を、証明の行間を埋めて示す。
+2つの尺度は Fuchs–van de Graaf の不等式で互いに挟まれ、定性的には同等であることも見る（§9.2.3）。
+最後に、静的な「状態の近さ」を動的な「チャネルの忠実さ」へ拡張する
+エンタングルメント忠実度を導入する（§9.3）。
+本章の道具立ては第8章の量子操作（トレース保存 CP 写像、Kraus 表現、purification）を前提とする。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-9-1">古典情報の距離尺度<span class="en">Distance measures for classical information</span></h2>
+
+<p>
+距離尺度に求められる役割は2種類ある。
+ひとつは<strong>静的</strong>な問い——「2つの情報（確率分布・量子状態）はどれくらい似ているか」。
+もうひとつは<strong>動的</strong>な問い——「情報を処理・伝送したとき、元の情報はどれくらい保たれたか」。
+動的な尺度は「入力と出力の静的な距離」として構成できるので、まず静的な尺度を整備する。
+本節では古典確率分布に対する標準的な2つの尺度を導入し、量子版（§9.2）の指針とする。
+どちらの尺度を使うべきかに唯一の正解はなく、
+用途に応じて扱いやすい方を選び、必要なら両者の関係式（§9.2.3）で翻訳する——
+というのが本章全体の使い方である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（古典トレース距離／全変動距離）</span>
+同じ添字集合上の確率分布 \(\{p_x\},\{q_x\}\) に対し
+\[
+D(p,q) \equiv \frac{1}{2}\sum_x |p_x - q_x|
+\]
+を<strong>トレース距離 (trace distance)</strong> と呼ぶ。
+統計学では<strong>全変動距離 (total variation distance)</strong>、
+\(L^1\) 距離（の半分）とも呼ばれる。
+</div>
+
+<p>
+\(D(p,q)\) は明らかに対称で、\(D(p,q)=0\) と \(p=q\) が同値であり、
+絶対値の三角不等式から \(D(p,r)\le D(p,q)+D(q,r)\) を満たす。
+すなわち距離の公理（計量）を満たす。値域は \(0\le D\le 1\) で、
+最大値 1 は2つの分布の台（サポート）が交わらないときに達成される。
+</p>
+
+<div class="example-box">
+<span class="box-title">例</span>
+確定分布 \(p=(1,0)\) と一様分布 \(q=(1/2,1/2)\) に対して
+\[
+D(p,q) = \frac12\Bigl(\Bigl|1-\frac12\Bigr| + \Bigl|0-\frac12\Bigr|\Bigr) = \frac12 .
+\]
+また偏りの異なるコイン \(p=(r,1-r)\), \(q=(s,1-s)\) に対しては
+\(D(p,q) = \frac12(|r-s|+|s-r|) = |r-s|\)：偏りの差そのものである。
+</div>
+
+<p>
+係数 \(1/2\) の理由は、次の<strong>変分表示</strong>を見ると腑に落ちる。
+事象（添字の部分集合）\(S\) に対する確率を \(p(S)=\sum_{x\in S}p_x\) と書くと、
+\[
+D(p,q) = \max_{S}\,\bigl(p(S) - q(S)\bigr),
+\]
+すなわちトレース距離は「<strong>2つの分布が単一の事象に与える確率の差の最大値</strong>」である。
+証明は簡単で、\(S_* \equiv \{x : p_x &gt; q_x\}\) と取ると、
+\(\sum_x (p_x - q_x) = 1-1 = 0\) より正の部分と負の部分の寄与が等しいから
+\[
+p(S_*) - q(S_*) = \sum_{x\in S_*}(p_x-q_x) = \frac12\sum_x|p_x-q_x| = D(p,q)
+\]
+であり、他方どんな \(S\) についても
+\(p(S)-q(S) = \sum_{x\in S}(p_x-q_x) \le \sum_{x\in S_*}(p_x-q_x)\)
+（\(S_*\) の外の項は非正、\(S_*\) の中の項は非負だから）となるからである。
+</p>
+
+<p>
+この変分表示は<strong>操作的意味</strong>を与える。
+誰かがコインを投げて、表なら分布 \(p\) から、裏なら分布 \(q\) から標本 \(x\) を1つ生成し、
+あなたに渡すとする。あなたの仕事は \(x\) を見て「\(p\) だった」か「\(q\) だった」かを当てることである。
+最良戦略は「\(x\in S\) なら \(p\) と答える」という形の判定で、その成功確率は
+\[
+p_{\text{成功}} = \frac12 p(S) + \frac12\bigl(1-q(S)\bigr)
+= \frac12 + \frac12\bigl(p(S)-q(S)\bigr)
+\le \frac12\bigl(1 + D(p,q)\bigr)
+\]
+となり、\(S=S_*\) で等号が成立する。
+つまり<strong>トレース距離は識別ゲームの成功確率の上乗せ分</strong>そのものである。
+\(D=0\) なら当てずっぽう（成功率 \(1/2\)）と変わらず、\(D=1\) なら確実に識別できる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（古典忠実度）</span>
+確率分布 \(\{p_x\},\{q_x\}\) に対し
+\[
+F(p,q) \equiv \sum_x \sqrt{p_x q_x}
+\]
+を<strong>忠実度 (fidelity)</strong> と呼ぶ。統計学では
+<strong>Bhattacharyya 係数</strong>として知られる量である。
+</div>
+
+<p>
+忠実度は距離ではなく「重なりの大きさ」を測る：\(F=1\) が「同一」、\(F=0\) が「完全に区別可能」で、
+トレース距離と大小の向きが逆であることに注意する。
+幾何学的には、各分布を単位ベクトル
+\(\sqrt{p} \equiv (\sqrt{p_x})_x\)（\(\sum_x(\sqrt{p_x})^2=1\) なので単位球面上の点）
+に対応させたときの<strong>ユークリッド内積</strong>
+\[
+F(p,q) = \sqrt{p}\cdot\sqrt{q}
+\]
+である。Cauchy–Schwarz の不等式から \(0\le F\le 1\) で、
+\(F=1\) と \(p=q\) が同値であることも直ちに従う。
+内積であるから \(F\) 自身は三角不等式を満たさないが、
+ベクトルのなす角 \(\arccos F\) は球面上の測地距離として距離の公理を満たす。
+この見方は量子版（§9.2.2 の角度）でそのまま生きる。
+</p>
+
+<div class="example-box">
+<span class="box-title">例</span>
+上と同じ \(p=(1,0)\), \(q=(1/2,1/2)\) では
+\[
+F(p,q) = \sqrt{1\cdot\tfrac12} + \sqrt{0\cdot\tfrac12} = \frac{1}{\sqrt2}\approx 0.707 .
+\]
+「半分ほど区別できる」（\(D=1/2\)）状況で、重なりは \(1/\sqrt2\)。
+2つの尺度が同じ状況をどう数値化するかの感覚を掴んでおくとよい
+（一般的な換算不等式は §9.2.3）。
+</div>
+
+<p>
+なぜ2つも尺度を用意するのか。トレース距離は識別確率という明快な操作的意味と
+三角不等式を持つ一方、量子版では計算が難しいことが多い。
+忠実度は purification（第2章・第8章）や積状態と相性がよく、
+量子情報理論の定理（Schumacher 圧縮、誤り訂正の条件など）では圧倒的に忠実度が現れる。
+両者は互いに他方を評価できる（§9.2.3）ので、実用上は「計算しやすい方で計算し、必要な方に翻訳する」。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-9-2">量子状態の近さ<span class="en">How close are two quantum states?</span></h2>
+
+<p>
+古典の2尺度を、確率分布 \(\to\) 密度演算子の置き換えで量子化する。
+方針は一貫している。まず「対角行列（互いに可換な状態）に制限すると古典の定義に戻る」
+ように定義を選ぶ。
+そのうえで、古典版の持っていた性質（変分表示・識別確率・計量性）が量子版でも成り立つことを、
+1つずつ証明していく。
+</p>
+
+<h3 id="sec-9-2-1">§9.2.1 トレース距離</h3>
+
+<div class="def-box">
+<span class="box-title">定義（トレース距離）</span>
+密度演算子 \(\rho,\sigma\) に対し
+\[
+D(\rho,\sigma) \equiv \frac{1}{2}\tr|\rho-\sigma|,
+\qquad |A| \equiv \sqrt{A^\dagger A}
+\]
+を<strong>トレース距離</strong>と呼ぶ。
+\(\rho-\sigma\) はエルミートなので、固有値を \(\lambda_i\) とすれば
+\(\tr|\rho-\sigma| = \sum_i |\lambda_i|\)：
+「固有値の絶対値の和（トレースノルム）」の半分である。
+</div>
+
+<p>
+\(\rho\) と \(\sigma\) が可換なら同時対角化でき、固有値の分布 \(\{r_i\},\{s_i\}\)
+（同じ固有基底での対角成分）を使って
+\(D(\rho,\sigma) = \frac12\sum_i|r_i - s_i| = D(r,s)\)：
+古典トレース距離に帰着する。よってこの定義は古典の正当な拡張である。
+</p>
+
+<p>
+以後繰り返し使う基本的な分解を先に用意しておく。
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題（直交分解）</span>
+任意の密度演算子 \(\rho,\sigma\) に対し、差は
+\[
+\rho - \sigma = Q - S,
+\qquad Q,S \ge 0,\quad QS = 0
+\]
+と、台の直交する2つの正演算子の差に分解できる。このとき
+\(|\rho-\sigma| = Q+S\) であり、\(\tr Q = \tr S = D(\rho,\sigma)\) が成り立つ。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+エルミート演算子 \(\Delta \equiv \rho-\sigma\) をスペクトル分解し
+\(\Delta = \sum_i \lambda_i \ketbra{i}{i}\) とする。
+正の固有値の部分 \(Q \equiv \sum_{\lambda_i&gt;0}\lambda_i\ketbra{i}{i}\) と
+負の固有値の部分 \(S \equiv -\sum_{\lambda_i&lt;0}\lambda_i\ketbra{i}{i}\) は
+どちらも正演算子で、固有ベクトルが互いに直交するから \(QS=0\)。
+定義から \(\Delta = Q-S\)、また
+\(|\Delta| = \sum_i|\lambda_i|\ketbra{i}{i} = Q+S\)。
+さらに \(\tr\Delta = \tr\rho - \tr\sigma = 1-1 = 0\) より \(\tr Q = \tr S\)、
+したがって \(\tr|\Delta| = \tr Q + \tr S = 2\tr Q\)、
+すなわち \(D(\rho,\sigma) = \tr Q\)。<span class="qed">∎</span>
+</div>
+
+<p>
+古典の変分表示「事象 \(S\) にわたる最大化」の量子版は、
+事象を<strong>射影演算子</strong>に置き換えたものになる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（トレース距離の変分公式）</span>
+\[
+D(\rho,\sigma) = \max_{P}\,\tr\bigl(P(\rho-\sigma)\bigr),
+\]
+ここで最大化は射影演算子 \(P\) 全体（あるいはより広く \(0\le E\le I\) を満たす
+演算子 \(E\) 全体）にわたる。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+補題の分解 \(\rho-\sigma = Q-S\) を使う。\(0\le E\le I\) を満たす任意の \(E\) に対し
+\[
+\tr\bigl(E(\rho-\sigma)\bigr) = \tr(EQ) - \tr(ES) \le \tr(EQ) \le \tr Q = D(\rho,\sigma).
+\]
+第1の不等号は \(\tr(ES) = \tr(\sqrt S E \sqrt S)\ge0\)（\(E\ge0\)）から、
+第2の不等号は \(\tr(EQ) = \tr(\sqrt Q E\sqrt Q) \le \tr(\sqrt Q I \sqrt Q) = \tr Q\)
+（\(E\le I\)）から従う。
+一方、\(P\) を \(Q\) の台への射影に取れば
+\(\tr(P(Q-S)) = \tr Q - 0 = D(\rho,\sigma)\) となり等号が達成される
+（\(PS=0\) は台の直交性による）。<span class="qed">∎</span>
+</div>
+
+<p>
+この公式から<strong>計量性</strong>が直ちに出る。対称性と非退化性
+（\(D=0 \Leftrightarrow \rho=\sigma\)）は定義から明らか。三角不等式は、
+\(D(\rho,\tau)\) を達成する射影 \(P\) を使って
+\[
+D(\rho,\tau) = \tr\bigl(P(\rho-\tau)\bigr)
+= \tr\bigl(P(\rho-\sigma)\bigr) + \tr\bigl(P(\sigma-\tau)\bigr)
+\le D(\rho,\sigma) + D(\sigma,\tau)
+\]
+と、変分公式の「最大値以下」評価を2回使うだけで示せる。
+古典で「最適な事象 \(S_*\)」が果たした役割を、量子では「最適な射影」が果たす——
+この対応は以後の証明でも繰り返し現れる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（1量子ビットでは Bloch 距離の半分）</span>
+Bloch 表示 \(\rho = \frac12(I + \vec r\cdot\vec\sigma)\),
+\(\sigma = \frac12(I + \vec s\cdot\vec\sigma)\)
+（\(\vec\sigma = (X,Y,Z)\) は Pauli 行列の組）に対して
+\[
+D(\rho,\sigma) = \frac{|\vec r - \vec s|}{2}.
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+差を取ると単位行列の項が消えて
+\(\rho - \sigma = \frac12(\vec r - \vec s)\cdot\vec\sigma\)。
+一般に実ベクトル \(\vec v\) に対し \((\vec v\cdot\vec\sigma)^2 = |\vec v|^2 I\)
+（Pauli 行列の反交換関係 \(\{\sigma_i,\sigma_j\} = 2\delta_{ij}I\) による）
+かつ \(\tr(\vec v\cdot\vec\sigma) = 0\) なので、
+\(\vec v\cdot\vec\sigma\) の固有値は \(\pm|\vec v|\) が1つずつ。
+したがって \(\rho-\sigma\) の固有値は \(\pm\frac12|\vec r-\vec s|\) で、
+\[
+D(\rho,\sigma) = \frac12\Bigl(\frac{|\vec r-\vec s|}{2} + \frac{|\vec r-\vec s|}{2}\Bigr)
+= \frac{|\vec r-\vec s|}{2}. \qquad
+\]
+<span class="qed">∎</span>
+</div>
+
+<p>
+つまり1量子ビットのトレース距離は、Bloch 球内のユークリッド距離（の半分）という
+直観的な幾何になっている。対蹠点（直交する純粋状態）で最大値
+\(D = \frac12\cdot 2 = 1\) となるのも整合的である。
+</p>
+
+<p>
+次に、古典の識別ゲームの量子版を考える。量子では「どんな測定で見分けるか」も
+戦略の一部であり、測定は POVM \(\{E_m\}\)（\(E_m\ge0\), \(\sum_m E_m = I\)。第2章）で記述される。
+状態 \(\rho\) を測定して結果 \(m\) を得る確率は \(p_m = \tr(\rho E_m)\)、
+\(\sigma\) なら \(q_m = \tr(\sigma E_m)\) なので、
+測定を1つ固定するごとに古典分布の組 \((p,q)\) が得られる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（測定統計による特徴づけ）</span>
+\[
+D(\rho,\sigma) = \max_{\{E_m\}} D(p,q),
+\qquad p_m = \tr(\rho E_m),\ q_m = \tr(\sigma E_m),
+\]
+最大化はすべての POVM にわたる。
+すなわち量子トレース距離は「<strong>最良の測定で見たときの測定結果分布の古典トレース距離</strong>」である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+任意の POVM に対し、直交分解 \(\rho-\sigma = Q-S\), \(|\rho-\sigma| = Q+S\) を使うと
+\[
+|p_m - q_m| = \bigl|\tr(E_m Q) - \tr(E_m S)\bigr|
+\le \tr(E_m Q) + \tr(E_m S) = \tr\bigl(E_m|\rho-\sigma|\bigr)
+\]
+（各項が非負であることを使った）。\(m\) について和を取り \(\sum_m E_m = I\) を使うと
+\[
+D(p,q) = \frac12\sum_m|p_m - q_m| \le \frac12\tr|\rho-\sigma| = D(\rho,\sigma).
+\]
+等号は、\(Q\) の台への射影 \(P\) を使った2値測定 \(\{P,\,I-P\}\) で達成される：
+このとき結果1の確率差は \(\tr(P(\rho-\sigma)) = \tr Q = D(\rho,\sigma)\)、
+結果2の確率差はその符号違いなので、\(D(p,q) = D(\rho,\sigma)\)。<span class="qed">∎</span>
+</div>
+
+<div class="example-box">
+<span class="box-title">操作的意味（Helstrom 限界）</span>
+コイン（確率 \(1/2\) ずつ）で \(\rho\) か \(\sigma\) を用意し、
+受け取った側が1回の測定でどちらかを当てるゲームを考える。
+2値 POVM \(\{E,\,I-E\}\) で結果 \(E\) なら「\(\rho\)」と答えるとき、成功確率は
+\[
+p_{\text{成功}} = \frac12\tr(E\rho) + \frac12\bigl(1 - \tr(E\sigma)\bigr)
+= \frac12 + \frac12\tr\bigl(E(\rho-\sigma)\bigr)
+\le \frac12\bigl(1 + D(\rho,\sigma)\bigr),
+\]
+最後の不等号は変分公式（\(0\le E\le I\) 版）による。
+等号は \(E = P\)（\(Q\) の台への射影）で達成される。
+これが2状態の最小誤り識別に対する <strong>Helstrom 限界</strong>である。
+古典（§9.1）と完全に同じ形になっており、
+トレース距離の「識別確率の上乗せ分」という解釈が量子でもそのまま成立する。
+</div>
+
+<figure>
+<svg viewBox="0 0 480 130" xmlns="http://www.w3.org/2000/svg">
+  <!-- coin / source -->
+  <rect x="15" y="35" width="110" height="60" rx="8" class="gate" stroke-width="1.5"/>
+  <text x="34" y="60" class="label">コインで</text>
+  <text x="28" y="80" class="label">ρ か σ を用意</text>
+  <!-- arrow -->
+  <line x1="125" y1="65" x2="195" y2="65" class="line" stroke-width="1.5"/>
+  <path d="M 195 65 l -9 -5 v 10 z" class="accent-fill"/>
+  <text x="140" y="55" class="label-muted">量子状態</text>
+  <!-- measurement -->
+  <rect x="200" y="35" width="90" height="60" rx="8" class="gate" stroke-width="1.5"/>
+  <path d="M 220 80 A 25 25 0 0 1 270 80" class="line" stroke-width="1.5"/>
+  <line x1="245" y1="80" x2="262" y2="52" class="line accent" stroke-width="2"/>
+  <text x="215" y="30" class="label">測定 {E, I−E}</text>
+  <!-- arrow -->
+  <line x1="290" y1="65" x2="360" y2="65" class="line" stroke-width="1.5"/>
+  <path d="M 360 65 l -9 -5 v 10 z" class="accent-fill"/>
+  <text x="305" y="55" class="label-muted">結果 m</text>
+  <!-- guess -->
+  <rect x="365" y="35" width="100" height="60" rx="8" class="gate" stroke-width="1.5"/>
+  <text x="380" y="60" class="label">「ρ」か「σ」</text>
+  <text x="398" y="80" class="label">と推測</text>
+  <text x="130" y="120" class="label-muted">最良の成功確率 = (1 + D(ρ,σ)) / 2</text>
+</svg>
+<figcaption>図 9.1：状態識別ゲーム。トレース距離は最良測定による識別確率の
+「当てずっぽうからの上乗せ分」を与える。</figcaption>
+</figure>
+
+<p>
+続いて動的な性質、すなわち量子操作（トレース保存 CP 写像。第8章）との相性を調べる。
+結論は「<strong>物理的な操作は状態を区別しにくくすることはあっても、区別しやすくすることはない</strong>」
+という、情報処理的にきわめて自然な主張である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（量子操作の下での縮小性）</span>
+\(\mathcal E\) をトレース保存の量子操作とすると、任意の \(\rho,\sigma\) に対し
+\[
+D\bigl(\mathcal E(\rho),\,\mathcal E(\sigma)\bigr) \le D(\rho,\sigma).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+直交分解 \(\rho-\sigma = Q-S\)（\(\tr Q = \tr S = D(\rho,\sigma)\)）と、
+左辺を達成する射影 \(P\)（変分公式）を取る。\(\mathcal E\) の線形性より
+\(\mathcal E(\rho)-\mathcal E(\sigma) = \mathcal E(Q) - \mathcal E(S)\) なので
+\[
+D\bigl(\mathcal E(\rho),\mathcal E(\sigma)\bigr)
+= \tr\bigl(P\,\mathcal E(Q)\bigr) - \tr\bigl(P\,\mathcal E(S)\bigr)
+\le \tr\bigl(P\,\mathcal E(Q)\bigr)
+\le \tr\bigl(\mathcal E(Q)\bigr)
+= \tr Q = D(\rho,\sigma).
+\]
+使ったのは順に：\(\mathcal E\) の正値性（\(\mathcal E(S)\ge0\) だから
+\(\tr(P\mathcal E(S))\ge0\)）、\(P\le I\) と \(\mathcal E(Q)\ge0\)、
+そして<strong>トレース保存性</strong> \(\tr\mathcal E(Q) = \tr Q\) である。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">縮小性の含意</span>
+<ul>
+<li><strong>部分トレースも量子操作</strong>なので、部分系だけを見ると状態は近づく：
+\(D(\rho^A,\sigma^A) \le D(\rho^{AB},\sigma^{AB})\)。</li>
+<li>ユニタリ変換では等号が成り立つ（\(\mathcal U^{-1}\) も量子操作だから両向きの不等式が出る）：
+トレース距離は<strong>ユニタリ不変</strong>である。</li>
+<li>測定統計の特徴づけ（前定理）は縮小性の特別な場合と見ることもできる：
+測定して結果を古典レジスタに書き出す操作も量子操作であり、
+その出力（対角状態）のトレース距離が \(D(p,q)\) だからである。</li>
+<li>逆に、もし \(D\) を増やす「操作」があれば、それを識別ゲームの前処理に使って
+Helstrom 限界を破れることになる。縮小性は識別確率解釈と表裏一体である。</li>
+</ul>
+</div>
+
+<p>
+最後に凸性に関する性質をまとめる。混合を取る操作でトレース距離がどう振る舞うかは、
+第12章でエンタングルメント尺度や容量を論じる際に必要になる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（強凸性）</span>
+確率分布 \(\{p_i\},\{q_i\}\) と密度演算子の族 \(\{\rho_i\},\{\sigma_i\}\) に対し
+\[
+D\Bigl(\sum_i p_i\rho_i,\ \sum_i q_i\sigma_i\Bigr)
+\le D(p,q) + \sum_i p_i\,D(\rho_i,\sigma_i).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+左辺を達成する射影を \(P\) とする。恒等式
+\[
+\sum_i p_i\rho_i - \sum_i q_i\sigma_i
+= \sum_i p_i(\rho_i - \sigma_i) + \sum_i (p_i - q_i)\sigma_i
+\]
+の両辺に \(\tr(P\,\cdot)\) を施すと、第1項は変分公式より
+\(\sum_i p_i \tr(P(\rho_i-\sigma_i)) \le \sum_i p_i D(\rho_i,\sigma_i)\)。
+第2項は \(0\le\tr(P\sigma_i)\le1\) より
+\[
+\sum_i (p_i-q_i)\tr(P\sigma_i) \le \sum_{i:\,p_i&gt;q_i}(p_i-q_i) = D(p,q).
+\]
+合わせて主張を得る。<span class="qed">∎</span>
+</div>
+
+<p>
+特別な場合として、\(p_i = q_i\) と取れば<strong>合同凸性</strong>
+\(D(\sum_i p_i\rho_i, \sum_i p_i\sigma_i) \le \sum_i p_i D(\rho_i,\sigma_i)\) が、
+さらに \(\sigma_i = \sigma\)（すべて同じ）と取れば第1引数に関する凸性が従う。
+直観的には「混ぜるほど見分けにくくなる」ということであり、
+これも識別確率の解釈と整合する。
+</p>
+
+<h3 id="sec-9-2-2">§9.2.2 忠実度</h3>
+
+<p>
+古典忠実度 \(F(p,q) = \sum_x\sqrt{p_xq_x}\) の量子化は一見自明でない。
+\(\sqrt\rho\sqrt\sigma\) は一般にエルミートですらないからである。
+正しい定義は次の形を取る。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（忠実度）</span>
+密度演算子 \(\rho,\sigma\) に対し
+\[
+F(\rho,\sigma) \equiv \tr\sqrt{\rho^{1/2}\,\sigma\,\rho^{1/2}} .
+\]
+\(\rho^{1/2}\sigma\rho^{1/2}\) は正演算子なので平方根は well-defined である。
+</div>
+
+<p>
+定義の見かけは非対称だが、後で（Uhlmann の定理の系として）対称性
+\(F(\rho,\sigma)=F(\sigma,\rho)\) が示される。まず特別な場合で感覚を掴む。
+</p>
+
+<ul>
+<li><strong>可換な場合。</strong>同時固有基底で \(\rho = \sum_i r_i\ketbra{i}{i}\),
+\(\sigma = \sum_i s_i\ketbra{i}{i}\) なら
+\(\rho^{1/2}\sigma\rho^{1/2} = \sum_i r_i s_i \ketbra{i}{i}\) だから
+\(F = \sum_i\sqrt{r_i s_i}\)：古典忠実度に帰着する。</li>
+<li><strong>片方が純粋な場合。</strong>\(\rho = \ketbra\psi\psi\) なら
+\(\rho^{1/2} = \rho\) で、
+\(\rho^{1/2}\sigma\rho^{1/2} = \bra\psi\sigma\ket\psi\,\ketbra\psi\psi\) は
+ランク1。その平方根は \(\sqrt{\bra\psi\sigma\ket\psi}\,\ketbra\psi\psi\) だから
+\[
+F(\ketbra\psi\psi,\sigma) = \sqrt{\bra\psi\sigma\ket\psi}.
+\]
+すなわち「重なりの確率の平方根」。</li>
+<li><strong>両方純粋な場合。</strong>さらに \(\sigma=\ketbra\varphi\varphi\) なら
+\[
+F = \sqrt{|\braket\psi\varphi|^2} = |\braket\psi\varphi|:
+\]
+状態ベクトルの内積の絶対値である。単位ベクトルの内積という古典忠実度の
+幾何学的描像（§9.1）がそのまま量子化されている。</li>
+</ul>
+
+<p>
+計算上重要な書き換えを1つ用意する。
+\((\sqrt\sigma\sqrt\rho)^\dagger(\sqrt\sigma\sqrt\rho) = \sqrt\rho\,\sigma\sqrt\rho\) なので
+\[
+F(\rho,\sigma) = \tr\bigl|\sqrt\sigma\sqrt\rho\bigr| .
+\]
+「\(\sqrt\sigma\sqrt\rho\) のトレースノルム」という形は、以下の証明群で主役を務める。
+またトレースノルムの一般的性質 \(\tr|A| = \tr|A^\dagger|\)
+（\(A^\dagger A\) と \(AA^\dagger\) の非零固有値は一致する）から、
+この表示だけでも対称性 \(F(\rho,\sigma)=F(\sigma,\rho)\) が確認できる。
+ユニタリ不変性 \(F(U\rho U^\dagger, U\sigma U^\dagger) = F(\rho,\sigma)\) も、
+定義の中のすべての演算子が \(U\,\cdot\,U^\dagger\) で共役されるだけなので明らかである。
+</p>
+
+<p>
+忠実度の最も深い特徴づけが次の定理である。
+purification——混合状態 \(\rho\) を、参照系 \(R\) を付けた純粋状態
+\(\ket\psi \in QR\)（\(\tr_R\ketbra\psi\psi = \rho\)）に持ち上げる操作（第2・8章）——
+を通じて、混合状態の忠実度が純粋状態の内積に化ける。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Uhlmann の定理）</span>
+量子系 \(Q\) の状態 \(\rho,\sigma\) に対し、\(Q\) と同型な参照系 \(R\) を取ると
+\[
+F(\rho,\sigma) = \max_{\ket\psi,\ket\varphi}\,|\braket\psi\varphi|,
+\]
+最大化は \(\rho\) の purification \(\ket\psi\) と \(\sigma\) の purification
+\(\ket\varphi\)（いずれも \(QR\) 上）にわたる。
+さらに一方の purification を固定し、他方だけを動かしても同じ最大値が得られる。
+</div>
+
+<p>
+証明の準備として、「規格化していない最大エンタングル状態」のよく知られた
+計算規則をまとめておく。\(Q,R\) の正規直交基底 \(\{\ket i\}\) を固定し
+\(\ket m \equiv \sum_i \ket i_Q\ket i_R\) と置く（ノルムは \(\sqrt d\)）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題（\(\ket m\) の計算規則）</span>
+任意の演算子 \(A,B\) について
+<ol>
+<li>\((A\otimes I)\ket m = (I\otimes A^{T})\ket m\)（\(T\) は基底 \(\{\ket i\}\) に関する転置）、</li>
+<li>\(\bra m (A\otimes B)\ket m = \tr(AB^{T})\)、</li>
+<li>\(\ket\psi = (\sqrt\rho\,\otimes V)\ket m\)（\(V\) は \(R\) 上の任意のユニタリ）は
+\(\rho\) の purification であり、逆に \(\rho\) の任意の purification はこの形に書ける。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+1. 成分計算：\((A\otimes I)\ket m = \sum_i (A\ket i)\ket i
+= \sum_{ij} A_{ji}\ket j\ket i = \sum_j \ket j (A^T\ket j) = (I\otimes A^T)\ket m\)。
+2. \(\bra m(A\otimes B)\ket m = \sum_{ij}\bra i A\ket j\bra i B\ket j
+= \sum_{ij}A_{ij}B_{ij} = \tr(AB^T)\)。
+3. 前半：\(\tr_R\bigl[(I\otimes V)\ketbra mm(I\otimes V^\dagger)\bigr]
+= \sum_{ij}\ketbra ij\,\bra j V^\dagger V\ket i = \sum_i \ketbra ii = I\) より
+\[
+\tr_R\bigl[(\sqrt\rho\otimes V)\ketbra mm(\sqrt\rho\otimes V^\dagger)\bigr]
+= \sqrt\rho\; I\;\sqrt\rho = \rho,
+\]
+ノルムも \(\bra m(\rho\otimes I)\ket m = \tr\rho = 1\) で正しい。
+後半：任意の purification を Schmidt 分解して
+\(\ket\psi = \sum_i\sqrt{\lambda_i}\ket{e_i}\ket{f_i}\) とすると、
+\(\rho = \tr_R\ketbra\psi\psi = \sum_i\lambda_i\ketbra{e_i}{e_i}\)。一方
+\[
+(\sqrt\rho\otimes I)\ket m = \sum_j \sqrt\rho\ket j\otimes\ket j
+= \sum_i \sqrt{\lambda_i}\,\ket{e_i}\otimes\ket{e_i^*},
+\qquad \ket{e_i^*} \equiv \sum_j \braket{e_i}{j}\ket j
+\]
+（成分を複素共役したベクトル）。\(\{\ket{e_i^*}\}\) は正規直交系なので、
+\(V\ket{e_i^*} = \ket{f_i}\) となるユニタリ \(V\) を（直交補空間上は任意に延長して）取れば
+\((\sqrt\rho\otimes V)\ket m = \ket\psi\)。<span class="qed">∎</span>
+</div>
+
+<p>
+もう1つ、行列解析の標準的な補題を使う。
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題（トレースノルムの変分表示）</span>
+任意の演算子 \(A\) について
+\(\displaystyle \max_{U:\text{ユニタリ}} |\tr(AU)| = \tr|A|\)。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+極分解 \(A = K|A|\)（\(K\) はユニタリ。\(A\) が特異でもユニタリに延長して取れる）を使うと、
+任意のユニタリ \(U\) に対し Hilbert–Schmidt 内積の Cauchy–Schwarz 不等式から
+\[
+|\tr(AU)| = \bigl|\tr\bigl(|A|^{1/2}\cdot|A|^{1/2}UK\bigr)\bigr|
+\le \sqrt{\tr|A|}\;\sqrt{\tr\bigl(K^\dagger U^\dagger|A|UK\bigr)} = \tr|A| .
+\]
+等号は \(U = K^\dagger\) で成立する（\(\tr(AK^\dagger) = \tr(K|A|K^\dagger) = \tr|A|\)）。<span class="qed">∎</span>
+</div>
+
+<div class="proof-box">
+<span class="box-title">Uhlmann の定理の証明</span>
+補題3より、\(\rho,\sigma\) の purification は
+\[
+\ket\psi = (\sqrt\rho\otimes V)\ket m,
+\qquad
+\ket\varphi = (\sqrt\sigma\otimes W)\ket m
+\]
+とパラメータ化できる（\(V,W\) はユニタリ）。内積を補題2で計算すると
+\[
+\braket\varphi\psi
+= \bra m\bigl(\sqrt\sigma\sqrt\rho\otimes W^\dagger V\bigr)\ket m
+= \tr\bigl(\sqrt\sigma\sqrt\rho\,(W^\dagger V)^T\bigr).
+\]
+\(V,W\) が全ユニタリを動くとき \(U \equiv (W^\dagger V)^T\) も全ユニタリを動くから、
+トレースノルムの変分表示より
+\[
+\max|\braket\varphi\psi| = \max_U\bigl|\tr(\sqrt\sigma\sqrt\rho\,U)\bigr|
+= \tr\bigl|\sqrt\sigma\sqrt\rho\bigr| = F(\rho,\sigma).
+\]
+なお \(W\) を固定して \(V\) だけを動かしても \(U\) は全ユニタリを尽くすので、
+「一方を固定してよい」という付言も同時に示された。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">Uhlmann の定理から従う性質</span>
+<ul>
+<li><strong>対称性</strong>：右辺は \(\rho,\sigma\) について対称。</li>
+<li><strong>値域</strong>：\(0\le F\le 1\)。\(F=1\) ⟺ 共通の purification を持つ
+⟺ \(\rho=\sigma\)（purification の部分トレースが一致するため）。
+\(F=0\) ⟺ 台が直交。</li>
+<li><strong>評価の道具</strong>：任意の purification の組は下界
+\(F(\rho,\sigma)\ge|\braket\psi\varphi|\) を与える。
+「うまい purification を1組見つければ忠実度を下から押さえられる」——
+この使い方が実践では最も多い。</li>
+</ul>
+</div>
+
+<p>
+トレース距離の縮小性に対応するのが、忠実度の<strong>単調性</strong>である。
+向きが逆（操作で「近さ」は増える）ことに注意。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（忠実度の単調性）</span>
+トレース保存の量子操作 \(\mathcal E\) に対し
+\[
+F\bigl(\mathcal E(\rho),\,\mathcal E(\sigma)\bigr) \ge F(\rho,\sigma).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+Uhlmann の最大値を達成する purification \(\ket\psi,\ket\varphi\in QR\) を取る：
+\(F(\rho,\sigma) = |\braket\varphi\psi|\)。
+第8章の表現定理より、\(\mathcal E\) は環境 \(E\)（初期状態 \(\ket{e_0}\)）を付加して
+ユニタリ \(U_{QE}\) を作用させ環境を捨てる操作として書ける：
+\(\mathcal E(\rho) = \tr_E\bigl[U(\rho\otimes\ketbra{e_0}{e_0})U^\dagger\bigr]\)。
+すると
+\[
+\ket{\psi'} \equiv (U_{QE}\otimes I_R)\,\ket\psi\ket{e_0}
+\]
+は \(\mathcal E(\rho)\) の purification である（purifying 系は \(ER\)。
+実際 \(ER\) をトレースアウトすると定義どおり \(\mathcal E(\rho)\) が残る）。
+\(\ket{\varphi'}\) も同様に作ると、Uhlmann の定理の「max ≥ 特定の組」より
+\[
+F\bigl(\mathcal E(\rho),\mathcal E(\sigma)\bigr)
+\ge |\braket{\varphi'}{\psi'}|
+= \bigl|\bra\varphi\bra{e_0}\,(U^\dagger U\otimes I)\,\ket\psi\ket{e_0}\bigr|
+= |\braket\varphi\psi| = F(\rho,\sigma).
+\]
+ユニタリ性で内積が保存されることがすべてである。<span class="qed">∎</span>
+</div>
+
+<p>
+特別な場合として、<strong>部分トレースで忠実度は増える</strong>：
+\(F(\rho^A,\sigma^A)\ge F(\rho^{AB},\sigma^{AB})\)。
+またユニタリでは（逆写像も許されるから）等号：忠実度もユニタリ不変である。
+</p>
+
+<p>
+トレース距離が「最良の測定による古典距離」だったのと対をなす特徴づけが、
+忠実度にもある。ただし max が min に変わる：
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（測定統計による特徴づけ）</span>
+\[
+F(\rho,\sigma) = \min_{\{E_m\}} F(p,q)
+= \min_{\{E_m\}} \sum_m\sqrt{p_m q_m},
+\qquad p_m = \tr(\rho E_m),\ q_m = \tr(\sigma E_m),
+\]
+最小化はすべての POVM にわたる。
+すなわち量子忠実度は「<strong>最も意地悪な測定で見てもこれだけは重なって見える</strong>」という量である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+（下界）\(A \equiv \sqrt\sigma\sqrt\rho\) の極分解 \(A = K|A|\) より
+\(F = \tr|A| = \tr(K^\dagger\sqrt\sigma\sqrt\rho)\)。
+\(\sum_m E_m = I\) を挟み、\(E_m = \sqrt{E_m}\sqrt{E_m}\) と割ってトレースの巡回性を使うと
+\[
+F = \sum_m \tr\bigl(K^\dagger\sqrt\sigma\,E_m\,\sqrt\rho\bigr)
+= \sum_m \tr\Bigl[\bigl(K^\dagger\sqrt\sigma\sqrt{E_m}\bigr)\bigl(\sqrt{E_m}\sqrt\rho\bigr)\Bigr].
+\]
+各項に Hilbert–Schmidt 内積の Cauchy–Schwarz 不等式
+\(|\tr(B^\dagger C)| \le \sqrt{\tr(B^\dagger B)}\sqrt{\tr(C^\dagger C)}\) を
+\(B = \sqrt{E_m}\sqrt\sigma K,\ C = \sqrt{E_m}\sqrt\rho\) として適用すると
+\[
+\bigl|\tr\bigl(K^\dagger\sqrt\sigma\,E_m\sqrt\rho\bigr)\bigr|
+\le \sqrt{\tr\bigl(K^\dagger\sqrt\sigma E_m\sqrt\sigma K\bigr)}
+   \sqrt{\tr\bigl(\sqrt\rho\,E_m\sqrt\rho\bigr)}
+= \sqrt{q_m}\sqrt{p_m}.
+\]
+よってすべての POVM で \(F \le \sum_m\sqrt{p_mq_m}\)。<br>
+（達成）\(\rho\) が可逆として（一般の場合は \(\rho\) を可逆な状態で近似し連続性で拡張すればよい）、
+エルミート正演算子
+\[
+M \equiv \rho^{-1/2}\,\sqrt{\rho^{1/2}\sigma\rho^{1/2}}\;\rho^{-1/2}
+\]
+を定義する。両辺に \(\rho^{1/2}\) を挟むと
+\((\rho^{1/2}M\rho^{1/2})^2 = \rho^{1/2}\sigma\rho^{1/2}\)、
+すなわち \(M\rho M = \sigma\) が成り立つ。
+\(M\) の固有分解 \(M = \sum_m \mu_m\ketbra mm\) に対応する射影測定
+\(E_m = \ketbra mm\) を選ぶと
+\[
+q_m = \bra m M\rho M\ket m = \mu_m^2\,\bra m\rho\ket m = \mu_m^2\,p_m
+\]
+なので
+\[
+\sum_m\sqrt{p_mq_m} = \sum_m \mu_m\,p_m = \tr(M\rho)
+= \tr\sqrt{\rho^{1/2}\sigma\rho^{1/2}} = F(\rho,\sigma).
+\]
+等号が達成された。<span class="qed">∎</span>
+</div>
+
+<p>
+2つの特徴づけを並べると構図が明快になる：
+\[
+D(\rho,\sigma) = \max_{\{E_m\}}D(p,q),
+\qquad
+F(\rho,\sigma) = \min_{\{E_m\}}F(p,q).
+\]
+トレース距離は「最も区別のつく測定」、忠実度は「最も重なりの見えない測定」で定義される
+古典量の最適値であり、どちらも<strong>量子の距離＝測定統計の距離の最悪値評価</strong>という
+統一的な読み方ができる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足：強い凹性</span>
+Uhlmann の定理を使うと、混合に対する忠実度の振る舞いも短く示せる。
+確率分布 \(\{p_i\},\{q_i\}\) と状態族に対し
+\[
+F\Bigl(\sum_i p_i\rho_i,\ \sum_i q_i\sigma_i\Bigr)
+\ \ge\ \sum_i \sqrt{p_i q_i}\;F(\rho_i,\sigma_i)
+\]
+（<strong>強い凹性</strong>）。実際、各 \(i\) で最適な purification の組
+\(\ket{\psi_i},\ket{\varphi_i}\in QR\) を取り、さらにラベル系 \(L\) を足して
+\[
+\ket\Psi = \sum_i\sqrt{p_i}\,\ket{\psi_i}\ket i_L,
+\qquad
+\ket\Phi = \sum_i\sqrt{q_i}\,\ket{\varphi_i}\ket i_L
+\]
+と置くと、これらはそれぞれ \(\sum_ip_i\rho_i\), \(\sum_iq_i\sigma_i\) の purification で、
+\(\braket\Phi\Psi = \sum_i\sqrt{p_iq_i}\braket{\varphi_i}{\psi_i}\)。
+位相を調整して各項を非負実にすれば、Uhlmann の下界性から主張が従う。
+特に \(p=q\) の場合の凹性 \(F(\sum p_i\rho_i,\sum p_i\sigma_i)\ge\sum p_iF(\rho_i,\sigma_i)\)
+が得られる。トレース距離の（強）凸性とちょうど鏡写しの関係である。
+</div>
+
+<p>
+最後に、「忠実度は距離ではない」という不満への処方箋を与えておく。
+§9.1 で見た単位球面の幾何をそのまま使い、
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（角度）</span>
+\[
+A(\rho,\sigma) \equiv \arccos F(\rho,\sigma) \ \in\ [0,\pi/2].
+\]
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理</span>
+角度 \(A\) は距離の公理（非負性・非退化性・対称性・三角不等式）を満たす。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+非自明なのは三角不等式 \(A(\rho,\tau)\le A(\rho,\sigma)+A(\sigma,\tau)\) のみ。
+まず純粋状態について、\(\delta(\psi,\varphi)\equiv\arccos|\braket\psi\varphi|\)
+が三角不等式を満たすことを示す。
+\(a = \delta(\psi,\varphi)\), \(b=\delta(\varphi,\gamma)\) と置く。
+\(a+b\ge\pi/2\) なら \(\delta\le\pi/2\) より自明なので \(a+b&lt;\pi/2\) とする。
+位相を選んで \(\braket\varphi\psi = \cos a\ge0\), \(\braket\varphi\gamma=\cos b\ge0\) とし、
+\(\ket\varphi\) 成分と直交成分に分解する：
+\[
+\ket\psi = \cos a\,\ket\varphi + \sin a\,\ket{e},
+\qquad
+\ket\gamma = \cos b\,\ket\varphi + \sin b\,\ket{f}
+\]
+（\(\ket e,\ket f\) は \(\ket\varphi\) に直交する単位ベクトル）。内積を取ると
+\[
+|\braket\psi\gamma| = \bigl|\cos a\cos b + \sin a\sin b\,\braket ef\bigr|
+\ge \cos a\cos b - \sin a\sin b = \cos(a+b) &gt; 0
+\]
+（\(|\braket ef|\le1\) を使った）。\(\arccos\) は単調減少なので
+\(\delta(\psi,\gamma)\le a+b\)。<br>
+混合状態へは Uhlmann の定理で持ち上げる。\(\sigma\) の purification \(\ket\varphi\) を1つ固定し、
+「一方を固定してよい」という Uhlmann の付言を使って、
+\(\rho\) の purification \(\ket\psi\) を \(|\braket\psi\varphi| = F(\rho,\sigma)\) となるように、
+\(\tau\) の purification \(\ket\gamma\) を \(|\braket\gamma\varphi| = F(\sigma,\tau)\)
+となるように選ぶ。すると
+\[
+A(\rho,\tau) \le \delta(\psi,\gamma)
+\le \delta(\psi,\varphi) + \delta(\varphi,\gamma)
+= A(\rho,\sigma) + A(\sigma,\tau),
+\]
+最初の不等号は Uhlmann の定理（\(F(\rho,\tau)\ge|\braket\psi\gamma|\) と
+\(\arccos\) の単調性）による。<span class="qed">∎</span>
+</div>
+
+<h3 id="sec-9-2-3">§9.2.3 距離尺度間の関係</h3>
+
+<p>
+トレース距離と忠実度は別々の哲学で定義したが、実は互いを両側から評価し合う。
+本節の主定理は次である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Fuchs–van de Graaf の不等式）</span>
+任意の密度演算子 \(\rho,\sigma\) に対し
+\[
+1 - F(\rho,\sigma) \ \le\ D(\rho,\sigma) \ \le\ \sqrt{1 - F(\rho,\sigma)^2}.
+\]
+</div>
+
+<p>
+証明を2つの補題に分ける。まず純粋状態では上界が等式で成り立つ：
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題（純粋状態では \(D=\sqrt{1-F^2}\)）</span>
+純粋状態 \(\ket\psi,\ket\varphi\) について、\(F = |\braket\psi\varphi|\) と置くと
+\[
+D\bigl(\ketbra\psi\psi,\ketbra\varphi\varphi\bigr) = \sqrt{1-F^2}.
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(F = \cos\theta\)（\(0\le\theta\le\pi/2\)）と書き、
+2つのベクトルが張る2次元部分空間で正規直交基底 \(\{\ket\psi,\ket{\psi_\perp}\}\) を取ると、
+位相を吸収して \(\ket\varphi = \cos\theta\ket\psi + \sin\theta\ket{\psi_\perp}\) とできる。
+この基底で
+\[
+\ketbra\psi\psi - \ketbra\varphi\varphi
+= \begin{pmatrix} \sin^2\theta &amp; -\cos\theta\sin\theta \\
+                  -\cos\theta\sin\theta &amp; -\sin^2\theta \end{pmatrix}.
+\]
+この行列はトレース 0、行列式
+\(-\sin^4\theta - \cos^2\theta\sin^2\theta = -\sin^2\theta\) なので
+固有値は \(\pm\sin\theta\)。よって
+\(D = \frac12(2\sin\theta) = \sin\theta = \sqrt{1-\cos^2\theta} = \sqrt{1-F^2}\)。<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">補題（古典分布では \(1-F\le D\)）</span>
+確率分布 \(p,q\) に対し \(1 - F(p,q) \le D(p,q)\)。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(\sum_x p_x = \sum_x q_x = 1\) を使うと
+\[
+1 - F(p,q) = \frac12\sum_x\bigl(p_x + q_x - 2\sqrt{p_xq_x}\bigr)
+= \frac12\sum_x\bigl(\sqrt{p_x}-\sqrt{q_x}\bigr)^2 .
+\]
+各項を \(|\sqrt{p_x}-\sqrt{q_x}|\le \sqrt{p_x}+\sqrt{q_x}\) で緩めると
+\[
+1-F(p,q) \le \frac12\sum_x\bigl|\sqrt{p_x}-\sqrt{q_x}\bigr|\bigl(\sqrt{p_x}+\sqrt{q_x}\bigr)
+= \frac12\sum_x|p_x - q_x| = D(p,q). \qquad
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="proof-box">
+<span class="box-title">Fuchs–van de Graaf の不等式の証明</span>
+（上界）Uhlmann の定理で最適な purification \(\ket\psi,\ket\varphi\) を取ると
+\(F(\rho,\sigma) = |\braket\psi\varphi|\)。部分トレースは量子操作なので、
+トレース距離の縮小性と純粋状態の補題から
+\[
+D(\rho,\sigma) \le D\bigl(\ketbra\psi\psi,\ketbra\varphi\varphi\bigr)
+= \sqrt{1 - F(\rho,\sigma)^2}.
+\]
+（下界）忠実度の測定特徴づけ（§9.2.2）で最小を達成する POVM を取り、
+その測定統計を \(p,q\) とすると \(F(\rho,\sigma) = F(p,q)\)。
+古典の補題とトレース距離の測定特徴づけ（\(D(p,q)\le D(\rho,\sigma)\)）から
+\[
+1 - F(\rho,\sigma) = 1 - F(p,q) \le D(p,q) \le D(\rho,\sigma). \qquad
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">読み方と使い方</span>
+<ul>
+<li><strong>位相的同値。</strong>\(F\to1 \Leftrightarrow D\to0\)：
+「どちらの尺度で近づけても同じこと」であり、収束や連続性の議論では好きな方を使ってよい。
+定量的には \(F\ge 1-\epsilon\) なら \(D\le\sqrt{1-(1-\epsilon)^2}\le\sqrt{2\epsilon}\)、
+逆に \(D\le\epsilon\) なら \(F\ge1-\epsilon\)。
+「忠実度の誤差 \(\epsilon\)」は「識別確率の誤差 \(\sqrt{2\epsilon}\)」まで緩みうる、
+という平方根の損失には注意が要る。</li>
+<li><strong>片方が純粋なら下界を強められる。</strong>\(\rho=\ketbra\psi\psi\) のとき、
+射影 \(P = I - \ketbra\psi\psi\) を変分公式に代入すると
+\[
+D(\rho,\sigma) \ge \tr\bigl(P(\sigma-\rho)\bigr) = 1 - \bra\psi\sigma\ket\psi
+= 1 - F(\rho,\sigma)^2 .
+\]
+第10・12章で「純粋な符号語と出力状態」を比べる際に効く形である。</li>
+<li>1量子ビットで両不等式の感覚を確かめる：\(\ket0\) と \(\ket+\) では
+\(F = |\braket0+| = 1/\sqrt2\), \(D = \sqrt{1-1/2} = 1/\sqrt2\)（純粋状態なので上界が等式）。
+一方 \(\ket0\) と最大混合 \(I/2\) では \(F = \sqrt{\bra0(I/2)\ket0} = 1/\sqrt2\) は同じだが
+\(D = 1/2 &lt; 1/\sqrt2\)：混合が絡むと上界は真に緩む。</li>
+</ul>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-9-3">量子チャネルの情報保存性<span class="en">How well does a quantum channel preserve information?</span></h2>
+
+<p>
+静的尺度が揃ったので、動的な問いに移る。
+量子メモリへの保存、チャネルによる伝送、誤り訂正の符号化・復号——
+これらはすべて量子操作 \(\mathcal E\) であり、
+「\(\mathcal E\) は量子情報をどれだけ保つか」を数値化したい。
+たとえば第10章では「誤り訂正が成功した」ことの定義そのものにこの尺度が要る。
+</p>
+
+<p>
+素朴な候補は入力ごとの忠実度である。入力が純粋状態 \(\ket\psi\) なら
+\[
+F\bigl(\ketbra\psi\psi,\ \mathcal E(\ketbra\psi\psi)\bigr)^2
+= \bra\psi\,\mathcal E(\ketbra\psi\psi)\,\ket\psi
+\]
+（§9.2.2 の純粋状態の公式。以下この節では2乗した量を使う——
+確率として読める上、後の公式が簡潔になるからである）。
+入力がアンサンブル \(\{p_j,\ket{\psi_j}\}\) で与えられるなら、その<strong>平均忠実度</strong>
+\[
+\bar F \equiv \sum_j p_j\,\bra{\psi_j}\,\mathcal E(\ketbra{\psi_j}{\psi_j})\,\ket{\psi_j}
+\]
+が自然な候補になる。
+しかしこれだけでは足りない。量子情報の核心的な特徴は、
+系 \(Q\) が<strong>外部の系とエンタングルしたまま</strong>処理されうることである。
+\(Q\) 単独の状態が保たれても、外部系との相関（エンタングルメント）が壊れていれば、
+量子情報が保存されたとは言えない。
+そこで「守るべきエンタングルメントの証人」として参照系 \(R\) を明示的に持ち込む。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（エンタングルメント忠実度）</span>
+系 \(Q\) の状態 \(\rho\) と、\(Q\) 上のトレース保存量子操作 \(\mathcal E\) に対し、
+\(\rho\) の purification \(\ket{RQ}\)（参照系 \(R\) との合成系上の純粋状態、
+\(\tr_R\ketbra{RQ}{RQ} = \rho\)）を取り、
+\[
+F(\rho,\mathcal E) \equiv
+\bra{RQ}\,\bigl[(\mathcal I_R\otimes\mathcal E)\bigl(\ketbra{RQ}{RQ}\bigr)\bigr]\,\ket{RQ}
+\]
+を<strong>エンタングルメント忠実度 (entanglement fidelity)</strong> と呼ぶ。
+\(\mathcal I_R\) は \(R\) 上の恒等操作。
+すなわち「\(R\) には何もせず \(Q\) だけを \(\mathcal E\) に通したとき、
+<strong>\(RQ\) 全体の状態</strong>がどれだけ元のままか」を、
+純粋状態との（2乗）忠実度で測った量である。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- entangled source -->
+  <circle cx="55" cy="75" r="8" class="accent-fill"/>
+  <path d="M 63 70 C 90 40, 110 40, 140 40" class="line" stroke-width="1.5" fill="none"/>
+  <path d="M 63 80 C 90 110, 110 110, 140 110" class="line" stroke-width="1.5" fill="none"/>
+  <text x="20" y="45" class="label-muted">|RQ⟩</text>
+  <!-- R wire -->
+  <line x1="140" y1="40" x2="390" y2="40" class="line" stroke-width="1.5"/>
+  <text x="148" y="30" class="label">R（参照系：何もしない）</text>
+  <!-- Q wire with channel -->
+  <line x1="140" y1="110" x2="230" y2="110" class="line" stroke-width="1.5"/>
+  <rect x="230" y="90" width="50" height="40" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="247" y="115" class="label">ℰ</text>
+  <line x1="280" y1="110" x2="390" y2="110" class="line" stroke-width="1.5"/>
+  <text x="148" y="132" class="label">Q（ノイズ・伝送・保存）</text>
+  <!-- comparison -->
+  <rect x="390" y="25" width="55" height="100" rx="8" class="gate" stroke-dasharray="5 3" stroke-width="1.5"/>
+  <text x="398" y="65" class="label">|RQ⟩</text>
+  <text x="398" y="85" class="label">と比較</text>
+</svg>
+<figcaption>図 9.2：エンタングルメント忠実度の設定。参照系 \(R\) との
+エンタングルメントまで含めて「\(RQ\) 全体が元の純粋状態に戻るか」を問う。</figcaption>
+</figure>
+
+<p>
+定義には purification の選択の任意性があるが、結果は選択によらない。
+これは次の明示公式を導くと同時に確かめられる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Kraus 演算子による表示）</span>
+\(\mathcal E(\rho) = \sum_k E_k\rho E_k^\dagger\) を Kraus 表現とすると
+\[
+F(\rho,\mathcal E) = \sum_k \bigl|\tr(\rho E_k)\bigr|^2 .
+\]
+特に \(F(\rho,\mathcal E)\) は purification の取り方にも Kraus 表現の取り方にもよらない。
+</div>
+
+<div class="proof-box">
+<span class="box-title">導出</span>
+\(\rho = \sum_i p_i\ketbra ii\) と固有分解し、purification として
+\(\ket{RQ} = \sum_i\sqrt{p_i}\,\ket{i_R}\ket{i_Q}\) を取る
+（他の purification は \(R\) 上のユニタリで移り合い、
+そのユニタリは \(\mathcal I_R\otimes\mathcal E\) と可換なうえ
+ブラとケットの両方に現れて相殺するから、値は変わらない）。
+Kraus 表現を入れると
+\[
+F(\rho,\mathcal E)
+= \sum_k \bra{RQ}(I_R\otimes E_k)\ketbra{RQ}{RQ}(I_R\otimes E_k^\dagger)\ket{RQ}
+= \sum_k \bigl|\bra{RQ}(I_R\otimes E_k)\ket{RQ}\bigr|^2 .
+\]
+各振幅は
+\[
+\bra{RQ}(I_R\otimes E_k)\ket{RQ}
+= \sum_{ij}\sqrt{p_ip_j}\,\braket{j_R}{i_R}\,\bra{j}E_k\ket{i}
+= \sum_i p_i\bra iE_k\ket i
+= \tr(\rho E_k)
+\]
+となるので主張の公式を得る。Kraus 表現の非一意性
+\(F_k = \sum_j u_{kj}E_j\)（\(u\) はユニタリ行列。第8章）についても
+\[
+\sum_k\bigl|\tr(\rho F_k)\bigr|^2
+= \sum_{jl}\Bigl(\sum_k u_{kj}u_{kl}^*\Bigr)\tr(\rho E_j)\,\tr(\rho E_l)^*
+= \sum_j\bigl|\tr(\rho E_j)\bigr|^2
+\]
+と不変である。<span class="qed">∎</span>
+</div>
+
+<div class="example-box">
+<span class="box-title">例（位相反転チャネル）</span>
+1量子ビットの位相反転チャネル
+\(\mathcal E(\rho) = (1-p)\rho + pZ\rho Z\)
+（Kraus 演算子 \(\sqrt{1-p}\,I,\ \sqrt p\,Z\)）に
+最大混合状態 \(\rho = I/2\) を通すと
+\[
+F = (1-p)\bigl|\tr(I/2)\bigr|^2 + p\,\bigl|\tr(Z/2)\bigr|^2 = 1-p .
+\]
+一方 \(\rho = I/2\) 自身は \(\mathcal E\) の不動点なので、
+静的な忠実度は \(F(\rho,\mathcal E(\rho)) = 1\) である。
+つまり「状態は完全に保たれるのに、エンタングルメント忠実度は \(1-p\)」である。
+チャネルが壊しているのは \(Q\) 単独の状態ではない。
+外部系との相関（purification でいう \(R\) との Bell 型相関）である。
+エンタングルメント忠実度でなければこの劣化は検出できない。
+</div>
+
+<p>
+エンタングルメント忠実度の基本性質をまとめる。
+「最も厳しい尺度である」こと（性質 3・4）が中心的なメッセージである。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（基本性質）</span>
+<ol>
+<li>\(0\le F(\rho,\mathcal E)\le 1\)。また \(F(\rho,\mathcal E)\) は
+\(\rho\) について凸、\(\mathcal E\) について線形である。</li>
+<li>入力が純粋状態なら
+\(F(\ketbra\psi\psi,\mathcal E) = \bra\psi\mathcal E(\ketbra\psi\psi)\ket\psi\)：
+静的な（2乗）忠実度と一致する。</li>
+<li>\(F(\rho,\mathcal E) \le \bigl[F\bigl(\rho,\ \mathcal E(\rho)\bigr)\bigr]^2\)：
+エンタングルメントまで含めた忠実度は、状態自身の忠実度を決して上回らない。
+対偶で言えば、<strong>\(F(\rho,\mathcal E)\) が 1 に近ければ \(Q\) 単独の状態も自動的によく保たれる</strong>。</li>
+<li>\(\rho = \sum_j p_j\ketbra{\psi_j}{\psi_j}\) となる任意のアンサンブルに対し
+\(F(\rho,\mathcal E) \le \bar F = \sum_j p_j\bra{\psi_j}\mathcal E(\ketbra{\psi_j}{\psi_j})\ket{\psi_j}\)：
+平均忠実度の一様な下界を与える。</li>
+<li>\(F(\rho,\mathcal E) = 1\) ⟺ \(\rho\) の台に載るすべての状態 \(\sigma\) について
+\(\mathcal E(\sigma) = \sigma\)。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+1. 値域は忠実度の値域から。凸性は、\(\bigl|\tr(\rho E_k)\bigr|^2\) が
+\(\rho\) のアフィン関数の絶対値2乗（凸関数）であることと、凸関数の和が凸であることによる。
+\(\mathcal E\) についての線形性は定義式が \(\mathcal E\) に線形に依存することから明らか。<br>
+2. 純粋状態の purification は自明（\(R\) 不要、\(\ket{RQ} = \ket\psi\)）に取れるので、
+定義がそのまま \(\bra\psi\mathcal E(\ketbra\psi\psi)\ket\psi\) になる。
+あるいは Kraus 公式から
+\(\sum_k|\bra\psi E_k\ket\psi|^2 = \sum_k\bra\psi E_k\ketbra\psi\psi E_k^\dagger\ket\psi\)
+と直接計算してもよい。<br>
+3. \(F(\rho,\mathcal E) = F\bigl(\ketbra{RQ}{RQ},\,(\mathcal I\otimes\mathcal E)(\ketbra{RQ}{RQ})\bigr)^2\)
+であり、\(R\) の部分トレースは量子操作だから、忠実度の単調性（§9.2.2）より
+\(F(\ketbra{RQ}{RQ},\cdot) \le F(\rho,\mathcal E(\rho))\)。両辺を2乗すればよい。<br>
+4. Kraus 公式と \(|z|^2\) の凸性から
+\[
+F(\rho,\mathcal E) = \sum_k\Bigl|\sum_j p_j\bra{\psi_j}E_k\ket{\psi_j}\Bigr|^2
+\le \sum_j p_j\sum_k\bigl|\bra{\psi_j}E_k\ket{\psi_j}\bigr|^2
+= \sum_j p_j\,F(\ketbra{\psi_j}{\psi_j},\mathcal E),
+\]
+最後の等号は性質2（の Kraus 版）である。<br>
+5. \(F=1\) は純粋状態 \(\ket{RQ}\) が \((\mathcal I\otimes\mathcal E)\) で不変であることと同値。
+出力 \(\sum_k(I\otimes E_k)\ketbra{RQ}{RQ}(I\otimes E_k^\dagger)\) が
+純粋状態 \(\ketbra{RQ}{RQ}\) に一致するには、各 \(k\) で
+\((I\otimes E_k)\ket{RQ} = c_k\ket{RQ}\)（\(\sum_k|c_k|^2=1\)）が必要十分である
+（純粋状態の分解の一意性）。
+\(\ket{RQ} = (I\otimes\sqrt\rho)\ket m\)（§9.2.2 の補題の記法）と書けば、
+\(X\mapsto(I\otimes X)\ket m\) が単射線形写像であることから、この条件は
+\(E_k\sqrt\rho = c_k\sqrt\rho\)、すなわち「各 \(E_k\) が \(\rho\) の台上で
+定数 \(c_k\) 倍として働く」ことと同値。このとき台に載る任意の \(\sigma\) で
+\(\mathcal E(\sigma) = \sum_k|c_k|^2\sigma = \sigma\)。逆も明らか。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">誤り訂正の成功基準として</span>
+第10章で誤り訂正を論じる際、「ノイズ \(\mathcal N\) のあとに復号 \(\mathcal D\) を施した
+合成チャネル \(\mathcal D\circ\mathcal N\) が量子情報を回復した」ことの定量的基準として
+\(F(\rho,\ \mathcal D\circ\mathcal N)\approx1\) を採用する。上の性質群がその正当化である：
+<ul>
+<li>性質5より、\(F=1\) は「符号空間（\(\rho\) の台）上のすべての状態が完全に戻る」ことを意味し、
+特定のテスト状態だけ戻ればよいのではない。</li>
+<li>性質3・4より、\(F\ge1-\epsilon\) なら、状態自身の忠実度も、
+どんなアンサンブルで運用したときの平均忠実度も、同じ精度で保証される。
+<strong>1つの数値でアンサンブル非依存の保証が出る</strong>のがこの尺度の強みである。</li>
+<li>逆向きの評価（平均忠実度からエンタングルメント忠実度を押さえる不等式）も知られており、
+2つの尺度は定性的に等価だが、理論的な扱いやすさで \(F(\rho,\mathcal E)\) が優る。</li>
+</ul>
+</div>
+
+<p>
+最後に、この尺度が支える2つの概念に触れて章を閉じる。
+</p>
+
+<p>
+<strong>量子情報源と忠実度基準。</strong>
+古典情報理論の情報源は「確率分布に従う文字列の生成器」だった。
+その量子版が<strong>量子情報源 (quantum information source)</strong> で、
+「密度演算子 \(\rho\) で記述される量子系を（i.i.d. に）供給する装置」として定式化される。
+ここで重要なのは、供給される系が<strong>外部とエンタングルしている可能性まで含めて</strong>
+情報とみなす、という立場である。したがって
+圧縮・伝送方式 \(\mathcal C\)（符号化して送って復号する全過程）の良し悪しは、
+エンタングルメント忠実度 \(F(\rho,\mathcal C)\to1\)（ブロック長 \(\to\infty\)）という
+<strong>忠実度基準</strong>で判定される。
+第12章の Schumacher 圧縮定理は、まさにこの基準の下での定理である
+（量子情報源は von Neumann エントロピー \(S(\rho)\) 量子ビット/文字まで圧縮できる、という定理）。
+本章の距離尺度は、同定理の「忠実に復元できた」を定義する言葉として使われる。
+</p>
+
+<p>
+<strong>誤差の合成則。</strong>
+実際の量子計算は多数のゲート（チャネル）の合成 \(\mathcal E_n\circ\cdots\circ\mathcal E_1\) であり、
+各段の理想操作を \(\mathcal F_i\) とするとき全体の誤差を各段の誤差で押さえたい。
+トレース距離に基づくチャネル間距離を使うと、三角不等式と縮小性から
+\[
+D\bigl((\mathcal E_2\circ\mathcal E_1)(\rho),\,(\mathcal F_2\circ\mathcal F_1)(\rho)\bigr)
+\le
+D\bigl(\mathcal E_2(\mathcal E_1(\rho)),\,\mathcal E_2(\mathcal F_1(\rho))\bigr)
++ D\bigl(\mathcal E_2(\mathcal F_1(\rho)),\,\mathcal F_2(\mathcal F_1(\rho))\bigr)
+\]
+の第1項が縮小性で \(D(\mathcal E_1(\rho),\mathcal F_1(\rho))\) 以下に押さえられるので、
+<strong>誤差はたかだか加法的にしか蓄積しない</strong>：各ゲートの誤差が \(\epsilon\) なら
+\(n\) ゲート後の誤差は \(n\epsilon\) 以下である。
+指数的にではなく線形にしか悪化しないというこの事実は、
+フォールトトレラント量子計算（第10章）が成立するための前提であり、
+本章で証明した「三角不等式＋縮小性」という2つの構造がその根拠になっている。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第9章のまとめ</span>
+<ul>
+<li>古典の距離尺度：トレース距離 \(D(p,q)=\frac12\sum|p_x-q_x|\)（識別ゲームの成功確率の上乗せ分）と
+忠実度 \(F(p,q)=\sum\sqrt{p_xq_x}\)（単位ベクトル \(\sqrt p\) どうしの内積、Bhattacharyya 係数）。</li>
+<li>量子トレース距離 \(D(\rho,\sigma)=\frac12\tr|\rho-\sigma|\)：
+変分公式 \(D=\max_P\tr(P(\rho-\sigma))\) から計量性・Helstrom 限界
+\(p_{\text{成功}}\le\frac12(1+D)\) が従う。1量子ビットでは Bloch ベクトル距離の半分。
+測定統計の古典距離の最大値に等しく、トレース保存量子操作の下で非増加（縮小性）、強凸。</li>
+<li>量子忠実度 \(F(\rho,\sigma)=\tr\sqrt{\rho^{1/2}\sigma\rho^{1/2}} = \tr|\sqrt\sigma\sqrt\rho|\)：
+純粋状態では \(|\braket\psi\varphi|\)。Uhlmann の定理
+\(F=\max|\braket\psi\varphi|\)（purification にわたる最大）が中心的性質で、
+対称性・単調性 \(F(\mathcal E(\rho),\mathcal E(\sigma))\ge F(\rho,\sigma)\)・強い凹性がここから出る。
+測定統計の古典忠実度の最小値にも等しい。角度 \(A=\arccos F\) は距離の公理を満たす。</li>
+<li>2つの尺度は Fuchs–van de Graaf の不等式 \(1-F\le D\le\sqrt{1-F^2}\) で結ばれ、
+位相的には同等（片方が純粋なら \(1-F^2\le D\) に強化できる）。</li>
+<li>チャネルの情報保存性はエンタングルメント忠実度
+\(F(\rho,\mathcal E)=\bra{RQ}(\mathcal I\otimes\mathcal E)(\ketbra{RQ}{RQ})\ket{RQ}
+= \sum_k|\tr(\rho E_k)|^2\) で測る。
+purification・Kraus 表現の取り方によらず、状態自身の忠実度や任意のアンサンブル平均忠実度を
+下から一様に保証する最も厳しい尺度であり、\(F=1\) ⟺ 台上のすべての状態が不変。
+誤り訂正（第10章）・量子情報源の圧縮（第12章）の成功基準となる。</li>
+<li>三角不等式＋縮小性により、チャネル合成での誤差蓄積はたかだか線形——
+フォールトトレランスの議論の土台。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

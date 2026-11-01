@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Grover の量子探索アルゴリズム、量子計数、探索の最適性とブラックボックス計算の限界">
+  <title>第6章 量子探索アルゴリズム — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter06" data-chapter="6">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第6章に対応</span>
+  第6章 量子探索アルゴリズム
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+前章の量子 Fourier 変換が「周期性」という構造を突く道具だったのに対し、
+本章の主役 <strong>Grover の量子探索アルゴリズム</strong>は、
+構造が何もない探索問題——\(N\) 個の候補から当たりを見つける——を
+オラクル呼び出し \(O(\sqrt N)\) 回で解く。古典の \(O(N)\) に対する二次加速である。
+§6.1 でアルゴリズム本体を構成し、幾何学的描像（2次元平面内の回転）で性能を厳密に解析する。
+§6.2 ではハミルトニアンの時間発展という物理の言葉から同じアルゴリズムを「再発見」し、
+§6.3 では Grover 反復の固有値に位相推定を適用して解の個数を数える<strong>量子計数</strong>を得る。
+§6.4–6.5 では NP 完全問題やデータベース探索への応用と限界を検討する。
+§6.6 では「\(\Omega(\sqrt N)\) 回のオラクル呼び出しは必要」という最適性を証明する。
+つまり Grover のアルゴリズムは改良の余地なく最適であり、
+総当たりに対する量子加速は二次までである。この事実の意味を §6.7 で考える。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-1">量子探索アルゴリズム<span class="en">The quantum search algorithm</span></h2>
+
+<p>
+問題を設定する。\(N=2^n\) 個の要素からなる探索空間にラベル \(x\in\{0,1,\dots,N-1\}\) を振り、
+そのうち \(M\) 個（\(1\le M\le N\)）が「解」であるとする。
+どれが解かは関数
+\[
+f:\{0,\dots,N-1\}\to\{0,1\},\qquad
+f(x)=\begin{cases}1 &amp; x\text{ が解}\\ 0 &amp; x\text{ が解でない}\end{cases}
+\]
+で判定できるが、\(f\) の中身に利用できる構造は一切ない（<strong>非構造化探索</strong>, unstructured search）。
+古典計算では \(f\) を平均 \(N/M\) 回程度評価するしかない。
+Grover のアルゴリズム（1996年）は、これを \(f\) の量子的評価
+\(O(\sqrt{N/M})\) 回で達成する。
+</p>
+
+<h3 id="sec-6-1-1">§6.1.1 オラクル</h3>
+
+<p>
+「\(f\) を量子的に評価できる」ことを、次のユニタリ演算（<strong>オラクル</strong>, oracle）が
+使えることとして定式化する。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（探索オラクル）</span>
+\(n\) 量子ビットのインデックスレジスタ \(\ket x\) と
+1 量子ビットのオラクル量子ビット \(\ket q\) に作用するユニタリ演算
+\[
+O:\ \ket{x}\ket{q}\ \longmapsto\ \ket{x}\ket{q\oplus f(x)}
+\]
+を探索問題のオラクルと呼ぶ（\(\oplus\) は mod 2 の加法）。
+\(x\) が解のときだけオラクル量子ビットが反転する。
+</div>
+
+<p>
+オラクル量子ビットを計算基底ではなく \(\ket{-}=(\ket0-\ket1)/\sqrt2\) に用意すると、
+オラクルの働きは劇的に見やすくなる。\(f(x)=0\) なら何も起きず、
+\(f(x)=1\) なら \(\ket-\mapsto(\ket1-\ket0)/\sqrt2=-\ket-\) となるから、
+\[
+O:\ \ket{x}\ket{-}\ \longmapsto\ (-1)^{f(x)}\,\ket{x}\ket{-}.
+\]
+オラクル量子ビットは \(\ket-\) のまま変化せず、
+情報は<strong>インデックスレジスタの位相</strong>に刻まれる
+（Deutsch–Jozsa の解析でも使った<em>位相キックバック</em>である）。
+以後オラクル量子ビットは省略し、オラクルを
+\[
+O = I - 2\sum_{x:\,f(x)=1}\ketbra{x}{x},
+\qquad O\ket x = (-1)^{f(x)}\ket x
+\]
+という「解の位相だけ反転させる」演算（位相オラクル）とみなす。
+</p>
+
+<div class="remark-box">
+<span class="box-title">「解を知っている」ことと「解を認識できる」ことの違い</span>
+オラクルは解を「知っている」わけではない。<strong>候補を見せられたら解かどうか判定できる</strong>だけである。
+この区別が空虚でないことは素因数分解の例でわかる。
+合成数 \(m\) の因数を知らなくても、「\(x\) は \(m\) を割り切るか」を試し割りで判定する回路は簡単に作れる。
+この判定回路（を可逆化したもの）をオラクルとして探索アルゴリズムに与えれば、
+<em>誰も因数を知らないまま</em>因数が見つかる。
+オラクルとは「効率よく検算できる問題」（NP 的な問題）の検算回路の抽象化である。
+</div>
+
+<h3 id="sec-6-1-2">§6.1.2 アルゴリズムの手順</h3>
+
+<p>
+アルゴリズムはインデックスレジスタを一様重ね合わせ
+\[
+\ket\psi = \frac{1}{\sqrt N}\sum_{x=0}^{N-1}\ket x = H^{\otimes n}\ket{0}^{\otimes n}
+\]
+に初期化し、次の <strong>Grover 反復</strong>（Grover iteration）\(G\) を適切な回数だけ繰り返す。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Grover 反復）</span>
+\[
+G = \bigl(2\ketbra\psi\psi - I\bigr)\,O .
+\]
+すなわち、(1) オラクル \(O\) で解の位相を反転し、
+(2) <strong>拡散演算子</strong>（diffusion operator）\(2\ketbra\psi\psi-I\) を掛ける、
+という 2 段の操作である。
+</div>
+
+<p>
+拡散演算子は次のように回路実装できる。\(\ket\psi=H^{\otimes n}\ket0\) だから
+\[
+2\ketbra\psi\psi - I
+= H^{\otimes n}\bigl(2\ketbra{0}{0} - I\bigr)H^{\otimes n}.
+\]
+中央の \(2\ketbra00-I\) は「\(\ket{0\cdots0}\) 以外の計算基底状態の位相を反転する」条件付き位相シフトであり
+（全体位相 \(-1\) を除けば「\(\ket{0\cdots0}\) だけ反転」と同じこと）、
+\(n\) ビットすべてが 0 かどうかを調べる多重制御 \(Z\) ゲートとして
+\(O(n)\) 個の基本ゲートで作れる（§4.3 の多重制御ゲートの構成）。
+したがって <strong>Grover 反復 1 回のコストは、オラクル 1 回 ＋ \(O(n)\) ゲート</strong>である。
+</p>
+
+<figure>
+<svg viewBox="0 0 560 130" xmlns="http://www.w3.org/2000/svg">
+  <!-- wires -->
+  <line x1="15" y1="45" x2="545" y2="45" class="line"/>
+  <line x1="15" y1="95" x2="215" y2="95" class="line"/>
+  <!-- slash for n qubits -->
+  <line x1="52" y1="52" x2="64" y2="38" class="line"/>
+  <text x="56" y="32" class="label-muted">n</text>
+  <!-- H^n -->
+  <rect x="80" y="30" width="44" height="30" class="gate" stroke-width="1.5"/>
+  <text x="86" y="51" class="label">H⊗ⁿ</text>
+  <!-- G box (dashed) -->
+  <rect x="150" y="12" width="330" height="105" class="line" stroke-dasharray="5 4"/>
+  <text x="155" y="27" class="label-muted">G（R ≈ (π/4)√(N/M) 回反復）</text>
+  <!-- Oracle -->
+  <rect x="170" y="30" width="40" height="80" class="gate" stroke-width="1.5"/>
+  <text x="182" y="76" class="label">O</text>
+  <!-- H^n -->
+  <rect x="240" y="30" width="44" height="30" class="gate" stroke-width="1.5"/>
+  <text x="246" y="51" class="label">H⊗ⁿ</text>
+  <!-- phase -->
+  <rect x="305" y="30" width="90" height="30" class="gate" stroke-width="1.5"/>
+  <text x="311" y="51" class="label">2|0⟩⟨0|−I</text>
+  <!-- H^n -->
+  <rect x="416" y="30" width="44" height="30" class="gate" stroke-width="1.5"/>
+  <text x="422" y="51" class="label">H⊗ⁿ</text>
+  <!-- measurement -->
+  <rect x="500" y="30" width="34" height="30" class="gate" stroke-width="1.5"/>
+  <path d="M 507 54 A 11 11 0 0 1 527 54" class="line"/>
+  <line x1="517" y1="54" x2="525" y2="38" class="line"/>
+  <!-- labels -->
+  <text x="8" y="38" class="label">|0⟩⊗ⁿ</text>
+  <text x="8" y="88" class="label">|−⟩</text>
+  <text x="222" y="99" class="label-muted">|−⟩（不変・省略可）</text>
+</svg>
+<figcaption>図 6.1：探索アルゴリズムの回路。破線内が Grover 反復 \(G\) で、
+オラクル \(O\) と拡散演算子 \(H^{\otimes n}(2\ketbra00-I)H^{\otimes n}\) から成る。</figcaption>
+</figure>
+
+<div class="example-box">
+<span class="box-title">例（平均のまわりの反転）</span>
+拡散演算子の別名は「平均のまわりの反転」(inversion about mean) である。
+一般の状態 \(\sum_k\alpha_k\ket k\) に作用させると、
+\(\bra\psi\bigl(\textstyle\sum_k\alpha_k\ket k\bigr) = \frac{1}{\sqrt N}\sum_k\alpha_k\) より
+\[
+\bigl(2\ketbra\psi\psi - I\bigr)\sum_k \alpha_k\ket k
+= \sum_k\,\bigl(2\langle\alpha\rangle - \alpha_k\bigr)\ket k,
+\qquad \langle\alpha\rangle \equiv \frac1N\sum_j \alpha_j .
+\]
+各振幅が平均値 \(\langle\alpha\rangle\) を挟んで折り返される。
+オラクルで解の振幅だけ負にしておくと平均は少し下がり、
+折り返しによって<strong>解の振幅は平均の上へ大きく跳ね上がり、他は少し下がる</strong>。
+この「位相反転＋平均まわり反転」を繰り返すたびに解の振幅が育っていく、
+というのが代数を見る前の直観である。
+</div>
+
+<h3 id="sec-6-1-3">§6.1.3 幾何学的描像</h3>
+
+<p>
+上の直観は、2 次元平面の回転として完全に厳密化できる。これが本章で最も重要な計算である。
+解の集合の一様重ね合わせと、非解の集合の一様重ね合わせ
+\[
+\ket\beta = \frac{1}{\sqrt M}\sum_{x:\,f(x)=1}\ket x,
+\qquad
+\ket\alpha = \frac{1}{\sqrt{N-M}}\sum_{x:\,f(x)=0}\ket x
+\]
+を定義する（\(\braket\alpha\beta=0\)）。初期状態は両者の張る平面内にあり、
+\[
+\ket\psi = \sqrt{\frac{N-M}{N}}\,\ket\alpha + \sqrt{\frac{M}{N}}\,\ket\beta
+= \cos\frac\theta2\,\ket\alpha + \sin\frac\theta2\,\ket\beta,
+\qquad
+\sin\frac\theta2 \equiv \sqrt{\frac MN}
+\]
+と書ける（\(0 &lt; \theta\le\pi\)）。ここで決定的なのは、
+<strong>\(G\) がこの平面を保ち、平面内では回転として働く</strong>ことである。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Grover 反復＝回転）</span>
+\(\mathrm{span}\{\ket\alpha,\ket\beta\}\) の上で、\(G\) は \(\ket\alpha\) から \(\ket\beta\) へ向かう向きの
+角度 \(\theta\)（\(\sin\frac\theta2=\sqrt{M/N}\)）の回転である。したがって
+\[
+G^k\ket\psi
+= \cos\!\Bigl(\frac{2k+1}{2}\theta\Bigr)\ket\alpha
++ \sin\!\Bigl(\frac{2k+1}{2}\theta\Bigr)\ket\beta .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+平面内の状態 \(\ket\varphi = \cos\gamma\,\ket\alpha + \sin\gamma\,\ket\beta\) を取る。
+まず位相オラクルは解の成分だけ符号を変えるから
+\[
+O\ket\varphi = \cos\gamma\,\ket\alpha - \sin\gamma\,\ket\beta,
+\]
+すなわち \(O\) は平面内では <strong>\(\ket\alpha\) 軸に関する鏡映</strong>である
+（平面の外は不変）。
+一方 \(2\ketbra\psi\psi - I\) は、\(\ket\psi\) 方向の成分を保ち直交成分の符号を変えるから、
+<strong>\(\ket\psi\) 軸に関する鏡映</strong>である（平面外の成分は符号が反転するだけで平面は保たれる。
+初期状態が平面内にあれば以後も平面から出ない）。
+平面幾何の基本事実として、2 直線に関する鏡映の合成は、
+直線のなす角の 2 倍の回転である。
+\(\ket\alpha\) 軸と \(\ket\psi\) 軸のなす角は \(\theta/2\) なので、
+\(G=(2\ketbra\psi\psi-I)O\) は角 \(2\times\theta/2=\theta\) の回転となる。
+向きを確認する：\(\ket\psi\)（角 \(\theta/2\)）に 1 回作用させると、
+\(O\) で角 \(-\theta/2\) へ折り返され、\(\ket\psi\) 軸での鏡映で角
+\(\theta/2+(\theta/2-(-\theta/2))=3\theta/2\) へ移る。
+確かに \(\ket\beta\) へ向かって \(\theta\) 進む。
+初期角が \(\theta/2\) だから、\(k\) 回で角は \((2k+1)\theta/2\)。<span class="qed">∎</span>
+</div>
+
+<figure>
+<svg viewBox="0 0 360 235" xmlns="http://www.w3.org/2000/svg">
+  <!-- axes -->
+  <line x1="70" y1="150" x2="315" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="150" x2="70" y2="18" class="line" stroke-width="1.5"/>
+  <!-- arc guide -->
+  <path d="M 190 150 A 120 120 0 0 0 101 34" class="line" stroke-dasharray="3 4"/>
+  <!-- O|psi> (below axis, dashed) -->
+  <line x1="70" y1="150" x2="179" y2="201" class="line" stroke-dasharray="5 3"/>
+  <circle cx="179" cy="201" r="3.5" class="line"/>
+  <!-- |psi> -->
+  <line x1="70" y1="150" x2="179" y2="99" class="line accent" stroke-width="2"/>
+  <circle cx="179" cy="99" r="3.5" class="accent-fill"/>
+  <!-- G|psi> -->
+  <line x1="70" y1="150" x2="101" y2="34" class="line accent" stroke-width="2"/>
+  <circle cx="101" cy="34" r="3.5" class="accent-fill"/>
+  <!-- angle arcs -->
+  <path d="M 106 150 A 36 36 0 0 0 103 135" class="line accent"/>
+  <path d="M 103 135 A 36 36 0 0 0 80 116" class="line"/>
+  <path d="M 106 150 A 36 36 0 0 1 103 165" class="line"/>
+  <!-- labels -->
+  <text x="320" y="154" class="label">|α⟩</text>
+  <text x="60" y="14" class="label">|β⟩</text>
+  <text x="186" y="97" class="label">|ψ⟩</text>
+  <text x="92" y="26" class="label">G|ψ⟩</text>
+  <text x="185" y="210" class="label">O|ψ⟩</text>
+  <text x="113" y="145" class="label-muted">θ/2</text>
+  <text x="93" y="120" class="label-muted">θ</text>
+  <text x="112" y="172" class="label-muted">θ/2</text>
+</svg>
+<figcaption>図 6.2：Grover 反復の幾何学的描像。
+オラクル \(O\) は \(\ket\alpha\) 軸に関する鏡映（\(\ket\psi\to O\ket\psi\)）、
+拡散演算子は \(\ket\psi\) 軸に関する鏡映で、合成 \(G\) は角 \(\theta\) の回転になる。
+反復のたびに状態は解の重ね合わせ \(\ket\beta\) に近づく。</figcaption>
+</figure>
+
+<p>
+角が \(\pi/2\) に達したとき状態は \(\ket\beta\) に一致し、
+測定すれば確率 1 で解のどれかが得られる。
+実際には反復回数は整数なのでぴったり \(\pi/2\) にはできないが、
+次小節で見るようにこの誤差は小さい。
+なお繰り返しすぎると回転は \(\ket\beta\) を<strong>通り過ぎて</strong>成功確率が下がる点に注意
+——多く回せばよいというものではない。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(N=4,\ M=1\)：1 回で確実に当たる）</span>
+\(\sin\frac\theta2=\sqrt{1/4}=\frac12\) より \(\theta/2=\pi/6\)、すなわち \(\theta=\pi/3\)。
+1 回の反復後の角は \(\frac{3\theta}{2}=\frac\pi2\) となり、状態は厳密に \(\ket\beta\)。
+つまり 4 件から 1 件を探す問題は、<strong>オラクル 1 回の呼び出しで確率 1 で解ける</strong>。
+古典では 1 回の評価で当たる確率は \(1/4\)（確実を期すなら最悪 3 回）だから、
+最小サイズの例でも差がつく。
+</div>
+
+<h3 id="sec-6-1-4">§6.1.4 性能</h3>
+
+<p>
+反復回数を見積もる。初期角 \(\theta/2\) を \(\pi/2\) まで運ぶには
+回転 \((\pi/2-\theta/2)/\theta = \pi/(2\theta)-1/2\) 回が理想で、
+最も近い整数
+\[
+R = \mathrm{round}\!\left(\frac{\arccos\sqrt{M/N}}{\theta}\right)
+\]
+を選ぶ。丸めによる角度誤差は高々 \(\theta/2\) なので、
+最終状態と \(\ket\beta\) のなす角は \(\theta/2\) 以下、
+したがって<strong>失敗確率は \(\cos^2(\text{最終角})\le\sin^2(\theta/2)=M/N\) 以下</strong>である。
+\(M\ll N\) なら成功確率はほぼ 1 になる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（反復回数の上界）</span>
+\(M\le N/2\) のとき
+\[
+R \le \left\lceil \frac{\pi}{4}\sqrt{\frac NM}\, \right\rceil .
+\]
+特に \(M=1\) なら \(R\approx\frac\pi4\sqrt N\)：オラクル呼び出しは \(O(\sqrt{N/M})\) 回で済む。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(R\le\lceil\pi/(2\theta)\rceil\) は丸めの定義から従う
+（理想回数 \(\pi/(2\theta)-1/2\) の丸めは \(\pi/(2\theta)\) を超えない）。
+\(M\le N/2\) なら \(\theta/2\le\pi/4\) であり、この範囲では
+\(\frac{\theta}{2}\ge\sin\frac\theta2=\sqrt{M/N}\)。
+よって \(\frac{1}{\theta}\le\frac12\sqrt{N/M}\) となり、
+\(R\le\lceil\frac{\pi}{4}\sqrt{N/M}\rceil\)。<span class="qed">∎</span>
+</div>
+
+<p>
+古典の \(O(N/M)\) と比べると<strong>二次加速</strong> (quadratic speedup) である。
+指数加速ではないが、§6.6 で見るようにこれが理論的な上限であり、
+しかも適用範囲（「検算できる問題」全部）が極めて広い。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意：\(M\) が未知の場合と \(M &gt; N/2\) の落とし穴</span>
+<p>
+最適な反復回数 \(R\) は \(\theta\)、すなわち解の個数 \(M\) に依存する。
+\(M\) を知らずに適当な回数だけ回すと、回転が \(\ket\beta\) を通り過ぎて
+成功確率が小さくなりうる。対処は 2 つある。
+(1) §6.3 の<strong>量子計数</strong>で先に \(M\) を推定してから \(R\) を決める。
+(2) 反復回数を \(1,2,4,8,\dots\) と指数的に変えながら測定を繰り返す
+ランダム化戦略でも、期待呼び出し回数 \(O(\sqrt{N/M})\) が保てることが知られている。
+</p>
+<p>
+また \(M &gt; N/2\) の場合、\(\theta\) は \(\pi/2\) を超えて 1 回の回転が大きすぎ、
+\(M\) の増加とともに必要な反復回数がかえって振る舞いを乱す
+（皮肉なことに<em>解が増えるほど</em>素朴なアルゴリズムは扱いにくくなる）。
+もっとも \(M\ge N/2\) ならランダムに 1 つ測るだけで確率 \(1/2\) 以上で当たるから
+実害は小さいが、系統的な解決としては<strong>インデックスに量子ビットを 1 本追加して
+探索空間を \(2N\) に倍増する</strong>手がある。解は元の \(N\) 側にしかないので
+解の割合は \(M/2N\le1/2\) となり、常に上の定理の適用範囲に入る。
+</p>
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-2">量子シミュレーションとしての探索<span class="en">Quantum search as a quantum simulation</span></h2>
+
+<p>
+Grover 反復の形 \((2\ketbra\psi\psi-I)O\) は、知ってしまえば検証は簡単である。
+しかし、どこから来たのかは見えにくい。本節では
+「<strong>解へ向かう時間発展を起こすハミルトニアンを設計し、それを量子回路でシミュレートする</strong>」
+という物理側の発想から、同じアルゴリズムを導いてみる。
+アルゴリズムの発見法としての量子シミュレーション（§4.7）の好例である。
+</p>
+
+<p>
+簡単のため解はただ 1 つ（\(M=1\)）とし、それを \(\ket x\) と書く。
+既知の初期状態 \(\ket\psi\) を解 \(\ket x\) へ運ぶハミルトニアンとして、
+両者だけから作れる最も対称的な候補
+\[
+H = \ketbra xx + \ketbra\psi\psi
+\]
+を推測する（guess）。うまくいくかどうかは計算で確かめればよい。
+</p>
+
+<p>
+<strong>2 次元への還元と Pauli 行列による書き換え。</strong>
+時間発展 \(e^{-iHt}\ket\psi\) は \(\mathrm{span}\{\ket x,\ket\psi\}\) から出ない。
+そこでこの平面の正規直交基底 \(\{\ket x,\ket y\}\) を、
+\[
+\ket\psi = \alpha\ket x + \beta\ket y,
+\qquad \alpha = \braket x\psi = \frac{1}{\sqrt N},
+\quad \beta = \sqrt{1-\alpha^2}
+\]
+となるように取る（\(\alpha,\beta&gt;0\) に取れる）。この基底で行列表示すると
+\[
+H = \begin{pmatrix}1+\alpha^2 &amp; \alpha\beta\\ \alpha\beta &amp; \beta^2\end{pmatrix}
+= I + \alpha\,(\alpha Z + \beta X)
+\]
+となる（\(\beta^2 = 1-\alpha^2\) を使った。\(X,Z\) はこの 2 次元空間の Pauli 行列）。
+ここで \(\vec n\cdot\vec\sigma \equiv \alpha Z+\beta X\) は
+\((\vec n\cdot\vec\sigma)^2 = (\alpha^2+\beta^2)I = I\) を満たすから、指数関数は閉じた形になる：
+\[
+e^{-iHt} = e^{-it}\Bigl[\cos(\alpha t)\,I - i\sin(\alpha t)\,(\alpha Z + \beta X)\Bigr].
+\]
+さらに直接計算で
+\((\alpha Z+\beta X)\ket\psi
+= \begin{pmatrix}\alpha &amp; \beta\\ \beta &amp; -\alpha\end{pmatrix}
+\begin{pmatrix}\alpha\\ \beta\end{pmatrix}
+= \begin{pmatrix}1\\ 0\end{pmatrix} = \ket x\)
+となることに注意すると、
+\[
+e^{-iHt}\ket\psi
+= e^{-it}\Bigl[\cos(\alpha t)\,\ket\psi - i\sin(\alpha t)\,\ket x\Bigr].
+\]
+</p>
+
+<div class="thm-box">
+<span class="box-title">結論（連続時間探索）</span>
+時刻 \(t\) で測定して解 \(x\) を得る確率は
+\[
+\bigl|\braket{x}{e^{-iHt}\psi}\bigr|^2
+= \alpha^2\cos^2(\alpha t) + \sin^2(\alpha t)
+\]
+であり、\(t = \dfrac{\pi}{2\alpha} = \dfrac{\pi\sqrt N}{2}\) で<strong>確率 1</strong> に達する。
+すなわちハミルトニアン \(H\) による発展は時間 \(O(\sqrt N)\) で探索を解く。
+</div>
+
+<p>
+Grover 反復の \(O(\sqrt N)\) <em>回</em>と同じスケーリングが、
+時間 \(O(\sqrt N)\) として現れている。偶然ではない——次に見るように、
+この時間発展を離散化するとまさに Grover 反復が出てくるからである。
+なお解が \(M\) 個ある場合は \(\ket x\) を解の一様重ね合わせ \(\ket\beta\) に置き換えれば
+同じ計算がそのまま通り、\(\alpha=\sqrt{M/N}\)、所要時間 \(O(\sqrt{N/M})\) となる。
+</p>
+
+<p>
+<strong>離散化：Grover 反復の再発見。</strong>
+\(H\) は 2 つの項の和なので、Trotter 流（§4.7.2）に小さな時間幅 \(\Delta t\) ずつ
+\[
+e^{-iH\Delta t} \approx e^{-i\ketbra\psi\psi\,\Delta t}\; e^{-i\ketbra xx\,\Delta t}
+\]
+と分割してシミュレートする。各因子は実装できる：
+\(P\) を射影演算子とすると \(e^{-iP\Delta t} = I + (e^{-i\Delta t}-1)P\) だから、
+\(e^{-i\ketbra xx\Delta t}\) は「解の位相だけ \(e^{-i\Delta t}\) 倍する」演算で、
+オラクル（＋位相を掛ける補助回路）1 回で作れる。
+\(e^{-i\ketbra\psi\psi\Delta t} = H^{\otimes n}\,e^{-i\ketbra00\Delta t}\,H^{\otimes n}\)
+はオラクル不要の固定回路である。
+1 ステップあたりの回転角を解析すると（2 次元平面内でこの積もまた回転になる）、
+回転角が最大になる選択が \(\Delta t = \pi\) であり、このとき
+\[
+e^{-i\pi\ketbra\psi\psi} = I - 2\ketbra\psi\psi,
+\qquad
+e^{-i\pi\ketbra xx} = I - 2\ketbra xx = O
+\]
+となって、積は
+\[
+\bigl(I-2\ketbra\psi\psi\bigr)\,O = -\,\bigl(2\ketbra\psi\psi - I\bigr)\,O = -G .
+\]
+全体位相 \(-1\) を除いて <strong>Grover 反復そのもの</strong>である。
+つまり Grover のアルゴリズムは「ハミルトニアン \(\ketbra xx+\ketbra\psi\psi\) の時間発展を、
+最大ステップ幅で刻んだもの」と読める。
+小さい \(\Delta t\) で刻んでも正しく動くが、必要ステップ数は
+\(t/\Delta t = O(\sqrt N/\Delta t)\) で、オラクル呼び出しの節約にはならない。
+どう刻んでも \(O(\sqrt N)\) 回を下回れないことは、§6.6 の最適性定理の予告になっている。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-3">量子計数<span class="en">Quantum counting</span></h2>
+
+<p>
+探索の前提を一つ弱めよう：解の個数 \(M\) が未知だとする。
+古典では \(M\) を精度よく推定するにも \(\Theta(N)\) 回の評価が要る（標本調査では \(O(1/\epsilon^2)\) 回で
+<em>割合</em>はわかるが、\(\sqrt M\) 程度の絶対精度を出すには結局多数回要る）。
+量子では、<strong>Grover 反復の回転角 \(\theta\) を位相推定（§5.2）で読み取る</strong>ことで、
+\(O(\sqrt N)\) 回のオラクル呼び出しで \(M\) が推定できる。これが<strong>量子計数</strong>
+(quantum counting) である。
+</p>
+
+<p>
+<strong>鍵：\(G\) の固有値。</strong>
+§6.1.3 で見たとおり、\(G\) は平面 \(\mathrm{span}\{\ket\alpha,\ket\beta\}\) 内の角 \(\theta\) の回転である。
+2 次元の回転行列の固有値は \(e^{\pm i\theta}\)、固有ベクトルは
+\[
+\ket{\eta_\pm} = \frac{1}{\sqrt2}\bigl(\ket\alpha \mp i\ket\beta\bigr),
+\qquad G\ket{\eta_\pm} = e^{\pm i\theta}\ket{\eta_\pm}
+\]
+である。そして \(\theta\) は
+\[
+\sin^2\frac\theta2 = \frac MN
+\]
+を通じて \(M\) を担っている。よって固有値の位相 \(\theta\) を推定すれば \(M\) がわかる。
+なお §6.1.4 の注意に従い探索空間を 1 量子ビット追加で \(2N\) に倍増しておけば
+\(\sin^2(\theta/2)=M/2N\le1/2\)、つまり \(\theta\in(0,\pi/2]\) の範囲に収まり、
+\(e^{+i\theta}\) と \(e^{-i\theta}=e^{i(2\pi-\theta)}\) のどちらの推定値を得ても
+\(\theta\) が一意に復元できる。
+</p>
+
+<p>
+<strong>手順。</strong>位相推定の標準形をそのまま使う。
+\(t\) 量子ビットの計数レジスタを一様重ね合わせに用意し、
+下のレジスタには \(\ket\psi\)（を倍増空間で作ったもの）を置く。
+\(\ket\psi\) は固有ベクトルの重ね合わせ
+\(\ket\psi = a\ket{\eta_+} + b\ket{\eta_-}\) なので、
+制御 \(G^{2^j}\) 群と逆 Fourier 変換のあとの測定は、
+確率 \(|a|^2\) で \(\theta/2\pi\) の、確率 \(|b|^2\) で \((2\pi-\theta)/2\pi\) の
+\(t\) ビット近似を返す。どちらが出ても \(\sin^2(\theta/2)\) は同じ値なので支障ない。
+</p>
+
+<figure>
+<svg viewBox="0 0 600 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- wires -->
+  <line x1="15" y1="45" x2="585" y2="45" class="line"/>
+  <line x1="15" y1="105" x2="470" y2="105" class="line"/>
+  <!-- slashes -->
+  <line x1="48" y1="52" x2="60" y2="38" class="line"/>
+  <text x="50" y="32" class="label-muted">t</text>
+  <line x1="48" y1="112" x2="60" y2="98" class="line"/>
+  <text x="50" y="92" class="label-muted">n+1</text>
+  <!-- H on counting -->
+  <rect x="90" y="30" width="44" height="30" class="gate" stroke-width="1.5"/>
+  <text x="97" y="51" class="label">H⊗ᵗ</text>
+  <!-- controlled G powers -->
+  <circle cx="205" cy="45" r="5" class="accent-fill"/>
+  <line x1="205" y1="45" x2="205" y2="90" class="line" stroke-width="1.5"/>
+  <rect x="175" y="90" width="60" height="30" class="gate" stroke-width="1.5"/>
+  <text x="184" y="111" class="label">G^2⁰</text>
+  <circle cx="290" cy="45" r="5" class="accent-fill"/>
+  <line x1="290" y1="45" x2="290" y2="90" class="line" stroke-width="1.5"/>
+  <rect x="260" y="90" width="60" height="30" class="gate" stroke-width="1.5"/>
+  <text x="269" y="111" class="label">G^2¹</text>
+  <text x="340" y="110" class="label">…</text>
+  <circle cx="400" cy="45" r="5" class="accent-fill"/>
+  <line x1="400" y1="45" x2="400" y2="90" class="line" stroke-width="1.5"/>
+  <rect x="370" y="90" width="62" height="30" class="gate" stroke-width="1.5"/>
+  <text x="376" y="111" class="label">G^2ᵗ⁻¹</text>
+  <!-- inverse QFT -->
+  <rect x="460" y="30" width="54" height="30" class="gate" stroke-width="1.5"/>
+  <text x="466" y="51" class="label">FT†</text>
+  <!-- measurement -->
+  <rect x="540" y="30" width="34" height="30" class="gate" stroke-width="1.5"/>
+  <path d="M 547 54 A 11 11 0 0 1 567 54" class="line"/>
+  <line x1="557" y1="54" x2="565" y2="38" class="line"/>
+  <!-- labels -->
+  <text x="8" y="38" class="label">|0⟩⊗ᵗ</text>
+  <text x="8" y="98" class="label">|ψ⟩</text>
+  <text x="520" y="90" class="label-muted">→ θ の t ビット推定</text>
+</svg>
+<figcaption>図 6.3：量子計数の回路。Grover 反復 \(G\) の固有値 \(e^{\pm i\theta}\) に
+位相推定を適用する。下側レジスタは探索空間を倍増した \(n+1\) 量子ビット。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">定理（計数精度）</span>
+位相推定で \(\theta\) を精度 \(|\Delta\theta|\le 2\pi/2^m\)（成功確率 \(1-\epsilon\)、
+計数レジスタ \(t = m + \lceil\log_2(2+\tfrac{1}{2\epsilon})\rceil\) 量子ビット）で推定し、
+\(\widetilde M = 2N\sin^2(\tilde\theta/2)\) と置くと（倍増空間なので \(N\to2N\)）、
+\[
+|\Delta M| = |\widetilde M - M|
+&lt; \Bigl(2\sqrt{2MN} + \frac{2\pi N}{2^{m}}\Bigr)\,\frac{2\pi}{2^{m+1}} .
+\]
+特に \(2^m = c\sqrt N\)（\(c\) は定数）と選べば、
+オラクル呼び出し \(2^t-1 = O(\sqrt N)\) 回で誤差 \(|\Delta M| = O(\sqrt M + 1)\) が達成される。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+恒等式 \(|\sin^2 a - \sin^2 b| = |\sin a - \sin b|\,(\sin a + \sin b)\)
+（\(a,b\in[0,\pi/2]\)）を \(a=\tilde\theta/2,\ b=\theta/2\) に使う。
+\(|\sin a-\sin b|\le|a-b| = |\Delta\theta|/2\)、
+\(\sin a+\sin b \le 2\sin b + |a-b| = 2\sqrt{M/2N} + |\Delta\theta|/2\) より
+\[
+\frac{|\Delta M|}{2N}
+&lt; \frac{|\Delta\theta|}{2}\Bigl(2\sqrt{\frac{M}{2N}} + \frac{|\Delta\theta|}{2}\Bigr).
+\]
+\(|\Delta\theta|\le2\pi/2^m\) を代入して整理すれば主張の式になる。
+\(2^m=c\sqrt N\) なら第 1 項は \(O(\sqrt M)\)、第 2 項は \(O(1)\)。
+オラクル呼び出し回数は制御 \(G^{2^j}\) の総計 \(2^t-1\) 回で、
+\(t=m+O(1)\) より \(O(\sqrt N)\)。<span class="qed">∎</span>
+</div>
+
+<p>
+<strong>応用。</strong>量子計数は探索アルゴリズムの穴を埋める。
+</p>
+
+<ul>
+<li><strong>\(M\) 未知の探索：</strong>まず計数で \(\widetilde M\)（誤差 \(O(\sqrt M)\)）を得てから
+反復回数 \(R\) を決めて探索を走らせる。角度 \(\theta\) の相対誤差が小さいので、
+成功確率は定数以上に保たれる。全体でオラクル \(O(\sqrt N)\) 回。</li>
+<li><strong>解の存在判定：</strong>\(M=0\) か \(M\ge1\) かの判定は \(\theta=0\) か否かの判定であり、
+精度 \(2^m\sim\sqrt N\) の計数で区別できる。
+NP 的な決定問題（「充足する割り当てはあるか？」）にそのまま使える。</li>
+<li><strong>統計調査の加速：</strong>「条件を満たすデータの割合」の推定を
+古典標本調査より二次的に速く行う（振幅推定として知られる一般化）。</li>
+</ul>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-4">NP完全問題の解法の高速化<span class="en">Speeding up the solution of NP-complete problems</span></h2>
+
+<p>
+探索アルゴリズムの最も自然な応用先は NP 完全問題（§3.2.4）である。
+充足可能性問題（SAT）を例に取る：\(n\) 変数のブール式 \(\varphi\) に対し、
+\(\varphi\) を真にする割り当てはあるか？
+割り当ては \(n\) ビット列 \(x\in\{0,1\}^n\)、つまり探索空間のサイズは \(N=2^n\) である。
+\(\varphi\) の評価は多項式サイズの古典回路ででき、
+それを可逆化（§1.4.1, §3.2.5）すればオラクル
+\(O\ket x\ket q = \ket x\ket{q\oplus\varphi(x)}\) が
+多項式個のゲートで実装できる。あとは探索アルゴリズムを回すだけで：
+</p>
+
+<div class="thm-box">
+<span class="box-title">帰結（総当たりの二次加速）</span>
+SAT（および任意の NP 問題の証拠探索）は、量子計算機上で
+\[
+O\bigl(2^{n/2}\,\mathrm{poly}(n)\bigr)
+\]
+時間で解ける。古典の素朴な総当たり \(O(2^n\,\mathrm{poly}(n))\) に対する二次加速である。
+解の有無だけ知りたければ量子計数（§6.3）を使えばよく、コストは同程度である。
+</div>
+
+<p>
+これをどう評価すべきか、両面から述べる。
+</p>
+
+<p>
+<strong>意義。</strong>指数 \(2^n\to2^{n/2}\) の改善は、指数関数の肩を半分にする
+——つまり<strong>扱える問題サイズ \(n\) を（同じ計算資源で）約 2 倍にする</strong>ことを意味し、
+実用上は決して小さくない。しかも仕組みが完全に汎用で、
+問題ごとの工夫なしに「検算回路」さえ書ければ適用できる。
+</p>
+
+<p>
+<strong>限界。</strong>第一に、\(2^{n/2}\) は依然として指数である。
+探索アルゴリズムは NP 完全問題を多項式時間に落とすものでは全くない。
+第二に、<strong>比較相手が素朴な総当たりである</strong>点に注意が要る。
+現実の SAT ソルバや 3-SAT の理論的アルゴリズムは、問題の構造
+（節の局所性、単位伝播、局所探索など）を使う。
+これらは \(O(c^n)\) を達成する（\(c &lt; 2\)。たとえば 3-SAT の古典局所探索で \(c\approx4/3\)）。
+「構造を無視した Grover」より速いことがある。
+もっとも、こうした<strong>古典ヒューリスティクス自体を Grover 型の反復で包んで
+二次加速する</strong>（振幅増幅, amplitude amplification）ことが可能な場合も多く、
+両者は排他的ではない。
+第三に、§6.6 の最適性定理により、オラクル的な（構造を見ない）使い方をする限り
+二次を超える加速は原理的に存在しない。
+NP 完全問題が量子計算機で多項式時間で解けるとすれば、
+それは探索の改良ではなく、各問題の構造への深い洞察によるはずである
+——そしてそのような洞察は現在知られていない
+（\(\mathrm{NP}\subseteq\mathrm{BQP}\) を示す証拠は何もない）。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-5">非構造化データベースの探索<span class="en">Quantum search of an unstructured database</span></h2>
+
+<p>
+「Grover は<em>データベース検索</em>を高速化する」という宣伝文句には注意が要る。
+前節までのオラクルは<strong>計算で答えが出る</strong>関数（SAT の検算など）だった。
+一方「データベース」は物理的なメモリに格納された恣意的なデータであり、
+オラクルは<strong>メモリ参照</strong>で実現しなければならない。この違いを詰めてみる。
+</p>
+
+<p>
+<strong>メモリ参照のオラクル化。</strong>
+\(N=2^n\) 個のセルからなるメモリに古典データ \(d_0,\dots,d_{N-1}\) が入っているとし、
+「\(d_x = s\)（探したい値）となる \(x\) を見つけたい」とする。
+探索アルゴリズムを走らせるには、重ね合わされたアドレスに対する参照
+\[
+\mathrm{LOAD}:\ \ket x\ket{r}\ \longmapsto\ \ket x\ket{r\oplus d_x}
+\]
+がユニタリに実行できなければならない。すなわちメモリ自体が
+<strong>量子的なアドレス指定</strong>（quantumly addressable memory、いわゆる量子RAM）に
+対応する必要がある。これは原理的には可能である：
+アドレスの各ビットで分岐する深さ \(n\) の二分木スイッチを組み、
+末端の \(N\) セルの内容を読み出して合流させる回路は、
+<strong>ハードウェア量 \(O(N)\)、1 回の参照の所要時間（回路の深さ）\(O(n)\)</strong> で作れる。
+データ自体は古典でよく、量子的である必要があるのはスイッチ部分だけである点は
+実装上の救いになる。
+</p>
+
+<p>
+<strong>コスト勘定の落とし穴。</strong>ここで公平な比較をすると：
+</p>
+
+<ul>
+<li>量子探索：参照 \(O(\sqrt N)\) 回。ただし量子RAM の建設にハードウェア \(O(N)\)。</li>
+<li>古典探索：参照 \(O(N)\) 回。ただしメモリは普通の古典メモリでよい。
+さらに、<strong>\(O(N)\) のハードウェアを許すなら</strong>古典でも
+全セルを並列に比較して \(O(\log N)\) 時間で答えを出す回路が組める。</li>
+</ul>
+
+<p>
+つまり「ハードウェア量まで含めた総コスト」で見ると、
+一度きりのデータベース検索での量子の優位は見かけほど明確でない。
+データを書き込む（＝全要素に一度は触れる）だけで \(O(N)\) の仕事が要ることも、
+一度きりの検索の加速を相殺する。
+量子探索が本領を発揮するのは、
+(1) オラクルが<strong>参照ではなく計算</strong>で実現される場合（§6.4 の SAT 型。
+探索空間 \(2^n\) に対しオラクル回路は \(\mathrm{poly}(n)\) で済む）、
+(2) 同じデータベースに対して<strong>複雑な述語での検索を何度も</strong>行い、
+量子RAM の建設コストが償却される場合、である。
+「量子計算機が Google を置き換える」式の理解は正しくない、というのが本節の教訓である。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-6">探索アルゴリズムの最適性<span class="en">Optimality of the search algorithm</span></h2>
+
+<p>
+本章のクライマックスである。Grover のアルゴリズムはオラクル \(O(\sqrt N)\) 回で探索を解いた。
+もっと賢い方法はないのか？　答えは<strong>否</strong>：
+オラクルをブラックボックスとして使う限り、
+どんな量子アルゴリズムも \(\Omega(\sqrt N)\) 回の呼び出しを必要とする。
+証明は<strong>ハイブリッド論法</strong> (hybrid argument) と呼ばれる、
+量子下界証明の原型となった議論である。
+</p>
+
+<p>
+<strong>設定。</strong>解は 1 つ（\(M=1\)）とし、解が \(x\) のときの位相オラクルを
+\(O_x = I - 2\ketbra xx\) と書く。
+最も一般的な \(k\) 回呼び出しアルゴリズムは、
+固定の初期状態 \(\ket{\psi_0}\)（作業用量子ビットを含んでよい）に、
+固定のユニタリ \(U_1,\dots,U_k\) とオラクルを交互に適用するものである：
+\[
+\ket{\psi_k^x} = U_k\,O_x\,U_{k-1}\,O_x\cdots U_1\,O_x\ket{\psi_0}.
+\]
+比較対象として、<strong>オラクルを一度も呼ばない</strong>並走状態
+\(\ket{\psi_k} = U_k U_{k-1}\cdots U_1\ket{\psi_0}\) を用意する。
+鍵になる量は、全ての \(x\) にわたる両者の偏差の総和
+\[
+D_k = \sum_{x=0}^{N-1}\bigl\|\,\ket{\psi_k^x} - \ket{\psi_k}\,\bigr\|^2
+\]
+である。証明は 2 段から成る：
+(i) \(D_k\) は高々 \(4k^2\) までしか育たない（オラクルの影響は少しずつしか蓄積しない）、
+(ii) 全ての \(x\) に対して解を当てられるためには \(D_k = \Omega(N)\) が必要
+（\(x\) ごとに違う答えを出すには状態が \(x\) ごとに大きく異なる必要がある）。
+両者を合わせると \(4k^2\ge cN\)、すなわち \(k=\Omega(\sqrt N)\) が出る。
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題 1（偏差の成長は遅い）</span>
+任意のアルゴリズムに対して
+\[
+D_k \le 4k^2 .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（帰納法）</span>
+\(D_0=0\) は明らか。\(\sqrt{D_{k+1}}\le\sqrt{D_k}+2\) を示せば
+\(\sqrt{D_k}\le2k\)、すなわち \(D_k\le4k^2\) が従う。
+ユニタリ \(U_{k+1}\) はノルムを変えないので
+\[
+D_{k+1} = \sum_x\bigl\|O_x\ket{\psi_k^x} - \ket{\psi_k}\bigr\|^2
+= \sum_x\bigl\|\,O_x\bigl(\ket{\psi_k^x}-\ket{\psi_k}\bigr)
++ (O_x - I)\ket{\psi_k}\,\bigr\|^2 .
+\]
+第 2 項は \((O_x-I)\ket{\psi_k} = -2\braket{x}{\psi_k}\ket x\) で、
+ノルムは \(2|\braket x{\psi_k}|\)。三角不等式を展開した形
+\(\|a+b\|^2\le\|a\|^2+2\|a\|\|b\|+\|b\|^2\) を使うと
+\[
+D_{k+1} \le D_k
++ 4\sum_x \bigl\|\ket{\psi_k^x}-\ket{\psi_k}\bigr\|\,\bigl|\braket x{\psi_k}\bigr|
++ 4\sum_x \bigl|\braket x{\psi_k}\bigr|^2 .
+\]
+最後の和は \(\sum_x|\braket x{\psi_k}|^2\le1\)（規格化）。
+中央の和には Cauchy–Schwarz の不等式を使う：
+\[
+\sum_x \bigl\|\ket{\psi_k^x}-\ket{\psi_k}\bigr\|\,\bigl|\braket x{\psi_k}\bigr|
+\le \sqrt{\textstyle\sum_x\|\ket{\psi_k^x}-\ket{\psi_k}\|^2}\;
+\sqrt{\textstyle\sum_x|\braket x{\psi_k}|^2}
+\le \sqrt{D_k}.
+\]
+よって
+\[
+D_{k+1} \le D_k + 4\sqrt{D_k} + 4 = \bigl(\sqrt{D_k}+2\bigr)^2 .
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">補題 2（識別には大きな偏差が必要）</span>
+測定によって各 \(x\) が確率 \(1/2\) 以上で正しく出力される、すなわち
+\(|\braket{x}{\psi_k^x}|^2\ge\frac12\)（全ての \(x\)）ならば、
+\[
+D_k \ge cN,\qquad c = \bigl(\sqrt2-\sqrt{2-\sqrt2}\bigr)^2 - o(1) \approx 0.42 .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+位相は成功確率に影響しないので、各 \(x\) の基底ベクトルの位相を取り直して
+\(\braket x{\psi_k^x} = |\braket x{\psi_k^x}|\ge1/\sqrt2\) としてよい。
+2 つの補助量を評価する。まず「オラクルあり状態と正解の距離」：
+\[
+E_k \equiv \sum_x\bigl\|\ket{\psi_k^x}-\ket x\bigr\|^2
+= \sum_x\Bigl(2 - 2\,\mathrm{Re}\braket x{\psi_k^x}\Bigr)
+\le \bigl(2-\sqrt2\bigr)N .
+\]
+次に「オラクルなし状態と正解の距離」：\(x\) に依らない単一の状態 \(\ket{\psi_k}\) は
+\(N\) 個の直交ベクトル全部の近くにはいられない。実際
+\(\sum_x \mathrm{Re}\braket x{\psi_k} \le \sum_x|\braket x{\psi_k}|
+\le \sqrt N\sqrt{\sum_x|\braket x{\psi_k}|^2} \le \sqrt N\)（Cauchy–Schwarz）より
+\[
+F_k \equiv \sum_x\bigl\|\ket x-\ket{\psi_k}\bigr\|^2
+= \sum_x\Bigl(2-2\,\mathrm{Re}\braket x{\psi_k}\Bigr)
+\ge 2N - 2\sqrt N .
+\]
+三角不等式
+\(\|\ket{\psi_k^x}-\ket{\psi_k}\| \ge \|\ket x-\ket{\psi_k}\| - \|\ket{\psi_k^x}-\ket x\|\)
+の両辺を 2 乗して \(x\) について足し、
+交差項に再び Cauchy–Schwarz を使うと
+\[
+D_k \ge F_k + E_k - 2\sqrt{E_k F_k} = \bigl(\sqrt{F_k}-\sqrt{E_k}\bigr)^2 .
+\]
+\(F_k\ge 2N-2\sqrt N,\ E_k\le(2-\sqrt2)N\) を入れれば、\(N\) が大きいとき
+\[
+D_k \ge \Bigl(\sqrt{2N-2\sqrt N} - \sqrt{(2-\sqrt2)N}\Bigr)^2
+= N\bigl(\sqrt2-\sqrt{2-\sqrt2}\bigr)^2 - O(\sqrt N).
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（探索の下界と Grover の最適性）</span>
+オラクル呼び出し \(k\) 回で全ての \(x\) を確率 \(1/2\) 以上で見つけるアルゴリズムは
+\[
+4k^2 \ge D_k \ge cN
+\qquad\Longrightarrow\qquad
+k \ge \frac{\sqrt{cN}}{2} \approx 0.32\sqrt N
+\]
+を満たす。したがって非構造化探索のオラクル計算量は \(\Theta(\sqrt N)\) であり、
+Grover のアルゴリズムは定数因子を除いて最適である。
+</div>
+
+<div class="caution-box">
+<span class="box-title">この定理が言っていること・いないこと</span>
+<p>
+より精密な解析（Zalka, 1999）によれば定数因子まで込めて
+\(\frac\pi4\sqrt N\) が漸近的に最適であり、Grover のアルゴリズムは文字通り一切改良できない。
+量子アルゴリズムとしては珍しい「完全に閉じた」結果である。
+</p>
+<p>
+含意として、<strong>オラクルを検算にしか使わない量子アルゴリズムで
+NP 完全問題を多項式時間で解くことはできない</strong>。
+\(2^{n/2}\) の壁は量子力学そのものが課す壁である。
+ただしこれは、NP 完全問題が量子計算機で効率よく解けないことの証明では<em>ない</em>。
+具体的な問題（たとえば 3-SAT の式）はオラクルではなく中身の見える回路である。
+その構造を使うアルゴリズムに、この下界は適用されない。この点は §6.7 で敷衍する。
+</p>
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-7">ブラックボックスアルゴリズムの限界<span class="en">Black box algorithm limits</span></h2>
+
+<p>
+探索は「\(f(x)=1\) となる \(x\) はあるか／どれか」という、
+関数 \(f\) についての特定の性質を問う問題だった。
+より一般に、オラクルとして与えられた
+\(f:\{0,\dots,N-1\}\to\{0,1\}\) の<strong>大域的な性質</strong>
+\[
+F\bigl(f(0),f(1),\dots,f(N-1)\bigr)\in\{0,1\}
+\]
+を決定するのに、オラクル呼び出しは何回必要か？　これが
+<strong>ブラックボックス（オラクル）計算量</strong>の一般問題である。例を挙げると：
+</p>
+
+<ul>
+<li>\(F=\mathrm{OR}\)：どれかの \(x\) で \(f(x)=1\) か？（＝探索の決定版）</li>
+<li>\(F=\mathrm{AND}\)：全ての \(x\) で \(f(x)=1\) か？</li>
+<li>\(F=\mathrm{PARITY}\)：\(f(x)=1\) となる \(x\) の個数は偶数か奇数か？</li>
+<li>\(F=\mathrm{MAJORITY}\)：\(f(x)=1\) が過半数か？</li>
+</ul>
+
+<p>
+こうした問題に対する強力な下界の道具が<strong>多項式法</strong> (polynomial method) である。
+アイデアだけ紹介する。変数 \(X_x \equiv f(x)\in\{0,1\}\)（\(N\) 個）と見たとき、
+位相オラクル 1 回の作用は各振幅に因子 \((1-2X_x)\) を掛けること、
+すなわち<strong>振幅を \(X\) たちの 1 次式で更新する</strong>ことである。よって帰納的に、
+\(k\) 回の呼び出し後の各振幅は \(X_0,\dots,X_{N-1}\) の次数 \(k\) 以下の（多重線形）多項式になり、
+測定で「\(F=1\)」と答える確率は次数 \(2k\) 以下の実多項式 \(P(X)\) になる。
+アルゴリズムが \(F\) を誤り確率 \(1/3\) 以下で計算するなら、\(P\) は
+\(F\) を誤差 \(1/3\) で近似する多項式である。したがって
+\[
+k \ \ge\ \frac{\widetilde{\mathrm{deg}}(F)}{2}
+\]
+（\(\widetilde{\mathrm{deg}}(F)\) は \(F\) の<strong>近似次数</strong>：
+\(F\) を誤差 \(1/3\) 以内で近似するのに必要な多項式の最小次数）。
+アルゴリズムの詳細を一切見ずに、近似理論だけで下界が出るのが強みである。
+</p>
+
+<p>
+知られている近似次数から、次のような結論が読み取れる。
+</p>
+
+<ul>
+<li>\(\widetilde{\mathrm{deg}}(\mathrm{OR}) = \Theta(\sqrt N)\)：
+探索（の決定版）の \(\Omega(\sqrt N)\) 下界が再導出され、Grover の最適性が別証明される。</li>
+<li>\(\widetilde{\mathrm{deg}}(\mathrm{PARITY}) = N\)：PARITY には \(k\ge N/2\) 回が必要。
+古典の \(N\) 回に対して<strong>高々 2 倍</strong>しか得しない
+（そして 2 倍は実際に達成できる：Deutsch–Jozsa 型の 1 呼び出しで 2 ビット分のパリティが得られる）。</li>
+<li>MAJORITY も \(\Theta(N)\)：本質的な量子加速なし。</li>
+</ul>
+
+<div class="thm-box">
+<span class="box-title">事実（全域関数では多項式加速まで）</span>
+\(F\) が<strong>全域関数</strong>（全ての \(f\) に対して定義され、約束事 promise がない）ならば、
+古典決定的計算量 \(D(F)\) と量子計算量 \(Q(F)\) の間に多項式関係
+\[
+D(F) = O\bigl(Q(F)^6\bigr)
+\]
+が成り立つ（Beals–Buhrman–Cleve–Mosca–de Wolf, 1998。指数はその後改良されている）。
+すなわち<strong>ブラックボックス問題で指数的量子加速は、約束のない限り不可能</strong>である。
+</div>
+
+<p>
+<strong>では Shor はなぜ速いのか。</strong>この結果は一見、
+第5章の指数加速（位数発見・素因数分解）と矛盾するように見えるが、そうではない。
+第一に、位数発見が使うオラクル \(x\mapsto a^x\bmod m\) は<strong>周期性という約束</strong>を満たす
+特殊な関数であり、全域関数の定理の適用外である
+（実際、約束つき問題では Simon の問題のように指数的な量子・古典分離が起こる）。
+第二に、素因数分解そのものにおいては関数はブラックボックスですらなく、
+<strong>中身の見える算術回路</strong>である。ブラックボックス下界は
+「中身を見ないアルゴリズム」の限界を語るだけで、
+構造を使うアルゴリズムについては何も禁じない。
+</p>
+
+<div class="remark-box">
+<span class="box-title">本章の結論としての設計指針</span>
+量子計算の能力について、本章の結果は明確な描像を与える：
+<strong>構造のない問題に対して量子計算機が与える加速は二次まで</strong>であり、
+それは Grover のアルゴリズムで達成済みである。
+指数加速を得るには、周期性（第5章）のような問題の構造を見つけ、
+それに共鳴する干渉パターンを設計しなければならない。
+「まず問題の隠れた代数構造を探せ、なければ Grover で二次加速して満足せよ」
+——これが量子アルゴリズム設計の基本方針である。
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第6章のまとめ</span>
+<ul>
+<li>探索オラクル \(O\ket x\ket q=\ket x\ket{q\oplus f(x)}\) は、オラクル量子ビットを \(\ket-\) にすると位相オラクル \(O\ket x=(-1)^{f(x)}\ket x\) になる。オラクルは「解を知っている」のではなく「検算できる」だけである。</li>
+<li>Grover 反復 \(G=(2\ketbra\psi\psi-I)O\) は、\(\mathrm{span}\{\ket\alpha,\ket\beta\}\) 内で 2 つの鏡映の合成＝角 \(\theta\)（\(\sin\frac\theta2=\sqrt{M/N}\)）の回転。拡散演算子は \(H^{\otimes n}(2\ketbra00-I)H^{\otimes n}\) で \(O(n)\) ゲート。</li>
+<li>反復回数 \(R\approx\frac\pi4\sqrt{N/M}\) で成功確率 \(1-O(M/N)\)。回しすぎると通り過ぎる。\(M\) 未知や \(M&gt;N/2\) には、量子計数・反復回数のランダム化・探索空間の倍増で対処する。</li>
+<li>ハミルトニアン \(H=\ketbra xx+\ketbra\psi\psi\) の時間発展は時間 \(\frac\pi2\sqrt N\) で解に到達し、これを幅 \(\Delta t=\pi\) で Trotter 分割すると Grover 反復が再現される。</li>
+<li>量子計数＝\(G\) の固有値 \(e^{\pm i\theta}\) への位相推定。オラクル \(O(\sqrt N)\) 回で \(M\) を誤差 \(O(\sqrt M)\) で推定でき、解の存在判定・\(M\) 未知の探索を可能にする。</li>
+<li>NP 完全問題の総当たりは \(2^n\to2^{n/2}\) に二次加速される。ただし構造を使う古典ヒューリスティクスとの比較は別問題で、多項式時間には程遠い。</li>
+<li>物理的データベースの検索では、量子RAM のハードウェアコスト \(O(N)\) を含めた勘定が必要で、優位は「オラクルが計算で実現できる」場合に限られる。</li>
+<li>ハイブリッド論法：偏差 \(D_k=\sum_x\|\psi_k^x-\psi_k\|^2\) は \(D_k\le4k^2\) でしか成長せず、識別には \(D_k\ge cN\)（\(c\approx0.42\)）が必要。ゆえに探索の下界は \(\Omega(\sqrt N)\) で Grover は最適。</li>
+<li>多項式法により、約束のない全域関数のブラックボックス計算では量子加速は多項式まで（\(D=O(Q^6)\)）。指数加速には問題の構造（約束）が不可欠——Shor が速いのはオラクルが黒箱でないから。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

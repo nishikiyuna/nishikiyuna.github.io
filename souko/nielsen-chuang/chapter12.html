@@ -1,0 +1,1638 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Holevo 限界、Schumacher 圧縮、量子チャネル容量、エンタングルメントの資源理論、量子暗号">
+  <title>第12章 量子情報理論 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter12" data-chapter="12">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第12章に対応</span>
+  第12章 量子情報理論
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本章は本書の最終章であり、Part III で整備してきた道具——量子操作（第8章）、距離尺度（第9章）、
+量子誤り訂正（第10章）、エントロピー（第11章）——を総動員して、
+<strong>量子情報理論 (quantum information theory)</strong> の主要な成果を一望する。
+貫く問いは Shannon 以来の情報理論と同じく「<em>与えられた資源で、どの情報処理タスクがどのレートで達成できるか</em>」である。
+扱う問いは5つである。
+<ul>
+<li>量子状態から古典情報をどこまで引き出せるか（§12.1 Holevo 限界）。</li>
+<li>量子情報源はどこまで圧縮できるか（§12.2 Shannon の定理と Schumacher の定理）。</li>
+<li>ノイズのある量子チャネルで古典情報・量子情報をどれだけ送れるか
+（§12.3 HSW 定理、§12.4 コヒーレント情報と量子データ処理不等式）。</li>
+<li>エンタングルメントは資源としてどう変換できるか（§12.5 マジョライゼーションと蒸留・希釈）。</li>
+<li>物理法則に安全性の根拠を置く暗号は可能か（§12.6 量子鍵配送とその安全性証明）。</li>
+</ul>
+本章を通じて<strong>対数の底は 2</strong> とし、エントロピーの単位はビットである。
+また \(H(\cdot)\) は Shannon エントロピー、特に 1 変数のときは二値エントロピー
+\(H(p)=-p\log p-(1-p)\log(1-p)\)、\(S(\cdot)\) は von Neumann エントロピーを表す（第11章の記法を踏襲）。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-12-1">量子状態の識別とアクセス可能情報<span class="en">Distinguishing quantum states and accessible information</span></h2>
+
+<p>
+量子情報理論の出発点は、第1章以来繰り返し現れてきた事実——<strong>非直交な量子状態は確実には識別できない</strong>——を
+<em>定量化</em>することである。識別が「どれだけ」できないのかを情報量の言葉で述べたものが、
+本節の主定理である Holevo 限界にほかならない。
+</p>
+
+<p>
+設定を固定する。Alice は確率分布 \(p_0,p_1,\dots,p_{|\mathcal X|-1}\) に従って古典的な記号 \(X=x\) を選び、
+それに応じて量子状態 \(\rho_x\) を用意して Bob に渡す。
+Bob はこの状態しか受け取れず、どの \(x\) が選ばれたかを知らない。
+Bob の側から見ると、手元の状態はアンサンブル \(\{p_x,\rho_x\}\) であり、平均状態は
+\[
+\rho \equiv \sum_x p_x \rho_x
+\]
+である。Bob は POVM \(\{E_y\}\)（\(E_y\ge 0,\ \sum_y E_y = I\)。§2.2.6）を選んで測定し、
+結果 \(Y=y\) を得る。このとき結果の条件付き分布は
+\(p(y|x) = \tr(E_y \rho_x)\) で与えられ、\(X\) と \(Y\) の同時分布
+\(p(x,y)=p_x\,p(y|x)\) が定まる。
+Bob が \(X\) について得た情報の自然な尺度は、Shannon の相互情報量 \(I(X:Y)\)（§11.2.3）である。
+Bob は測定を自由に設計できるので、最良の測定での値に興味がある。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（アクセス可能情報）</span>
+アンサンブル \(\{p_x,\rho_x\}\) に対する<strong>アクセス可能情報 (accessible information)</strong> とは、
+Bob が選びうるすべての POVM \(\{E_y\}\) にわたる相互情報量の上限
+\[
+\mathrm{Acc}(\{p_x,\rho_x\}) \equiv \sup_{\{E_y\}} I(X:Y)
+\]
+である。
+</div>
+
+<p>
+状態 \(\rho_x\) たちが互いに直交していれば、それらを完全に識別する射影測定が存在し、
+\(Y=X\) とできるから \(\mathrm{Acc}=H(X)\) となる。すなわち直交状態は古典情報と同じである。
+非自明なのは非直交の場合で、アクセス可能情報を与える一般公式は知られておらず、
+2状態のような簡単な場合ですら最適測定の決定は容易でない。
+それにもかかわらず、<strong>上から押さえる普遍的な限界</strong>は驚くほど簡潔な形で存在する。
+それが次の Holevo 限界である。
+</p>
+
+<h3 id="sec-12-1-1">§12.1.1 Holevo 限界</h3>
+
+<div class="thm-box">
+<span class="box-title">定理（Holevo 限界）</span>
+Alice がアンサンブル \(\{p_x,\rho_x\}\) から状態を用意し、Bob が任意の POVM \(\{E_y\}\) で測定して
+結果 \(Y\) を得るとき、
+\[
+I(X:Y) \;\le\; S(\rho) - \sum_x p_x S(\rho_x) \;\equiv\; \chi(\{p_x,\rho_x\})
+\]
+が成り立つ。ここで \(\rho=\sum_x p_x\rho_x\)。右辺 \(\chi\) を
+<strong>Holevo 量 (Holevo quantity)</strong> または Holevo の \(\chi\) 量と呼ぶ。
+とくに \(\mathrm{Acc}(\{p_x,\rho_x\})\le\chi\) である。
+</div>
+
+<p>
+証明の前に \(\chi\) の意味を確認しておく。
+エントロピーの凹性（正確には §11.3.6 の混合状態のエントロピー上限）より
+\(0\le \chi \le S(\rho)\) であり、\(\rho_x\) がすべて純粋状態なら \(\chi = S(\rho)\) となる。
+また \(\chi\) は「アンサンブルとしての不確定さ \(S(\rho)\)」から
+「どの状態かを知っていても残る不確定さの平均 \(\sum_x p_x S(\rho_x)\)」を引いたものであり、
+古典の相互情報量 \(I(X:Y)=H(Y)-H(Y|X)\) の量子版の形をしている。
+実際、\(\rho_x\) たちが同時対角化可能（＝実質的に古典分布）のときは
+\(\chi\) は分布どうしの相互情報量そのものに退化する。
+</p>
+
+<p>
+<strong>証明の構図。</strong>
+証明は 3 つの系を組み合わせた思考実験として整理するのが見通しよい。
+</p>
+
+<ul>
+<li>系 \(P\)（preparation）：Alice の選んだ記号 \(x\) を正規直交基底 \(\{\ket{x}\}\) に記録しておく系。</li>
+<li>系 \(Q\)：Bob に渡される量子系。</li>
+<li>系 \(M\)（measurement）：Bob の測定装置のメーター。初期状態は基準状態 \(\ket{0}\)。</li>
+</ul>
+
+<p>
+初期状態（Bob の測定前）は
+\[
+\rho^{PQM} \;=\; \sum_x p_x \,\ketbra{x}{x}\otimes\rho_x\otimes\ketbra{0}{0}
+\]
+である。Bob の測定は、\(Q\) と \(M\) に作用する次の量子操作 \(\mathcal E\) でモデル化できる：
+\[
+\mathcal E\bigl(\sigma\otimes\ketbra{0}{0}\bigr)
+= \sum_y \sqrt{E_y}\,\sigma\sqrt{E_y}\,\otimes\ketbra{y}{y}.
+\]
+すなわち測定結果 \(y\) をメーターの直交状態 \(\ket{y}\) に書き込み、
+\(Q\) には対応する状態変化を起こす。
+これは Kraus 演算子 \(B_y = \sqrt{E_y}\otimes\ketbra{y}{0}\) を持つ量子操作であり、
+メーターが \(\ket{0}\) から始まる限り保存的（トレース保存）である
+（\(\sum_y B_y^\dagger B_y = \sum_y E_y\otimes\ketbra{0}{0} = I\otimes\ketbra{0}{0}\) が
+初期部分空間上で恒等になっている。第8章の枠組みで正当な操作であることが確認できる）。
+</p>
+
+<p>
+証明の骨格は、量子相互情報量 \(S(A:B)=S(A)+S(B)-S(A,B)\) についての 2 つの補題に集約される。
+どちらも<strong>強劣加法性 (strong subadditivity, SSA)</strong>（§11.4：
+\(S(ABC)+S(B)\le S(AB)+S(BC)\)）から従う。
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題 1（部分系を捨てても相互情報量は増えない）</span>
+任意の 3 体状態に対して
+\[
+S(P:M) \;\le\; S(P:Q,M).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+定義を展開すると、示すべき不等式は
+\[
+S(P)+S(M)-S(P,M) \;\le\; S(P)+S(Q,M)-S(P,Q,M),
+\]
+すなわち
+\[
+S(P,Q,M)+S(M) \;\le\; S(P,M)+S(Q,M)
+\]
+と同値である。これは系の割り当て \(A=P,\ B=M,\ C=Q\) に対する強劣加法性そのものである。<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">補題 2（局所的な量子操作は相互情報量を増やさない）</span>
+系 \(QM\) にのみ作用する任意のトレース保存量子操作 \(\mathcal E\) に対し、
+作用後の状態を \('\) 付きで表すと
+\[
+S(P:Q',M') \;\le\; S(P:Q,M).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+第8章の表現定理より、\(\mathcal E\) は「純粋状態 \(\ket{0}_{E'}\) の環境 \(E'\) を付加し、
+\(QME'\) 上のユニタリ \(U\) を作用させ、\(E'\) を捨てる」という形に書ける。
+各段階で相互情報量がどう変わるかを追う。
+(i) 無相関な純粋系の付加：\(S(QME')=S(QM)\)、\(S(PQME')=S(PQM)\) なので
+\(S(P:QME')=S(P:QM)\)。変化しない。
+(ii) \(QME'\) 上のユニタリ：\(P\) を含む各エントロピー \(S(P),\,S(QME'),\,S(PQME')\) は
+局所ユニタリで不変なので、\(S(P:QME')\) も不変。
+(iii) \(E'\) を捨てる：補題 1（\(Q,M,E'\) のうち \(E'\) を捨てる形）より
+\(S(P:Q'M')\le S(P:Q'M'E')\)。
+以上を連結して \(S(P:Q',M')\le S(P:Q,M)\)。<span class="qed">∎</span>
+</div>
+
+<p>
+これで準備が整った。
+</p>
+
+<div class="proof-box">
+<span class="box-title">Holevo 限界の証明</span>
+<p>
+測定前の状態 \(\rho^{PQM}\) と測定後の状態
+\[
+\rho^{PQ'M'} = \sum_{x,y} p_x\,\ketbra{x}{x}\otimes\sqrt{E_y}\rho_x\sqrt{E_y}\otimes\ketbra{y}{y}
+\]
+について、次の鎖を作る：
+\[
+S(P:M') \;\overset{\text{(a)}}{\le}\; S(P:Q',M')
+\;\overset{\text{(b)}}{\le}\; S(P:Q,M)
+\;\overset{\text{(c)}}{=}\; S(P:Q).
+\]
+(a) は補題 1、(b) は補題 2（測定＝\(QM\) 上の量子操作）、
+(c) は測定前の \(M\) が \(PQ\) と無相関な純粋状態であることによる。
+</p>
+<p>
+あとは両端を計算すればよい。
+<strong>右端：</strong>状態 \(\rho^{PQ}=\sum_x p_x\ketbra{x}{x}\otimes\rho_x\) は
+\(P\) の直交状態でラベル付けされたブロック対角形なので、§11.3.2 の結合エントロピー定理より
+\[
+S(P,Q) = H(p) + \sum_x p_x S(\rho_x),
+\qquad S(P)=H(p),\qquad S(Q)=S(\rho).
+\]
+ここで \(H(p)\) は分布 \(\{p_x\}\) の Shannon エントロピー。したがって
+\[
+S(P:Q) = S(P)+S(Q)-S(P,Q) = S(\rho)-\sum_x p_x S(\rho_x) = \chi .
+\]
+<strong>左端：</strong>\(Q'\) をトレースアウトした \(PM'\) の状態は
+\[
+\rho^{PM'} = \sum_{x,y} p_x \tr(E_y\rho_x)\,\ketbra{x}{x}\otimes\ketbra{y}{y}
+= \sum_{x,y} p(x,y)\,\ketbra{x}{x}\otimes\ketbra{y}{y},
+\]
+すなわち同時分布 \(p(x,y)\) をそのまま直交基底に載せた完全に古典的な状態である。
+古典状態の量子相互情報量は Shannon 相互情報量に一致するから
+\(S(P:M') = I(X:Y)\)。
+以上より \(I(X:Y)\le\chi\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">証明の読み方</span>
+この証明は「情報の流れ」の言葉で読むと味わい深い。
+\(P\) と \(Q\) の間の量子相互情報量 \(\chi\) が、Alice の準備段階で存在する相関の総量である。
+Bob の測定は \(QM\) 上の局所操作にすぎないから相関を増やせず（補題 2）、
+最後にメーターだけを読む行為は相関の一部を捨てる（補題 1）。
+残った古典相関が \(I(X:Y)\) である。
+つまり Holevo 限界は<strong>データ処理不等式の量子版</strong>であり、
+「測定という処理は準備時に仕込まれた相関 \(\chi\) を超える古典情報を生み出せない」と述べている。
+なお、等号が達成されるのは \(\rho_x\) たちが互いに可換（同時対角化可能）な場合であり、
+一般の非直交アンサンブルでは \(\mathrm{Acc} &lt; \chi\) が厳しい不等号で成り立つ。
+ただし §12.3 で見るように、<em>多数のコピーをブロックとして集団測定する</em>漸近的設定では
+\(\chi\) はレートとして達成可能になる。\(\chi\) の真価はそこで現れる。
+</div>
+
+<h3 id="sec-12-1-2">§12.1.2 Holevo 限界の応用例</h3>
+
+<p>
+<strong>(1) 1 量子ビットは高々 1 ビットしか運べない。</strong>
+Alice が 1 量子ビット（\(d=2\)）に古典情報を載せて Bob に送るとする。
+どんなアンサンブル \(\{p_x,\rho_x\}\) を使っても
+\[
+I(X:Y)\le\chi\le S(\rho)\le \log 2 = 1
+\]
+である（最後の不等式は \(d\) 次元系のエントロピー上限 \(S\le\log d\)。§11.3.2）。
+同様に \(n\) 量子ビットで運べる古典情報は高々 \(n\) ビットである。
+量子状態は \(2^n\) 個の連続な振幅を持つ（§1.2）にもかかわらず、
+<strong>取り出せる古典情報はビット数分でしかない</strong>——
+第1章で予告した緊張関係が、ここで定理として確定したことになる。
+等号は直交状態（実質古典ビット）で達成されるから、
+古典情報の運搬という目的に限れば量子ビットに古典ビットを超える能力はない。
+</p>
+
+<div class="remark-box">
+<span class="box-title">超高密度符号化との整合性</span>
+超高密度符号化（§2.3）では、事前共有したエンタングルメントを使って
+「1 量子ビットの送信で 2 ビット」を伝えた。これは上の限界と矛盾しない。
+プロトコル全体では、Bob は最終的に <em>2 量子ビット</em>（送られてきた 1 個＋手元の 1 個）を測定している。
+Bob の測定対象となる 2 量子ビット系のアンサンブルは 4 つの Bell 状態が等確率のもので、
+これに対する上限は \(\chi = S(I/4) - 0 = 2\) ビットである。それがちょうど達成されている。
+Holevo 限界は「測定される系全体」について適用しなければならない。
+</div>
+
+<p>
+<strong>(2) 非直交 2 状態は 1 ビット未満しか運べない。</strong>
+Holevo 限界の威力は、非直交性が情報伝達能力を<em>どれだけ</em>削るかを具体的に数値化できる点にある。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(\ket{0}\) と \(\ket{+}\) のアンサンブル）</span>
+Alice が公平なコイン \(X\in\{0,1\}\) を振り、\(X=0\) なら \(\ket{0}\)、\(X=1\) なら
+\(\ket{+}=(\ket0+\ket1)/\sqrt2\) を送るとする。両状態は純粋なので
+\(\chi = S(\rho)\)、ここで
+\[
+\rho = \tfrac12\ketbra{0}{0} + \tfrac12\ketbra{+}{+}.
+\]
+\(\rho\) の固有値を求める。2 つの純粋状態の等重率混合の固有値は
+\(\frac12(1\pm|\braket{0}{+}|)\) で与えられる（Bloch ベクトルの平均の長さが
+\(|\braket{0}{+}|=1/\sqrt2\) になることから直ちに従う）。よって固有値は
+\[
+\lambda_\pm = \frac{1}{2}\Bigl(1\pm\frac{1}{\sqrt2}\Bigr)
+= \cos^2\frac{\pi}{8},\ \sin^2\frac{\pi}{8}
+\approx 0.854,\ 0.146
+\]
+であり、
+\[
+\chi = S(\rho) = H\!\bigl(\cos^2(\pi/8)\bigr) \approx 0.601\ \text{ビット}.
+\]
+したがってどんな測定をしても \(I(X:Y)\le 0.601\)：
+コイン 1 枚分（1 ビット）の情報を仕込んだのに、
+非直交性のせいで <strong>4 割の情報が原理的に取り出せない</strong>。
+状態が「近い」（\(|\braket{\psi_0}{\psi_1}|\to1\)）ほど \(\chi\to0\) となり、
+identical な状態は当然何も運ばない。
+なお、この例のアクセス可能情報の真値は最適測定の解析により約 \(0.399\) ビットであることが知られており、
+\(\chi\) との間にギャップがあること（Holevo 限界の非達成）も確認できる。
+</div>
+
+<p>
+<strong>(3) 情報と擾乱。</strong>
+Holevo 限界は量子暗号（§12.6）の直観的基盤でもある。
+盗聴者 Eve が通信中の状態から情報を得ようとすれば、
+Eve の系と信号系の間に相関（正の \(\chi\)）を作らねばならない。
+後で見るように（§12.6.4〜12.6.5）、非直交状態のアンサンブルに対してこれを行うと
+必ず状態が乱れて Alice–Bob 間の誤り率が上がる。
+「取り出せる情報に上限がある」ことと「取り出す行為が痕跡を残す」ことは、
+同じ構造（測定＝環境との相関形成）の二つの側面である。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-12-2">データ圧縮<span class="en">Data compression</span></h2>
+
+<p>
+情報理論の第一の柱は「情報源はどこまで圧縮できるか」という問いである。
+古典では Shannon のノイズなし符号化定理が答えを与え、
+その量子版が Schumacher の定理である。
+両者は完全に並行した構造——<strong>典型性 (typicality)</strong> による証明——を持つので、
+まず古典の場合を証明込みで丁寧に復習し、それを量子に持ち上げる。
+この並行性こそが「von Neumann エントロピー \(S(\rho)\) が量子情報の量である」という主張の実質である。
+</p>
+
+<h3 id="sec-12-2-1">§12.2.1 Shannon のノイズなし符号化定理</h3>
+
+<p>
+<strong>情報源のモデル。</strong>
+情報源は i.i.d.（独立同分布）とする：各時刻に有限アルファベット上の確率変数
+\(X_1,X_2,\dots\) が分布 \(p(x)\) から独立に出力される。
+エントロピー \(H(X)=-\sum_x p(x)\log p(x)\) がこの情報源の圧縮限界であることを示すのが目標である。
+圧縮とは、長さ \(n\) のブロック \(x^n=(x_1,\dots,x_n)\) を \(nR\) ビットの符号語に写し
+（レート \(R\)）、高い確率で復元できるようにすることをいう。
+</p>
+
+<p>
+<strong>鍵となる観察。</strong>ブロック \(x^n\) の生起確率は独立性より
+\(p(x^n)=p(x_1)p(x_2)\cdots p(x_n)\) なので、
+\[
+-\frac{1}{n}\log p(X^n) = \frac{1}{n}\sum_{i=1}^{n}\bigl(-\log p(X_i)\bigr)
+\]
+は i.i.d. 確率変数 \(-\log p(X_i)\)（平均は定義より \(H(X)\)）の標本平均である。
+したがって<strong>大数の弱法則</strong>（<a href="appendixA1.html">付録A1</a> §A1.5）により、
+これは \(n\to\infty\) で \(H(X)\) に確率収束する。
+この事実を<strong>漸近等分配性 (asymptotic equipartition property, AEP)</strong> と呼ぶ。
+「ほとんどすべての系列は、確率がほぼ \(2^{-nH}\) の<em>典型的</em>な系列である」——
+これが圧縮の可能性の源である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（典型系列・典型集合）</span>
+\(\epsilon&gt;0\) に対し、系列 \(x^n\) が <strong>\(\epsilon\)-典型 (\(\epsilon\)-typical)</strong> であるとは
+\[
+2^{-n(H(X)+\epsilon)} \;\le\; p(x^n) \;\le\; 2^{-n(H(X)-\epsilon)},
+\]
+同値に \(\bigl|-\tfrac1n\log p(x^n) - H(X)\bigr|\le\epsilon\) が成り立つことをいう。
+\(\epsilon\)-典型系列全体の集合を \(T(n,\epsilon)\) と書く。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（典型集合の性質）</span>
+任意の \(\epsilon&gt;0,\ \delta&gt;0\) に対し、\(n\) を十分大きく取れば：
+<ol>
+<li>\(\Pr\bigl[X^n\in T(n,\epsilon)\bigr] \ge 1-\delta\)（ほとんどの系列は典型的）。</li>
+<li>\(|T(n,\epsilon)| \le 2^{n(H(X)+\epsilon)}\)（典型系列の数は約 \(2^{nH}\) 個しかない）。</li>
+<li>\(|T(n,\epsilon)| \ge (1-\delta)\,2^{n(H(X)-\epsilon)}\)。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+(1) は上で述べた大数の弱法則の言い換えそのものである。
+(2)：典型系列は 1 つあたり確率 \(\ge 2^{-n(H+\epsilon)}\) を持ち、確率の総和は 1 を超えないから
+\[
+1 \ge \sum_{x^n\in T(n,\epsilon)} p(x^n) \ge |T(n,\epsilon)|\; 2^{-n(H+\epsilon)} .
+\]
+(3)：(1) より \(1-\delta \le \Pr[T(n,\epsilon)] \le |T(n,\epsilon)|\,2^{-n(H-\epsilon)}\)。<span class="qed">∎</span>
+</div>
+
+<p>
+つまり全系列 \(|\mathcal X|^n = 2^{n\log|\mathcal X|}\) 個のうち、
+実際に現れるのは事実上 \(2^{nH}\) 個だけであり（\(H\le\log|\mathcal X|\)、等号は一様分布のみ）、
+しかもそれらはほぼ等確率で現れる。
+圧縮とは「この \(2^{nH}\) 個に通し番号を振る」ことにほかならない。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Shannon のノイズなし符号化定理）</span>
+i.i.d. 情報源 \(\{X,p(x)\}\) に対し：
+<ol>
+<li><strong>達成可能性</strong>：\(R &gt; H(X)\) なら、レート \(R\) の圧縮法で
+復元失敗確率を \(n\to\infty\) で任意に小さくできる。</li>
+<li><strong>逆定理</strong>：\(R &lt; H(X)\) なら、レート \(R\) のどんな圧縮法でも
+復元失敗確率は \(n\to\infty\) で 1 に近づく。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>達成可能性。</strong>\(\epsilon&gt;0\) を \(H+\epsilon&lt;R\) となるように取る。
+符号化：入力 \(x^n\) が典型なら、典型集合の要素の辞書式番号（性質 (2) より
+\(n(H+\epsilon)\le nR\) ビットで足りる）を出力する。
+非典型なら失敗フラグ（適当な固定符号語）を出す。
+復号：番号から系列を引く。失敗するのは非典型系列が出たときだけで、
+その確率は性質 (1) より \(\le\delta\)。\(\delta\) は任意に小さくできる。
+</p>
+<p>
+<strong>逆定理。</strong>レート \(R&lt;H\) の任意の方式を考える。復号器の出力は高々
+\(2^{nR}\) 通りしかないから、正しく復元される系列の集合 \(S\) は \(|S|\le 2^{nR}\) を満たす。
+その確率を典型・非典型に分けて評価する：
+\[
+\Pr[S] \;\le\; \underbrace{\Pr[\text{非典型}]}_{\le\,\delta}
+\;+\; \underbrace{|S|\cdot 2^{-n(H-\epsilon)}}_{\text{典型系列 1 つの確率の上限}}
+\;\le\; \delta + 2^{-n(H-R-\epsilon)} .
+\]
+\(\epsilon\) を \(H-R-\epsilon&gt;0\) となるよう取れば第2項は指数的に消え、
+成功確率 \(\to 0\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">エントロピーの操作的意味</span>
+第11章ではエントロピーを公理や数学的性質から特徴づけたが、
+この定理はエントロピーに<strong>操作的 (operational)</strong> な意味を与える：
+\(H(X)\) とは「情報源 1 文字を表現するのに漸近的に必要かつ十分なビット数」である。
+量子情報理論の様式美は、あらゆる情報量をこのような
+「あるタスクの最適レート」として特徴づける点にある。
+以下、\(S(\rho)\)（圧縮、§12.2.2）、\(\chi\)（古典通信、§12.3）、
+コヒーレント情報（量子通信、§12.4）、エンタングルメントエントロピー（蒸留・希釈、§12.5）と、
+同じパターンが繰り返される。
+</div>
+
+<h3 id="sec-12-2-2">§12.2.2 Schumacher の量子ノイズなし符号化定理</h3>
+
+<p>
+<strong>量子情報源。</strong>
+量子版の i.i.d. 情報源とは、各時刻に密度演算子 \(\rho\)（\(d\) 次元系 \(Q\) 上）で記述される
+状態が独立に生成されるもの、すなわちブロック状態 \(\rho^{\otimes n}\) である。
+圧縮とは、\(\rho^{\otimes n}\) を \(nR\) <em>量子ビット</em>の系に写す量子操作
+\(\mathcal C^n\)（符号化）と、元の空間に戻す量子操作 \(\mathcal D^n\)（復号）の組であって、
+\(\mathcal D^n\circ\mathcal C^n \approx \mathrm{id}\) が高精度で成り立つものをいう。
+</p>
+
+<p>
+「高精度」の基準には注意が要る。量子情報源の肝は、
+状態が<strong>重ね合わせや他系とのエンタングルメントを保ったまま</strong>復元されるべきだという点である。
+そこで精度は<strong>エンタングルメント忠実度 (entanglement fidelity)</strong>（§9.3）
+\[
+F(\rho^{\otimes n},\,\mathcal D^n\circ\mathcal C^n)
+= \bra{R Q^n}\,\bigl[(\mathrm{id}_R\otimes\mathcal D^n\circ\mathcal C^n)(\ketbra{RQ^n}{RQ^n})\bigr]\,\ket{R Q^n}
+\]
+で測る。ここで \(\ket{RQ^n}\) は \(\rho^{\otimes n}\) の任意の純粋化である。
+これは「\(\rho^{\otimes n}\) と相関を持つ<em>どんな</em>参照系との相関も壊れない」ことを要求する、
+最も厳しい基準である（エンタングルメント忠実度が 1 に近ければ、
+アンサンブル解釈での平均忠実度も 1 に近い。§9.3）。
+</p>
+
+<p>
+<strong>典型部分空間。</strong>
+\(\rho\) をスペクトル分解する：
+\[
+\rho = \sum_x \lambda_x \ketbra{e_x}{e_x},
+\qquad S(\rho) = -\sum_x \lambda_x\log\lambda_x = H(\lambda).
+\]
+すると \(\rho^{\otimes n}\) の固有ベクトルは \(\ket{e_{x_1}}\otimes\cdots\otimes\ket{e_{x_n}}\)、
+固有値は \(\lambda_{x_1}\cdots\lambda_{x_n}\) であり、
+固有値ラベルの列 \(x^n\) は<strong>分布 \(\lambda\) の古典 i.i.d. 情報源</strong>と同じ統計に従う。
+そこで古典の典型性をそのまま流用できる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（典型部分空間）</span>
+分布 \(\{\lambda_x\}\) に関して \(\epsilon\)-典型な列 \(x^n\) に対応する固有ベクトルが張る部分空間
+\[
+T(n,\epsilon) = \mathrm{span}\bigl\{\ket{e_{x_1}}\cdots\ket{e_{x_n}} :
+x^n \text{ が }\epsilon\text{-典型}\bigr\}
+\]
+を <strong>\(\epsilon\)-典型部分空間 (typical subspace)</strong> と呼び、
+その上への射影演算子を \(P(n,\epsilon)\) と書く。
+</div>
+
+<p>
+古典の典型集合の性質 (1)〜(3) は、そのまま次の形に翻訳される。
+すべて固有値の言葉に直せば古典の場合の言い換えである。
+</p>
+
+<ul>
+<li>\(\tr\bigl[P(n,\epsilon)\,\rho^{\otimes n}\bigr] \ge 1-\delta\)
+（状態のほとんどの重みは典型部分空間に載っている）、</li>
+<li>\(\dim T(n,\epsilon) = \tr P(n,\epsilon) \le 2^{n(S(\rho)+\epsilon)}\)、</li>
+<li>\(P\rho^{\otimes n}P\) の 0 でない固有値はすべて区間
+\([2^{-n(S+\epsilon)},\,2^{-n(S-\epsilon)}]\) に入る。</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+  <!-- big ellipse: full Hilbert space -->
+  <ellipse cx="230" cy="130" rx="200" ry="105" class="line" stroke-width="1.5" fill="none"/>
+  <text x="105" y="52" class="label">全 Hilbert 空間（次元 d^n）</text>
+  <!-- typical subspace -->
+  <ellipse cx="265" cy="155" rx="85" ry="48" class="line accent" stroke-width="2" fill="none"/>
+  <text x="196" y="152" class="label">典型部分空間</text>
+  <text x="200" y="172" class="label">次元 ≈ 2^{nS(ρ)}</text>
+  <!-- weight annotation -->
+  <text x="120" y="230" class="label-muted">tr(Pρ⊗n) ≥ 1−δ ： 状態の重みはほぼ全部ここ</text>
+  <!-- compression arrows -->
+  <line x1="440" y1="130" x2="520" y2="130" class="line accent" stroke-width="2"/>
+  <polygon points="520,124 534,130 520,136" class="accent-fill"/>
+  <text x="446" y="118" class="label">等長写像 V</text>
+  <!-- compressed register -->
+  <rect x="540" y="90" width="84" height="80" rx="8" class="line" stroke-width="1.5" fill="none"/>
+  <text x="551" y="124" class="label">nS(ρ) 個の</text>
+  <text x="548" y="146" class="label">量子ビット</text>
+</svg>
+<figcaption>図 12.1：典型部分空間の模式図。\(\rho^{\otimes n}\) の重みは指数的に小さな部分空間
+（次元 \(\approx 2^{nS(\rho)}\)）にほぼ集中しており、そこだけを約 \(nS(\rho)\) 量子ビットに載せ替えるのが
+Schumacher 圧縮である。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">定理（Schumacher の量子ノイズなし符号化定理）</span>
+i.i.d. 量子情報源 \(\rho\) に対し：
+<ol>
+<li>\(R &gt; S(\rho)\) なら、レート \(R\)（ブロック長 \(n\) あたり \(nR\) 量子ビット）の
+圧縮・復元法でエンタングルメント忠実度を \(n\to\infty\) で 1 に近づけられる。</li>
+<li>\(R &lt; S(\rho)\) なら、どんな方式でも忠実度は \(n\to\infty\) で 0 に近づく。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（達成可能性）</span>
+<p>
+\(\epsilon\) を \(S+\epsilon&lt;R\) に取る。以下 \(P=P(n,\epsilon)\) と略記する。
+</p>
+<p>
+<strong>符号化 \(\mathcal C^n\)：</strong>
+まず 2 値測定 \(\{P,\,I-P\}\) を行う。
+結果が「典型」なら状態は典型部分空間内に射影されている。
+\(\dim T(n,\epsilon)\le 2^{nR}\) なので、典型部分空間を \(nR\) 量子ビットのレジスタに埋め込む
+等長写像 \(V\) を作用させて送る。
+結果が「非典型」なら、諦めて固定状態（典型部分空間内の適当な \(\ket{\text{junk}}\)）を送る。
+<strong>復号 \(\mathcal D^n\)：</strong>\(V^\dagger\) で元の空間に戻すだけである。
+</p>
+<p>
+<strong>忠実度の評価：</strong>全体の操作は
+\[
+\mathcal D^n\circ\mathcal C^n(\sigma) = P\sigma P + \sum_i A_i\sigma A_i^\dagger,
+\]
+という形になる（第 1 項が成功分岐。\(A_i\) は失敗分岐の Kraus 演算子で詳細は不要）。
+エンタングルメント忠実度は Kraus 演算子ごとの寄与の和で下から押さえられる（§9.3 の公式
+\(F(\rho,\mathcal E)=\sum_k|\tr(A_k\rho)|^2\)）ので、成功分岐だけ残して
+\[
+F\bigl(\rho^{\otimes n},\,\mathcal D^n\circ\mathcal C^n\bigr)
+\;\ge\; \bigl|\tr\bigl(P\rho^{\otimes n}\bigr)\bigr|^2
+\;\ge\; (1-\delta)^2 \;\ge\; 1-2\delta .
+\]
+\(\delta\to0\) にできるから忠実度は 1 に収束する。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（逆定理の議論）</span>
+レート \(R&lt;S(\rho)\) の任意の方式 \((\mathcal C^n,\mathcal D^n)\) を考える。
+符号化の出力は \(2^{nR}\) 次元の系に載るから、
+復号後の状態 \(\mathcal D^n\circ\mathcal C^n(\rho^{\otimes n})\) を構成する各 Kraus 演算子
+\(A_k = D_j C_i\) は階数 \(\le 2^{nR}\) を持つ。
+エンタングルメント忠実度を評価すると、Cauchy–Schwarz 型の評価により各項は
+\[
+|\tr(A_k\rho^{\otimes n})|^2 \le \tr\bigl(A_k\rho^{\otimes n}A_k^\dagger\bigr)\,
+\tr\bigl(\Pi_k\rho^{\otimes n}\bigr)
+\]
+と押さえられる。ここで \(\Pi_k\) は \(A_k^\dagger\) の台（階数 \(\le 2^{nR}\) の射影）である。
+ところが階数 \(2^{nR}\) の任意の射影 \(\Pi\) に対し、典型・非典型に分けると
+\[
+\tr\bigl(\Pi\rho^{\otimes n}\bigr)
+\;\le\; \underbrace{\tr\bigl(\Pi P\rho^{\otimes n}P\bigr)}_{\le\, 2^{nR}\cdot 2^{-n(S-\epsilon)}}
+\;+\; \underbrace{\tr\bigl((I-P)\rho^{\otimes n}\bigr)}_{\le\,\delta}
+\]
+（第 1 項：\(P\rho^{\otimes n}P\) の固有値上限 \(\times\) 射影の階数）。
+\(R&lt;S-\epsilon\) と取れば第 1 項は指数的に消える。
+これと \(\sum_k \tr(A_k\rho^{\otimes n}A_k^\dagger)=1\) を合わせると
+\(F\to0\) が従う。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">Schumacher 圧縮の意味</span>
+<ul>
+<li><strong>\(S(\rho)\) の操作的意味の確立。</strong>「量子情報源 1 文字は \(S(\rho)\) 量子ビット」——
+von Neumann エントロピーが Shannon エントロピーの正統な量子版であることの、
+最初にして最も基本的な操作的証拠である。</li>
+<li><strong>圧縮できるのは非直交性のおかげではない。</strong>
+\(\rho\) の固有基底で見れば Schumacher 圧縮は古典圧縮と同じことをしている。
+非自明なのは、情報源がたとえば非直交状態 \(\{\ket{0},\ket{+}\}\) を等確率で出す場合でも、
+<em>個々の状態がどれかを一切知らずに</em>（測定して壊すことなく）、
+平均状態 \(\rho\) のエントロピー \(S(\rho)\approx0.601&lt;1\) まで圧縮できる点である。
+重ね合わせもエンタングルメントも保たれたまま、である。</li>
+<li><strong>ブロック測定の穏やかさ。</strong>証明の鍵は、測定 \(\{P,I-P\}\) がほぼ確実に「典型」を出し、
+そのとき状態をほとんど乱さない（\(P\rho^{\otimes n}P\approx\rho^{\otimes n}\)）ことにある。
+「結果がほぼ確定している測定は状態を壊さない」——
+この<em>gentle measurement</em> の原理は量子情報理論の証明技術の随所で使われる。</li>
+</ul>
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-12-3">ノイズのある量子チャネル上の古典情報<span class="en">Classical information over noisy quantum channels</span></h2>
+
+<p>
+情報理論の第二の柱は「ノイズのあるチャネルで、どれだけの情報を<em>誤りなく</em>送れるか」である。
+本節ではチャネルがトレース保存量子操作 \(\mathcal E\)（第8章）で与えられるとき、
+それを使って<strong>古典情報</strong>を送る問題を考える。
+答えを与えるのが Holevo–Schumacher–Westmoreland (HSW) 定理であり、
+§12.1 の Holevo 量 \(\chi\) がここで「達成可能なレート」として操作的意味を獲得する。
+まず古典のチャネル符号化定理を、量子版に引き継がれる証明のアイデアが見える程度に復習する。
+</p>
+
+<h3 id="sec-12-3-1">§12.3.1 ノイズのある古典チャネルの復習</h3>
+
+<p>
+<strong>設定。</strong>離散無記憶チャネルとは条件付き分布 \(p(y|x)\) である：
+入力 \(x\) を入れると出力 \(y\) が確率 \(p(y|x)\) で出て、使用ごとに独立に働く。
+レート \(R\) の符号とは、\(2^{nR}\) 個のメッセージ \(m\) のそれぞれに長さ \(n\) の
+符号語 \(x^n(m)\) を割り当て（符号化）、
+出力 \(y^n\) からメッセージを推定する規則（復号）を定めたものである。
+ブロック長 \(n\to\infty\) で最大誤り確率を 0 にできるレートの上限を<strong>容量 (capacity)</strong> \(C\) と呼ぶ。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Shannon のチャネル符号化定理）</span>
+離散無記憶チャネル \(p(y|x)\) の容量は
+\[
+C = \max_{p(x)} I(X:Y)
+\]
+で与えられる。最大化は入力分布 \(p(x)\) にわたる
+（\(Y\) は \(p(x)p(y|x)\) から定まる出力）。
+</div>
+
+<p>
+<strong>達成可能性：ランダム符号化。</strong>
+Shannon の証明の天才的な点は、良い符号を構成する代わりに
+<strong>ランダムに選んだ符号の平均性能</strong>を評価したことである。
+最適な \(p(x)\) を固定し、各符号語 \(x^n(m)\) の各文字を \(p(x)\) から i.i.d. に生成する。
+復号には<strong>結合典型性 (joint typicality)</strong> を使う：
+出力 \(y^n\) を受け取ったら、「\((x^n(m),y^n)\) が同時分布 \(p(x,y)\) に関して典型的」となる
+メッセージ \(m\) がただ 1 つあればそれを出力する。誤りが起きるのは次の 2 通りである。
+</p>
+
+<ul>
+<li><strong>正しい符号語が結合典型でない。</strong>
+\((x^n(m),y^n)\) は真の同時分布からの i.i.d. 標本なので、AEP によりこの確率は \(\to0\)。</li>
+<li><strong>無関係な符号語が偶然結合典型になる。</strong>
+\(m'\neq m\) の符号語 \(x^n(m')\) は \(y^n\) と独立に生成されている。
+独立な対が結合典型になる確率は、典型集合のサイズ勘定から
+\[
+\Pr[\text{偶然の結合典型}] \approx
+\frac{2^{nH(X,Y)}}{2^{nH(X)}\,2^{nH(Y)}} = 2^{-nI(X:Y)}
+\]
+と評価できる（分子：結合典型対の数、分母：独立対の総数のスケール）。
+候補は \(2^{nR}\) 個あるから、和集合の上界により誤り確率は
+\(\lesssim 2^{nR}\cdot2^{-nI(X:Y)} = 2^{-n(I(X:Y)-R)}\)。
+<strong>\(R&lt;I(X:Y)\) なら指数的に消える。</strong></li>
+</ul>
+
+<p>
+平均誤り確率が小さいなら、少なくとも 1 つの（ランダムでない）符号で誤り確率が小さい——
+これで達成可能性が示される。
+「\(2^{nI}\) 個までなら符号語を詰め込める」という<em>球詰め (sphere packing)</em> の直観
+（出力空間 \(2^{nH(Y)}\) 個の典型出力を、1 符号語あたり \(2^{nH(Y|X)}\) 個の「ノイズ球」が占める。
+詰め込める数はその比 \(2^{nI(X:Y)}\)）を頭に置いておくと、量子版でも見通しがよい。
+</p>
+
+<p>
+<strong>逆定理。</strong>レート \(R\) で誤り確率 \(P_e\to0\) が可能なら \(R\le C\) であることは、
+Fano の不等式 \(H(W|\hat W)\le 1+P_e\,nR\)（§11.2.4 で言及した）とデータ処理不等式から従う。
+一様なメッセージ \(W\) に対し
+\[
+nR = H(W) = I(W:\hat W) + H(W|\hat W)
+\le I(X^n:Y^n) + 1 + P_e\,nR
+\le nC + 1 + P_e\,nR
+\]
+（最後は無記憶性から \(I(X^n:Y^n)\le\sum_i I(X_i:Y_i)\le nC\)）。
+\(n\to\infty,\ P_e\to0\) として \(R\le C\)。<span class="qed">∎</span>
+</p>
+
+<h3 id="sec-12-3-2">§12.3.2 ノイズのある量子チャネル上の古典情報：HSW 定理</h3>
+
+<p>
+<strong>設定。</strong>量子チャネル \(\mathcal E\) で古典情報を送る。
+本小節では符号語として<strong>積状態</strong>のみを許す：
+Alice はアルファベット代わりの状態の組 \(\{\rho_j\}\) を決め、
+メッセージ \(m\) を系列 \(j_1(m),\dots,j_n(m)\) に符号化して
+\(\rho_{j_1}\otimes\cdots\otimes\rho_{j_n}\) を送る（エンタングルした符号語は使わない）。
+Bob は出力 \(\mathcal E(\rho_{j_1})\otimes\cdots\otimes\mathcal E(\rho_{j_n})\) 全体に対する
+<strong>集団測定（エンタングルした測定）</strong>を許される。
+この設定で達成可能な最大レートを<strong>積状態容量</strong> \(C^{(1)}(\mathcal E)\) と書く。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Holevo–Schumacher–Westmoreland）</span>
+\[
+C^{(1)}(\mathcal E)
+= \max_{\{p_j,\rho_j\}} \Bigl[
+S\Bigl(\mathcal E\Bigl(\sum_j p_j\rho_j\Bigr)\Bigr)
+- \sum_j p_j\,S\bigl(\mathcal E(\rho_j)\bigr)
+\Bigr]
+= \max_{\{p_j,\rho_j\}} \chi\bigl(\{p_j,\mathcal E(\rho_j)\}\bigr).
+\]
+すなわち積状態容量は、出力アンサンブルの Holevo 量を入力アンサンブルについて最大化したものに等しい。
+</div>
+
+<p>
+<strong>逆定理（上界）。</strong>こちらは §12.1 の成果がほぼそのまま使える。
+Alice の符号化は出力側にアンサンブル
+\(\{2^{-nR},\,\sigma_m\}\)（\(\sigma_m = \mathcal E(\rho_{j_1(m)})\otimes\cdots\otimes\mathcal E(\rho_{j_n(m)})\)
+は積状態）を生じさせる。Bob の測定結果との相互情報量は Holevo 限界より
+\(I(W:\hat W)\le \chi(\{2^{-nR},\sigma_m\})\) で押さえられる。
+ここで<strong>積状態アンサンブルの \(\chi\) は 1 文字あたりの \(\chi\) の和で押さえられる</strong>ことを示す。
+平均状態を \(\bar\sigma\)、その \(i\) 文字目の縮約を \(\bar\sigma_i\) とすると、
+劣加法性（§11.3.4）より \(S(\bar\sigma)\le\sum_i S(\bar\sigma_i)\)。
+一方、各 \(\sigma_m\) は積状態なのでエントロピーは正確に加法的：
+\(S(\sigma_m)=\sum_i S(\sigma_{m,i})\)。よって
+\[
+\chi = S(\bar\sigma) - \sum_m 2^{-nR} S(\sigma_m)
+\;\le\; \sum_{i=1}^n\Bigl[ S(\bar\sigma_i) - \sum_m 2^{-nR} S(\sigma_{m,i}) \Bigr]
+\;\le\; n\,\max_{\{p_j,\rho_j\}}\chi\bigl(\{p_j,\mathcal E(\rho_j)\}\bigr).
+\]
+あとは古典の逆定理と同じく Fano の不等式で \(R\le C^{(1)}\) が従う。
+（この議論が「積状態」の仮定を本質的に使っている点に注意。
+エンタングルした符号語では \(S(\sigma_m)\) の加法性が崩れる。後述の加法性問題を見よ。）
+</p>
+
+<p>
+<strong>達成可能性のアイデア。</strong>
+古典のランダム符号化・典型性復号を、次の対応で量子化する。
+</p>
+
+<table>
+<tr><th>古典</th><th>量子（HSW）</th></tr>
+<tr><td>符号語を \(p(x)\) から i.i.d. 生成</td><td>符号語の各文字を最適アンサンブル \(\{p_j,\rho_j\}\) から i.i.d. 生成</td></tr>
+<tr><td>出力の典型集合</td><td>平均出力 \(\bar\rho=\sum_j p_j\mathcal E(\rho_j)\) の典型部分空間（射影 \(P\)、次元 \(\approx2^{nS(\bar\rho)}\)）</td></tr>
+<tr><td>符号語ごとの「ノイズ球」</td><td>符号語 \(m\) の<strong>条件付き典型部分空間</strong>（射影 \(P_m\)、次元 \(\approx 2^{n\bar S}\)、\(\bar S\equiv\sum_j p_jS(\mathcal E(\rho_j))\)）</td></tr>
+<tr><td>結合典型性復号</td><td>pretty good measurement（下記）</td></tr>
+</table>
+
+<p>
+球詰めの直観はそのまま生きる：
+出力状態はほぼすべて次元 \(2^{nS(\bar\rho)}\) の典型部分空間に住み、
+各符号語の出力はその中の次元 \(2^{n\bar S}\) の部分空間にほぼ集中する。
+互いにほぼ直交な部分空間として詰め込める符号語の数は比
+\[
+\frac{2^{nS(\bar\rho)}}{2^{n\bar S}} = 2^{n\chi}
+\]
+程度——これが達成可能レート \(\chi\) の正体である。
+</p>
+
+<p>
+これを厳密にするのが復号測定の構成である。素朴には「符号語 \(m\) の条件付き典型部分空間への
+射影 \(P_m\) で順に検査」したいが、\(P_m\) たちは可換でも直交でもないので、
+そのままでは POVM にならない。そこで規格化を挟んだ
+<strong>pretty good measurement（square-root measurement とも呼ばれる）</strong>
+\[
+E_m = \Bigl(\sum_{m'} P\,P_{m'}\,P\Bigr)^{-1/2} P\,P_m\,P \Bigl(\sum_{m'} P\,P_{m'}\,P\Bigr)^{-1/2}
+\]
+を使う（\(\sum_m E_m\le I\) となり、残りを「失敗」要素に割り当てれば POVM になる）。
+誤り確率の評価は、およそ
+\(1-\bra{\psi}E_m\ket{\psi}\le 2\,\tr[(I-PP_mP)\sigma_m]+4\sum_{m'\neq m}\tr[PP_{m'}P\,\sigma_m]\)
+という形の代数的な補題に帰着する。
+第 1 項は「正しい符号語は自分の典型部分空間に載っている」ことから小さい。
+第 2 項は「無関係な符号語の典型部分空間に引っかかる確率」で、
+ランダム符号の平均で \(\approx 2^{-n\chi}\) になるから、
+\(R&lt;\chi\) なら和集合の上界により指数的に消える。
+古典証明の 2 種類の誤りイベントと完全に並行である。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（脱分極チャネルの積状態容量）</span>
+1 量子ビットの脱分極チャネル（§8.3.4）
+\[
+\mathcal E(\rho) = (1-p)\,\rho + p\,\frac{I}{2}
+\]
+を考える。対称性から、最適入力アンサンブルとして直交基底の等重率混合
+\(\{\tfrac12,\ketbra{0}{0}\},\{\tfrac12,\ketbra{1}{1}\}\) を取れることが示せる
+（\(\chi\) は出力 Bloch ベクトルの長さのみで決まり、平均を最大限「混ぜる」には対蹠点対がよい）。
+このとき
+\[
+\mathcal E(\ketbra00) \text{ の固有値} = 1-\frac p2,\ \frac p2,
+\qquad
+\mathcal E\Bigl(\frac I2\Bigr) = \frac I2
+\]
+なので
+\[
+C^{(1)}(\mathcal E) = S\Bigl(\frac I2\Bigr) - S\bigl(\mathcal E(\ketbra00)\bigr)
+= 1 - H\Bigl(\frac p2\Bigr).
+\]
+これは「ビットを送ると確率 \(p/2\) で反転する古典 2 元対称チャネル」の容量と同じ形である：
+古典情報を送る限り、脱分極ノイズは実効的に古典的なビット反転ノイズとして働く。
+\(p\to0\) で 1 ビット、\(p\to1\)（完全脱分極）で 0 に落ちることも確認できる。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足：加法性問題とその後（原書刊行後の進展）</span>
+HSW 定理が与えるのは<em>積状態</em>容量 \(C^{(1)}\) である。
+エンタングルした符号語まで許した真の古典容量は、ブロックを 1 つのチャネルとみなして
+\[
+C(\mathcal E) = \lim_{n\to\infty}\frac{1}{n}\,C^{(1)}\bigl(\mathcal E^{\otimes n}\bigr)
+\]
+という<strong>正則化 (regularization)</strong> された形でしか書けない。
+原書刊行時点では、
+「\(C^{(1)}(\mathcal E\otimes\mathcal F)=C^{(1)}(\mathcal E)+C^{(1)}(\mathcal F)\)（加法性）が
+常に成り立ち、したがって \(C=C^{(1)}\) だろう」というのが大きな予想だった。
+ところが<strong>2009年、Hastings によって反例が構成された</strong>。
+エンタングルした入力が最小出力エントロピーを下げるチャネルの組が存在し、
+Holevo 量は一般には非加法的、すなわち \(C&gt;C^{(1)}\) となりうる。
+エンタングルメントは古典情報の伝送すら助けることがある——
+量子 Shannon 理論が古典理論のような一文字公式で閉じない（現在も閉じていない）ことを示す、
+分野の転回点となった結果である。
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-12-4">ノイズのある量子チャネル上の量子情報<span class="en">Quantum information over noisy quantum channels</span></h2>
+
+<p>
+§12.3 は量子チャネルで<em>古典</em>情報を送る問題だった。本節ではさらに一歩進み、
+<strong>量子情報そのもの</strong>——重ね合わせやエンタングルメントを保ったままの状態——を
+ノイズのあるチャネル \(\mathcal E\) でどれだけ送れるかを問う。
+古典通信の容量が Holevo 量 \(\chi\) で書けたように、量子通信の鍵を握る量は
+<strong>コヒーレント情報 (coherent information)</strong> である。
+その準備として、チャネルが環境に漏らすエントロピー——<strong>エントロピー交換</strong>——を導入する。
+道具立ては第9章の忠実度と第11章の強劣加法性であり、
+最後に量子誤り訂正の限界（量子 Singleton 限界）と、
+誤り訂正を熱力学の言葉で読み直す視点（Maxwell の悪魔）で締める。
+</p>
+
+<h3 id="sec-12-4-1">§12.4.1 エントロピー交換と量子 Fano 不等式</h3>
+
+<p>
+<strong>設定と参照系。</strong>
+系 \(Q\)（\(d\) 次元、状態 \(\rho\)）をチャネル \(\mathcal E\) に通したとき、
+「どれだけ情報が環境へ漏れたか」を測りたい。
+そのために<strong>参照系 (reference system)</strong> \(R\) を用意し、
+\(RQ\) が純粋状態 \(\ket{RQ}\) になるよう \(\rho\) を純粋化する
+（\(\tr_R\ketbra{RQ}{RQ}=\rho\)、したがって \(S(R)=S(Q)=S(\rho)\)）。
+第8章の環境表現により、\(\mathcal E\) は純粋な環境 \(E\)（初期状態 \(\ket{0}_E\)）を付け足し、
+\(QE\) 上のユニタリ \(U\) を作用させて \(E\) を捨てる操作である。
+\(R\) には手を触れないので、作用後の全系 \(RQ'E'\) は依然として純粋である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（エントロピー交換）</span>
+状態 \(\rho\) をチャネル \(\mathcal E\) に通したときの<strong>エントロピー交換
+(entropy exchange)</strong> を
+\[
+S(\rho,\mathcal E) \;\equiv\; S(RQ') \;=\; S(E')
+\]
+と定義する（\(RQ'E'\) が純粋なので \(S(RQ')=S(E')\)、すなわち出力＋参照系のエントロピーは
+環境が持ち去ったエントロピーに等しい）。
+\(\mathcal E\) の Kraus 表現 \(\mathcal E(\rho)=\sum_i E_i\rho E_i^\dagger\) を用いると、
+環境の終状態の行列要素は
+\[
+W_{ij} \;=\; \tr\!\bigl(E_i\,\rho\,E_j^\dagger\bigr)
+\]
+で与えられ、\(W=(W_{ij})\) は密度演算子（\(W\ge0,\ \tr W=1\)）となって
+\[
+S(\rho,\mathcal E) \;=\; S(W) \;=\; -\tr\bigl(W\log W\bigr)
+\]
+が成り立つ。
+</div>
+
+<p>
+\(W\) が密度演算子である点は確認に値する。\(\tr W=\sum_i\tr(E_i\rho E_i^\dagger)=\tr\rho=1\)、
+また任意のベクトル \(v\) に対し \(\sum_{ij}\bar v_i W_{ij}v_j
+=\tr\bigl[(\sum_i v_i E_i)\rho(\sum_j v_j E_j)^\dagger\bigr]\ge0\) だから半正定値である。
+\(W\) は「どの Kraus 枝が起きたか」という環境の自由度を並べた行列であり、
+そのエントロピーが漏洩量を測る。
+理想チャネル（\(\mathcal E=\mathrm{id}\)、Kraus 演算子は \(I\) ひとつ）では \(W=1\)、
+\(S(\rho,\mathcal E)=0\)：何も漏れない。逆に完全にノイズ的なチャネルでは \(S(\rho,\mathcal E)\) は大きくなる。
+</p>
+
+<p>
+<strong>エンタングルメント忠実度との関係。</strong>
+チャネルがどれだけ理想的かは、第9章の<strong>エンタングルメント忠実度 (entanglement fidelity)</strong>
+\[
+F_e(\rho,\mathcal E) \;=\; \bra{RQ}\,(\mathrm{id}_R\otimes\mathcal E)\bigl(\ketbra{RQ}{RQ}\bigr)\,\ket{RQ}
+\;=\; \sum_i \bigl|\tr(E_i\rho)\bigr|^2
+\]
+で測る。これは「\(\rho\) と相関を持つ参照系との相関がどれだけ保たれたか」であり、
+\(F_e=1\) は \(\mathcal E\) が \(\rho\) の台の上で恒等的に働くことを意味する。
+直観的には「漏れが小さい（\(S(\rho,\mathcal E)\approx0\)）」ことと
+「忠実度が高い（\(F_e\approx1\)）」ことは同じ事態の裏表であり、これを不等式にしたのが次である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（量子 Fano 不等式）</span>
+\(d\) 次元系 \(Q\)（状態 \(\rho\)）とチャネル \(\mathcal E\) に対し、
+\[
+S(\rho,\mathcal E) \;\le\; H\bigl(F_e\bigr) + \bigl(1-F_e\bigr)\log\bigl(d^2-1\bigr).
+\]
+ここで \(H\) は二値エントロピー、\(F_e=F_e(\rho,\mathcal E)\)。
+とくに \(F_e\to1\) のとき右辺 \(\to0\) となり、\(S(\rho,\mathcal E)\to0\)。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明の骨子</span>
+エントロピー交換は純粋化された出力状態のエントロピー \(S(RQ')\) であり、
+\(RQ'\) は \(d^2\) 次元空間に属する。この状態は目標状態 \(\ket{RQ}\) と
+\(\bra{RQ}\rho_{RQ'}\ket{RQ}=F_e\) の重なりを持つ。
+「\(\ket{RQ}\) への重みが \(F_e\) に固定された \(d^2\) 次元状態のうち、
+エントロピーを最大にするもの」は、\(\ket{RQ}\) に重み \(F_e\) を、
+残り \(d^2-1\) 次元に一様に重み \((1-F_e)\) を分配した状態であり、そのエントロピーは
+\(H(F_e)+(1-F_e)\log(d^2-1)\) に等しい（一様分配がエントロピーを最大化することは §11.3.2）。
+実際のエントロピーはこれ以下だから不等式が従う。<span class="qed">∎</span>
+</div>
+
+<p>
+古典の Fano 不等式（§11.2.4）が「誤り確率が小さければ条件付きエントロピーが小さい」だったのに対し、
+量子 Fano 不等式は「忠実度が高ければ環境への漏洩エントロピーが小さい」と述べる。
+どちらも「良い伝達には小さな不確かさが対応する」という同型の主張であり、
+後述の量子データ処理不等式の逆向きの評価に使われる。
+</p>
+
+<h3 id="sec-12-4-2">§12.4.2 コヒーレント情報と量子データ処理不等式</h3>
+
+<div class="def-box">
+<span class="box-title">定義（コヒーレント情報）</span>
+状態 \(\rho\) とチャネル \(\mathcal E\) に対する<strong>コヒーレント情報</strong>を
+\[
+I(\rho,\mathcal E) \;\equiv\; S\bigl(\mathcal E(\rho)\bigr) - S(\rho,\mathcal E)
+\;=\; S(Q') - S(RQ')
+\]
+と定義する。
+</div>
+
+<p>
+右辺第 2 の等号は定義（\(S(\mathcal E(\rho))=S(Q')\)、\(S(\rho,\mathcal E)=S(RQ')\)）による。
+\(I(\rho,\mathcal E)=S(Q')-S(RQ')=-S(R|Q')\)、
+すなわち<strong>出力を条件としたときの参照系の条件付きエントロピーの符号を変えたもの</strong>である。
+古典の相互情報量 \(I(X:Y)=S(X)+S(Y)-S(XY)\) が対称かつ非負だったのに対し、
+コヒーレント情報は決して非負とは限らない。
+これは第11章で見た「量子では条件付きエントロピー \(S(A|B)\) が負になりうる」ことの直接の帰結である。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（コヒーレント情報が負になる）</span>
+出力を固定状態に潰す<strong>置換チャネル</strong> \(\mathcal E(\rho)=\ketbra{0}{0}\) を考える。
+出力は \(R\) と無相関な純粋状態なので \(S(\mathcal E(\rho))=0\)、
+\(S(RQ')=S(R)+0=S(\rho)\)。したがって
+\[
+I(\rho,\mathcal E) = 0 - S(\rho) = -S(\rho) \le 0.
+\]
+\(\rho\) が混合状態なら厳密に負である。
+チャネルが入力を完全に破壊し、参照系との相関がすべて環境に流れ去った状況に対応する。
+「負のコヒーレント情報」は<strong>このチャネルでは量子情報を一切送れない</strong>ことの徴候であり、
+実際、量子容量はコヒーレント情報の正則化された最大値で与えられる（\(p\ge0\) の場合のみ通信可能）。
+</div>
+
+<p>
+コヒーレント情報が量子容量の指標であることは、次の<strong>量子データ処理不等式</strong>が保証する。
+古典のデータ処理不等式（§11.2.4：後処理は情報を増やさない）の量子版である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（量子データ処理不等式）</span>
+任意のチャネル \(\mathcal E_1,\mathcal E_2\) と状態 \(\rho\) に対し、
+\[
+S(\rho) \;\ge\; I(\rho,\mathcal E_1) \;\ge\; I(\rho,\mathcal E_2\circ\mathcal E_1).
+\]
+すなわちコヒーレント情報は入力エントロピーを超えず、かつチャネルを継ぎ足すたびに単調に減少する。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明の流れ</span>
+<p>
+<strong>第 1 の不等式 \(S(\rho)\ge I(\rho,\mathcal E_1)\)。</strong>
+\(I(\rho,\mathcal E_1)=S(Q')-S(RQ')\) であり、\(S(R)=S(\rho)\) だから、示すべきは
+\(S(RQ')\ge S(Q')-S(R)\)。これは Araki–Lieb の三角不等式
+\(S(AB)\ge|S(A)-S(B)|\)（§11.3.4）そのものである。
+</p>
+<p>
+<strong>第 2 の不等式（単調性）。</strong>
+\(\mathcal E_1\) の環境を \(E_1'\)、続けて \(\mathcal E_2\) を作用させたときの環境を \(E_2'\) とし、
+全系 \(RQ''E_1'E_2'\) を純粋に保つ。定義から
+\(I(\rho,\mathcal E_1)=S(Q')-S(E_1')\)、
+\(I(\rho,\mathcal E_2\circ\mathcal E_1)=S(Q'')-S(E_1'E_2')\)
+（後者は \(S(RQ'')=S(E_1'E_2')\) を使った）。
+\(\mathcal E_2\) は \(Q'\) に新鮮な純粋環境 \(E_2'\) を付けてユニタリを施すので
+\(S(Q')=S(Q''E_2')\)。よって示すべきは
+\[
+S(Q''E_2') + S(E_1'E_2') \;\ge\; S(Q'') + S(E_1').
+\]
+これは \(A=Q'',\ B=E_2',\ C=E_1'\) に対する弱単調性
+\(S(AB)+S(BC)\ge S(A)+S(C)\)——強劣加法性（§11.4）と純粋化から等価に導かれる形——に他ならない。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">等号＝完全な誤り訂正可能性</span>
+第 1 の不等式の等号 \(I(\rho,\mathcal E)=S(\rho)\) は、
+<strong>\(\rho\) の台の上で \(\mathcal E\) の誤りが完全に訂正可能</strong>であることと同値である。
+理由は単調性から読める。もし復元操作（訂正）\(\mathcal R\) があって \(\mathcal R\circ\mathcal E=\mathrm{id}\) なら、
+\(I(\rho,\mathrm{id})=S(\rho)\) だから
+\[
+S(\rho) = I(\rho,\mathcal R\circ\mathcal E) \le I(\rho,\mathcal E) \le S(\rho)
+\]
+で挟み撃ちとなり等号が成立する。逆に等号が成れば、
+第11章の強劣加法性の等号条件（\(S(R|Q')\) が最小を取る＝\(R\) が出力から復元可能）から
+訂正操作の存在が導かれる。これは第10章の Knill–Laflamme 条件をエントロピーの言葉で言い直したものであり、
+「訂正可能性＝参照系との相関が環境に漏れていないこと」という描像を与える。
+</div>
+
+<h3 id="sec-12-4-3">§12.4.3 量子 Singleton 限界</h3>
+
+<p>
+上の「相関の漏れ」の描像は、量子符号のパラメータに厳しい制約を課す。
+\([n,k,d]\) 量子符号——\(n\) 個の物理量子ビットに \(k\) 個の論理量子ビットを埋め込み、
+符号距離 \(d\) を持つ符号——を考える。
+距離 \(d=2t+1\) の符号は任意の \(t\) 量子ビット誤りを訂正でき、
+これは<strong>任意の \(2t\) 量子ビットの消失 (erasure) を訂正できること</strong>と同値である
+（誤り位置が既知なら訂正能力は倍になる。第10章）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（量子 Singleton 限界／Knill–Laflamme 限界）</span>
+\([n,k,d]\) 量子符号は
+\[
+n - k \;\ge\; 2(d-1),
+\qquad\text{すなわち}\qquad
+n \;\ge\; 4t + k \quad (d=2t+1)
+\]
+を満たす。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（no-cloning とエントロピー計算）</span>
+<p>
+\(k\) 論理量子ビットを参照系 \(R\)（\(S(R)=k\)）と最大エンタングルさせて符号化し、
+全系 \(R\,1\cdots n\) を純粋状態 \(\ket{\Psi}\) とする。
+\(n\ge2(d-1)\) を仮定して（さもなくば主張は自明）、\(n\) 個の物理量子ビットを
+サイズ \(|A|=|B|=d-1=2t\)、\(|C|=n-2(d-1)\) の 3 組 \(A,B,C\) に分ける。
+</p>
+<p>
+\(A\) の消失（\(2t\) 個）が訂正可能であることは、<strong>\(A\) が参照系 \(R\) と完全に相関を持たない</strong>
+こと、すなわち \(I(R:A)=0\)（\(\rho_{RA}=\rho_R\otimes\rho_A\)）と同値である
+（誤りが環境＝消失した部分に漏れていない、という前小節の描像）。同様に \(B\) についても \(I(R:B)=0\)。
+これらから
+\[
+S(RA)=S(R)+S(A),\qquad S(RB)=S(R)+S(B).
+\]
+全系が純粋なので、補集合どうしのエントロピーは等しい：
+\(S(RA)=S(BC)\)、\(S(RB)=S(AC)\)。代入して 2 式を足すと
+\[
+S(BC)+S(AC) = 2\,S(R) + S(A) + S(B).
+\]
+左辺を劣加法性で上から押さえると
+\(S(BC)+S(AC)\le S(B)+S(C)+S(A)+S(C)\)。整理すれば
+\[
+2\,S(R) \le 2\,S(C) \;\Longrightarrow\; k = S(R) \le S(C) \le |C| = n-2(d-1).
+\]
+これで \(n-k\ge2(d-1)\) を得る。
+no-cloning はここで「\(A\) からも \(B\) からも独立に論理情報が復元できるなら
+同じ量子情報が複製されてしまう」という形で効いており、
+その禁止が \(I(R:A)=I(R:B)=0\) という脱相関条件として現れている。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+古典の Singleton 限界 \(n-k\ge d-1\) と比べ、量子版は係数が 2 になる。
+これは量子符号がビット反転と位相反転の<em>両方</em>を訂正せねばならない（第10章）ことの反映である。
+たとえば 1 論理量子ビットを距離 3（\(t=1\)）で守るには \(n\ge4\cdot1+1=5\)、
+すなわち 5 量子ビット符号が最小になる（第10章で見た完全符号がこの限界を飽和する）。
+</p>
+
+<h3 id="sec-12-4-4">§12.4.4 誤り訂正・冷却・Maxwell の悪魔</h3>
+
+<p>
+量子誤り訂正を情報の観点から見ると、それは<strong>系からエントロピーを汲み出す</strong>操作である。
+この見方は熱力学と接続し、訂正の物理的コストを明らかにする。
+</p>
+
+<p>
+<strong>訂正＝エントロピーの汲み出し。</strong>
+ノイズは符号化された状態にエントロピー（＝環境との相関、＝シンドロームの不確定さ）を注入する。
+訂正手続きは、補助量子ビット（アンシラ）にシンドロームを測り取り、
+そのシンドローム情報に応じて回復操作を施す。
+訂正後の論理系のエントロピーは元に戻るが、
+<em>注入されたエントロピーはアンシラに移っただけで消えてはいない</em>。
+論理系を清浄に保ち続けるには、シンドロームを蓄えたアンシラを繰り返し
+初期状態 \(\ket{0}\) にリセット（消去）しなければならない。
+これは冷凍機がエントロピーを外部へ汲み出し続けるのと同じ構造であり、
+量子誤り訂正は「論理量子ビットの<strong>冷却</strong>」に他ならない。
+</p>
+
+<div class="remark-box">
+<span class="box-title">Landauer 原理と第二法則</span>
+1 ビットの情報を消去（既知状態へリセット）するには、温度 \(T\) の環境へ
+少なくとも \(k_B T\ln 2\) のエネルギーを熱として捨てねばならない——これが
+<strong>Landauer 原理</strong>である（消去は非可逆で、環境のエントロピーを
+\(k_B\ln2\) 以上増やす）。誤り訂正でシンドロームを消去するコストはこの原理に支配される。
+</div>
+
+<p>
+<strong>Maxwell の悪魔との整合。</strong>
+シンドローム測定は「系の状態についての情報を得て、それに応じて操作する」という
+Maxwell の悪魔そのものである。悪魔が系のエントロピーを下げられるように見えて第二法則を破らないのはなぜか。
+Landauer 原理により、<strong>悪魔が得た情報（記憶）を消去する段で必ず環境のエントロピーが増える</strong>からである
+（Bennett の解決）。
+量子誤り訂正もこれと完全に整合する：訂正は論理系のエントロピーを下げるが、
+その分アンシラにエントロピーが移り、アンシラのリセット（消去）で
+\(k_B T\ln2\) per bit の熱が環境へ捨てられる。
+したがって「訂正によって全体のエントロピーが減った」ように見えても、
+汲み出したエントロピーは消去コストとして帳尻が合い、熱力学第二法則は破れない。
+情報理論的な誤り訂正と、物理的な冷却・消去コストが、
+一つの収支表の上で結びつくのである。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-12-5">物理資源としてのエンタングルメント<span class="en">Entanglement as a physical resource</span></h2>
+
+<p>
+テレポーテーション（§1.3.7・§2.3）や超高密度符号化（§2.3）が示したように、
+エンタングルメントは<strong>消費して使える資源</strong>である。
+資源には「どれだけあるか」を測る尺度と、「どう変換できるか」の規則がある。
+本節ではまず 2 部純粋状態に限って変換規則を完全に決定し
+（majorization と Nielsen の定理）、次に資源量の定量化（蒸留と希釈）へ進む。
+基準となる操作は
+<strong>局所操作と古典通信 (local operations and classical communication, LOCC)</strong> である。
+Alice と Bob がそれぞれ手元の系に量子操作を施し、古典通信で協調するが、
+量子系のやり取りはしない、という操作の集合である。LOCC はエンタングルメントを新たに生成できないので、
+「LOCC で何が何に変換できるか」がエンタングルメントの資源としての秩序を定める。
+</p>
+
+<h3 id="sec-12-5-1">§12.5.1 2 部純粋状態の LOCC 変換：Nielsen の定理</h3>
+
+<p>
+2 部純粋状態 \(\ket\psi_{AB}\) は Schmidt 分解（§2.5）
+\(\ket\psi=\sum_i\sqrt{\lambda_i}\,\ket{i}_A\ket{i}_B\) を持ち、
+その Schmidt 係数の二乗の組 \(\lambda_\psi=(\lambda_1,\dots,\lambda_d)\)
+（＝縮約状態 \(\rho_A\) の固有値の組）がエンタングルメントの構造をすべて担う。
+LOCC 変換の可否は、この確率ベクトルの間の<strong>majorization（優越）</strong>関係だけで決まる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（majorization）</span>
+成分の和が等しい 2 つの確率ベクトル \(x,y\in\mathbb R^d\) について、
+成分を降順に並べ替えたものを \(x^\downarrow,y^\downarrow\) と書く。
+\(x\) が \(y\) に<strong>優越される (majorized by)</strong>、記号で \(x\prec y\) とは、
+\[
+\sum_{i=1}^{k} x^\downarrow_i \;\le\; \sum_{i=1}^{k} y^\downarrow_i
+\quad (k=1,\dots,d-1),
+\qquad \sum_{i=1}^{d} x_i = \sum_{i=1}^{d} y_i
+\]
+が成り立つことをいう。直観的には \(x\prec y\) は「\(x\) は \(y\) より<em>平ら（混合的）</em>」を意味する。
+一様分布 \((1/d,\dots,1/d)\) はすべてのベクトルに優越され、
+一点集中 \((1,0,\dots,0)\) はすべてのベクトルを優越する。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（Nielsen）</span>
+2 部純粋状態 \(\ket\psi\) を LOCC によって確実に（確率 1 で）\(\ket\varphi\) に変換できるための必要十分条件は
+\[
+\ket\psi \to \ket\varphi \quad\Longleftrightarrow\quad \lambda_\psi \prec \lambda_\varphi
+\]
+である。
+</div>
+
+<p>
+向きに注意する。\(\lambda_\psi\prec\lambda_\varphi\) は「\(\psi\) の Schmidt 分布の方が平ら」、
+すなわち<strong>\(\psi\) の方がエンタングルしている</strong>ことを意味する。
+LOCC はエンタングルメントを増やせないから、変換はより強くエンタングルした \(\psi\) から
+より弱い \(\varphi\) への一方向にしか進めない——定理はこれを正確な数式にしている。
+証明の核心は、LOCC 変換が縮約状態に対して二重確率的な混合として作用し、
+Hardy–Littlewood–Pólya の定理（\(x\prec y\) ⇔ \(x\) は \(y\) の二重確率行列による像）と結びつく点にある。
+</p>
+
+<div class="example-box">
+<span class="box-title">数値例</span>
+2 量子ビットで、Schmidt 二乗が \(\lambda_\psi=(0.7,0.3)\) の状態 \(\ket\psi\) と
+\(\lambda_\varphi=(0.8,0.2)\) の状態 \(\ket\varphi\) を比べる。
+\(k=1\)：\(0.7\le0.8\)、\(k=2\)：和はともに \(1\)。よって \(\lambda_\psi\prec\lambda_\varphi\) が成り立ち、
+\(\ket\psi\to\ket\varphi\) は LOCC で可能（より平らな＝よりエンタングルした \(\psi\) から
+より偏った \(\varphi\) へ）。逆向き \(\ket\varphi\to\ket\psi\) は不可能である。
+最大エンタングル状態 \((0.5,0.5)\) はすべての 2 量子ビット純粋状態に変換でき、
+積状態 \((1,0)\) はどの状態からも到達できるが、そこからは何も生み出せない。
+</div>
+
+<div class="remark-box">
+<span class="box-title">エンタングルメント触媒</span>
+majorization は半順序でしかないため、\(\lambda_\psi\prec\lambda_\varphi\) も
+\(\lambda_\varphi\prec\lambda_\psi\) も成り立たず<strong>どちらにも変換できない</strong>状態対が存在する。
+驚くべきことに、そのような対でも<strong>触媒 (catalyst)</strong> と呼ばれる補助エンタングル状態 \(\ket c\) を
+借りると変換できる場合がある：\(\ket\psi\otimes\ket c\to\ket\varphi\otimes\ket c\) が LOCC で可能で、
+しかも触媒 \(\ket c\) は<em>元のまま返る</em>。
+たとえば \(\lambda_\psi=(0.4,0.4,0.1,0.1)\)、\(\lambda_\varphi=(0.5,0.25,0.25,0)\) は
+直接には変換不可能だが、\(\lambda_c=(0.6,0.4)\) の触媒があれば可能になる。
+化学触媒と同じく、触媒自身は消費されずに反応を可能にする——
+エンタングルメントの資源理論の非自明さを示す現象である。
+</div>
+
+<h3 id="sec-12-5-2">§12.5.2 蒸留と希釈</h3>
+
+<p>
+資源としての「量」を測るには、共通の通貨——最大エンタングル状態（Bell 対、ebit）——に換算するのがよい。
+純粋状態 \(\ket\psi\) の多数コピー \(\ket\psi^{\otimes n}\) を LOCC で Bell 対に変換する
+<strong>蒸留 (distillation)</strong> と、逆に Bell 対から \(\ket\psi^{\otimes n}\) を合成する
+<strong>希釈 (dilution)</strong> の漸近レートが、資源量の操作的定義を与える。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（エンタングルメントエントロピー）</span>
+2 部純粋状態 \(\ket\psi_{AB}\) の<strong>エンタングルメントエントロピー</strong>を、
+片側の縮約状態の von Neumann エントロピー
+\[
+E(\psi) \;=\; S(\rho_A) \;=\; S(\rho_B) \;=\; H(\lambda_\psi)
+\]
+で定義する（\(\rho_A=\tr_B\ketbra\psi\psi\)、両側が等しいのは Schmidt 分解による）。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（純粋状態の蒸留・希釈レート）</span>
+\(\ket\psi\) について、蒸留レート・希釈レートはともに \(E(\psi)\) に等しい。
+すなわち \(n\to\infty\) で、\(\ket\psi^{\otimes n}\) から漸近的に \(nE(\psi)\) 個の Bell 対を
+高忠実度で取り出せ（蒸留）、逆に \(nE(\psi)\) 個の Bell 対から \(\ket\psi^{\otimes n}\) を
+高忠実度で合成できる（希釈）。両操作は<strong>漸近的に可逆</strong>である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">手続きの概略（典型部分空間による）</span>
+<p>
+<strong>蒸留。</strong>\(\ket\psi^{\otimes n}=\sum_{x^n}\sqrt{\lambda_{x^n}}\,\ket{x^n}_A\ket{x^n}_B\)
+と展開する（\(\lambda_{x^n}=\prod_i\lambda_{x_i}\)）。
+Alice は自分の系で「Schmidt ラベル列 \(x^n\) が \(\epsilon\)-典型か」を測る 2 値測定（§12.2 と同じ射影 \(P\)）を行い、
+結果を Bob に古典通信する。典型と出た場合（確率 \(\ge1-\delta\)）、状態は
+約 \(2^{nE(\psi)}\) 次元の典型部分空間に射影され、
+そこでの Schmidt 係数はほぼ一様（\(\approx2^{-nE}\)）——つまり
+<strong>次元 \(2^{nE(\psi)}\) の最大エンタングル状態</strong>にほぼ等しくなる。
+これを局所ユニタリで標準形に整えれば \(\approx nE(\psi)\) 個の Bell 対を得る。
+量子系のやり取りは一切なく、LOCC のみで完結する。
+</p>
+<p>
+<strong>希釈。</strong>逆に \(nE(\psi)\) 個の Bell 対から出発する。
+Alice が手元で \(\ket\psi^{\otimes n}\) の Alice 側全体を局所的に用意する。
+その典型部分空間の部分は Schumacher 圧縮で \(\approx nE\) 量子ビットに収まる（§12.2.2）ので、
+これを Bell 対を使った量子テレポーテーション（§1.3.7）で Bob へ送る。
+Bell 対 \(nE\) 個はちょうど \(nE\) 量子ビットのテレポーテーションを賄い、
+結果として \(\ket\psi^{\otimes n}\) が両者に分かち持たれる。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+蒸留レートと希釈レートがともに \(E(\psi)\) で一致すること（漸近的可逆性）は、
+<strong>純粋状態のエンタングルメントには一意な「量」が存在する</strong>ことを意味する。
+これが「エンタングルメントエントロピーこそ純粋状態エンタングルメントの正しい尺度である」という
+主張の実質である。
+§12.2 の Schumacher の定理・§12.3 の HSW 定理と並ぶ、
+「情報量＝あるタスクの最適レート」という様式のもう一つの実例でもある。
+</p>
+
+<div class="remark-box">
+<span class="box-title">混合状態では可逆性が崩れる：bound entanglement</span>
+混合状態 \(\rho_{AB}\) になると事情は一変する。
+\(\rho\) から取り出せる Bell 対のレート——<strong>蒸留可能エンタングルメント</strong> \(E_D(\rho)\)——と、
+\(\rho\) を作るのに要する Bell 対のレート——<strong>生成コスト (entanglement cost)</strong> \(E_C(\rho)\)——は
+一般に一致せず、\(E_D(\rho)\le E_C(\rho)\) で<em>厳密な不等号になりうる</em>。
+すなわち混合状態のエンタングルメントは非可逆に「目減り」する。
+極端な例が<strong>束縛エンタングルメント (bound entanglement)</strong> である：
+明らかにエンタングルしている（分離不可能な）のに \(E_D=0\)、
+すなわち作るのにコストはかかるのに Bell 対を 1 つも取り出せない状態が存在する。
+純粋状態の美しい一意性は、混合状態では失われる。
+</div>
+
+<h3 id="sec-12-5-3">§12.5.3 蒸留と量子誤り訂正の対応</h3>
+
+<p>
+エンタングルメント蒸留と量子誤り訂正は、見かけの異なる二つの問題でありながら、
+実は同じ数学的骨格を共有する。この対応は第10章の符号理論を情報理論的に照らし直す。
+</p>
+
+<p>
+<strong>一方向蒸留 ⇔ 量子符号。</strong>
+Alice と Bob がノイズのあるチャネルを通じて多数の（不完全な）エンタングル対を共有しているとする。
+Alice から Bob への古典通信のみを許す<strong>一方向 (one-way) 蒸留プロトコル</strong>は、
+Alice がアンシラに補助測定を行い、その結果（シンドロームに相当）を Bob に送り、
+Bob がそれに応じて回復操作を行って純粋な Bell 対を取り出す、という構造を持つ。
+この「測定→シンドローム送信→回復」は量子誤り訂正符号の復号手続きと完全に同型であり、
+Bennett らは<strong>一方向蒸留プロトコルと量子誤り訂正符号が 1 対 1 に対応する</strong>ことを示した。
+CSS 符号（第10章）はこの対応の下で、ビット誤りと位相誤りを別々に扱う蒸留プロトコルに翻訳される。
+</p>
+
+<p>
+<strong>テレポーテーションを介した接続。</strong>
+両者を繋ぐ蝶番がテレポーテーションである。
+ノイズのある量子チャネル \(\mathcal E\) で量子状態を送ることは、
+(i) \(\mathcal E\) を通して不完全な Bell 対を共有し、(ii) それを蒸留して純粋な Bell 対にし、
+(iii) 純粋 Bell 対で状態をテレポートする、という三段構えと等価である。
+したがって「\(\mathcal E\) で量子情報を送る符号」と「\(\mathcal E\) で共有した対を蒸留するプロトコル」は
+同じ資源変換を別の言葉で述べたものであり、
+量子容量（§12.4 のコヒーレント情報）と蒸留可能エンタングルメントが密接に関係する理由もここにある。
+この対応は次節 §12.6 の BB84 安全性証明でも決定的な役割を果たす。
+</p>
+
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-12-6">量子暗号<span class="en">Quantum cryptography</span></h2>
+
+<p>
+本章の最後は、量子力学を安全性の<em>根拠</em>に据える暗号——とりわけ
+<strong>量子鍵配送 (quantum key distribution, QKD)</strong> である。
+古典暗号の安全性が「計算が難しい」という仮定に依るのに対し、
+QKD は「非直交状態は識別できず、測定は状態を乱す」という物理法則に安全性を置く。
+まず暗号の土台である秘密鍵暗号を復習し、鍵を作る後処理（調停と増幅）を述べ、
+BB84 プロトコルを完全に記述したうえで、その安全性証明の骨格を
+§12.4・§12.5 の道具で読み解く。
+</p>
+
+<h3 id="sec-12-6-1">§12.6.1 秘密鍵暗号とワンタイムパッド</h3>
+
+<p>
+Alice が Bob に秘密のメッセージ \(m\)（\(n\) ビット）を送りたい。
+両者が事前に共有する秘密鍵 \(k\)（\(n\) ビットのランダム列）があれば、
+<strong>ワンタイムパッド (one-time pad, Vernam 暗号)</strong> が使える：
+Alice は暗号文 \(c=m\oplus k\)（ビットごとの排他的論理和）を送り、
+Bob は \(c\oplus k=m\) で復号する。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（ワンタイムパッドの完全秘匿性）</span>
+鍵 \(k\) がメッセージと同じ長さの一様ランダム列で、一度しか使われないなら、
+暗号文はメッセージについて何の情報も漏らさない：
+\[
+I(M:C) = 0.
+\]
+</div>
+
+<p>
+証明は易しい。任意の \(m\) に対し \(c=m\oplus k\) は \(k\) が一様なので一様分布し、
+\(m\) に依らず \(\Pr[C=c]=2^{-n}\)。よって \(C\) は \(M\) と独立で \(I(M:C)=0\)。
+Shannon が示したこの<strong>完全秘匿性 (perfect secrecy)</strong> は無条件である。
+盗聴者の計算能力を一切仮定しない。
+ただしその代償として、<strong>鍵はメッセージと同じ長さが必要で、使い回せない</strong>。
+</p>
+
+<p>
+ここに<strong>鍵配送問題 (key distribution problem)</strong> が生じる：
+完全秘匿な通信のためには大量の秘密鍵をあらかじめ安全に共有せねばならないが、
+その鍵自体をどうやって安全に配送するのか。
+古典的なチャネルだけでは、盗聴者が受動的に盗み聞きしても痕跡が残らないため、
+共有した鍵が漏れていないことを原理的に保証できない。
+QKD はまさにこの問題を——量子力学を使って——解く。
+</p>
+
+<h3 id="sec-12-6-2">§12.6.2 情報調停とプライバシー増幅</h3>
+
+<p>
+QKD の量子部分が終わった時点で、Alice と Bob は
+<strong>相関はあるが完全には一致していない</strong>ビット列を持ち、
+盗聴者 Eve はそれについて<strong>部分的な情報</strong>を持っているかもしれない。
+この生の鍵を、一致した完全な秘密鍵に精製する古典後処理が 2 段構えで行われる。
+</p>
+
+<ul>
+<li><strong>情報調停 (information reconciliation)</strong>：
+Alice と Bob の列の食い違い（誤り）を、公開チャネルでパリティ検査などをやり取りして訂正し、
+両者の列を完全に一致させる。これは本質的に<strong>誤り訂正</strong>であり、
+公開したパリティの分だけ Eve にも情報が漏れる（この漏洩量は後で差し引く）。</li>
+<li><strong>プライバシー増幅 (privacy amplification)</strong>：
+一致したが Eve に一部知られている列に対し、
+<strong>ユニバーサルハッシュ関数</strong>をランダムに選んで適用し、
+より短い列へ圧縮する。Eve の持つ部分情報がビット \(t\) 分あるとき、
+列を適切に短くすれば、ハッシュ後の鍵についての Eve の情報を指数的に小さくできる。
+直観的には「Eve が全体の一部しか知らないなら、全ビットを混ぜ合わせた関数値については
+ほとんど何も知らない」という事実を使う。</li>
+</ul>
+
+<p>
+最終的な鍵長は、生の鍵長から「調停で公開した分」と「Eve が量子測定で得た分」を差し引いた長さになる。
+この差引きが正になる——すなわち安全な鍵が正のレートで残る——ための条件が、
+QKD の安全性の定量的な中身である（§12.6.4）。
+</p>
+
+<h3 id="sec-12-6-3">§12.6.3 QKD：BB84 プロトコル</h3>
+
+<p>
+BB84（Bennett–Brassard 1984）は最初期にして最も基本的な QKD プロトコルである。
+2 つの共役な測定基底——<strong>計算基底</strong> \(Z=\{\ket0,\ket1\}\) と
+<strong>アダマール基底</strong> \(X=\{\ket+,\ket-\}\)——を使う。手順は次の通りである。
+</p>
+
+<figure>
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg">
+  <!-- Alice box -->
+  <rect x="20" y="30" width="150" height="90" rx="8" class="line" stroke-width="1.5" fill="none"/>
+  <text x="70" y="55" class="label">Alice</text>
+  <text x="34" y="78" class="label-muted">乱数ビット aᵢ</text>
+  <text x="34" y="96" class="label-muted">乱数基底 bᵢ ∈ {Z,X}</text>
+  <text x="34" y="113" class="label-muted">量子ビットを準備</text>
+  <!-- quantum channel -->
+  <line x1="170" y1="75" x2="330" y2="75" class="line accent" stroke-width="2"/>
+  <polygon points="330,69 344,75 330,81" class="accent-fill"/>
+  <text x="196" y="64" class="label">量子チャネル</text>
+  <!-- Eve -->
+  <rect x="212" y="120" width="90" height="46" rx="6" class="line" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="232" y="140" class="label-muted">Eve?</text>
+  <text x="220" y="158" class="label-muted">盗聴＝攪乱</text>
+  <line x1="257" y1="75" x2="257" y2="120" class="line" stroke-width="1" stroke-dasharray="3 3"/>
+  <!-- Bob box -->
+  <rect x="344" y="30" width="150" height="90" rx="8" class="line" stroke-width="1.5" fill="none"/>
+  <text x="394" y="55" class="label">Bob</text>
+  <text x="358" y="78" class="label-muted">乱数基底 b′ᵢ で</text>
+  <text x="358" y="96" class="label-muted">測定 → ビット a′ᵢ</text>
+  <!-- classical public channel below -->
+  <rect x="20" y="210" width="680" height="90" rx="8" class="line" stroke-width="1.2" fill="none"/>
+  <text x="34" y="232" class="label">公開古典チャネル（認証済み・盗聴可）</text>
+  <text x="34" y="256" class="label-muted">① 基底を照合し bᵢ=b′ᵢ の位置だけ残す（sifting）</text>
+  <text x="34" y="274" class="label-muted">② 標本を公開比較し誤り率を推定 → 高すぎれば中止</text>
+  <text x="34" y="292" class="label-muted">③ 情報調停で一致させ、④ プライバシー増幅で鍵を圧縮</text>
+  <!-- arrows down to classical channel -->
+  <line x1="95" y1="120" x2="95" y2="210" class="line" stroke-width="1.2"/>
+  <polygon points="89,210 95,222 101,210" class="line" fill="none"/>
+  <line x1="419" y1="120" x2="419" y2="210" class="line" stroke-width="1.2"/>
+  <!-- key output -->
+  <rect x="560" y="120" width="140" height="60" rx="8" class="line accent" stroke-width="2" fill="none"/>
+  <text x="580" y="147" class="label">共有秘密鍵</text>
+  <text x="580" y="167" class="label-muted">Eve の情報 ≈ 0</text>
+  <line x1="560" y1="150" x2="500" y2="150" class="line accent" stroke-width="2"/>
+</svg>
+<figcaption>図 12.2：BB84 の流れ。量子部分（上：ランダム基底での準備と測定）で相関を作り、
+公開古典チャネル（下：sifting・誤り率推定・調停・増幅）で秘密鍵を精製する。
+Eve が量子チャネルで情報を得ようとすると必ず誤り率が上がり、②で検知される。</figcaption>
+</figure>
+
+<ol>
+<li><strong>準備。</strong>Alice は各回、乱数ビット \(a_i\in\{0,1\}\) と乱数基底 \(b_i\in\{Z,X\}\) を選ぶ。
+\(b_i=Z\) なら \(a_i\) を \(\{\ket0,\ket1\}\) に、\(b_i=X\) なら \(\{\ket+,\ket-\}\) に符号化して 1 量子ビットを送る。</li>
+<li><strong>測定。</strong>Bob は各回、独立に乱数基底 \(b_i'\in\{Z,X\}\) を選んで測定し、結果 \(a_i'\) を記録する。</li>
+<li><strong>照合 (sifting)。</strong>全量子ビット送信後、Alice と Bob は<strong>基底 \(b_i,b_i'\) だけ</strong>を
+公開チャネルで突き合わせる（<em>ビット値は明かさない</em>）。基底が一致した位置（約半分）だけを残し、
+不一致の位置は捨てる。基底が一致していれば理想的には \(a_i=a_i'\) のはずである。</li>
+<li><strong>標本検査。</strong>残った位置からランダムに一部を選び、ビット値を公開比較して誤り率を推定する。
+誤り率がしきい値を超えていれば盗聴（または過大なノイズ）とみなしプロトコルを中止する。
+検査に使った位置は鍵から除く。</li>
+<li><strong>調停＋増幅。</strong>残りの位置について、§12.6.2 の情報調停で列を完全一致させ、
+プライバシー増幅で Eve の情報を消し去り、最終的な秘密鍵を得る。</li>
+</ol>
+
+<p>
+<strong>盗聴＝攪乱の直観。</strong>
+Eve は各量子ビットがどちらの基底で符号化されたかを知らない
+（基底は後で公開されるが、そのときには量子ビットは通過済み）。
+非直交状態 \(\{\ket0,\ket1,\ket+,\ket-\}\) は<strong>確実には識別できない</strong>（§12.1）から、
+Eve が情報を得ようと測定すれば、誤った基底で測ったときに状態を乱す。
+最も単純な<em>intercept–resend</em> 攻撃（Eve が測って測定値を再送信）では、
+基底が半分の確率で食い違い、その半分でビットが反転するので、
+Alice–Bob 間に約 \(25\%\) の誤りが生じる。
+「情報を盗む」ことと「痕跡を残す」ことが不可分である——
+これが §12.1(3) で予告した Holevo 限界の裏面であり、BB84 の安全性の心臓部である。
+</p>
+
+<div class="remark-box">
+<span class="box-title">変種：B92 と E91</span>
+<ul>
+<li><strong>B92</strong>（Bennett 1992）：非直交な<em>2 状態</em>（たとえば \(\ket0\) と \(\ket+\)）だけを使う。
+2 状態が非直交でありさえすれば鍵配送が可能であることを示す最小構成で、
+安全性は 2 状態の識別不可能性に直接依拠する。</li>
+<li><strong>E91</strong>（Ekert 1991、EPR プロトコル）：
+Alice と Bob が Bell 対を共有し、各自ランダムな基底で測定する。
+一部の測定で<strong>Bell 不等式（CHSH）</strong>の破れを検証し、
+破れが十分なら盗聴がなかったこと（Eve が事前に相関を仕込めなかったこと）を保証する。
+エンタングルメントと非局所相関を安全性の証拠に使う点が新しく、次項の安全性証明の視点に直結する。</li>
+</ul>
+</div>
+
+<h3 id="sec-12-6-4">§12.6.4 プライバシーとコヒーレント情報</h3>
+
+<p>
+安全な鍵がどれだけ残るかは、<strong>Bob が得る情報と Eve が得る情報の差</strong>で決まる。
+量子チャネルを Alice→Bob のチャネル \(\mathcal E\) とみなすと、
+Eve は \(\mathcal E\) の<strong>環境</strong>（§12.4.1）を握る者と同一視できる：
+Alice の信号のうち Bob に届かず環境へ漏れた成分こそが Eve の取り分だからである。
+</p>
+
+<p>
+この描像の下で、抽出可能な秘密鍵レートは
+\(I(A:B)-I(A:E)\)（Bob との相互情報量から Eve との相互情報量を引いたもの）で下から押さえられる。
+そして Eve の情報 \(I(A:E)\) はチャネルのノイズ——環境への漏洩、すなわちエントロピー交換 \(S(\rho,\mathcal E)\)——と
+直結する。ノイズが小さければ環境（Eve）は情報をほとんど得られず、鍵レートは大きい。
+ノイズが大きくなるにつれ Eve の取り分が増え、ある点で秘密鍵レートは 0 に落ちる。
+</p>
+
+<p>
+この関係はコヒーレント情報 \(I(\rho,\mathcal E)=S(\mathcal E(\rho))-S(\rho,\mathcal E)\)（§12.4.2）と
+同じ量に帰着する。実際、\(I(\rho,\mathcal E)\) が正であることは
+「Bob への相関が環境への漏洩を上回る」ことを意味し、
+これは量子情報が送れる条件であると同時に、
+<strong>安全な鍵が正のレートで蒸留できる条件</strong>でもある。
+§12.4 の量子通信容量と §12.6 のプライバシーが同じ量で支配されるのは偶然ではなく、
+次項で見るように両者は数学的に同一の問題である。
+</p>
+
+<h3 id="sec-12-6-5">§12.6.5 BB84 の安全性証明の構造</h3>
+
+<p>
+BB84 が<strong>あらゆる</strong>盗聴戦略に対して安全であることの厳密な証明は、
+一見すると準備・測定という素朴なプロトコルに、
+§12.5 の蒸留と第10章の CSS 符号を接続する Shor–Preskill の議論によって与えられる。
+完全な再現は行わないが、論理の流れを追う。
+</p>
+
+<ol>
+<li><strong>エンタングルメントベースのプロトコルへの還元。</strong>
+まず BB84 を、Alice と Bob が Bell 対を共有して各自測定する
+<strong>EPR プロトコル（E91 型）</strong>に置き換える。
+「Alice が状態を準備して送る」ことと「Alice が Bell 対の片割れを測定して状態を用意する」ことは
+統計的に区別できない（測定を送信の前後どちらで行っても Bob 側の状態分布は同じ）ため、
+この置き換えは Eve から見て BB84 と完全に等価である。
+したがって<strong>EPR プロトコルの安全性を示せば BB84 の安全性が従う</strong>。</li>
+
+<li><strong>安全性を Bell 対の純粋度に帰着。</strong>
+EPR プロトコルでは、Alice と Bob が<strong>ほぼ完全な Bell 対</strong>を共有できれば、
+その対から測定で得る鍵は Eve と相関を持たない——完全な Bell 対は環境（Eve）と積状態だからである
+（§12.4 の脱相関＝訂正可能性の描像）。
+よって問題は「ノイズのある共有対から、いくつの高忠実度 Bell 対を蒸留できるか」に帰着する（§12.5.3）。</li>
+
+<li><strong>CSS 符号による蒸留＝調停＋増幅。</strong>
+その蒸留を <strong>CSS 符号</strong>（第10章：ビット反転と位相反転を独立に扱える量子符号）で実装する。
+標本検査で推定した誤り率が、CSS 符号が訂正できる範囲に収まっていれば、蒸留は成功する。
+CSS 符号の 2 種類の訂正が、古典後処理の 2 段階にちょうど対応するのが要点である：
+<ul>
+<li><strong>ビット反転の訂正 ⇔ 情報調停</strong>（Alice と Bob の鍵ビットを一致させる誤り訂正）、</li>
+<li><strong>位相反転の訂正 ⇔ プライバシー増幅</strong>（位相情報＝Eve が握りうる情報を消す）。</li>
+</ul>
+CSS 符号ではこの 2 つが独立に行えるため、
+<strong>実際のプロトコルでは位相訂正を「実行」する必要がない</strong>——
+位相を訂正<em>できた</em>という事実だけで Eve の情報がないことが保証され、
+古典的なプライバシー増幅（ハッシュ）で代替できる。
+これが「量子的な EPR プロトコル」を「古典後処理だけの BB84」に落とし込む決め手である。</li>
+
+<li><strong>結論。</strong>
+以上より、標本検査で測った誤り率が CSS 符号の訂正能力の範囲内（BB84 では概ね \(11\%\) 程度が閾値）であれば、
+Eve がどんな戦略を採ろうとも最終鍵についての情報は指数的に小さく抑えられ、
+正のレートで安全な鍵が得られる。誤り率がそれを超えれば鍵は取れず、プロトコルは中止される。
+安全性の根拠は計算量ではなく、
+<strong>「情報を得れば必ず攪乱する」という量子力学の構造それ自体</strong>に置かれている。</li>
+</ol>
+
+<div class="remark-box">
+<span class="box-title">まとめの視点</span>
+BB84 の安全性証明は、本章の主題が一つに束ねられる場所である：
+非直交状態の識別不可能性（§12.1）が盗聴＝攪乱を生み、
+エンタングルメント蒸留（§12.5）と量子誤り訂正（第10章・§12.4）が
+その攪乱の下で秘密を精製する手段を与え、
+コヒーレント情報（§12.4）が通信可能性とプライバシーの両方を同じ量で支配する。
+量子情報理論の道具立てが、物理法則に根ざした暗号という具体的な果実に結実している。
+</div>
+
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第12章のまとめ</span>
+<ul>
+<li><strong>アクセス可能情報と Holevo 限界（§12.1）</strong>：
+アンサンブル \(\{p_x,\rho_x\}\) から測定で引き出せる古典情報は
+\(I(X:Y)\le\chi=S(\rho)-\sum_x p_xS(\rho_x)\) で押さえられる。
+証明は準備 \(P\)・信号 \(Q\)・メーター \(M\) の量子相互情報量に対する
+データ処理不等式（強劣加法性）。帰結として 1 量子ビットは高々 1 ビットしか運べず、
+非直交状態は情報伝達能力を削る。</li>
+<li><strong>データ圧縮（§12.2）</strong>：古典の Shannon 符号化定理（典型集合、\(2^{nH}\) 個への通し番号）の
+量子版が Schumacher の定理。典型部分空間（次元 \(\approx2^{nS(\rho)}\)）への穏やかな射影により、
+量子情報源は 1 文字あたり \(S(\rho)\) 量子ビットに——重ね合わせもエンタングルメントも保ったまま——圧縮できる。
+\(S(\rho)\) に操作的意味が与えられる。</li>
+<li><strong>ノイズチャネル上の古典情報（§12.3）</strong>：HSW 定理により積状態容量
+\(C^{(1)}=\max_{\{p_j,\rho_j\}}\chi(\{p_j,\mathcal E(\rho_j)\})\)。
+球詰めの直観（典型部分空間 \(2^{nS(\bar\rho)}\) に条件付き典型部分空間 \(2^{n\bar S}\) を詰める）と
+pretty good measurement で達成。真の容量は正則化が必要で、Hastings の反例により \(\chi\) は非加法的。</li>
+<li><strong>ノイズチャネル上の量子情報（§12.4）</strong>：エントロピー交換 \(S(\rho,\mathcal E)=S(W)\)
+（\(W_{ij}=\tr(E_i\rho E_j^\dagger)\)）が環境への漏洩を測り、量子 Fano 不等式が忠実度と結ぶ。
+コヒーレント情報 \(I(\rho,\mathcal E)=S(\mathcal E(\rho))-S(\rho,\mathcal E)\) は負になりうる量子情報の指標で、
+量子データ処理不等式 \(S(\rho)\ge I(\rho,\mathcal E_1)\ge I(\rho,\mathcal E_2\circ\mathcal E_1)\)（三角不等式＋強劣加法性）に従う。
+等号は完全訂正可能性と同値。量子 Singleton 限界 \(n\ge4t+k\)。誤り訂正は冷却であり、
+シンドローム消去のコストが Landauer 原理・第二法則と整合する。</li>
+<li><strong>資源としてのエンタングルメント（§12.5）</strong>：
+2 部純粋状態の LOCC 変換は majorization で完全決定される（Nielsen の定理
+\(\ket\psi\to\ket\varphi\iff\lambda_\psi\prec\lambda_\varphi\)、触媒現象あり）。
+純粋状態の蒸留・希釈は漸近的に可逆でレートは一意に \(E(\psi)=S(\rho_A)\)。
+混合状態では \(E_D\le E_C\) で束縛エンタングルメントが存在。
+一方向蒸留は量子符号と対応し、テレポーテーションが両者を繋ぐ。</li>
+<li><strong>量子暗号（§12.6）</strong>：ワンタイムパッドは完全秘匿だが鍵配送問題を残す。
+BB84 は 2 基底のランダム選択→sifting→誤り率検査→情報調停＋プライバシー増幅で鍵を作り、
+盗聴＝攪乱（非直交状態の識別不可能性）で安全性を担保する。
+プライバシーはコヒーレント情報が支配し、安全性証明は
+EPR プロトコルへの還元→CSS 符号による蒸留（ビット訂正＝調停、位相訂正＝増幅）という
+Shor–Preskill の骨格で与えられる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

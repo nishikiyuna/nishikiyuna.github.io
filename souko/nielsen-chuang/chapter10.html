@@ -1,0 +1,1985 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="3量子ビット符号から Shor 符号・CSS 符号・スタビライザー符号へ、そしてフォールトトレラント量子計算と閾値定理">
+  <title>第10章 量子誤り訂正 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter10" data-chapter="10">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第10章に対応</span>
+  第10章 量子誤り訂正
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+現実の量子系は環境との相互作用（第8章の量子ノイズ）から逃れられない。
+量子計算が机上の空論に終わらないためには、ノイズの中で量子情報を守る技術——
+<strong>量子誤り訂正 (quantum error-correction)</strong>——が不可欠である。
+本章は本書の理論的な山場のひとつであり、次の流れで進む。
+まず3量子ビット符号と Shor の9量子ビット符号を通じて、
+「量子情報は複製できない・誤りは連続的・測定は状態を壊す」という三重の困難が
+いずれも克服できることを具体的に見る（§10.1–10.2）。
+次に、どんな符号がどんな誤りを訂正できるかを完全に特徴づける
+<strong>量子誤り訂正条件</strong>を証明し、連続的な誤りが離散的な Pauli 誤りの訂正に
+帰着するという分野の基本原理（誤りの離散化）を導く（§10.3)。
+続いて古典線形符号から量子符号を組み立てる CSS 構成（§10.4）と、
+それをも包含する強力な<strong>スタビライザー形式</strong>（§10.5）を展開する。
+スタビライザー形式の副産物として、Clifford 回路が古典計算機で効率よく
+シミュレートできるという Gottesman–Knill 定理も得られる。
+最後に、符号化したまま計算を実行する<strong>フォールトトレラント量子計算</strong>の設計原理を扱う。
+到達点は<strong>閾値定理</strong>である（§10.6）。
+ゲートあたりの誤り率がある閾値を下回れば、任意に長い量子計算が
+多項式対数程度のオーバーヘッドで実行できる、という定理である。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-10-1">導入：3量子ビット符号<span class="en">Introduction</span></h2>
+
+<p>
+古典の誤り訂正の発想は単純である。ビット 0 を 000 に、1 を 111 に複製して送れば
+（<strong>反復符号</strong>）、チャネルが1ビットを反転させても多数決で復元できる。
+各ビットが独立に確率 \(p\) で反転するなら、多数決が失敗するのは2ビット以上が
+反転したときだけであり、その確率は \(3p^2(1-p)+p^3 = 3p^2-2p^3\)。
+\(p &lt; 1/2\) である限り、符号化しない場合の誤り率 \(p\) より小さい。
+</p>
+
+<p>
+同じことを量子情報でやろうとすると、直ちに<strong>3つの困難</strong>に突き当たる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">量子誤り訂正の3つの困難</span>
+<ol>
+<li><strong>複製できない。</strong>複製不可能定理（§1.3.5, Box 12.1）により、
+未知の状態 \(\ket{\psi}\) から \(\ket{\psi}\ket{\psi}\ket{\psi}\) を作る操作は存在しない。
+古典反復符号の「コピーして多数決」はそのままでは使えない。</li>
+<li><strong>誤りが連続的。</strong>古典ビットの誤りは反転（\(0\leftrightarrow1\)）しかないが、
+量子状態は \(\alpha\ket{0}+\beta\ket{1}\) の振幅が<em>連続的に</em>ずれうる。
+連続な誤りを特定して戻すには無限の精度が必要に見える。</li>
+<li><strong>測定が状態を壊す。</strong>誤りを見つけるには系を観測したくなるが、
+測定は重ね合わせを壊してしまう。守るべき情報そのものを見ずに
+誤りだけを知る必要がある。</li>
+</ol>
+</div>
+
+<p>
+本節と次節の目標は、この3つがすべて克服可能であることを最も簡単な例で示すことである。
+先に答えの要点を述べておく。
+(1) 複製の代わりに<strong>エンタングルさせる</strong>：\(\alpha\ket{0}+\beta\ket{1}\) を
+\(\alpha\ket{000}+\beta\ket{111}\) に写す操作はユニタリであり、複製
+\((\alpha\ket{0}+\beta\ket{1})^{\otimes3}\) とは別物である。
+(2) 誤りの連続性は<strong>シンドローム測定が誤りを離散化する</strong>ことで解決される。
+どんな連続的な誤りも、測定後には有限個の代表的な誤りのどれかに collapse する。
+あとはそれを打ち消せばよい（§10.2, §10.3.1 で精密化）。
+(3) 測定の破壊性は、<strong>符号化された情報について何も語らない観測量</strong>
+（誤りの位置だけを教えるパリティ型の観測量）を測ることで回避される。
+</p>
+
+<h3 id="sec-10-1-1">§10.1.1 3量子ビットビット反転符号</h3>
+
+<p>
+ノイズとして、各量子ビットに独立に確率 \(p\) で Pauli \(X\)（ビット反転）が作用する
+チャネル（ビット反転チャネル）を考える。守りたい1量子ビット状態
+\(\ket{\psi}=\alpha\ket{0}+\beta\ket{1}\) を、次の対応で3量子ビットに<strong>符号化</strong>する：
+\[
+\ket{0}\mapsto\ket{0_L}\equiv\ket{000},\qquad
+\ket{1}\mapsto\ket{1_L}\equiv\ket{111},
+\]
+\[
+\alpha\ket{0}+\beta\ket{1}\ \mapsto\ \alpha\ket{000}+\beta\ket{111}.
+\]
+添字 \(L\) は「論理 (logical)」の意で、\(\ket{0_L},\ket{1_L}\) を<strong>論理基底状態</strong>、
+その張る2次元部分空間 \(C=\mathrm{span}\{\ket{000},\ket{111}\}\subset(\mathbb{C}^2)^{\otimes3}\)
+を<strong>符号空間 (code space)</strong> と呼ぶ。
+この符号化は、補助ビット2個を \(\ket{0}\) に用意して CNOT を2回かけるだけで実現できる
+（図 10.1 左）。作られるのは複製ではなくエンタングル状態であり、
+複製不可能定理とは矛盾しない——これが困難 (1) の解決である。
+</p>
+
+<figure>
+<svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- three data wires -->
+  <line x1="20" y1="50"  x2="680" y2="50"  class="line" stroke-width="1.5"/>
+  <line x1="20" y1="95"  x2="680" y2="95"  class="line" stroke-width="1.5"/>
+  <line x1="20" y1="140" x2="680" y2="140" class="line" stroke-width="1.5"/>
+  <!-- ancilla wires -->
+  <line x1="330" y1="185" x2="620" y2="185" class="line" stroke-width="1.5"/>
+  <line x1="330" y1="220" x2="620" y2="220" class="line" stroke-width="1.5"/>
+  <text x="22" y="42"  class="label">|ψ⟩</text>
+  <text x="22" y="87"  class="label">|0⟩</text>
+  <text x="22" y="132" class="label">|0⟩</text>
+  <text x="288" y="189" class="label">|0⟩</text>
+  <text x="288" y="224" class="label">|0⟩</text>
+  <!-- encoding CNOTs -->
+  <circle cx="70" cy="50" r="4" class="accent-fill"/>
+  <line x1="70" y1="50" x2="70" y2="95" class="accent" stroke-width="1.5"/>
+  <circle cx="70" cy="95" r="9" class="accent" fill="none" stroke-width="1.5"/>
+  <line x1="70" y1="86" x2="70" y2="104" class="accent" stroke-width="1.5"/>
+  <circle cx="105" cy="50" r="4" class="accent-fill"/>
+  <line x1="105" y1="50" x2="105" y2="140" class="accent" stroke-width="1.5"/>
+  <circle cx="105" cy="140" r="9" class="accent" fill="none" stroke-width="1.5"/>
+  <line x1="105" y1="131" x2="105" y2="149" class="accent" stroke-width="1.5"/>
+  <!-- noise region -->
+  <rect x="160" y="28" width="90" height="134" class="line" fill="none" stroke-dasharray="5 4"/>
+  <text x="170" y="20" class="label-muted">ノイズ（各線に X が確率 p）</text>
+  <text x="193" y="102" class="label">E</text>
+  <!-- syndrome CNOTs: Z1Z2 -> anc1 (via CNOT from q1,q2), Z2Z3 -> anc2 -->
+  <circle cx="370" cy="50" r="4" class="accent-fill"/>
+  <line x1="370" y1="50" x2="370" y2="185" class="accent" stroke-width="1.5"/>
+  <circle cx="370" cy="185" r="9" class="accent" fill="none" stroke-width="1.5"/>
+  <line x1="370" y1="176" x2="370" y2="194" class="accent" stroke-width="1.5"/>
+  <circle cx="405" cy="95" r="4" class="accent-fill"/>
+  <line x1="405" y1="95" x2="405" y2="185" class="accent" stroke-width="1.5"/>
+  <circle cx="405" cy="185" r="9" class="accent" fill="none" stroke-width="1.5"/>
+  <line x1="405" y1="176" x2="405" y2="194" class="accent" stroke-width="1.5"/>
+  <circle cx="440" cy="95" r="4" class="accent-fill"/>
+  <line x1="440" y1="95" x2="440" y2="220" class="accent" stroke-width="1.5"/>
+  <circle cx="440" cy="220" r="9" class="accent" fill="none" stroke-width="1.5"/>
+  <line x1="440" y1="211" x2="440" y2="229" class="accent" stroke-width="1.5"/>
+  <circle cx="475" cy="140" r="4" class="accent-fill"/>
+  <line x1="475" y1="140" x2="475" y2="220" class="accent" stroke-width="1.5"/>
+  <circle cx="475" cy="220" r="9" class="accent" fill="none" stroke-width="1.5"/>
+  <line x1="475" y1="211" x2="475" y2="229" class="accent" stroke-width="1.5"/>
+  <!-- measurement boxes -->
+  <rect x="520" y="172" width="34" height="26" class="gate" stroke-width="1.5"/>
+  <path d="M 527 193 A 10 10 0 0 1 547 193" class="line" stroke-width="1.5"/>
+  <line x1="537" y1="193" x2="545" y2="178" class="line" stroke-width="1.5"/>
+  <rect x="520" y="207" width="34" height="26" class="gate" stroke-width="1.5"/>
+  <path d="M 527 228 A 10 10 0 0 1 547 228" class="line" stroke-width="1.5"/>
+  <line x1="537" y1="228" x2="545" y2="213" class="line" stroke-width="1.5"/>
+  <!-- recovery box -->
+  <rect x="600" y="30" width="60" height="130" class="gate" stroke-width="1.5"/>
+  <text x="612" y="90" class="label">回復</text>
+  <text x="608" y="110" class="label-muted">X_i</text>
+  <line x1="560" y1="185" x2="600" y2="120" class="line" stroke-dasharray="3 3"/>
+  <line x1="560" y1="220" x2="600" y2="130" class="line" stroke-dasharray="3 3"/>
+  <text x="330" y="248" class="label-muted">シンドローム測定（Z₁Z₂ と Z₂Z₃ のパリティ）</text>
+  <text x="30" y="248" class="label-muted">符号化</text>
+</svg>
+<figcaption>図 10.1：3量子ビットビット反転符号。左：CNOT 2個による符号化
+\(\alpha\ket{0}+\beta\ket{1}\mapsto\alpha\ket{000}+\beta\ket{111}\)。
+中央：ノイズ。右：補助量子ビット2個へパリティ \(Z_1Z_2,\ Z_2Z_3\) を書き出して測定し、
+結果に応じた \(X_i\) で回復する。データ量子ビット自体は一度も測定されない。</figcaption>
+</figure>
+
+<p><strong>シンドローム測定。</strong>
+ノイズを通過した状態から誤りの位置を特定したい。ただしデータを壊さないように、
+振幅 \(\alpha,\beta\) の情報を一切含まない観測量を選ぶ必要がある。
+それが2つの<strong>パリティ観測量</strong>
+\[
+Z_1 Z_2 = Z\otimes Z\otimes I,\qquad
+Z_2 Z_3 = I\otimes Z\otimes Z
+\]
+である。\(Z\ket{0}=\ket{0},\ Z\ket{1}=-\ket{1}\) だから、\(Z_1Z_2\) の固有値は
+「1番目と2番目のビット値が一致するか（\(+1\)）否か（\(-1\)）」だけを教える。
+両観測量は可換なので同時測定でき、測定結果の組
+\((z_{12},z_{23})\in\{\pm1\}^2\) を<strong>誤りシンドローム (error syndrome)</strong> と呼ぶ。
+起こりうる4つの場合を整理すると：
+</p>
+
+<table>
+<thead><tr><th>誤り</th><th>\(Z_1Z_2\)</th><th>\(Z_2Z_3\)</th><th>回復操作</th></tr></thead>
+<tbody>
+<tr><td>なし（\(I\)）</td><td>\(+1\)</td><td>\(+1\)</td><td>何もしない</td></tr>
+<tr><td>\(X_1\)</td><td>\(-1\)</td><td>\(+1\)</td><td>\(X_1\)</td></tr>
+<tr><td>\(X_2\)</td><td>\(-1\)</td><td>\(-1\)</td><td>\(X_2\)</td></tr>
+<tr><td>\(X_3\)</td><td>\(+1\)</td><td>\(-1\)</td><td>\(X_3\)</td></tr>
+</tbody>
+</table>
+
+<p>
+たとえば \(X_1\) が起きた後の状態は \(\alpha\ket{100}+\beta\ket{011}\) であり、
+これは \(Z_1Z_2\) の固有値 \(-1\)、\(Z_2Z_3\) の固有値 \(+1\) の同時固有状態である。
+つまり<strong>符号空間に \(X_i\) を作用させた4つの部分空間はすべて直交し、
+シンドローム測定はどの部分空間にいるかだけを射影的に判定する</strong>。
+射影演算子で書けば、測定は
+\[
+P_0=\ketbra{000}{000}+\ketbra{111}{111},\quad
+P_1=\ketbra{100}{100}+\ketbra{011}{011},
+\]
+\[
+P_2=\ketbra{010}{010}+\ketbra{101}{101},\quad
+P_3=\ketbra{001}{001}+\ketbra{110}{110}
+\]
+による射影測定と同値である。重要なのは、たとえば
+\(\bra{\psi'}P_1\ket{\psi'}=1\)（\(\ket{\psi'}=\alpha\ket{100}+\beta\ket{011}\)）のように
+<strong>測定結果が確定的で、\(\alpha,\beta\) に依存しない</strong>ことである。
+測定は「どの誤りが起きたか」だけを教え、「どんな状態を守っているか」については
+何のビットも漏らさない。だから重ね合わせは壊れない——これが困難 (3) の解決である。
+シンドロームが \((-1,+1)\) なら \(X_1\) をかけ直せば \(X_1^2=I\) より元の
+\(\alpha\ket{000}+\beta\ket{111}\) が完全に復元する。
+</p>
+
+<p><strong>性能解析。</strong>
+この手続きは「\(X\) が高々1個」の場合に完璧に働く。失敗するのは2個以上の反転が
+起きたときで（このとき多数決が逆向きの訂正をして論理ビットが反転する）、その確率は
+\[
+p_{\mathrm{fail}} = 3p^2(1-p)+p^3 = 3p^2-2p^3 .
+\]
+古典反復符号と同じく、\(p&lt;1/2\) なら符号化しない場合の \(p\) を下回る。
+量子的な指標である忠実度（第9章）で言い直すこともできる。符号化しない場合、
+ビット反転チャネルを通った状態の忠実度は
+\(F=\sqrt{\bra{\psi}\mathcal{E}(\rho)\ket{\psi}}\) であり、最悪の場合
+\(F=\sqrt{1-p}\) まで下がる。一方、符号化＋訂正を行った場合は
+2個以上の誤りが起きた分岐だけが忠実度を損なうので
+\[
+F \ge \sqrt{1-3p^2+2p^3} \ \ge\ \sqrt{1-3p^2}
+\]
+となり、\(p\) の1次のオーダーで完全に保護される。
+「訂正可能な誤りの確率を \(O(p)\) から \(O(p^2)\) に押し下げる」というこの構図は、
+本章の最後（閾値定理）まで繰り返し現れる基本パターンである。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足：シンドローム測定の実装</span>
+\(Z_1Z_2\) の測定は、パリティ書き出し回路で実装できる（図 10.1）。
+補助量子ビット \(\ket{0}\) を用意し、量子ビット1と2をそれぞれ制御とする CNOT を
+補助ビットに2回かけてから、補助ビットを計算基底で測ればよい。
+補助ビットには \(b_1\oplus b_2\)（ビット値の XOR）だけが書き込まれるため、
+測定してもデータの重ね合わせには影響しない。
+このように「観測量そのものを測る」代わりに「観測量の値を補助系に写して測る」
+手法は、§10.6.3 のフォールトトレラント測定でも主役になる。
+</div>
+
+<h3 id="sec-10-1-2">§10.1.2 3量子ビット位相反転符号</h3>
+
+<p>
+ビット反転は古典にもある誤りだが、量子固有の誤りとして<strong>位相反転 (phase flip)</strong>
+\(Z\) がある：各量子ビットに独立に確率 \(p\) で \(Z\) が作用し、
+\(\alpha\ket{0}+\beta\ket{1}\mapsto\alpha\ket{0}-\beta\ket{1}\) とするチャネルである。
+計算基底の各ベクトルは不変なので古典的には「無害」だが、
+重ね合わせの相対位相という量子情報の核心を破壊する。
+</p>
+
+<p>
+鍵になるのは基底の取り替えである。Hadamard 基底
+\(\ket{\pm}=(\ket{0}\pm\ket{1})/\sqrt2\) では
+\[
+Z\ket{+}=\ket{-},\qquad Z\ket{-}=\ket{+}
+\]
+となり、<strong>位相反転は \(\ket{\pm}\) 基底におけるビット反転にほかならない</strong>。
+\(HZH=X\) という関係式がこれを一行で表す。
+したがってビット反転符号の全構成を Hadamard 変換で「回転」させればよい：
+\[
+\ket{0}\mapsto\ket{0_L}=\ket{+\,+\,+},\qquad
+\ket{1}\mapsto\ket{1_L}=\ket{-\,-\,-}.
+\]
+符号化回路はビット反転符号の回路の後に \(H^{\otimes3}\) を付けたもの、
+シンドローム観測量はパリティ \(Z_1Z_2,\ Z_2Z_3\) を共役変換した
+\[
+H^{\otimes3}(Z_1Z_2)H^{\otimes3} = X_1X_2,\qquad
+H^{\otimes3}(Z_2Z_3)H^{\otimes3} = X_2X_3
+\]
+であり、回復操作は検出された位置への \(Z_i\) である。
+性能はビット反転符号と完全に同一（失敗確率 \(3p^2-2p^3\)）。
+一般に、符号 \(C\) がユニタリ \(U\) で誤り集合 \(\{E_i\}\) を訂正するなら、
+\(UC\) は誤り集合 \(\{UE_iU^\dagger\}\) を訂正する——2つの符号は
+<strong>ユニタリ同値</strong>であるという。
+</p>
+
+<p>
+しかしこの符号は \(X\) 誤りには全く無力であり（逆にビット反転符号は \(Z\) に無力）、
+「\(X\) も \(Z\) も、さらに任意の誤りも」訂正できる符号が次節の主題となる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-10-2">Shor 符号<span class="en">The Shor code</span></h2>
+
+<p>
+ビット反転符号と位相反転符号を<strong>連接 (concatenation)</strong> する、
+すなわち一方の符号の各量子ビットをさらに他方の符号で符号化する。
+この着想により、任意の1量子ビット誤りを訂正できる最初の量子符号が得られる。
+これが Shor の<strong>9量子ビット符号</strong>である（1995年）。
+</p>
+
+<p>
+構成は2段階である（図 10.2）。まず外側で位相反転符号を使い
+\(\ket{0}\mapsto\ket{+++},\ \ket{1}\mapsto\ket{---}\) とし、
+次に内側で各量子ビットの \(\ket{\pm}\) をビット反転符号で
+\(\ket{\pm}\mapsto(\ket{000}\pm\ket{111})/\sqrt2\) と符号化する。結果として
+\[
+\ket{0_L}=\frac{(\ket{000}+\ket{111})(\ket{000}+\ket{111})(\ket{000}+\ket{111})}{2\sqrt2},
+\]
+\[
+\ket{1_L}=\frac{(\ket{000}-\ket{111})(\ket{000}-\ket{111})(\ket{000}-\ket{111})}{2\sqrt2}
+\]
+という9量子ビットの符号語を得る。9個の量子ビットは3個ずつの
+<strong>ブロック</strong>（第1ブロック＝量子ビット1–3、第2＝4–6、第3＝7–9）をなす。
+</p>
+
+<figure>
+<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+  <!-- top node -->
+  <rect x="290" y="15" width="120" height="34" class="gate" stroke-width="1.5"/>
+  <text x="302" y="37" class="label">論理量子ビット</text>
+  <!-- middle nodes -->
+  <rect x="60"  y="100" width="150" height="34" class="gate" stroke-width="1.5"/>
+  <rect x="275" y="100" width="150" height="34" class="gate" stroke-width="1.5"/>
+  <rect x="490" y="100" width="150" height="34" class="gate" stroke-width="1.5"/>
+  <text x="80"  y="122" class="label">|000⟩±|111⟩</text>
+  <text x="295" y="122" class="label">|000⟩±|111⟩</text>
+  <text x="510" y="122" class="label">|000⟩±|111⟩</text>
+  <!-- edges top -> middle -->
+  <line x1="330" y1="49" x2="135" y2="100" class="accent" stroke-width="1.5"/>
+  <line x1="350" y1="49" x2="350" y2="100" class="accent" stroke-width="1.5"/>
+  <line x1="370" y1="49" x2="565" y2="100" class="accent" stroke-width="1.5"/>
+  <text x="150" y="78" class="label-muted">位相反転符号（外側）：|±⟩ を3つに</text>
+  <!-- bottom leaves -->
+  <g>
+    <circle cx="95"  cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+    <circle cx="135" cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+    <circle cx="175" cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+    <circle cx="310" cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+    <circle cx="350" cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+    <circle cx="390" cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+    <circle cx="525" cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+    <circle cx="565" cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+    <circle cx="605" cy="200" r="12" class="line" fill="none" stroke-width="1.5"/>
+  </g>
+  <text x="90"  y="205" class="label-muted">1</text>
+  <text x="130" y="205" class="label-muted">2</text>
+  <text x="170" y="205" class="label-muted">3</text>
+  <text x="305" y="205" class="label-muted">4</text>
+  <text x="345" y="205" class="label-muted">5</text>
+  <text x="385" y="205" class="label-muted">6</text>
+  <text x="520" y="205" class="label-muted">7</text>
+  <text x="560" y="205" class="label-muted">8</text>
+  <text x="600" y="205" class="label-muted">9</text>
+  <!-- edges middle -> leaves -->
+  <line x1="115" y1="134" x2="95"  y2="188" class="line"/>
+  <line x1="135" y1="134" x2="135" y2="188" class="line"/>
+  <line x1="155" y1="134" x2="175" y2="188" class="line"/>
+  <line x1="330" y1="134" x2="310" y2="188" class="line"/>
+  <line x1="350" y1="134" x2="350" y2="188" class="line"/>
+  <line x1="370" y1="134" x2="390" y2="188" class="line"/>
+  <line x1="545" y1="134" x2="525" y2="188" class="line"/>
+  <line x1="565" y1="134" x2="565" y2="188" class="line"/>
+  <line x1="585" y1="134" x2="605" y2="188" class="line"/>
+  <text x="150" y="170" class="label-muted">ビット反転符号（内側）</text>
+  <text x="60" y="245" class="label-muted">第1ブロック</text>
+  <text x="300" y="245" class="label-muted">第2ブロック</text>
+  <text x="515" y="245" class="label-muted">第3ブロック</text>
+</svg>
+<figcaption>図 10.2：Shor 符号の連接構造。外側の位相反転符号が1論理量子ビットを
+3つの \(\ket{\pm}\) 型自由度に広げ、内側のビット反転符号がその各々を
+3物理量子ビットで守る。合計 \(3\times3=9\) 量子ビット。</figcaption>
+</figure>
+
+<p><strong>ビット反転の訂正。</strong>
+ビット反転 \(X_i\) は内側の符号が処理する。各ブロック内のパリティ
+\[
+Z_1Z_2,\ Z_2Z_3;\qquad Z_4Z_5,\ Z_5Z_6;\qquad Z_7Z_8,\ Z_8Z_9
+\]
+（計6個）を測れば、§10.1.1 と全く同様にどの量子ビットが反転したかが分かり、
+その位置に \(X\) をかけて戻せる。たとえば \(X_1\) の後の第1ブロックは
+\(\ket{100}\pm\ket{011}\) であり、\((Z_1Z_2,Z_2Z_3)=(-1,+1)\) が位置1を指す。
+</p>
+
+<p><strong>位相反転の訂正。</strong>
+位相反転 \(Z_i\) がブロック内のどこに作用しても、そのブロックの符号だけが変わる：
+\[
+Z_1(\ket{000}\pm\ket{111}) = Z_2(\ket{000}\pm\ket{111}) = Z_3(\ket{000}\pm\ket{111})
+= \ket{000}\mp\ket{111}.
+\]
+つまり外側から見れば \(\ket{+}\to\ket{-}\) 型のビット反転が1ブロックに起きたのと同じであり、
+外側の位相反転符号が処理できる。シンドローム観測量は「隣り合うブロックの符号
+（\(\pm\)）が一致するか」を測るもので、
+\[
+g_7 = X_1X_2X_3X_4X_5X_6,\qquad g_8 = X_4X_5X_6X_7X_8X_9
+\]
+がそれである。実際、\(X^{\otimes3}(\ket{000}\pm\ket{111})=\pm(\ket{000}\pm\ket{111})\)
+だから、\(X_1\cdots X_6\) の固有値は第1・第2ブロックの符号の積になる。
+たとえば \(Z_2\)（第1ブロック内）が起きると \((g_7,g_8)=(-1,+1)\) となり、
+第1ブロックの符号が反転したと分かる。回復には \(Z_1\)（第1ブロックの任意の1つで良い）
+をかければよい。ここで注目すべきは、\(Z_1,Z_2,Z_3\) が<strong>符号空間上で全く同じ作用</strong>
+を持つため、「どれが起きたか」を区別できなくても・しなくても訂正できることである。
+この現象（<strong>縮退</strong>）は古典符号にはない量子符号固有の性質で、§10.3.3 で再訪する。
+</p>
+
+<p><strong>ビット・位相同時反転。</strong>
+\(Y=iXZ\) はビット反転と位相反転の積（大域位相 \(i\) を除き \(X\) と \(Z\) の同時作用）だから、
+上の2種類のシンドロームが両方反応し、\(X_i\) と \(Z_i\) を両方かければ訂正される。
+すなわち Shor 符号は、9量子ビットのうち任意の1つに作用する
+\(X,\ Y,\ Z\) のどれをも訂正できる。
+</p>
+
+<h3 id="sec-10-2-1">任意の1量子ビット誤りが訂正できること——誤りの離散化</h3>
+
+<p>
+ここからが量子誤り訂正の理論で最も重要な一歩である。
+訂正できるのは \(X,Y,Z\) という特別な誤りだけではない。
+<strong>1個の量子ビットに作用する完全に任意の誤り——微小な回転も、振幅減衰も、
+環境との任意のエンタングルメントも——が、同じ手続きで訂正される</strong>。
+</p>
+
+<p>
+まずユニタリな誤りで見る。量子ビット1に任意のユニタリ \(U\) が作用したとしよう。
+Pauli 行列 \(\{I,X,Z,XZ\}\) は \(2\times2\) 行列の基底をなすから、
+\[
+U = e_0 I + e_1 X_1 + e_2 Z_1 + e_3 X_1 Z_1
+\]
+と展開できる（\(e_i\in\mathbb{C}\)）。誤り後の状態は
+\[
+U\ket{\psi_L} = e_0\ket{\psi_L} + e_1 X_1\ket{\psi_L} + e_2 Z_1\ket{\psi_L} + e_3 X_1Z_1\ket{\psi_L}
+\]
+という<strong>4種類の誤り状態の重ね合わせ</strong>である。
+ここでシンドローム測定を行うと何が起こるか。4つの項はそれぞれ異なるシンドロームを持つ
+互いに直交する部分空間に属するので、測定は状態をどれか1つの項に
+<strong>射影（collapse）</strong>させる：確率 \(\propto|e_1|^2\) で \(X_1\ket{\psi_L}\)
+（シンドロームは \(X_1\) のもの）、確率 \(\propto|e_2|^2\) で \(Z_1\ket{\psi_L}\)、等々。
+どの分岐でもシンドロームが対応する Pauli 訂正を指示し、訂正後は必ず
+\(\ket{\psi_L}\) に戻る。<strong>連続無限にありうる誤りが、測定によって高々4通りの
+離散的な誤りに変換される</strong>——これが<strong>誤りの離散化 (discretization of errors)</strong>
+であり、困難 (2) の解決である。
+</p>
+
+<div class="example-box">
+<span class="box-title">例：微小回転の訂正</span>
+量子ビット1に微小な位相回転
+\(U = e^{i\theta Z_1/2} = \cos(\theta/2)\,I + i\sin(\theta/2)\,Z_1\)
+が起きたとする。シンドローム測定の結果、
+確率 \(\cos^2(\theta/2)\) で「誤りなし」のシンドロームが出て状態は
+\(\ket{\psi_L}\) そのものに collapse し（このとき誤りは<em>測定が勝手に消してくれる</em>）、
+確率 \(\sin^2(\theta/2)\) で「\(Z_1\) 型誤り」のシンドロームが出て
+\(Z_1\ket{\psi_L}\) に collapse する（\(Z_1\) をかけて訂正）。
+どちらの分岐でも結果は完璧な \(\ket{\psi_L}\) である。
+アナログ量である \(\theta\) を推定する必要は一切ない。
+古典のアナログ計算機は誤差の蓄積で破綻したが、量子計算機が
+（振幅という連続量を扱うにもかかわらず）同じ運命を辿らないのは、
+この機構のおかげである。
+</div>
+
+<p>
+ユニタリとは限らない一般のノイズも同様に処理される。量子ビット1に作用する任意の
+量子操作（第8章）を演算要素 \(\{E_k\}\) で表すと、各 \(E_k\) は
+\(E_k = e_{k0}I + e_{k1}X_1 + e_{k2}Z_1 + e_{k3}X_1Z_1\) と展開でき、
+誤り後の状態 \(\sum_k E_k\ketbra{\psi_L}{\psi_L}E_k^\dagger\) の各項が
+シンドローム測定で Pauli 分岐に collapse する。
+環境 \(E\) とのエンタングルメント \(\sum_k \ket{e_k}\otimes E_k\ket{\psi_L}\)
+が生じている場合でも、シンドローム測定はデータを環境から<strong>切り離す</strong>。
+測定後の状態は（ある特定の Pauli 誤り）\(\otimes\)（環境の対応状態）という積に collapse し、
+訂正でデータ側が復元される。一般的な証明は §10.3 の量子誤り訂正条件から従う。
+</p>
+
+<div class="remark-box">
+<span class="box-title">まとめ：3つの困難はこう解決された</span>
+<ol>
+<li>複製 → <strong>エンタングルによる符号化</strong>。情報は9量子ビットの非局所的な相関に
+「薄く広げて」書き込まれ、どの1量子ビットを覗いても読めない。</li>
+<li>誤りの連続性 → <strong>シンドローム測定による離散化</strong>。任意の誤りは
+Pauli 誤りの重ね合わせであり、測定がどれか1つを選んで collapse させる。</li>
+<li>測定の破壊性 → <strong>符号化情報と可換な観測量だけを測る</strong>。
+シンドロームは誤りの情報のみを含み、\(\alpha,\beta\) の情報を含まない。</li>
+</ol>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-10-3">量子誤り訂正の理論<span class="en">Theory of quantum error-correction</span></h2>
+
+<p>
+Shor 符号の成功を偶然に終わらせないために、一般論を建てる。
+問うべきことは次である：<em>符号空間 \(C\) とノイズ過程 \(\mathcal{E}\) が与えられたとき、
+\(\mathcal{E}\) の影響を完全に元に戻す回復操作 \(\mathcal{R}\) は存在するか。</em>
+答えは驚くほど簡潔な代数的条件で与えられる。
+</p>
+
+<p>
+設定を固定する。\(C\) を全 Hilbert 空間の部分空間（符号空間）、
+\(P\) を \(C\) への射影演算子とする。ノイズは演算要素 \(\{E_i\}\) を持つ
+量子操作 \(\mathcal{E}(\rho)=\sum_i E_i\rho E_i^\dagger\) とし、
+個々の \(E_i\) を<strong>誤り演算子</strong>と呼ぶ。
+回復操作 \(\mathcal{R}\)（トレース保存の量子操作）が \(\mathcal{E}\) を \(C\) 上で
+<strong>訂正する</strong>とは、符号空間に台を持つ任意の状態 \(\rho\)（\(\rho = P\rho P\)）に対し
+\[
+(\mathcal{R}\circ\mathcal{E})(\rho) \propto \rho
+\]
+が成り立つことをいう（\(\mathcal{E}\) がトレース保存なら比例定数は 1）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（量子誤り訂正条件）</span>
+\(C\) を符号空間、\(P\) をその射影演算子とする。誤り演算子の集合 \(\{E_i\}\) に対し、
+これらを訂正する回復操作 \(\mathcal{R}\) が存在するための必要十分条件は、
+ある複素数の行列 \(\alpha=(\alpha_{ij})\) が存在して
+\[
+P E_i^\dagger E_j P = \alpha_{ij}\, P \qquad (\forall\, i,j)
+\]
+が成り立つことである。このとき \(\alpha\) は自動的に Hermite 行列になる。
+</div>
+
+<p>
+条件の直観的な読み方を先に与える。\(\ket{\psi_a},\ket{\psi_b}\) を符号空間の
+正規直交基底として、条件を挟み込むと
+\[
+\bra{\psi_a} E_i^\dagger E_j \ket{\psi_b} = \alpha_{ij}\,\delta_{ab}.
+\]
+\(a\neq b\) の成分（\(=0\)）は「異なる符号語は、どんな誤りを受けても互いに直交したまま
+——誤りが符号語同士を混同させない」ことを言い、
+\(a=b\) の成分（\(\alpha_{ij}\) が \(a\) に<em>依らない</em>こと）は
+「誤りの起こり方（内積 \(\braket{E_i\psi_a}{E_j\psi_a}\)）がどの符号語でも同一
+——環境が符号化された情報を学習しない」ことを言う。
+2つ合わせて「誤りは情報を壊しもしないし読みもしない」という条件である。
+</p>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>（α の Hermite 性）</strong>まず条件が成り立つとき
+\((PE_i^\dagger E_jP)^\dagger = PE_j^\dagger E_iP\) より
+\(\alpha_{ij}^* = \alpha_{ji}\)、すなわち \(\alpha\) は Hermite である。
+</p>
+<p>
+<strong>（十分性：条件 ⇒ 回復操作の構成）</strong>
+\(\alpha\) は Hermite なので、ユニタリ行列 \(u\) と実対角行列 \(d\) により対角化できる。
+そこで誤り演算子の線形結合
+\[
+F_k \equiv \sum_i u_{ki}\, E_i
+\]
+を定義すると（\(\{F_k\}\) は \(\{E_i\}\) と同じ量子操作を定める：演算要素のユニタリ自由度、§8.2）、
+\[
+P F_k^\dagger F_l P = \sum_{ij} u_{ki}^*\,\alpha_{ij}\,u_{lj}\, P = d_{k}\,\delta_{kl}\, P
+\]
+と<strong>対角化された誤り訂正条件</strong>が成り立つようにできる。
+\(PF_k^\dagger F_kP \ge 0\) より \(d_k\ge0\) である。
+</p>
+<p>
+次に各 \(F_kP\) に極分解（付録・§2.1.10）を適用する：ユニタリ \(U_k\) が存在して
+\[
+F_k P = U_k \sqrt{P F_k^\dagger F_k P} = \sqrt{d_k}\, U_k P .
+\]
+幾何的には「\(F_k\) は符号空間 \(C\) を、回転 \(U_k\) で写した部分空間
+\(U_kC\) へ、一様な倍率 \(\sqrt{d_k}\) で写す」ことを意味する。
+\(d_k\neq0\) なる \(k\) に対しシンドローム部分空間への射影
+\[
+P_k \equiv U_k P U_k^\dagger
+\]
+を定義する。これらが互いに直交することを確かめる：
+\(PF_k^\dagger = \sqrt{d_k}\,PU_k^\dagger\) を使うと、対角化された条件から
+\[
+\sqrt{d_kd_l}\; P U_k^\dagger U_l P = P F_k^\dagger F_l P = d_k\delta_{kl}P
+\quad\Longrightarrow\quad
+P U_k^\dagger U_l P = \delta_{kl} P,
+\]
+\[
+P_kP_l = U_k\,(P U_k^\dagger U_l P)\,U_l^\dagger = \delta_{kl}\,U_kPU_l^\dagger = \delta_{kl}P_k .
+\]
+つまり<strong>異なる誤り \(F_k\) は符号空間を互いに直交する部分空間へ写す</strong>。
+そこで回復操作を「シンドローム測定 \(\{P_k\}\) ＋ 逆回転 \(U_k^\dagger\)」で定義する：
+\[
+\mathcal{R}(\sigma) \equiv \sum_k U_k^\dagger P_k\, \sigma\, P_k U_k .
+\]
+（\(\sum_kP_k\) が恒等にならない場合は残りの射影を演算要素に加えてトレース保存にする。）
+これが働くことの検算：\(\rho=P\rho P\) に対し
+\(P_kF_lP = \sqrt{d_l}\,U_kPU_k^\dagger U_lP = \delta_{kl}\sqrt{d_l}\,U_lP\) だから
+\[
+U_k^\dagger P_k (F_l \rho F_l^\dagger) P_k U_k
+= \delta_{kl}\, d_l\, P\rho P = \delta_{kl}\, d_l\, \rho,
+\]
+\[
+\mathcal{R}(\mathcal{E}(\rho)) = \sum_{k,l} U_k^\dagger P_k F_l\rho F_l^\dagger P_kU_k
+= \Big(\sum_l d_l\Big)\rho \ \propto\ \rho . \qquad
+\]
+</p>
+<p>
+<strong>（必要性：回復操作の存在 ⇒ 条件）</strong>
+演算要素 \(\{R_k\}\) を持つ回復操作 \(\mathcal{R}\) が \(\{E_i\}\) を訂正するとする。
+合成 \(\mathcal{R}\circ\mathcal{E}\) は演算要素 \(\{R_kE_i\}\) を持ち、
+符号空間上のすべての \(\rho\) を \(\rho\)（の定数倍）に写す。
+ここで補題を使う：<em>量子操作 \(\sum_m A_m\rho A_m^\dagger \propto \rho\)
+が部分空間 \(C\) 上のすべての \(\rho\) で成り立つなら、各 \(A_m\) は \(C\) 上で
+恒等の定数倍、すなわち \(A_mP = c_m P\) である。</em>
+実際、\(C\) 内の任意の単位ベクトル \(\ket{\psi}\) に対し
+\(\sum_m A_m\ketbra{\psi}{\psi}A_m^\dagger \propto \ketbra{\psi}{\psi}\) の左辺は
+正演算子の和で、和がランク1の射影に比例するなら各項もそれに比例するしかない
+（\(\ket{\psi}\) に直交する成分があれば左辺の期待値が正になり矛盾）。
+よって \(A_m\ket{\psi} = c_m(\psi)\ket{\psi}\)。
+係数が \(\ket{\psi}\) に依らないことは線形性から従う：直交する
+\(\ket{\psi_1},\ket{\psi_2}\in C\) について
+\(A_m(\ket{\psi_1}+\ket{\psi_2}) = c_m(\psi_1)\ket{\psi_1}+c_m(\psi_2)\ket{\psi_2}\)
+がまた \(\ket{\psi_1}+\ket{\psi_2}\) の定数倍であるためには
+\(c_m(\psi_1)=c_m(\psi_2)\) が必要である。補題により
+\[
+R_k E_i P = c_{ki}\, P
+\]
+と書ける。\(\mathcal{R}\) のトレース保存性 \(\sum_kR_k^\dagger R_k=I\) を挟むと
+\[
+P E_i^\dagger E_j P
+= \sum_k P E_i^\dagger R_k^\dagger R_k E_j P
+= \sum_k (R_kE_iP)^\dagger (R_kE_jP)
+= \Big(\sum_k c_{ki}^*\,c_{kj}\Big) P
+\]
+となり、\(\alpha_{ij}\equiv\sum_kc_{ki}^*c_{kj}\)（明らかに Hermite）が条件を満たす。
+<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="example-box">
+<span class="box-title">例：3量子ビットビット反転符号での検算</span>
+\(P=\ketbra{000}{000}+\ketbra{111}{111}\)、誤り集合 \(\{I, X_1, X_2, X_3\}\) について
+（等確率でない場合は係数がつくだけ）：\(i=j\) では
+\(PX_i^\dagger X_iP = P\)。\(i\neq j\) では、たとえば
+\(PX_1X_2P\) は \(\ket{000}\mapsto\ket{110}\) が符号空間の外へ出るので \(0\)。
+よって \(\alpha=\mathrm{diag}\) 型で条件成立。
+逆に、この符号で訂正できない誤りも同じ条件で判定できる。
+たとえば \(X_1X_2X_3\) は \(\ket{000}\mapsto\ket{111}\)、
+\(\ket{111}\mapsto\ket{000}\) と<strong>符号語を別の符号語に写す</strong>ので、
+\(\bra{\psi_a}X_1X_2X_3\ket{\psi_b}\neq0\ (a\neq b)\) となり条件に反する。
+誤り集合に \(I\) と \(X_1X_2X_3\) を同時に含めることはできない、ということである。
+訂正可能性の限界は「誤りが符号語同士を結んでしまうかどうか」で決まる。
+</div>
+
+<h3 id="sec-10-3-1">§10.3.1 誤りの離散化</h3>
+
+<p>
+量子誤り訂正条件から、§10.2 で観察した離散化が一般的な定理として従う。
+鍵は<strong>条件が誤り演算子について線形</strong>だという事実である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（訂正可能な誤りの線形性）</span>
+回復操作 \(\mathcal{R}\) が符号 \(C\) 上で誤り集合 \(\{E_i\}\) を訂正するなら、
+\(\mathcal{R}\) は任意の線形結合
+\[
+F_j = \sum_i m_{ji} E_i
+\]
+を演算要素とするノイズ過程 \(\mathcal{F}\) も（同じ \(\mathcal{R}\) のままで）訂正する。
+すなわち、<strong>訂正可能な誤りの線形包はすべて訂正可能</strong>である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+必要性の証明で得た関係 \(R_kE_iP=c_{ki}P\) は \(E_i\) について線形なので
+\[
+R_k F_j P = \sum_i m_{ji}\, R_kE_iP = \Big(\sum_i m_{ji}c_{ki}\Big) P \equiv c'_{kj}P .
+\]
+したがって \(\rho=P\rho P\) に対し
+\[
+(\mathcal{R}\circ\mathcal{F})(\rho)
+= \sum_{k,j} R_kF_j\,\rho\, F_j^\dagger R_k^\dagger
+= \sum_{k,j} |c'_{kj}|^2\, \rho \ \propto\ \rho .
+\]
+（\(\mathcal{F}\) がトレース保存なら比例定数は自動的に 1 になる。）
+<span class="qed">∎</span>
+</div>
+
+<p>
+この定理の帰結が量子誤り訂正の実用上の基盤である。
+\(n\) 量子ビット上で「高々 \(t\) 個の量子ビットに作用する任意の演算子」の全体は、
+重み \(\le t\) の Pauli 積（各サイトが \(I,X,Y,Z\) のテンソル積で、
+\(I\) でないサイトが \(t\) 個以下のもの）の線形包である。よって：
+</p>
+
+<div class="remark-box">
+<span class="box-title">系（Pauli 誤りだけ調べればよい）</span>
+符号が誤り集合 \(\{\)重み \(\le t\) のすべての Pauli 積\(\}\) を訂正するなら、
+その符号は「任意の \(t\) 個以下の量子ビットに作用する任意のノイズ過程」
+（ユニタリ誤差、減衰、環境とのエンタングルメントを含む）を訂正する。
+このような符号を「\(t\) 個の誤りを訂正する符号」と呼ぶ。
+</div>
+
+<p>
+Shor 符号は \(\{I\}\cup\{X_i,Y_i,Z_i\}_{i=1}^9\) を訂正するので、
+任意の1量子ビット誤りを訂正する——§10.2 の議論はこの系の特別な場合だったわけである。
+以後、符号の設計では有限集合である Pauli 誤りだけを考えればよい。
+</p>
+
+<h3 id="sec-10-3-2">§10.3.2 独立な誤りモデルと性能</h3>
+
+<p>
+「\(t\) 個までの誤りを訂正」という保証が実際のノイズチャネルでどんな性能に化けるかを、
+代表的なモデルで見積もる。各量子ビットに独立同一に作用する
+<strong>脱分極チャネル</strong>（§8.3.4）
+\[
+\mathcal{E}(\rho) = (1-p)\,\rho + \frac{p}{3}\left(X\rho X + Y\rho Y + Z\rho Z\right)
+\]
+を考える。これは確率 \(1-p\) で何もせず、確率 \(p/3\) ずつで \(X,Y,Z\) を起こすと
+解釈できる（誤り演算子がはじめから Pauli 型なので解析が楽であり、
+一般の独立ノイズでも離散化定理により本質は同じである）。
+</p>
+
+<p>
+\(n\) 量子ビットの符号で \(t\) 個の誤りを訂正できるなら、訂正に失敗しうるのは
+\(t+1\) 箇所以上で誤りが起きた場合だけである。その確率は
+\[
+p_{\mathrm{fail}} \le \sum_{j=t+1}^{n}\binom{n}{j}p^j(1-p)^{n-j}
+= \binom{n}{t+1}p^{\,t+1} + O(p^{\,t+2}).
+\]
+すなわち<strong>実効誤り率は \(O(p)\) から \(O(p^{t+1})\) へ改善される</strong>。
+\(p\) が十分小さければ \(t\) を上げる（またはあとで見る連接を使う）ことで
+誤り率をいくらでも下げられる。逆に \(p\) が大きいと
+\(\binom{n}{t+1}p^{t+1} &gt; p\) となって符号化がかえって害になる——
+「ノイズがある閾値より小さいこと」が量子誤り訂正の効く条件だという構図が、
+既にここに現れている。
+</p>
+
+<h3 id="sec-10-3-3">§10.3.3 縮退符号</h3>
+
+<p>
+量子符号には古典符号に対応物のない現象がある。
+Shor 符号で見たように、\(Z_1\) と \(Z_2\) は<strong>異なる物理過程でありながら
+符号空間上で同一の作用</strong>を持つ（\(Z_1P = Z_2P\)）。
+このように、訂正対象の誤り集合の中に符号空間上で線形従属になる組があるとき、
+その符号を<strong>縮退している (degenerate)</strong> という。
+誤り訂正条件の言葉では、行列 \(\alpha\) が正則（フルランク）でないときが縮退に当たる
+（\(\alpha\) が正則な符号を非縮退符号という）。
+</p>
+
+<p>
+縮退は欠陥ではなく資源である。縮退符号では「どの誤りが起きたか」を完全に
+識別できなくても、同じ回復操作が複数の誤りを一括で正すため、
+シンドロームの区別すべき数が減る。この分だけ、非縮退符号に課される
+数え上げ的な限界（次項の量子 Hamming 限界など）を回避できる可能性がある。
+</p>
+
+<h3 id="sec-10-3-4">§10.3.4 量子 Hamming 限界</h3>
+
+<p>
+「\(k\) 論理量子ビットを \(n\) 物理量子ビットに埋め込み \(t\) 個の誤りを訂正する」
+符号の資源には下限がある。<strong>非縮退</strong>符号について、それを数え上げで導こう。
+</p>
+
+<div class="thm-box">
+<span class="box-title">量子 Hamming 限界</span>
+\(n\) 量子ビットに \(k\) 量子ビットを符号化し、\(t\) 個以下の任意の誤りを訂正する
+<strong>非縮退</strong>符号が存在するなら、
+\[
+\sum_{j=0}^{t}\binom{n}{j}3^j\; 2^k \ \le\ 2^n .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">導出</span>
+非縮退符号では、相異なる訂正対象誤り \(E_i\neq E_j\) は符号空間を
+<strong>互いに直交する部分空間</strong> \(E_iC \perp E_jC\) に写す
+（誤り訂正条件の十分性の証明で構成した \(P_k\) の直交性そのものである。
+縮退があると \(E_iC=E_jC\) と重なれるため、この数え上げは適用できない）。
+訂正すべき誤りは「\(j\) 箇所（\(0\le j\le t\)）を選び、各箇所に \(X,Y,Z\) の
+いずれかを置く」Pauli 積で数え尽くされ、その総数は
+\(\sum_{j=0}^{t}\binom{n}{j}3^j\) 個。各部分空間 \(E_iC\) の次元は
+\(\dim C = 2^k\)（\(E_i\) は符号空間上で単射）だから、直交部分空間の合計次元は
+全空間の次元 \(2^n\) を超えられない。これが主張の不等式である。
+<span class="qed">∎</span>
+</div>
+
+<p>
+最も関心のある場合、\(k=1\)（1論理量子ビット）、\(t=1\)（1誤り訂正）では
+\[
+2\,(1+3n) \le 2^n
+\]
+となり、\(n=4\) では \(26&gt;16\) で不成立、\(n=5\) で \(32\le 32\)（等号！）となる。
+つまり<strong>1量子ビットを守るには最低5量子ビットが必要</strong>であり、
+しかも \(n=5\) では全 Hilbert 空間をシンドローム部分空間が隙間なく埋め尽くす。
+実際にこの限界を達成する \([[5,1,3]]\) 符号（完全符号）が存在する（§10.5.6）。
+なお、この限界はあくまで非縮退符号に対するものである。縮退符号も含めた
+一般の限界としては量子 Singleton 限界 \(n-k\ge 2(d-1)\)（Knill–Laflamme）が知られており、
+\(t=\lfloor(d-1)/2\rfloor\) 個を訂正する距離 \(d\) の符号に適用される
+（距離の定義は §10.5.5）。\(k=1,\ d=3\) ではこちらからも \(n\ge5\) が出る。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-10-4">量子符号の構成——古典線形符号と CSS 符号<span class="en">Constructing quantum codes</span></h2>
+
+<p>
+良い量子符号を一から探すのは大変だが、幸い古典符号理論には50年以上の蓄積がある。
+本節では、古典線形符号の理論を必要な分だけ整備し（§10.4.1）、
+2つの古典符号から量子符号を組み立てる Calderbank–Shor–Steane（CSS）構成を与える
+（§10.4.2）。その最小の実例が Steane の7量子ビット符号である。
+</p>
+
+<h3 id="sec-10-4-1">§10.4.1 古典線形符号</h3>
+
+<p>
+以下、ビット列は \(\mathbb{Z}_2=\{0,1\}\)（算術はすべて mod 2）上のベクトルとして扱う。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（線形符号・生成行列）</span>
+\([n,k]\) <strong>線形符号</strong> \(C\) とは、\(k\) ビットのメッセージを \(n\) ビットの
+符号語に写す線形符号化、すなわち \(\mathbb{Z}_2^n\) の \(k\) 次元部分空間である。
+成分が \(0,1\) の \(n\times k\) 行列 \(G\)（<strong>生成行列</strong>）を使って
+\[
+x \in \mathbb{Z}_2^k \ \longmapsto\ Gx \in \mathbb{Z}_2^n
+\]
+と書ける（\(G\) の列は独立とする）。符号語全体は \(C=\{Gx : x\in\mathbb{Z}_2^k\}\)、
+その個数は \(2^k\)。
+</div>
+
+<p>
+たとえば3ビット反復符号は \(n=3,k=1\)、\(G^T=(1\ 1\ 1)\) である。
+誤り検出には生成行列より「符号語であることの検査」が使いやすい。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（パリティ検査行列・シンドローム）</span>
+\([n,k]\) 符号 \(C\) の<strong>パリティ検査行列</strong>とは、
+\[
+C = \ker H = \{y\in\mathbb{Z}_2^n : Hy=0\}
+\]
+を満たす \((n-k)\times n\) 行列 \(H\)（行は独立）である。\(HG=0\) が成り立つ。
+受信語 \(y' = y + e\)（\(y\in C\)、\(e\) が誤りベクトル）に対し
+\[
+Hy' = Hy + He = He
+\]
+を<strong>誤りシンドローム</strong>と呼ぶ。シンドロームは符号語 \(y\) に依らず
+誤り \(e\) だけの関数である——§10.1 のパリティ測定はまさにこれの量子版だった。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（距離）</span>
+ビット列 \(x,y\) の <strong>Hamming 距離</strong> \(d(x,y)\) は異なるビット位置の数、
+<strong>重み</strong> \(\mathrm{wt}(x)=d(x,0)\) は 1 の個数。符号の<strong>距離</strong>は
+\[
+d(C) = \min_{x\neq y\in C} d(x,y) = \min_{0\neq x\in C}\mathrm{wt}(x)
+\]
+（2番目の等号は線形性 \(d(x,y)=\mathrm{wt}(x+y)\) による）。距離 \(d\) の \([n,k]\)
+符号を \([n,k,d]\) と書く。距離 \(d=2t+1\) の符号は \(t\) 個までの誤りを訂正できる：
+重み \(\le t\) の誤りは、最も近い符号語を選ぶ復号（シンドロームから最小重みの
+\(e\) を推定して足す）で一意に正される。
+</div>
+
+<div class="example-box">
+<span class="box-title">例：Hamming 符号 \([7,4,3]\)</span>
+\(r\ge2\) に対し、\(1\) から \(2^r-1\) までの整数を2進表示した列ベクトルを並べた
+\(r\times(2^r-1)\) 行列を \(H\) とすると、\([2^r-1,\,2^r-1-r,\,3]\) 符号
+（<strong>Hamming 符号</strong>）が得られる。\(r=3\) では
+\[
+H = \begin{pmatrix}
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1\\
+0 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; 1 &amp; 1\\
+1 &amp; 0 &amp; 1 &amp; 0 &amp; 1 &amp; 0 &amp; 1
+\end{pmatrix}.
+\]
+1ビット誤り \(e_j\)（\(j\) 番目だけ 1）のシンドローム \(He_j\) は \(H\) の第 \(j\) 列、
+すなわち「\(j\) の2進表示」になる。<strong>シンドロームを読むと誤り位置がそのまま
+2進数で書いてある</strong>という美しい設計である。どの2列も相異なるので
+1誤りが常に識別でき、距離は 3（例えば \(1110000\) が符号語で重み 3）。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（双対符号）</span>
+\([n,k]\) 符号 \(C\)（生成行列 \(G\)、検査行列 \(H\)）の<strong>双対符号</strong>は
+\[
+C^\perp = \{y\in\mathbb{Z}_2^n : y\cdot x = 0\ \ \forall x\in C\}
+\]
+であり、これは生成行列 \(H^T\)、検査行列 \(G^T\) を持つ \([n,n-k]\) 符号である。
+\(C^\perp\subseteq C\) のとき \(C\) は<strong>自己双対的（双対含み）</strong>という。
+</div>
+
+<p>
+CSS 構成の証明で使う次の恒等式をここで準備しておく。
+</p>
+
+<div class="thm-box">
+<span class="box-title">補題（指標和）</span>
+線形符号 \(C\subseteq\mathbb{Z}_2^n\) と \(z\in\mathbb{Z}_2^n\) に対し
+\[
+\sum_{y\in C} (-1)^{y\cdot z} =
+\begin{cases}
+|C| &amp; (z\in C^\perp)\\
+0 &amp; (z\notin C^\perp).
+\end{cases}
+\]
+<span style="font-weight:normal">
+（証明：\(z\in C^\perp\) なら全項 1。そうでなければ \(y_0\cdot z=1\) なる
+\(y_0\in C\) があり、\(y\mapsto y+y_0\) は \(C\) の並べ替えで和の符号を反転させるので
+和は 0。）
+</span>
+</div>
+
+<p>
+最後に、良い古典符号が「存在する」ことの保証を挙げておく。
+</p>
+
+<div class="thm-box">
+<span class="box-title">Gilbert–Varshamov 限界</span>
+大きな \(n\) に対し、\(t=\delta n\) 個（\(\delta&lt;1/4\)）の誤りを訂正する
+\([n,k]\) 線形符号で
+\[
+\frac{k}{n} \ \ge\ 1 - H(2\delta),
+\qquad H(x)\equiv -x\log_2 x-(1-x)\log_2(1-x)
+\]
+を満たすものが存在する。すなわち、符号化レート \(k/n\) を一定に保ったまま
+誤り訂正能力を \(n\) に比例して伸ばせる。
+</div>
+
+<p>
+導出の骨子は確率的な数え上げである：ランダムに選んだ生成行列が距離 \(2\delta n\)
+未満の符号語を持つ確率を、重み \(&lt;2\delta n\) のベクトルの個数
+\(\approx 2^{nH(2\delta)}\) で上から評価すると、\(k/n &lt; 1-H(2\delta)\) なら
+この確率が 1 未満になり、条件を満たす符号が少なくとも1つ存在する。
+CSS 構成（次項）と組み合わせると、量子符号についても同様の存在定理
+（量子 Gilbert–Varshamov 限界：レート \(k/n \ge 1-2H(2t/n)\) の \(t\) 誤り訂正
+CSS 符号の存在）が得られる。
+</p>
+
+<h3 id="sec-10-4-2">§10.4.2 Calderbank–Shor–Steane 符号</h3>
+
+<p>
+量子符号が扱うべき誤りは \(X\) 型（ビット反転）と \(Z\) 型（位相反転）の2系統である
+（\(Y\propto XZ\) は両方の合成）。CSS 構成の発想は、
+<strong>2つの古典符号を用意して、ビット反転の訂正と位相反転の訂正をそれぞれに
+分担させる</strong>ことにある。位相反転が Hadamard 変換でビット反転に化ける
+（§10.1.2）という事実が、2つ目の古典符号を活かす橋になる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（CSS 符号）</span>
+\(C_1\) を \([n,k_1]\)、\(C_2\) を \([n,k_2]\) の古典線形符号とし、
+\[
+C_2 \subset C_1,\qquad
+\text{\(C_1\) と \(C_2^\perp\) はともに \(t\) 個の誤りを訂正できる}
+\]
+を満たすとする。各 \(x\in C_1\) に対し \(n\) 量子ビットの状態
+\[
+\ket{x+C_2} \equiv \frac{1}{\sqrt{|C_2|}}\sum_{y\in C_2}\ket{x+y}
+\]
+（剰余類 \(x+C_2\) 上の一様重ね合わせ）を対応させる。
+\(x-x'\in C_2\) なら \(\ket{x+C_2}=\ket{x'+C_2}\)（同じ剰余類）、
+そうでなければ2つの状態は共通項を持たず直交する。したがって独立な符号語は
+剰余類の数 \(|C_1|/|C_2| = 2^{k_1-k_2}\) 個あり、これらが張る部分空間が
+<strong>CSS 符号</strong> \(\mathrm{CSS}(C_1,C_2)\) である：
+\(k_1-k_2\) 論理量子ビットを \(n\) 物理量子ビットに符号化する。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理</span>
+\(\mathrm{CSS}(C_1,C_2)\) は、高々 \(t\) 個の量子ビット上の任意の誤りを訂正する
+\([[n,\,k_1-k_2]]\) 量子符号である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（シンドローム測定の明示的構成）</span>
+<p>
+離散化定理（§10.3.1）により、ビット反転 \(e_1\in\mathbb{Z}_2^n\)
+（\(X\) が立つ位置のベクトル、\(\mathrm{wt}(e_1)\le t\)）と
+位相反転 \(e_2\in\mathbb{Z}_2^n\)（\(Z\) が立つ位置、\(\mathrm{wt}(e_2)\le t\)）
+の合成型の誤りを訂正できれば十分である。誤り後の符号語は
+\[
+\ket{x+C_2} \ \longmapsto\
+\frac{1}{\sqrt{|C_2|}}\sum_{y\in C_2}(-1)^{(x+y)\cdot e_2}\ket{x+y+e_1}.
+\]
+</p>
+<p>
+<strong>第1段：ビット反転の訂正。</strong>
+\(C_1\) の検査行列 \(H_1\) を使う。補助レジスタ \(\ket{0}\) を添えて
+可逆計算 \(\ket{v}\ket{0}\mapsto\ket{v}\ket{H_1v}\) を実行すると、
+\(x+y\in C_1\) だから \(H_1(x+y+e_1)=H_1e_1\)：補助レジスタには重ね合わせの
+<strong>全項で共通の</strong>値 \(H_1e_1\) が書き込まれる。これを測定しても状態は乱れず、
+古典シンドローム \(H_1e_1\) から（\(C_1\) が \(t\) 誤り訂正符号なので）\(e_1\) が
+一意に決まる。該当位置に \(X\) をかけて \(e_1\) を消去する。残る状態は
+\(\sum_y(-1)^{(x+y)\cdot e_2}\ket{x+y}/\sqrt{|C_2|}\)。
+</p>
+<p>
+<strong>第2段：位相反転の訂正。</strong>
+全量子ビットに Hadamard をかける。\(H^{\otimes n}\ket{v} =
+2^{-n/2}\sum_z(-1)^{v\cdot z}\ket{z}\) を使うと状態は
+\[
+\frac{1}{\sqrt{2^n|C_2|}}\sum_{z}\sum_{y\in C_2}(-1)^{(x+y)\cdot(e_2+z)}\ket{z}
+\ \xrightarrow{\ z'=z+e_2\ }\
+\frac{1}{\sqrt{2^n|C_2|}}\sum_{z'}\sum_{y\in C_2}(-1)^{(x+y)\cdot z'}\ket{z'+e_2}.
+\]
+\(y\) についての和に指標和の補題を適用すると、\(z'\in C_2^\perp\) の項だけが生き残り
+\[
+\sqrt{\frac{|C_2|}{2^n}}\sum_{z'\in C_2^\perp}(-1)^{x\cdot z'}\ket{z'+e_2}.
+\]
+これは<strong>符号 \(C_2^\perp\) の符号語（に位相のついた重ね合わせ）にビット反転
+\(e_2\) が加わった状態</strong>にほかならない。第1段と同様に \(C_2^\perp\) の検査行列で
+シンドローム \(H_{2^\perp}e_2\) を測れば（\(C_2^\perp\) が \(t\) 誤り訂正符号なので）
+\(e_2\) が特定でき、\(X\) で消去できる。最後にもう一度 \(H^{\otimes n}\) をかければ
+（Hadamard は対合なので）状態は元の \(\ket{x+C_2}\) に完全に戻る。
+</p>
+<p>
+以上で、重み \(\le t\) の任意の \(X\) 型・\(Z\) 型複合誤りに対する回復操作が
+明示的に構成された。<span class="qed">∎</span>
+</p>
+</div>
+
+<p>
+証明の対称性に注意しよう。ビット反転は \(C_1\) が、位相反転は
+（Hadamard 変換した世界で）\(C_2^\perp\) が訂正する。
+両者の役割を分離できたのは、\(X\) 型と \(Z\) 型のシンドローム測定が互いに
+干渉しない（対応する観測量が可換である）ためであり、この構造は
+§10.5 でスタビライザー形式として一般化される。
+</p>
+
+<div class="example-box">
+<span class="box-title">例：Steane 符号 \([[7,1,3]]\)</span>
+\(C_1\) を Hamming 符号 \([7,4,3]\)、\(C_2=C_1^\perp\)（\([7,3]\) 符号）とする。
+Hamming 符号は双対含み \(C_1^\perp\subset C_1\) であることが知られている
+（\(H\) の行同士・行と自分自身の内積がすべて 0 になることを上の \(H\) で直接確かめられる。
+各行は重み 4、行同士の共通 1 は 2 個）。
+また \(C_2^\perp = (C_1^\perp)^\perp = C_1\) だから「\(C_1\) と \(C_2^\perp\) がともに
+1誤り訂正」という条件は Hamming 符号の \(d=3\) そのものである。よって
+\[
+\mathrm{CSS}(C_1, C_1^\perp) = [[7,\ 4-3,\ 3]] = [[7,1,3]]
+\]
+が得られる。これが <strong>Steane 符号</strong>である。論理基底状態は
+\[
+\ket{0_L} = \frac{1}{\sqrt8}\sum_{y\in C_1^\perp}\ket{y},\qquad
+\ket{1_L} = \frac{1}{\sqrt8}\sum_{y\in C_1^\perp}\ket{y + \bar x}
+\]
+（\(\bar x\) は \(C_1\) の \(C_1^\perp\) に属さない代表元、たとえば \(1111111\)）。
+Shor 符号の 9 量子ビットより少ない 7 量子ビットで1誤り訂正を達成し、
+さらに §10.6 で見るようにフォールトトレラント設計と極めて相性が良い。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-10-5">スタビライザー符号<span class="en">Stabilizer codes</span></h2>
+
+<p>
+ここまでの符号（3量子ビット符号、Shor 符号、CSS 符号）には共通のパターンがあった。
+符号空間は「いくつかの可換な Pauli 積観測量の同時 \(+1\) 固有空間」であり、
+シンドローム測定とはそれらの観測量の測定だった。
+このパターンを公理化したのが<strong>スタビライザー形式 (stabilizer formalism)</strong>
+（Gottesman, 1996）である。状態ベクトル（指数的に長い振幅のリスト）ではなく
+<strong>状態を固定する演算子の群</strong>（生成元 \(n\) 個程度のリスト）で系を記述する、
+量子情報における「Heisenberg 描像」と言ってよい。
+符号理論だけでなく、Clifford 回路の古典シミュレーション（Gottesman–Knill 定理）
+という一般的な帰結ももたらす。
+</p>
+
+<h3 id="sec-10-5-1">§10.5.1 スタビライザー形式</h3>
+
+<p>
+出発点として、EPR 状態 \(\ket{\Phi}=(\ket{00}+\ket{11})/\sqrt2\) を考える。直接計算で
+\[
+X_1X_2\ket{\Phi}=\ket{\Phi},\qquad Z_1Z_2\ket{\Phi}=\ket{\Phi}
+\]
+が確かめられる。実は逆も言える：この2つの演算子の同時 \(+1\) 固有ベクトルは
+（位相を除き）\(\ket{\Phi}\) しかない。つまり「\(X_1X_2\) と \(Z_1Z_2\) に固定される」
+という2行の情報が、4つの複素振幅と同じ内容を持つ。
+このアイデアを一般化する。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Pauli 群）</span>
+\(n\) 量子ビットの <strong>Pauli 群</strong> \(G_n\) とは、
+Pauli 行列のテンソル積に位相因子 \(\pm1,\pm i\) を許した集合
+\[
+G_n = \{\,c\, g_1\otimes g_2\otimes\cdots\otimes g_n \ :\
+c\in\{\pm1,\pm i\},\ g_j\in\{I,X,Y,Z\}\,\}
+\]
+である（行列の積について群をなす。位相因子は積で生じる \(\pm i\) を吸収するために必要）。
+群論の一般的な用語（部分群・剰余類・生成元）は<a href="appendixA2.html">付録A2</a> にまとめてある。
+\(G_n\) の任意の2元は<strong>可換か反可換</strong>のいずれかであり、
+任意の元 \(g\) は \(g^2=\pm I\)、位相が \(\pm1\) の元は Hermite である。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（スタビライザーと安定化される空間）</span>
+\(S\) を \(G_n\) の部分群とする。
+\[
+V_S = \{\ket{\psi} : g\ket{\psi}=\ket{\psi}\ \ \forall g\in S\}
+\]
+を \(S\) に<strong>安定化される部分空間</strong>と呼び、\(S\) を \(V_S\) の
+<strong>スタビライザー</strong>と呼ぶ。\(V_S\) が自明（\(\{0\}\)）でないための必要十分条件は
+<ol>
+<li>\(S\) の元がすべて可換であること、</li>
+<li>\(-I\notin S\) であること</li>
+</ol>
+である。
+</div>
+
+<p>
+条件の必要性は簡単に分かる。\(g,h\in S\) が反可換なら
+\(\ket{\psi}=gh\ket{\psi}=-hg\ket{\psi}=-\ket{\psi}\) で \(\ket{\psi}=0\)。
+また \(-I\ket{\psi}=\ket{\psi}\) も \(\ket{\psi}=0\) を強いる。
+なお \(-I\notin S\) から、\(S\) の元に位相 \(\pm i\) は現れず
+（\((ig)^2=-g^2=\mp I\) だから \(\pm i\) 位相の元があると \(-I\in S\) になる）、
+すべての元は \(g^2=I\) を満たす Hermite 演算子、すなわち固有値 \(\pm1\) の観測量である。
+</p>
+
+<p>
+\(S\) は生成元で \(S=\langle g_1,\ldots,g_l\rangle\) と表す。生成元の組が
+<strong>独立</strong>とは、どの \(g_i\) を除いても生成される群が小さくなること
+（同値：\(g_1^{a_1}\cdots g_l^{a_l}=I\) が \(a=0\) 以外にないこと）をいう。
+</p>
+
+<div class="thm-box">
+<span class="box-title">命題（安定化空間の次元）</span>
+\(S=\langle g_1,\ldots,g_l\rangle\) が独立な生成元 \(l\) 個からなり、
+可換で \(-I\notin S\) なら、
+\[
+\dim V_S = 2^{n-l}.
+\]
+つまり<strong>独立な生成元1個につき自由度が正確に半分になる</strong>。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(V_S\) への射影演算子は
+\[
+P_S = \prod_{j=1}^{l}\frac{I+g_j}{2}
+\]
+である（各因子は \(g_j\) の \(+1\) 固有空間への射影で、可換だから積も射影）。
+展開すると
+\[
+P_S = \frac{1}{2^l}\sum_{g\in S} g
+\]
+（積を展開すると \(S\) の全 \(2^l\) 元がちょうど1回ずつ現れる。元が \(2^l\) 個
+あることは生成元の独立性による）。
+Pauli 群の元は恒等演算子以外トレースが 0 であり、独立性と \(-I\notin S\) から
+\(S\) 内で \(\pm I\) に等しい元は \(I\) のみ。よって
+\[
+\dim V_S = \tr P_S = \frac{1}{2^l}\tr I = \frac{2^n}{2^l} = 2^{n-l}.
+\]
+<span class="qed">∎</span>
+</div>
+
+<p>
+計算に便利な表現として<strong>検査行列 (check matrix)</strong> を導入する。
+生成元 \(g_i\)（位相を無視）に、長さ \(2n\) の行ベクトル
+\(r(g_i)=(x_1\cdots x_n\,|\,z_1\cdots z_n)\) を対応させる：
+サイト \(j\) が \(X\) なら \(x_j=1\)、\(Z\) なら \(z_j=1\)、\(Y\) なら両方 1、\(I\) なら両方 0。
+このとき
+</p>
+<ul>
+<li>\(g,g'\) が可換 \(\iff\) シンプレクティック内積
+\(r(g)\,\Lambda\, r(g')^T = 0 \pmod 2\)、ここで
+\(\Lambda=\begin{pmatrix}0 &amp; I\\ I &amp; 0\end{pmatrix}\)。</li>
+<li>生成元が独立 \(\iff\) 検査行列（\(l\times 2n\)）の行が \(\mathbb{Z}_2\) 上独立。</li>
+</ul>
+<p>
+群論の計算が \(\mathbb{Z}_2\) 上の線形代数に置き換わるのがこの表現の御利益である。
+</p>
+
+<h3 id="sec-10-5-2">§10.5.2 ユニタリゲートとスタビライザー形式</h3>
+
+<p>
+状態にユニタリ \(U\) を作用させると、スタビライザーはどう変わるか。
+\(g\ket{\psi}=\ket{\psi}\) なら
+\[
+U\ket{\psi} = Ug\ket{\psi} = (UgU^\dagger)\,U\ket{\psi}
+\]
+だから、\(U\ket{\psi}\) は \(UgU^\dagger\) に安定化される。すなわち
+\[
+V_S \xrightarrow{\ U\ } U V_S,\qquad S \xrightarrow{\ U\ } USU^\dagger
+\]
+であり、<strong>状態を追う代わりに生成元 \(g_i\mapsto Ug_iU^\dagger\) を追えばよい</strong>。
+生成元は \(l\le n\) 個しかないから、\(UgU^\dagger\) がまた Pauli 群に留まる限り、
+この更新は効率的に実行できる。
+</p>
+
+<p>
+そこで「Pauli 群を Pauli 群に写すユニタリ」の全体
+\[
+N(G_n) = \{U : UgU^\dagger\in G_n\ \ \forall g\in G_n\}
+\]
+（\(G_n\) の<strong>正規化群</strong>；大域位相を除いて考える）が重要になる。
+これを <strong>Clifford 群</strong>と呼ぶ。基本ゲートの共役変換は直接計算できる：
+</p>
+
+<table>
+<thead><tr><th>ゲート \(U\)</th><th>入力 \(g\)</th><th>出力 \(UgU^\dagger\)</th></tr></thead>
+<tbody>
+<tr><td rowspan="2">Hadamard \(H\)</td><td>\(X\)</td><td>\(Z\)</td></tr>
+<tr><td>\(Z\)</td><td>\(X\)</td></tr>
+<tr><td rowspan="2">位相ゲート \(S\)</td><td>\(X\)</td><td>\(Y\)</td></tr>
+<tr><td>\(Z\)</td><td>\(Z\)</td></tr>
+<tr><td rowspan="4">CNOT（制御 1, 標的 2）</td><td>\(X_1\)</td><td>\(X_1X_2\)</td></tr>
+<tr><td>\(X_2\)</td><td>\(X_2\)</td></tr>
+<tr><td>\(Z_1\)</td><td>\(Z_1\)</td></tr>
+<tr><td>\(Z_2\)</td><td>\(Z_1Z_2\)</td></tr>
+<tr><td rowspan="2">Pauli \(X\)</td><td>\(X\)</td><td>\(X\)</td></tr>
+<tr><td>\(Z\)</td><td>\(-Z\)</td></tr>
+<tr><td rowspan="2">Pauli \(Z\)</td><td>\(X\)</td><td>\(-X\)</td></tr>
+<tr><td>\(Z\)</td><td>\(Z\)</td></tr>
+</tbody>
+</table>
+
+<p>
+\(Y=iXZ\) の変換は表から合成できる（例：\(HYH^\dagger = iZX = -Y\)）ので、
+\(X\) と \(Z\) の変換だけ覚えれば十分である。
+CNOT の行は覚える価値がある：<strong>\(X\) は制御から標的へ「前向きに」伝播し、
+\(Z\) は標的から制御へ「後ろ向きに」伝播する</strong>。
+この事実は §10.6 のフォールトトレラント設計で決定的な役割を果たす。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Clifford 群の生成元）</span>
+\(n\) 量子ビットの Clifford 群 \(N(G_n)\) は、大域位相を除き、
+Hadamard ゲート・位相ゲート \(S=\mathrm{diag}(1,i)\)・CNOT の組み合わせだけで生成される。
+</div>
+
+<p>
+証明の方針だけ述べる：帰納法で、任意の Clifford 元 \(U\) に対し
+\(UX_1U^\dagger,\ UZ_1U^\dagger\) という反可換な Pauli 対を
+\(H,S,\)CNOT の列で \(X_1,Z_1\) に戻せることを示す
+（反可換 Pauli 対は \(H,S,\)CNOT で標準形に移せる）。
+残った \(U'\) は量子ビット 2 以降にしか作用しない Clifford 元になり、帰納法が回る。
+逆向き（\(H,S,\)CNOT が Clifford 群に属すること）は上の表そのものである。
+なお \(S = T^2\) であって \(T\)（\(\pi/8\) ゲート）自身は Clifford <em>でない</em>：
+\(TXT^\dagger = (X+Y)/\sqrt2 \notin G_1\)。この一線が §10.5.4 と §10.6.2 の伏線になる。
+</p>
+
+<div class="example-box">
+<span class="box-title">例：GHZ 状態の生成をスタビライザーで追う</span>
+初期状態 \(\ket{000}\) のスタビライザーは \(\langle Z_1,Z_2,Z_3\rangle\)。
+\(H_1\) を作用：\(\langle X_1,Z_2,Z_3\rangle\)。
+CNOT\(_{1\to2}\)：\(X_1\mapsto X_1X_2\)、\(Z_2\mapsto Z_1Z_2\)、\(Z_3\) 不変で
+\(\langle X_1X_2,\ Z_1Z_2,\ Z_3\rangle\)。
+CNOT\(_{1\to3}\)：\(\langle X_1X_2X_3,\ Z_1Z_2,\ Z_1Z_3\rangle\)。
+これは GHZ 状態 \((\ket{000}+\ket{111})/\sqrt2\) のスタビライザーである。
+状態ベクトルを一度も書かずに計算が済んだことに注意。
+</div>
+
+<h3 id="sec-10-5-3">§10.5.3 スタビライザー形式での測定</h3>
+
+<p>
+Pauli 観測量 \(g\in G_n\)（位相 \(\pm1\)、Hermite）を、スタビライザー
+\(S=\langle g_1,\ldots,g_n\rangle\) を持つ状態 \(\ket{\psi}\) に対して測定する。
+2つの場合に分かれる。
+</p>
+
+<ol>
+<li><strong>\(g\) がすべての生成元と可換な場合。</strong>
+このとき（\(l=n\) のスタビライザー状態なら）\(g\) または \(-g\) が \(S\) に属することが
+示せ、\(g\ket{\psi}=\pm\ket{\psi}\)：測定結果は確定的（\(+1\) または \(-1\)）で、
+状態は変化しない。どちらの符号かは、生成元の積として \(\pm g\) を書き表す
+（検査行列の \(\mathbb{Z}_2\) 線形代数で解ける）ことで決まる。</li>
+<li><strong>\(g\) がある生成元と反可換な場合。</strong>
+反可換な生成元を \(g_1\) とする（複数あれば、他の反可換な生成元 \(g_j\) を
+\(g_1g_j\) に取り替えることで \(g_1\) だけが反可換なように生成元を選び直せる）。
+このとき測定結果は \(\pm1\) が<strong>確率 \(1/2\) ずつ</strong>で出る：
+射影演算子 \((I\pm g)/2\) の期待値は
+\(\bra{\psi}(I\pm g)/2\ket{\psi}\) で、
+\(\bra{\psi}g\ket{\psi} = \bra{\psi}g\,g_1\ket{\psi} = -\bra{\psi}g_1 g\ket{\psi}
+= -\bra{\psi}g\ket{\psi}\)、よって \(\bra{\psi}g\ket{\psi}=0\)。
+測定後の状態のスタビライザーは、結果が \(\pm1\) のとき
+\[
+\langle \pm g,\ g_2,\ \ldots,\ g_n\rangle
+\]
+（\(g_1\) を \(\pm g\) で置き換える）に更新される。実際、測定後状態
+\((I\pm g)\ket{\psi}/\|\cdot\|\) が \(\pm g\) と \(g_2,\ldots,g_n\)
+（いずれも \(g\) と可換）に固定されることは直接確かめられる。</li>
+</ol>
+
+<p>
+以上により、「計算基底での状態準備 → Clifford ゲート → Pauli 測定」だけからなる量子回路は、
+<strong>生成元のリストの更新規則として完全に古典的に追跡できる</strong>。
+リストは \(O(n)\) 個の Pauli 積（各 \(O(n)\) 記号）で、各ステップの更新コストは多項式である。
+</p>
+
+<h3 id="sec-10-5-4">§10.5.4 Gottesman–Knill 定理</h3>
+
+<div class="thm-box">
+<span class="box-title">Gottesman–Knill 定理</span>
+次の要素だけからなる量子計算は、古典計算機で多項式時間で
+シミュレートできる：
+(i) 計算基底での状態準備、
+(ii) Clifford ゲート（Hadamard・位相ゲート \(S\)・CNOT・Pauli）、
+(iii) Pauli 観測量（特に計算基底 \(Z_i\)）の測定、
+(iv) 測定結果を条件とする古典制御。
+</div>
+
+<p>
+証明は前2項の内容の要約である：スタビライザー生成元を古典データとして持ち、
+ゲートで共役変換し、測定で置換する。すべて \(\mathbb{Z}_2\) 線形代数で済む。
+</p>
+
+<p>
+この定理の意義は、量子計算の能力の源泉について私たちの直観を較正するところにある。
+Clifford 回路は EPR 対も GHZ 状態も作れるし、テレポーテーション、超高密度符号化、
+そして本章の量子誤り訂正のシンドローム測定まで実行できる。
+<strong>大量のエンタングルメントを生成する回路でありながら、古典計算機で効率よく
+シミュレートできる</strong>のである。したがって「エンタングルメントがあるから
+量子計算は速い」という素朴な説明は成立しない。エンタングルメントは
+（純粋状態の計算で指数加速を得るには）必要ではあるが十分ではなく、
+量子加速には Clifford の外のゲート（\(T\) など）が本質的に必要になる。
+どの資源が「非古典性」を担うのかは、いまだ完全には理解されていない
+深い問題である。
+</p>
+
+<h3 id="sec-10-5-5">§10.5.5 スタビライザー符号の構成</h3>
+
+<div class="def-box">
+<span class="box-title">定義（スタビライザー符号 \([[n,k,d]]\)）</span>
+可換で \(-I\) を含まない、独立な生成元 \(n-k\) 個の部分群
+\(S=\langle g_1,\ldots,g_{n-k}\rangle\subset G_n\) を取る。
+安定化空間 \(V_S\)（次元 \(2^k\)、§10.5.1 の命題）を符号空間とする符号を
+\([[n,k]]\) <strong>スタビライザー符号</strong> \(C(S)\) という。
+</div>
+
+<p>
+論理演算子もスタビライザーの言葉で書ける。\(S\) の（\(G_n\) 内での）正規化群
+\[
+N(S) = \{g\in G_n : g S g^\dagger = S\}
+\]
+を考える（Pauli 群では \(gS g^\dagger=S \iff g\) が \(S\) の全元と可換、
+すなわち \(N(S)\) は中心化群と一致する）。\(N(S)\) の元は符号空間を保つが、
+\(S\) に属さない元は符号空間の<em>中で</em>非自明に作用する——これが
+<strong>論理演算子</strong>である。適切に選んだ
+\(\bar Z_1,\ldots,\bar Z_k,\ \bar X_1,\ldots,\bar X_k \in N(S)\setminus S\)
+（互いの可換関係が Pauli 演算子と同型になるもの）が、符号化された \(k\) 量子ビット上の
+論理 Pauli 演算として働く。
+</p>
+
+<p>
+逆に、<strong>訂正できない誤りとは \(N(S)\setminus S\) の元</strong>である：
+\(S\) の全元と可換なので<em>どのシンドロームにも掛からず</em>、
+かつ符号空間上で非自明に作用して論理情報を書き換える。これが次の定義と定理を導く。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（距離）</span>
+スタビライザー符号の<strong>距離</strong>は
+\[
+d = \min\{\, \mathrm{wt}(g) : g\in N(S)\setminus S \,\}
+\]
+（\(\mathrm{wt}\) は Pauli 積の非自明サイト数）。距離 \(d\) の \([[n,k]]\) 符号を
+\([[n,k,d]]\) と書く。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（スタビライザー符号の誤り訂正条件）</span>
+\(\{E_j\}\subset G_n\) を Pauli 誤りの集合とする。すべての組 \(j,k\) について
+\[
+E_j^\dagger E_k \notin N(S)\setminus S
+\]
+（すなわち \(E_j^\dagger E_k\) が \(S\) に属するか、または \(S\) のある元と反可換）
+ならば、\(\{E_j\}\) は符号 \(C(S)\) で訂正可能である。
+特に \(d=2t+1\) なら、重み \(\le t\) の任意の誤りが訂正できる。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+一般論（§10.3 の量子誤り訂正条件 \(PE_j^\dagger E_kP=\alpha_{jk}P\)）に帰着させる。
+\(P\) を \(V_S\) への射影とする。\(E\equiv E_j^\dagger E_k\) について場合分け：
+(i) \(E\in S\) なら \(EP=P\)（スタビライザーは符号空間上で恒等）なので
+\(PEP = P\)：条件を \(\alpha_{jk}=1\) で満たす。
+(ii) \(E\) が \(S\) のある元 \(g\) と反可換なら \(PEP=0\) を示す。
+\(P\) は \(g\) の \(+1\) 固有空間の中への射影なので \(gP = P\)、随伴を取って \(Pg = P\)。
+これと \(Eg = -gE\) を使うと
+\[
+PEP = P E (gP) = (PE g) P = -(P g E)P = -(Pg)EP = -PEP,
+\]
+すなわち \(PEP = -PEP\) となり \(PEP = 0\)。
+条件を \(\alpha_{jk}=0\) で満たす。仮定より全組がどちらかに落ちるので、
+誤り訂正条件が成立する。距離についての主張は、
+\(\mathrm{wt}(E_j),\mathrm{wt}(E_k)\le t\) なら \(\mathrm{wt}(E_j^\dagger E_k)\le 2t &lt; d\)
+となり、定義から重み \(&lt;d\) の元は \(N(S)\setminus S\) に入れないことから従う。
+<span class="qed">∎</span>
+</div>
+
+<p><strong>シンドローム測定と回復。</strong>
+実際の訂正手続きは §10.1 の素朴な方法の直接の一般化である。
+生成元 \(g_1,\ldots,g_{n-k}\)（互いに可換な観測量）をすべて測定し、
+結果 \(\beta_l\in\{\pm1\}\) の列を<strong>シンドローム</strong>とする。
+誤り \(E_j\) が起きた状態 \(E_j\ket{\psi}\) では
+\[
+g_l\,(E_j\ket{\psi}) = (\pm1)\,E_j\,g_l\ket{\psi} = (\pm1)\,E_j\ket{\psi}
+\]
+（\(E_j\) と \(g_l\) が可換なら \(+\)、反可換なら \(-\)）だから、
+シンドロームは「\(E_j\) が各生成元と可換か否か」のパターンを確定的に報せる。
+シンドロームが誤りを一意に決めるなら \(E_j^\dagger\) をかけて回復する。
+2つの誤りが同じシンドロームを持つ場合でも、仮定から \(E_j^\dagger E_k\in S\)
+（縮退）なので、どちらを仮定して訂正しても符号空間上では同じ結果になり、
+回復は正しく完了する。ここでも縮退が「識別できなくても訂正できる」形で働く。
+</p>
+
+<h3 id="sec-10-5-6">§10.5.6 例</h3>
+
+<p>
+主要な符号のスタビライザー生成元を一覧にする。
+既に個別に導いた符号がすべて同じ形式に収まることを確認してほしい。
+</p>
+
+<p><strong>3量子ビットビット反転符号 \([[3,1]]\)</strong>（\(Z\) 誤りには無防備なので距離は 1）：</p>
+<table>
+<thead><tr><th>生成元</th><th></th></tr></thead>
+<tbody>
+<tr><td>\(g_1\)</td><td>\(Z\ Z\ I\)</td></tr>
+<tr><td>\(g_2\)</td><td>\(I\ Z\ Z\)</td></tr>
+<tr><td>論理</td><td>\(\bar Z = Z\,Z\,Z,\qquad \bar X = X\,X\,X\)</td></tr>
+</tbody>
+</table>
+
+<p><strong>Shor 符号 \([[9,1,3]]\)</strong>：</p>
+<table>
+<thead><tr><th>生成元</th><th></th></tr></thead>
+<tbody>
+<tr><td>\(g_1\)</td><td>\(Z\ Z\ I\ I\ I\ I\ I\ I\ I\)</td></tr>
+<tr><td>\(g_2\)</td><td>\(I\ Z\ Z\ I\ I\ I\ I\ I\ I\)</td></tr>
+<tr><td>\(g_3\)</td><td>\(I\ I\ I\ Z\ Z\ I\ I\ I\ I\)</td></tr>
+<tr><td>\(g_4\)</td><td>\(I\ I\ I\ I\ Z\ Z\ I\ I\ I\)</td></tr>
+<tr><td>\(g_5\)</td><td>\(I\ I\ I\ I\ I\ I\ Z\ Z\ I\)</td></tr>
+<tr><td>\(g_6\)</td><td>\(I\ I\ I\ I\ I\ I\ I\ Z\ Z\)</td></tr>
+<tr><td>\(g_7\)</td><td>\(X\ X\ X\ X\ X\ X\ I\ I\ I\)</td></tr>
+<tr><td>\(g_8\)</td><td>\(I\ I\ I\ X\ X\ X\ X\ X\ X\)</td></tr>
+<tr><td>論理</td><td>\(\bar Z = X^{\otimes9},\qquad \bar X = Z^{\otimes9}\)</td></tr>
+</tbody>
+</table>
+
+<p>
+生成元は §10.1–10.2 のシンドローム観測量そのものである。
+論理演算子は \(S\) の元を掛けて低重みの代表に取り替えられる：
+たとえば \(\bar X \sim Z_1Z_4Z_7\)、\(\bar Z \sim X_1X_2X_3\)（重み 3 ＝ 距離）。
+また \(g_1g_2 = Z_1Z_3\) と \(Z_1Z_2=g_1\) の比較から
+\(Z_1,Z_2,Z_3\) が同一シンドローム・同一作用を持つこと（縮退）も読み取れる。
+</p>
+
+<p><strong>5量子ビット符号 \([[5,1,3]]\)</strong>——量子 Hamming 限界（§10.3.4）を
+等号で達成する最小の1誤り訂正符号：</p>
+<table>
+<thead><tr><th>生成元</th><th></th></tr></thead>
+<tbody>
+<tr><td>\(g_1\)</td><td>\(X\ Z\ Z\ X\ I\)</td></tr>
+<tr><td>\(g_2\)</td><td>\(I\ X\ Z\ Z\ X\)</td></tr>
+<tr><td>\(g_3\)</td><td>\(X\ I\ X\ Z\ Z\)</td></tr>
+<tr><td>\(g_4\)</td><td>\(Z\ X\ I\ X\ Z\)</td></tr>
+<tr><td>論理</td><td>\(\bar Z = Z\,Z\,Z\,Z\,Z,\qquad \bar X = X\,X\,X\,X\,X\)</td></tr>
+</tbody>
+</table>
+
+<p>
+生成元は \(XZZXI\) の巡回シフトになっている（4回目のシフトは最初の4つの積で表せる
+ため独立な生成元は4個）。可換性は各組で反可換になるサイトが偶数個あることから
+確かめられる。シンドロームは \(2^4=16\) 通りで、
+「誤りなし」1通り＋「\(\{X,Y,Z\}\times5\) サイト」15通りとちょうど一対一に対応する
+——完全符号と呼ばれる所以である。
+</p>
+
+<p><strong>Steane 符号 \([[7,1,3]]\)</strong>——CSS 構成（§10.4.2）のスタビライザー版。
+生成元は Hamming 符号の検査行列 \(H\) の各行を「\(X\) 型」と「\(Z\) 型」の両方で
+読んだものである：</p>
+<table>
+<thead><tr><th>生成元</th><th></th></tr></thead>
+<tbody>
+<tr><td>\(g_1\)</td><td>\(I\ I\ I\ X\ X\ X\ X\)</td></tr>
+<tr><td>\(g_2\)</td><td>\(I\ X\ X\ I\ I\ X\ X\)</td></tr>
+<tr><td>\(g_3\)</td><td>\(X\ I\ X\ I\ X\ I\ X\)</td></tr>
+<tr><td>\(g_4\)</td><td>\(I\ I\ I\ Z\ Z\ Z\ Z\)</td></tr>
+<tr><td>\(g_5\)</td><td>\(I\ Z\ Z\ I\ I\ Z\ Z\)</td></tr>
+<tr><td>\(g_6\)</td><td>\(Z\ I\ Z\ I\ Z\ I\ Z\)</td></tr>
+<tr><td>論理</td><td>\(\bar Z = Z^{\otimes7},\qquad \bar X = X^{\otimes7}\)</td></tr>
+</tbody>
+</table>
+
+<p>
+\(X\) 型生成元と \(Z\) 型生成元の可換性は、\(H\) の行同士の内積が 0
+（Hamming 符号の双対含み性）という古典的事実の言い換えである。
+一般に CSS 符号 \(\mathrm{CSS}(C_1,C_2)\) のスタビライザーは
+「\(C_2^\perp\)…すなわち \(H_1\) の行を \(Z\) 型で、\(C_2\) の生成行列の行を
+\(X\) 型で読んだもの」で与えられ、CSS 符号はスタビライザー符号の特別な場合
+（生成元が \(X\) 型と \(Z\) 型に分離できる場合）だと分かる。
+</p>
+
+<h3 id="sec-10-5-7">§10.5.7 標準形</h3>
+
+<p>
+スタビライザー符号を系統的に扱う（符号化回路を作る・論理演算子を読み出す）ための
+正規化が<strong>標準形 (standard form)</strong> である。
+検査行列 \(\big(\,X\text{部}\;\big|\;Z\text{部}\,\big)\)（\((n-k)\times2n\)）に対し、
+行の基本変形（生成元の積への取り替え）・量子ビットの並べ替え（列の対応する組の入れ替え）
+は符号を本質的に変えない。そこで \(\mathbb{Z}_2\) 上の Gauss 消去を2段階で行う：
+まず \(X\) 部を消去して階数 \(r\) の単位ブロックを作り、
+残った行（\(X\) 部が 0 の行）の \(Z\) 部をさらに消去すると、
+\[
+\left(\begin{array}{ccc|ccc}
+I &amp; A_1 &amp; A_2 &amp; B &amp; C_1 &amp; C_2\\
+0 &amp; 0 &amp; 0 &amp; D &amp; I &amp; E
+\end{array}\right)
+\]
+という形に整えられる。列ブロックの幅は左から \(r,\ n-k-r,\ k\)（\(Z\) 部も同じ）。
+上段 \(r\) 行が「\(X\) を含む生成元」、下段 \(n-k-r\) 行が「純 \(Z\) 型の生成元」である
+（CSS 符号なら最初からこの2層に分かれている）。
+</p>
+
+<p>
+標準形の御利益は、論理演算子が明示的に書き下せることである。
+\(k=1\) の場合で書くと（一般の \(k\) では各行が1論理量子ビットに対応）、
+\[
+\bar Z = \big(\,0\ \ 0\ \ 0\;\big|\;A_2^T\ \ 0\ \ I\,\big),
+\qquad
+\bar X = \big(\,0\ \ E^T\ \ I\;\big|\;E^TC_1^T+C_2^T\ \ 0\ \ 0\,\big)
+\]
+が生成元すべてと可換で、互いに反可換（最後の \(k\) 列ブロックで \(X\) と \(Z\) が重なる）
+であり、\(S\) に属さないことが検査行列の計算で確かめられる。
+検算の例として \(\bar Z\) と上段の可換性：シンプレクティック内積は
+\((I\ A_1\ A_2)\cdot(A_2^T\ 0\ I)^T = A_2 + A_2 = 0 \pmod 2\)。
+下段とは \(X\) 部同士・\(Z\) 部と \(0\) の積しか現れないので自明に可換である。
+</p>
+
+<h3 id="sec-10-5-8">§10.5.8 符号化・復号・訂正の回路</h3>
+
+<p>
+標準形は回路構成にも直結する。要点のみまとめる。
+</p>
+
+<ul>
+<li><strong>符号化。</strong>標準形の生成元と論理演算子から、
+「入力 \(k\) 量子ビット＋補助 \((n-k)\) 個の \(\ket{0}\)」を符号語に写す回路が
+系統的に組める。考え方：符号語は
+\(\prod_{j}\frac{I+g_j}{2}\,\bar X^{x}\ket{0\cdots0}\) の形
+（\(Z\) 型生成元は \(\ket{0\cdots0}\) を既に固定しているので、
+\(X\) を含む上段 \(r\) 個の生成元だけを「対称化」すればよい）で書け、
+各因子 \(I+g_j\) は「制御量子ビットを \(\ket{+}\) に用意した制御-\(g_j\)」
+すなわち Hadamard 1個と CNOT・制御-\(Z\) 数個で実装できる。
+全体のゲート数は \(O(n(n-k))\)。Steane 符号なら Hadamard 3個と CNOT 数個で済む。</li>
+<li><strong>シンドローム測定。</strong>生成元 \(g_l\) ごとに補助量子ビットを
+\(\ket{+}\) に用意し、制御-\(g_l\)（制御は補助側）をかけてから補助を
+\(X\) 基底で測る。補助には \(g_l\) の固有値 \(\pm1\) が位相キックバックで書き込まれる。
+（この素朴な回路は1個の補助ビットが多数のデータビットに触れるため
+フォールトトレラントではない——§10.6.3 で改良する。）</li>
+<li><strong>回復。</strong>シンドローム \((\beta_1,\ldots,\beta_{n-k})\) から誤りを推定し
+（古典計算：一般には最尤復号）、対応する Pauli を作用させる。</li>
+<li><strong>復号（符号を解く）。</strong>符号化回路はユニタリなので、
+逆回路を走らせれば論理情報が元の \(k\) 量子ビットに戻る。
+ただし実際の量子計算では符号を解く場面はほとんどなく、
+符号化したまま計算を進める（§10.6）。</li>
+</ul>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-10-6">フォールトトレラント量子計算<span class="en">Fault-Tolerant Quantum Computation</span></h2>
+
+<p>
+ここまでの §10.1–10.5 は「静止した符号語をノイズから守る」話であった。
+だが本当に欲しいのは、符号化した情報に<strong>計算を施す</strong>ことである。
+しかも符号化・訂正・ゲート・測定を実行する装置そのものがノイズを持つ。
+本節が扱うのは、故障する部品だけを使って任意に長い量子計算を信頼度高く走らせる方法、
+すなわち<strong>フォールトトレラント量子計算 (fault-tolerant quantum computation)</strong> である。
+その設計原理と、成功を保証する<strong>閾値定理 (threshold theorem)</strong> を見る。
+これは本書全体の到達点のひとつである。
+</p>
+
+<h3 id="sec-10-6-1">§10.6.1 全体像</h3>
+
+<p>
+素朴な発想はこうである。論理量子ビットを符号語として蓄え、
+ときどきシンドローム測定と訂正を挟んで誤りの蓄積を抑えつつ、
+必要なゲートは「符号を解いて、生の量子ビットに施し、また符号化し直す」。
+しかしこの「符号を解く」瞬間、情報は裸になり、そこで1つでもノイズが入れば
+訂正できずに壊れる。したがって鉄則は次である：
+<strong>符号を解いてはいけない。符号化されたまま、直接に論理ゲートを施す。</strong>
+</p>
+
+<p>
+第二の落とし穴は<strong>誤りの伝播</strong>である。
+これまで「1量子ビットに誤りが起きた」ことを暗に前提してきたが、
+2量子ビットゲートは誤りを<em>広げる</em>。
+たとえば制御 \(a\)・標的 \(b\) の CNOT を考える。
+ゲートの直前に制御線でビット反転 \(X_a\) が起きていたとすると、
+\(\CNOT\,(X_a\otimes I) = (X_a\otimes X_b)\,\CNOT\) であるから、
+CNOT を通した後には<strong>標的にも \(X\) 誤りが伝染する</strong>。
+同様に標的側の位相誤り \(Z_b\) は制御側へ逆流する
+（\(\CNOT\,(I\otimes Z_b) = (Z_a\otimes Z_b)\,\CNOT\)）。
+つまり1個の物理的故障が、不用意な回路では複数の量子ビットへ増殖しうる。
+</p>
+
+<div class="def-box">
+<span class="box-title">フォールトトレランスの定義（作業定義）</span>
+ある手続き（符号化されたゲート・測定・訂正など）が<strong>フォールトトレラント</strong>であるとは、
+その手続きの中で部品が<strong>1個だけ</strong>故障したとき、
+出力側の各符号ブロックに生じる誤りが<strong>高々1個</strong>の量子ビットに留まることをいう。
+より一般には、\(t\) 誤り訂正符号に対し「\(s\le t\) 個の部品故障なら
+各ブロックに高々 \(s\) 個の誤り」を要求する。要は、
+<strong>訂正能力を超えて誤りが増殖しないように回路を組む</strong>ということである。
+</div>
+
+<p>
+定義の核心は「増えない」ことにある。CNOT の例のように誤りは伝播するが、
+同じ符号ブロック内の2量子ビットを1つのゲートで結んでしまうと、
+1個の故障が同一ブロックの2箇所を汚し、距離3の符号では訂正不能になる。
+これを避ける常套手段が<strong>transversal（横断的）</strong>な構成である
+（次項）。ブロック間のゲートを、
+「\(i\) 番目の量子ビットどうしだけを結ぶ」形に限れば、
+ある物理ゲートの故障は各ブロックの高々1箇所にしか波及しない。
+</p>
+
+<p>
+残る問題は「1回の訂正で消しきれるほど誤りが小さいか」である。
+物理誤り率 \(p\) がそこそこ小さくても、長い計算では誤りが積もる。
+そこで<strong>連接符号 (concatenated code)</strong> の考えが効く。
+1つの論理量子ビットを符号語（たとえば7量子ビット）で表し、
+その7量子ビットの<em>各々を</em>さらに符号語で表し……と階層的に入れ子にする。
+レベルを1つ上げるごとに、後述のように実効誤り率が \(p\to cp^2\) と
+二乗で小さくなる。\(p\) が閾値を下回っていれば、
+わずか数レベルで誤り率を任意に押し下げられる。
+</p>
+
+<figure>
+<svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- level 0: one logical qubit -->
+  <rect x="330" y="14" width="40" height="26" rx="4" class="gate"/>
+  <text x="337" y="32" class="label">論理</text>
+  <!-- level 1: 3 blocks (schematic, using 3 to keep it readable) -->
+  <line x1="350" y1="40" x2="180" y2="86" class="line" stroke-width="1"/>
+  <line x1="350" y1="40" x2="350" y2="86" class="line" stroke-width="1"/>
+  <line x1="350" y1="40" x2="520" y2="86" class="line" stroke-width="1"/>
+  <rect x="158" y="86" width="44" height="24" rx="4" class="gate"/>
+  <text x="168" y="103" class="label-muted">レベル1</text>
+  <rect x="328" y="86" width="44" height="24" rx="4" class="gate"/>
+  <rect x="498" y="86" width="44" height="24" rx="4" class="gate"/>
+  <!-- level 2 under the left block only, schematic -->
+  <line x1="180" y1="110" x2="120" y2="150" class="line" stroke-width="1"/>
+  <line x1="180" y1="110" x2="180" y2="150" class="line" stroke-width="1"/>
+  <line x1="180" y1="110" x2="240" y2="150" class="line" stroke-width="1"/>
+  <circle cx="120" cy="160" r="8" class="line" stroke-width="1"/>
+  <circle cx="180" cy="160" r="8" class="line" stroke-width="1"/>
+  <circle cx="240" cy="160" r="8" class="line" stroke-width="1"/>
+  <text x="96" y="192" class="label-muted">レベル2（物理量子ビット）</text>
+  <!-- similar hint under other level-1 blocks -->
+  <line x1="350" y1="110" x2="330" y2="150" class="line" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="350" y1="110" x2="370" y2="150" class="line" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="520" y1="110" x2="500" y2="150" class="line" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="520" y1="110" x2="540" y2="150" class="line" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="300" y="230" class="label-muted">1論理量子ビット = 符号語の入れ子。各レベルで実効誤り率が p → c p² と縮む。</text>
+</svg>
+</figure>
+
+<h3 id="sec-10-6-2">§10.6.2 フォールトトレラントな論理ゲート</h3>
+
+<p>
+以下、具体例として §10.4.2 の <strong>Steane 符号 \([[7,1,3]]\)</strong> を用いる
+（CSS 符号かつスタビライザー符号で、1誤り訂正）。
+この符号の美点は、多くの基本ゲートが<strong>transversal</strong> に実装できることである。
+transversal とは「符号ブロックの各量子ビットに、他の量子ビットと相互作用させずに
+物理ゲートを1個ずつ施す（ブロック間ゲートは同じ番号の量子ビットどうしのみ結ぶ）」構成をいう。
+</p>
+
+<div class="thm-box">
+<span class="box-title">なぜ transversal はフォールトトレラントか</span>
+transversal な操作では、\(i\) 番目の物理ゲートは \(i\) 番目の量子ビットにしか触れない
+（2ブロック間なら両ブロックの \(i\) 番目のみ）。したがって
+<strong>物理ゲート1個の故障は、各符号ブロックの高々1量子ビットにしか誤りを残さない</strong>。
+これは前項のフォールトトレランスの定義そのものである。
+誤りが同一ブロック内で増殖しないので、後段の訂正で消せる。
+</div>
+
+<p>
+Steane 符号では、論理 Pauli と論理 Clifford ゲートが次のように transversal に得られる
+（\(U^{\otimes7}\) は7量子ビットすべてに \(U\) を施す意味）。
+</p>
+
+<div class="example-box">
+<span class="box-title">Steane 符号の transversal な論理ゲート</span>
+<ul>
+<li><strong>論理 \(X,Z\)：</strong>\(\bar X = X^{\otimes7}\)、\(\bar Z = Z^{\otimes7}\)
+（§10.5.6 の生成元表と整合）。</li>
+<li><strong>論理 Hadamard：</strong>\(\bar H = H^{\otimes7}\)。
+Hadamard は \(X\leftrightarrow Z\) を入れ替えるが、Steane 符号は \(X\) 型と \(Z\) 型の
+生成元が同じ検査行列（自己双対的 Hamming 符号）から来るため、
+全ビットに \(H\) を施すと符号空間が符号空間へ写り、論理 \(H\) として働く。</li>
+<li><strong>論理位相ゲート \(S\)：</strong>\(\bar S = (S^\dagger)^{\otimes7}\) の形で得られる。
+\(S=\mathrm{diag}(1,i)\) を各ビットに施すと符号語全体に付く位相の帳尻から
+向きが反転するため、\(S\) ではなく \(S^\dagger\)（あるいはそれに論理 \(Z\) を伴う補正）を
+使うという<em>符号の注意</em>が要る。詳細は帳簿合わせに過ぎないので割愛するが、
+transversal であることは変わらない。</li>
+<li><strong>論理 CNOT：</strong>2つの符号ブロック間で、
+同じ番号の量子ビットどうしに物理 CNOT を7組かける
+（\(\overline{\CNOT} = \CNOT^{\otimes7}\)、制御ブロック→標的ブロック）。
+ブロック内の量子ビット間は結ばないので、片方のブロックの1故障は
+相手ブロックの高々1量子ビットにしか伝播しない。</li>
+</ul>
+</div>
+
+<p>
+これで論理 \(\{X,Z,H,S,\CNOT\}\) が揃った。これらは <strong>Clifford 群</strong>を生成する
+（§10.5.2）。ところが Gottesman–Knill 定理（§10.5.4）が言うように、
+Clifford ゲートだけでは古典計算機で効率シミュレートでき、
+量子的な計算能力の優位を出せない。<strong>万能量子計算</strong>には
+Clifford の外の非 Clifford ゲート——典型的には
+<strong>\(T\) ゲート \(T=\mathrm{diag}(1,e^{i\pi/4})\)</strong>（\(\pi/8\) ゲート）——が
+1つ必要である。ところがこの \(T\) が曲者で、Steane 符号では transversal に作れない。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足：transversal ゲートの根本的限界（原書の範囲を超える固有名詞）</span>
+「なぜ \(T\) だけ transversal に作れないのか」には一般的な答えがある。
+<strong>Eastin–Knill の定理</strong>（Eastin &amp; Knill, 2009。本書本文の範囲外）は、
+<em>任意の距離をもつ符号に対し、transversal な論理ゲートの全体は必ず有限群にとどまり、
+万能ゲート集合を成し得ない</em>ことを主張する。
+Clifford 群までは transversal に取れても、それを万能にする最後の1ゲートは
+原理的に transversal にできない——これは特定の符号の弱点ではなく普遍的な障壁である。
+したがって \(T\) は transversal 以外の方法でフォールトトレラントに実装するしかない。
+</div>
+
+<p>
+その標準的な回避策が<strong>魔法状態注入 (magic state injection)</strong> である。
+考え方はこうである。まず \(T\) を「消費される特別な補助状態」に押し込める。
+具体的には論理的な<strong>魔法状態</strong>
+\(\ket{A_L} \propto \ket{0_L} + e^{i\pi/4}\ket{1_L}\)
+（\(=\bar T\,\bar H\ket{0_L}\) に相当）をあらかじめ用意しておく。
+すると任意の論理量子ビット \(\ket{\psi_L}\) に対し、
+\(\ket{A_L}\) を補助として<strong>論理 CNOT と論理 \(S\)・測定（いずれも transversal に可能）だけ</strong>を
+組み合わせた回路を走らせると、測定結果に応じた Clifford 補正の後に
+\(\bar T\ket{\psi_L}\) が得られる。
+非 Clifford である \(T\) の「非 Clifford さ」は、すべて \(\ket{A_L}\) の準備に隔離された。
+</p>
+
+<p>
+残る課題は「ノイズを持つ装置で、良質な \(\ket{A_L}\) をどう用意するか」である。
+生の準備は誤りやすい。しかし、多数の粗い \(\ket{A_L}\) を集めて Clifford 演算と測定だけで
+「良い状態」を選別・純化する手段がある。<strong>魔法状態蒸留 (magic state distillation)</strong> である。
+これにより、いくらでも高忠実度の \(\ket{A_L}\) を、オフラインで（計算本体とは分けて）用意できる。
+準備・蒸留・注入のいずれも transversal な Clifford 操作と測定で閉じているため、
+全体としてフォールトトレラントに \(T\) を——ひいては万能量子計算を——実現できる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足：cat 状態・魔法状態という語（原書外の用語整理）</span>
+「魔法状態 (magic state)」「魔法状態蒸留」は本書執筆後に定着した用語である
+（Bravyi &amp; Kitaev, 2005 が起点）。本書本文では \(T\) の
+フォールトトレラント実装を、後述の Shor 型測定で使う
+<strong>cat 状態</strong>（GHZ 状態
+\((\ket{0\cdots0}+\ket{1\cdots1})/\sqrt2\)）と補助回路を用いて構成する流儀で説明している。
+現代の呼び名と対応づけるために触れておいた。骨子——「非 Clifford さを
+使い捨ての補助状態に隔離し、本体は transversal Clifford で回す」——は共通である。
+</div>
+
+<h3 id="sec-10-6-3">§10.6.3 フォールトトレラントな測定</h3>
+
+<p>
+シンドローム測定は誤り訂正の心臓部だが、§10.5.8 の素朴な構成
+（1個の補助量子ビットを生成元 \(g_l\) の全サポートに制御接続する）は
+<strong>フォールトトレラントでない</strong>。理由は誤りの伝播にある。
+補助ビットが計算の途中で反転すると、制御演算を通じて
+その誤りが \(g_l\) のサポート内の<strong>複数のデータ量子ビット</strong>に一斉に流れ込み、
+1つの故障が同一ブロックの多点を汚してしまう。距離3の符号では致命的である。
+</p>
+
+<div class="def-box">
+<span class="box-title">Shor 型シンドローム測定</span>
+生成元 \(g_l\) が \(w\) 個の量子ビットに作用するとき、
+補助として1個ではなく <strong>\(w\) 個の量子ビットからなる cat 状態</strong>
+\[
+\ket{\mathrm{cat}} = \frac{\ket{00\cdots0}+\ket{11\cdots1}}{\sqrt2}
+\]
+を用意する。手順は次の通り。
+<ol>
+<li><strong>準備。</strong>\(\ket{0}^{\otimes w}\) から Hadamard 1個と CNOT の連鎖で
+cat 状態を作る。</li>
+<li><strong>検証 (verification)。</strong>作った cat 状態が正しいか
+（準備中の1故障で \(\ket{0\cdots0}\) と \(\ket{1\cdots1}\) の重ね合わせが崩れていないか）を、
+補助ビットの一部の<strong>パリティ</strong>を測って確かめる。
+パリティが合わなければ捨ててやり直す。これで「悪い cat 状態」の混入を防ぐ。</li>
+<li><strong>結合。</strong>検証済み cat 状態の \(i\) 番目の量子ビットを、
+\(g_l\) が作用する \(i\) 番目のデータ量子ビットにだけ transversal に制御接続する
+（1補助ビット↔1データビット）。こうすれば補助側の1故障は
+データ側の高々1量子ビットにしか波及しない。</li>
+<li><strong>測定。</strong>補助全体を測り、\(w\) 個の結果の<strong>パリティ</strong>を取ると、
+\(g_l\) の固有値 \(\pm1\)（シンドロームの1ビット）が得られる。</li>
+<li><strong>繰り返しと多数決。</strong>測定回路自体が誤りうるので、
+同じシンドロームを複数回測って<strong>多数決</strong>を取り、
+測定過程の単発の故障が誤ったシンドロームを与える可能性を抑える。</li>
+</ol>
+</div>
+
+<p>
+cat 状態を使う狙いは、制御接続を「1対1（横断的）」に散らすことで
+補助側の故障がデータブロックに増殖しないようにする点にある。
+検証と多数決は、それぞれ「補助準備の故障」「測定の故障」に対する備えである。
+論理演算子の測定にも同じ枠組みが使える。
+たとえば論理 \(\bar Z\) を測って、フォールトトレラントに論理量子ビットを読み出したり
+状態を準備したりする場合である。
+測りたい多量子ビット観測量のサポートに合わせて cat 状態を用意し、
+transversal な制御演算を通して補助にその固有値を写し取り、多数決すればよい。
+</p>
+
+<h3 id="sec-10-6-4">§10.6.4 閾値定理</h3>
+
+<p>
+以上の道具（符号を解かない・transversal ゲート・Shor 型測定・魔法状態注入・
+そして連接符号）を組み合わせると、質的に強力な結論に到達する。
+物理誤り率が<strong>ある閾値</strong>を下回りさえすれば、
+任意に長い量子計算を、任意に高い信頼度で、しかも現実的なコストで実行できる。
+これが<strong>閾値定理</strong>である。まず1レベルの連接で誤り率がどう変わるかを見る。
+</p>
+
+<div class="proof-box">
+<span class="box-title">導出：連接による誤り率の二乗抑制</span>
+<p>
+フォールトトレラントに設計された論理ゲート（訂正込みの1サイクル）を考える。
+これは物理レベルでは有限個の部品（物理ゲート・測定・待機）から成り、
+各部品は独立に確率 \(p\) で故障するとする（<strong>局所確率的ノイズ</strong>）。
+フォールトトレランスの定義より、この論理ゲートが失敗するのは
+<strong>2個以上の部品が故障したとき</strong>だけである（1個の故障は訂正で消える）。
+</p>
+<p>
+論理ゲートの中に「故障すると論理エラーにつながりうる部品の対」が
+\(c\) 通りあるとすれば、レベル1での論理誤り率は
+\[
+p_1 \;\le\; \binom{(\text{部品数})}{2}\,p^2 \;\equiv\; c\,p^2 .
+\]
+ここで \(c\) は符号と回路設計だけで決まる定数（危険な故障対の個数）である。
+</p>
+<p>
+連接をもう1段重ねると、レベル2のゲートはレベル1のゲートを部品として同じ構造で作る。
+先の議論をそのまま適用すれば
+\(p_2 \le c\,p_1^2\)。一般に
+\[
+p_{k} \;\le\; c\,p_{k-1}^{\,2}.
+\]
+この漸化式を解く。\(q_k \equiv c\,p_k\) と置くと
+\(q_k = c p_k \le c\cdot c p_{k-1}^2 = (c p_{k-1})^2 = q_{k-1}^2\)、
+よって
+\[
+q_k \le q_0^{\,2^k} = (c\,p)^{2^k}
+\quad\Longrightarrow\quad
+\boxed{\;p_k \;\le\; \dfrac{(c\,p)^{2^k}}{c}\;}.
+\]
+</p>
+<p>
+右辺は \(c p \lt 1\)、すなわち
+\[
+p \;\lt\; p_{\mathrm{th}} \equiv \frac1c
+\]
+のときに \(k\) について<strong>二重指数的に</strong> 0 へ向かう。
+\(p_{\mathrm{th}}\) を<strong>フォールトトレランス閾値</strong>と呼ぶ。
+</p>
+</div>
+
+<div class="thm-box">
+<span class="box-title">閾値定理 (threshold theorem)</span>
+局所確率的ノイズの下で、部品あたりの物理誤り率 \(p\) が閾値
+\(p_{\mathrm{th}}=1/c\) を下回るなら、\(N\) 個の論理ゲートから成る任意の量子回路を、
+全体の誤り確率が任意の目標 \(\epsilon\) 以下になるように実行できる。
+必要な連接レベルは
+\[
+2^{k} \;=\; O\!\left(\frac{\log(N/\epsilon)}{\log(1/(c\,p))}\right)
+\]
+で足り、物理的なオーバーヘッド（1論理ゲートあたりの物理操作数）は
+1レベルにつき定数倍 \(d\) なので \(d^{\,k}\) 倍、すなわち
+\[
+\text{オーバーヘッド} \;=\; d^{\,k}
+\;=\; \operatorname{poly}\!\Big(\log(N/\epsilon)\Big).
+\]
+<strong>目標精度を上げるコストは、その対数の多項式(=多項式対数的, polylogarithmic)にしか増えない。</strong>
+</div>
+
+<div class="proof-box">
+<span class="box-title">オーバーヘッド評価の骨子</span>
+<p>
+全体を誤り \(\epsilon\) 未満にするには、\(N\) 個の論理ゲートそれぞれの誤り率を
+\(\epsilon/N\) 未満にすればよい（和集合限界）。
+レベル \(k\) の誤り率 \(p_k\le (cp)^{2^k}/c\) を \(\epsilon/N\) 以下にする条件は
+\[
+(cp)^{2^k} \le \frac{c\,\epsilon}{N}
+\;\Longleftrightarrow\;
+2^k \;\ge\; \frac{\log\!\big(N/(c\epsilon)\big)}{\log\!\big(1/(cp)\big)} .
+\]
+右辺は \(\log(N/\epsilon)\) のオーダーだから、必要レベル数は
+\(k = O\!\big(\log\log(N/\epsilon)\big)\)。
+1レベルごとに物理操作数が定数 \(d\) 倍になるので、
+オーバーヘッドは
+\[
+d^{\,k} = \big(2^{k}\big)^{\log_2 d}
+= O\!\Big(\big(\log(N/\epsilon)\big)^{\log_2 d}\Big)
+= \operatorname{poly}\!\big(\log(N/\epsilon)\big).
+\]
+物理量子ビット数も同じく多項式対数倍で済む。
+</p>
+</div>
+
+<div class="caution-box">
+<span class="box-title">定理が寄りかかっている仮定</span>
+閾値定理の結論は無条件ではない。導出は次を暗に使っている。
+<ul>
+<li><strong>誤りの独立性（局所確率性）。</strong>各部品の故障が独立、
+少なくとも弱い相関しか持たないこと。強く相関した誤り
+（同時多点誤り）や時間的に長距離な相関があると
+「1故障→1誤り」の勘定が崩れる。</li>
+<li><strong>並列操作。</strong>異なるブロックへの操作を<em>同時に</em>実行できること。
+待機時間が延びればその間の誤りが積もるため、並列性は本質的である。</li>
+<li><strong>高速な古典処理。</strong>シンドローム復号（誤り推定）を
+量子コヒーレンスが失われるより速く行える古典計算資源があること。</li>
+<li><strong>新鮮な補助量子ビットの供給。</strong>訂正で得たエントロピーを
+系外へ捨てるために、初期化済みの \(\ket{0}\) を随時供給できること。</li>
+<li><strong>十分小さい \(p\)。</strong>そもそも \(p\lt p_{\mathrm{th}}\)。
+定数 \(c\) は危険な故障対の数なので、良い符号・良い回路設計ほど
+\(c\) が小さく閾値 \(p_{\mathrm{th}}=1/c\) が高い。</li>
+</ul>
+</div>
+
+<p>
+閾値定理の意義は決定的である。これがなければ、量子計算は
+「長くすればするほどノイズに埋もれる」宿命の技術に見える。
+定理は逆に、<strong>部品の質が一定の水準（閾値）を超えれば、
+残りは工学的なスケールアップの問題に還元される</strong>ことを保証する。
+どれほど大きく精密な量子計算も、物理誤り率を閾値以下に抑え、
+連接レベルを数段積むという<strong>多項式対数的</strong>なコストで到達可能になる——
+これが「量子計算は原理的に実現可能である」という主張の理論的支柱である。
+実際の閾値の数値はノイズモデルと符号に依存し、
+本書執筆時の見積り（\(10^{-4}\) 程度からより楽観的な値まで）から、
+表面符号など後年の符号ではより高い閾値（\(\sim10^{-2}\)）が知られるようになった。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第10章のまとめ</span>
+<ul>
+<li><strong>3量子ビット符号（§10.1）：</strong>複製の代わりにエンタングルさせて
+\(\alpha\ket{000}+\beta\ket{111}\) と符号化し、パリティ型のシンドローム観測量
+\(Z_1Z_2,\,Z_2Z_3\) で「情報を見ずに誤りの位置だけ」を知って訂正する。
+Hadamard 基底に移せば位相反転符号になり、両者を組み合わせる素地ができる。</li>
+<li><strong>Shor 符号（§10.2）：</strong>位相反転符号の各量子ビットをビット反転符号で
+入れ子にした \([[9,1,3]]\) 符号。ビット反転・位相反転・その積 \(Y\)、
+さらに<em>任意の</em>1量子ビット誤りを訂正でき、
+「連続的な誤りもシンドローム測定で離散化される」ことを最初に示す。</li>
+<li><strong>量子誤り訂正条件（§10.3）：</strong>符号 \(C\)（射影子 \(P\)）が誤り集合
+\(\{E_i\}\) を訂正できる必要十分条件は
+\(P E_i^\dagger E_j P = \alpha_{ij} P\)（\(\alpha\) はエルミート）。
+ここから訂正可能な誤りの線形性が従い、
+<strong>Pauli 基底の誤りだけ調べれば連続的な誤りも訂正できる</strong>（誤りの離散化）。
+量子 Hamming 限界がリソースの下限を与える。</li>
+<li><strong>CSS 符号（§10.4）：</strong>双対含み \(C_2\subset C_1\) を満たす2つの古典線形符号から
+\(\mathrm{CSS}(C_1,C_2)\) を構成。ビット反転誤りは \(C_1\) のパリティ検査で、
+位相反転誤りは \(C_2^\perp\) のそれで訂正する。Steane 符号 \([[7,1,3]]\) が代表例。</li>
+<li><strong>スタビライザー符号（§10.5）：</strong>符号空間を、Pauli 群の可換部分群
+\(S\)（\(-I\notin S\)）の \(+1\) 固有空間として定義する。\(n-k\) 個の生成元が
+\(2^k\) 次元の符号を定め、シンドローム測定・論理演算子・標準形・符号化回路が
+すべて \(\mathbb{Z}_2\) 線形代数に帰着する。副産物として、
+Clifford 回路は古典的に効率シミュレートできる（Gottesman–Knill 定理）。</li>
+<li><strong>フォールトトレラント量子計算（§10.6）：</strong>符号を解かず、
+transversal な論理ゲートと Shor 型シンドローム測定で誤りの増殖を防ぐ。
+Clifford ゲートは transversal に作れるが、万能化に要る \(T\) は
+（Eastin–Knill 的限界により）transversal に作れず、魔法状態注入で実装する。
+連接符号により実効誤り率は \(p\to cp^2\) と二乗抑制され、
+\(p\lt p_{\mathrm{th}}=1/c\) なら \(p_k\le(cp)^{2^k}/c\) が二重指数的に減少する。</li>
+<li><strong>閾値定理：</strong>物理誤り率が閾値を下回れば、任意に長い量子計算を
+多項式対数的なオーバーヘッドで任意精度まで実行できる。
+量子計算が原理的に実現可能であることの理論的支柱。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

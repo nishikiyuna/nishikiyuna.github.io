@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="確率変数・Bayes の定理・期待値と分散・Markov/Chebyshev/Chernoff の集中不等式・大数の法則">
+  <title>付録A1 確率論の基礎 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="appendixA1" data-chapter="A1">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 付録1 に対応</span>
+  付録A1 確率論の基礎
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この付録の概要</span>
+本ノートの各所で、確率論の初等的な事実を証明なしに使ってきた。
+本付録はそれらを一箇所にまとめ、すべて証明を付ける。
+確率変数と条件付き確率から始め（§A1.1、§A1.2）、期待値と分散を定義する（§A1.3）。
+そのうえで、本文で実際に必要になる<strong>集中不等式</strong>
+（Markov、Chebyshev、Chernoff）を順に導く（§A1.4）。最後に大数の法則を述べ、本文のどこで使われるかを整理する（§A1.5）。
+本ノートで扱う確率変数はすべて<strong>有限個の値</strong>しか取らないものとし、
+測度論的な準備は一切必要としない。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a1-1">確率変数<span class="en">Random variables</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（確率変数）</span>
+有限集合 \(\mathcal{X}\) の各元 \(x\) に非負の実数 \(p(x)\ge0\) が与えられ、
+\(\sum_{x\in\mathcal X}p(x)=1\) を満たすとき、組 \((\mathcal X,p)\) を
+<strong>確率分布</strong>という。
+このとき「値 \(x\in\mathcal X\) を確率 \(p(x)\) で取る量」を<strong>確率変数
+(random variable)</strong> と呼び、大文字 \(X\) で書く。
+「\(X\) が値 \(x\) を取る」という事象の確率を \(p(X=x)\) と書き、
+文脈から明らかなときは \(p(x)\) と略記する。
+</div>
+
+<p>
+記法の約束を一つ置く。確率変数そのものは大文字（\(X,Y,Z\)）、
+それが取る具体的な値は小文字（\(x,y,z\)）で書く。
+\(\mathcal X\) の部分集合 \(A\subseteq\mathcal X\) を<strong>事象</strong>と呼び、
+その確率を \(p(A)=\sum_{x\in A}p(x)\) と定める。
+2つの確率変数 \(X,Y\) を同時に考えるときは、対 \((x,y)\) 上の分布
+\(p(X=x,\,Y=y)\)（<strong>同時分布</strong>）を与える。
+そこから
+\[
+p(x) = \sum_y p(x,y),\qquad p(y) = \sum_x p(x,y)
+\]
+として得られる分布を<strong>周辺分布 (marginal distribution)</strong> と呼ぶ。
+</p>
+
+<p>
+確率変数のベクトル値版もそのまま使う。たとえば
+\(X=(X_1,\dots,X_n)\) が \(\{0,1\}^n\) に値を取る確率変数、といった書き方をする。
+本ノートで最も頻繁に現れるのはこの形（\(n\) ビット列の分布）である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a1-2">条件付き確率と Bayes の定理<span class="en">Conditional probability and Bayes' rule</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（条件付き確率・独立性）</span>
+\(p(X=x)&gt;0\) のとき、\(X=x\) が起きたという条件のもとで \(Y=y\) が起きる
+<strong>条件付き確率 (conditional probability)</strong> を
+\[
+p(Y=y \mid X=x) \equiv \frac{p(X=x,\,Y=y)}{p(X=x)}
+\]
+で定義する。\(p(X=x)=0\) のときは \(p(Y=y\mid X=x)\equiv0\) と約束する。
+略記は \(p(y|x)\)。<br>
+すべての \(x,y\) について
+\[
+p(x,y) = p(x)\,p(y)
+\]
+が成り立つとき、\(X\) と \(Y\) は<strong>独立 (independent)</strong> であるという。
+</div>
+
+<p>
+定義から、独立なら \(p(x)&gt;0\) のとき \(p(y|x)=p(y)\)：
+「\(X\) の値を知っても \(Y\) についての知識は変わらない」。これが独立性の意味である。
+条件付き確率は、固定した \(x\) に対して \(y\) の確率分布になっている：
+\(\sum_y p(y|x) = \sum_y p(x,y)/p(x) = p(x)/p(x) = 1\)。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（全確率の法則）</span>
+\[
+p(y) = \sum_x p(y|x)\,p(x).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+定義より \(p(y|x)p(x)=p(x,y)\)（\(p(x)=0\) の項は両辺とも 0）。
+\(x\) について和を取れば周辺分布の定義そのものである。<span class="qed">∎</span>
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（Bayes の定理）</span>
+\(p(y)&gt;0\) のとき
+\[
+p(x|y) = \frac{p(y|x)\,p(x)}{p(y)}
+= \frac{p(y|x)\,p(x)}{\sum_{x'}p(y|x')\,p(x')} .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+条件付き確率の定義を2通りに使うと
+\(p(x|y)\,p(y) = p(x,y) = p(y|x)\,p(x)\)。
+\(p(y)&gt;0\) で割れば第1の等式を得る。
+分母に全確率の法則を代入すれば第2の等式になる。<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">Bayes の定理の読み方</span>
+\(X\) を「原因」、\(Y\) を「観測」とすると、
+\(p(y|x)\) は「原因が分かっているときに何が観測されるか」（順方向、通常は模型から計算できる）、
+\(p(x|y)\) は「観測から原因を推定する」（逆方向、知りたい量）である。
+Bayes の定理は前者から後者への翻訳規則であり、
+\(p(x)\) を<strong>事前分布</strong>、\(p(x|y)\) を<strong>事後分布</strong>と呼ぶ。
+本ノートでは §2.4.1（測定後のアンサンブルの導出）でこの形をそのまま使った。
+また §8.3.5 の「光子が観測されなかったという事実が状態を \(\ket0\) 側へ傾ける」という
+議論も、Bayes 更新の量子版として読める。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a1-3">期待値と分散<span class="en">Expectation and variance</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（期待値・分散・標準偏差）</span>
+実数値の確率変数 \(X\) に対し、
+\[
+\mathbb E(X) \equiv \sum_x p(x)\,x
+\]
+を<strong>期待値 (expectation)</strong>、
+\[
+\mathrm{var}(X) \equiv \mathbb E\bigl[(X-\mathbb E(X))^2\bigr]
+\]
+を<strong>分散 (variance)</strong>、\(\Delta(X)\equiv\sqrt{\mathrm{var}(X)}\) を
+<strong>標準偏差 (standard deviation)</strong> と呼ぶ。
+</div>
+
+<p>
+基本的な性質を並べる。いずれも定義から直接の計算である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">命題（期待値と分散の基本性質）</span>
+<ol>
+<li><strong>線形性</strong>：\(\mathbb E(aX+bY)=a\,\mathbb E(X)+b\,\mathbb E(Y)\)
+（\(a,b\in\mathbb R\)。\(X,Y\) は独立でなくてよい）。</li>
+<li><strong>分散の展開</strong>：\(\mathrm{var}(X)=\mathbb E(X^2)-\mathbb E(X)^2\)。</li>
+<li><strong>独立変数の積</strong>：\(X,Y\) が独立なら \(\mathbb E(XY)=\mathbb E(X)\mathbb E(Y)\)。</li>
+<li><strong>独立変数の和の分散</strong>：\(X_1,\dots,X_n\) が互いに独立なら
+\(\mathrm{var}\bigl(\sum_iX_i\bigr)=\sum_i\mathrm{var}(X_i)\)。</li>
+<li>ある値 \(x\ge\mathbb E(X)\) で \(p(x)&gt;0\) となるものが必ず存在する。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>1.</strong> 同時分布上で
+\(\mathbb E(aX+bY)=\sum_{x,y}p(x,y)(ax+by)
+= a\sum_x x\sum_y p(x,y) + b\sum_y y\sum_x p(x,y)
+= a\mathbb E(X)+b\mathbb E(Y)\)。
+</p>
+<p>
+<strong>2.</strong> \(\mu\equiv\mathbb E(X)\) と置き、線形性を使って
+\(\mathbb E[(X-\mu)^2]=\mathbb E(X^2)-2\mu\,\mathbb E(X)+\mu^2=\mathbb E(X^2)-\mu^2\)。
+</p>
+<p>
+<strong>3.</strong> 独立性より \(p(x,y)=p(x)p(y)\) だから
+\(\mathbb E(XY)=\sum_{x,y}p(x)p(y)\,xy
+=\bigl(\sum_xp(x)x\bigr)\bigl(\sum_yp(y)y\bigr)=\mathbb E(X)\mathbb E(Y)\)。
+</p>
+<p>
+<strong>4.</strong> \(Y_i\equiv X_i-\mathbb E(X_i)\) と中心化すると
+\(\mathbb E(Y_i)=0\) で、\(i\ne j\) では独立性と 3. より
+\(\mathbb E(Y_iY_j)=\mathbb E(Y_i)\mathbb E(Y_j)=0\)。よって
+\[
+\mathrm{var}\Bigl(\sum_iX_i\Bigr)=\mathbb E\Bigl[\Bigl(\sum_iY_i\Bigr)^2\Bigr]
+=\sum_{i,j}\mathbb E(Y_iY_j)=\sum_i\mathbb E(Y_i^2)=\sum_i\mathrm{var}(X_i).
+\]
+</p>
+<p>
+<strong>5.</strong> 対偶を示す。もし \(p(x)&gt;0\) なるすべての \(x\) で \(x&lt;\mathbb E(X)\) なら、
+\(\mathbb E(X)=\sum_xp(x)x&lt;\mathbb E(X)\sum_xp(x)=\mathbb E(X)\) となって矛盾する。
+<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="example-box">
+<span class="box-title">例（ベルヌーイ試行）</span>
+\(X\) が確率 \(q\) で 1、確率 \(1-q\) で 0 を取るとする。
+\(\mathbb E(X)=q\)、\(\mathbb E(X^2)=q\) なので
+\(\mathrm{var}(X)=q-q^2=q(1-q)\)。
+\(q=1/2\)（公平なコイン）で分散が最大 \(1/4\) になり、
+\(q=0,1\)（決定的）で 0 になる。
+独立な \(n\) 回の試行の和 \(S_n=\sum_{i=1}^nX_i\)（二項分布）では、
+性質 1 と 4 から
+\[
+\mathbb E(S_n)=nq,\qquad \mathrm{var}(S_n)=nq(1-q),\qquad
+\Delta(S_n)=\sqrt{nq(1-q)}
+\]
+となる。<strong>平均は \(n\) に比例して伸びるが、ばらつきは \(\sqrt n\) でしか伸びない</strong>
+——相対的なばらつき \(\Delta(S_n)/\mathbb E(S_n)\propto1/\sqrt n\) が 0 に向かうことが、
+次節の集中不等式と大数の法則の中身である。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a1-4">集中不等式<span class="en">Concentration inequalities</span></h2>
+
+<p>
+「確率変数は平均のまわりにどれくらい集中しているか」を定量化する不等式を、
+弱いものから順に3つ導く。後のものほど強い仮定を要求し、その分だけ強い結論を与える。
+</p>
+
+<h3 id="sec-a1-4-1">Markov の不等式</h3>
+
+<div class="thm-box">
+<span class="box-title">定理（Markov の不等式）</span>
+\(X\ge0\) を非負の確率変数とすると、任意の \(a&gt;0\) に対して
+\[
+p\bigl(X \ge a\bigr) \ \le\ \frac{\mathbb E(X)}{a}.
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+和を \(x\ge a\) の部分と \(x&lt;a\) の部分に分けると、非負性から
+\[
+\mathbb E(X) = \sum_x p(x)\,x \ \ge\ \sum_{x\ge a}p(x)\,x
+\ \ge\ a\sum_{x\ge a}p(x) = a\,p(X\ge a).
+\]
+両辺を \(a&gt;0\) で割ればよい。<span class="qed">∎</span>
+</div>
+
+<p>
+仮定は非負性だけで、分布の形について何も知らなくても使える。
+その代わり結論は弱く、減衰は \(1/a\) にすぎない。
+</p>
+
+<h3 id="sec-a1-4-2">Chebyshev の不等式</h3>
+
+<div class="thm-box">
+<span class="box-title">定理（Chebyshev の不等式）</span>
+分散が有限な確率変数 \(X\) と任意の \(\lambda&gt;0\) に対し
+\[
+p\Bigl(\bigl|X-\mathbb E(X)\bigr| \ge \lambda\,\Delta(X)\Bigr) \ \le\ \frac{1}{\lambda^2}.
+\]
+すなわち<strong>平均から標準偏差 \(\lambda\) 個分以上離れる確率は \(1/\lambda^2\) 以下</strong>である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+非負の確率変数 \(Y\equiv(X-\mathbb E(X))^2\) に Markov の不等式を
+\(a=\lambda^2\Delta(X)^2\) で適用する。\(\mathbb E(Y)=\mathrm{var}(X)=\Delta(X)^2\) だから
+\[
+p\bigl(Y\ge\lambda^2\Delta(X)^2\bigr) \le \frac{\Delta(X)^2}{\lambda^2\Delta(X)^2}
+= \frac{1}{\lambda^2}.
+\]
+左辺の事象 \(Y\ge\lambda^2\Delta(X)^2\) は \(|X-\mathbb E(X)|\ge\lambda\Delta(X)\) と
+同じ事象である。<span class="qed">∎</span>
+</div>
+
+<p>
+分散という追加情報を使ったぶん、減衰が \(1/\lambda\) から \(1/\lambda^2\) へ改善された。
+これでも多くの場面では足りない。
+本ノートで繰り返し必要になるのは「誤り確率が反復回数について<strong>指数的に</strong>減る」
+という主張であり、そのためには次の Chernoff 型の評価が要る。
+</p>
+
+<h3 id="sec-a1-4-3">Chernoff 限界</h3>
+
+<p>
+独立性を仮定すると、指数関数的に強い集中が示せる。
+道具は「指数関数を掛けてから Markov の不等式を使う」という一手である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Hoeffding–Chernoff 限界）</span>
+\(X_1,\dots,X_n\) を独立で \(\{0,1\}\) に値を取る確率変数とし、
+\(p(X_i=1)=q\)（すべての \(i\) で共通）とする。
+\(S_n=\sum_{i=1}^nX_i\) と置くと、任意の \(\epsilon&gt;0\) に対して
+\[
+p\Bigl(\Bigl|\frac{S_n}{n}-q\Bigr| \ge \epsilon\Bigr)
+\ \le\ 2\,e^{-2n\epsilon^2}.
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+片側 \(p(S_n-nq\ge n\epsilon)\) を評価すれば、\(X_i\to1-X_i\) の置き換えで
+反対側も同じ評価になり、和集合の上界で係数 2 が付く。
+</p>
+<p>
+<strong>ステップ1（指数 Markov）。</strong>
+任意の \(t&gt;0\) に対し、\(e^{tx}\) が単調増加であることから
+\(S_n-nq\ge n\epsilon \iff e^{t(S_n-nq)}\ge e^{tn\epsilon}\)。
+非負の確率変数 \(e^{t(S_n-nq)}\) に Markov の不等式を適用して
+\[
+p\bigl(S_n-nq\ge n\epsilon\bigr)
+\ \le\ e^{-tn\epsilon}\ \mathbb E\bigl[e^{t(S_n-nq)}\bigr]
+= e^{-tn\epsilon}\prod_{i=1}^{n}\mathbb E\bigl[e^{t(X_i-q)}\bigr],
+\]
+最後の等号は独立性（命題 3 の指数関数版。独立な変数の関数もまた独立である）による。
+</p>
+<p>
+<strong>ステップ2（Hoeffding の補題）。</strong>
+\(Y\equiv X_1-q\) は \([-q,\,1-q]\)（長さ 1 の区間）に値を取り \(\mathbb E(Y)=0\) である。
+このとき
+\[
+\mathbb E\bigl[e^{tY}\bigr] \ \le\ e^{t^2/8}
+\]
+が成り立つ。実際、\(\psi(t)\equiv\ln\mathbb E[e^{tY}]\) と置くと
+\(\psi(0)=0\)、\(\psi'(0)=\mathbb E(Y)=0\) であり、
+\(\psi''(t)\) は「指数傾斜した分布の下での \(Y\) の分散」に等しい。
+長さ 1 の区間に値を取る確率変数の分散は高々 \(1/4\) だから
+\(\psi''(t)\le1/4\)。Taylor の定理より \(\psi(t)\le t^2/8\) を得る。
+</p>
+<p>
+<strong>ステップ3（最適化）。</strong>ステップ1・2を合わせて
+\[
+p\bigl(S_n-nq\ge n\epsilon\bigr) \ \le\ e^{-tn\epsilon}\,e^{nt^2/8}
+= \exp\Bigl[n\Bigl(\frac{t^2}{8}-t\epsilon\Bigr)\Bigr].
+\]
+指数の中身は \(t=4\epsilon\) で最小になり、その値は \(-2\epsilon^2\)。
+よって片側の確率は \(e^{-2n\epsilon^2}\) 以下、両側で \(2e^{-2n\epsilon^2}\) 以下である。
+<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">3つの不等式の比較</span>
+標本平均 \(S_n/n\) が真の値 \(q\) から \(\epsilon\) 以上ずれる確率の上界を並べる。
+<div class="table-wrap">
+<table>
+<thead><tr><th>不等式</th><th>仮定</th><th>上界</th></tr></thead>
+<tbody>
+<tr><td>Markov</td><td>非負性のみ</td><td>\(O(1/n\epsilon)\) 程度（使い方によるが弱い）</td></tr>
+<tr><td>Chebyshev</td><td>分散が有限</td><td>\(\dfrac{q(1-q)}{n\epsilon^2}\le\dfrac{1}{4n\epsilon^2}\)</td></tr>
+<tr><td>Chernoff</td><td>独立・有界</td><td>\(2e^{-2n\epsilon^2}\)</td></tr>
+</tbody>
+</table>
+</div>
+Chebyshev は \(n\) について<strong>多項式</strong>にしか減らないのに対し、
+Chernoff は<strong>指数的</strong>に減る。この違いが決定的である。
+たとえば「誤り確率 \(1/3\) のアルゴリズムを \(m\) 回反復して多数決すると
+誤り確率が \(2^{-\Omega(m)}\) になる」（§3.2.2、§4.5.5）という主張は
+Chernoff がなければ言えない。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（誤り確率の増幅）</span>
+誤り確率が \(1/2-\eta\)（\(\eta&gt;0\)）のアルゴリズムを独立に \(m\) 回走らせ、
+多数決を取る。\(X_i=1\) を「\(i\) 回目が誤り」として \(q=1/2-\eta\)、
+多数決が誤るのは \(S_m/m\ge1/2\)、すなわち \(S_m/m-q\ge\eta\) のときである。
+Chernoff 限界より
+\[
+p(\text{多数決が誤る}) \ \le\ e^{-2m\eta^2},
+\]
+すなわち反復回数について指数的に減衰する。
+§3.2.2 で BPP の閾値 \(1/4\) が本質的でないと述べた根拠がこれである
+（そこでは同じ結論を二項係数の直接評価で導いた。どちらの道でも指数減衰が出る）。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a1-5">大数の法則と本文での使われ方<span class="en">The law of large numbers</span></h2>
+
+<div class="thm-box">
+<span class="box-title">定理（大数の弱法則）</span>
+\(X_1,X_2,\dots\) を独立同分布（i.i.d.）で、平均 \(\mu=\mathbb E(X_1)\)、
+分散が有限な実確率変数の列とする。標本平均を
+\(\bar X_n\equiv\frac1n\sum_{i=1}^nX_i\) とすると、任意の \(\epsilon&gt;0\) に対し
+\[
+\lim_{n\to\infty} p\bigl(|\bar X_n - \mu| \ge \epsilon\bigr) = 0 .
+\]
+すなわち \(\bar X_n\) は \(\mu\) に<strong>確率収束</strong>する。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+線形性より \(\mathbb E(\bar X_n)=\mu\)。独立性と分散の性質（命題 4）から
+\[
+\mathrm{var}(\bar X_n) = \frac{1}{n^2}\sum_{i=1}^n\mathrm{var}(X_i)
+= \frac{\mathrm{var}(X_1)}{n}.
+\]
+Chebyshev の不等式を \(\lambda\Delta(\bar X_n)=\epsilon\)、すなわち
+\(\lambda = \epsilon\sqrt{n/\mathrm{var}(X_1)}\) として適用すると
+\[
+p\bigl(|\bar X_n-\mu|\ge\epsilon\bigr) \ \le\ \frac{1}{\lambda^2}
+= \frac{\mathrm{var}(X_1)}{n\,\epsilon^2} \ \xrightarrow[n\to\infty]{}\ 0 .
+\]
+<span class="qed">∎</span>
+</div>
+
+<div class="remark-box">
+<span class="box-title">本文のどこで使ったか</span>
+<ul>
+<li><strong>§3.2.2（BPP の誤り増幅）・§4.5.5（BQP の定義）：</strong>
+反復と多数決で誤り確率が指数的に下がること。§A1.4.3 の Chernoff 限界がその根拠である。</li>
+<li><strong>§6.3（量子計数）：</strong>推定値の誤差評価。位相推定の失敗確率を
+定数回の反復で押し下げる議論に集中不等式が効く。</li>
+<li><strong>§12.2（データ圧縮）：</strong>
+<strong>漸近等分配性 (AEP)</strong> は大数の弱法則そのものである。
+i.i.d. 情報源の系列 \(x^n\) に対し
+\[
+-\frac1n\log p(X^n) = \frac1n\sum_{i=1}^n\bigl(-\log p(X_i)\bigr)
+\]
+は i.i.d. 確率変数 \(-\log p(X_i)\)（平均は Shannon エントロピー \(H(X)\)）の標本平均である。
+大数の法則によりこれは \(H(X)\) に確率収束し、
+「ほとんどの系列は確率 \(\approx2^{-nH}\) の典型系列である」という結論が出る。
+Schumacher 圧縮（§12.2.2）の典型部分空間も、\(\rho\) の固有値分布に対する
+同じ議論の言い換えである。</li>
+<li><strong>§12.3（HSW 定理）：</strong>ランダム符号化の解析で、
+「無関係な符号語が偶然結合典型になる確率」の評価に典型性（＝大数の法則）を使う。</li>
+</ul>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">付録A1 のまとめ</span>
+<ul>
+<li>条件付き確率 \(p(y|x)=p(x,y)/p(x)\) から、全確率の法則
+\(p(y)=\sum_xp(y|x)p(x)\) と Bayes の定理 \(p(x|y)=p(y|x)p(x)/p(y)\) が従う。
+独立性は \(p(x,y)=p(x)p(y)\)。</li>
+<li>期待値は線形、分散は \(\mathrm{var}(X)=\mathbb E(X^2)-\mathbb E(X)^2\)。
+独立変数の和では分散が加法的になり、\(n\) 回の試行の標準偏差は \(\sqrt n\) でしか伸びない。</li>
+<li>集中不等式の階段：Markov \(p(X\ge a)\le\mathbb E(X)/a\)（非負性のみ）
+→ Chebyshev \(p(|X-\mathbb E X|\ge\lambda\Delta)\le1/\lambda^2\)（分散を使う）
+→ Chernoff \(p(|S_n/n-q|\ge\epsilon)\le2e^{-2n\epsilon^2}\)（独立性を使う）。
+指数減衰が要るところでは Chernoff が必須である。</li>
+<li>大数の弱法則は Chebyshev の直接の帰結であり、
+§12.2 の漸近等分配性（典型系列・典型部分空間）の数学的正体でもある。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

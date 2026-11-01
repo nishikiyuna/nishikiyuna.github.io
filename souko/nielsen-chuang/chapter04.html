@@ -1,0 +1,1653 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="1量子ビット演算と制御演算から量子回路モデルを組み上げ、万能性定理と量子系のシミュレーションを示す">
+  <title>第4章 量子回路 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter04" data-chapter="4">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 第4章に対応</span>
+  第4章 量子回路
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本章は量子計算の「言語」である<strong>量子回路モデル</strong>を、部品の側から組み上げる章である。
+まず 1 量子ビットのユニタリ演算を回転演算子で完全に分類し（§4.2）、
+それを部品として任意の制御演算を CNOT と 1 量子ビットゲートから系統的に構成する（§4.3）。
+次に、測定を回路の中でどう扱うかを整理する。
+測定はいつでも回路の末尾へ先送りできる（§4.4）。
+そのうえで本章の主定理である<strong>万能性定理</strong>を証明する。
+任意のユニタリ演算は {1 量子ビットゲート, CNOT} で厳密に実現でき、
+さらに有限集合 {H, T, CNOT} だけで任意精度で近似できる（§4.5）。
+同時に、「ほとんどの」ユニタリの実現には指数個のゲートが必要という限界も数え上げ論法で示す。
+最後に、量子計算機の最初の応用として Feynman が構想した<strong>量子系のシミュレーション</strong>を、
+Trotter 公式に基づく具体的アルゴリズムとして与える（§4.7）。
+第5章以降のすべてのアルゴリズムはこの章の言葉で書かれる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-1">量子アルゴリズムの構成要素<span class="en">Quantum algorithms</span></h2>
+
+<p>
+第1章で素描したように、量子アルゴリズムとは
+「量子力学が許す操作だけを使って、古典計算機より効率よく問題を解く手続き」である。
+その手続きを記述する標準的な枠組みが<strong>量子回路 (quantum circuit)</strong> であり、
+本章の目標はこの枠組みを部品レベルから完全に整備することである。
+具体的には次の三つの問いに答える。
+</p>
+
+<ul>
+<li><strong>部品は何か。</strong>
+1 量子ビットに対する任意のユニタリはどう記述・分解できるか（§4.2）。
+「条件が満たされたときだけ演算する」制御演算はどう作るか（§4.3）。
+測定は回路の中でどう扱えばよいか（§4.4）。</li>
+<li><strong>部品は足りているか。</strong>
+有限種類のゲートだけで、原理的に可能なあらゆるユニタリ変換を（厳密に、あるいは任意精度で）
+実現できるか——万能性の問題（§4.5）。これは古典回路における
+「NAND ゲートだけですべての論理関数が作れる」という事実の量子版である。</li>
+<li><strong>この部品で何を計算するか。</strong>
+最初の本格的な応用例として、量子系の時間発展のシミュレーションを構成する（§4.7）。</li>
+</ul>
+
+<p>
+回路図の約束事を確認しておく。量子回路は左から右へ時間が流れる図であり、
+横線（ワイヤ）は 1 量子ビットの時間発展を、線上の箱はゲート（ユニタリ演算）を表す。
+古典の論理回路と違って、量子回路には
+<strong>ループ（帰還）がなく、ワイヤの合流（FANIN）も分岐（FANOUT）もない</strong>。
+合流は非可逆であり、分岐は未知状態の複製を意味するから、
+どちらもユニタリ性（および複製不可能定理、§1.3.5）と両立しないためである。
+特に断らない限り、入力は計算基底状態 \(\ket{0}^{\otimes n}\) に初期化されているとする。
+</p>
+
+<p>
+量子アルゴリズムの全体は通常、
+（i）古典的な前処理、（ii）量子回路の実行、（iii）測定結果に対する古典的な後処理、
+の三層からなる。本章はもっぱら（ii）の言語を作る章であり、
+出来上がった言語の要件一覧は §4.6 にまとめる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-2">1量子ビット演算<span class="en">Single qubit operations</span></h2>
+
+<p>
+1 量子ビットのユニタリは \(2\times 2\) ユニタリ行列、すなわち 4 実パラメータの族である。
+この節でその全体を<strong>回転演算子</strong>によって座標付けし、
+のちの構成（制御演算・万能性）の要となる二つの分解定理——Z-Y 分解と ABC 分解——を証明する。
+まず記号を思い出しておく。Pauli 行列は
+\[
+X = \begin{pmatrix} 0 &amp; 1 \\ 1 &amp; 0 \end{pmatrix},\qquad
+Y = \begin{pmatrix} 0 &amp; -i \\ i &amp; 0 \end{pmatrix},\qquad
+Z = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; -1 \end{pmatrix}
+\]
+であり、いずれもエルミートかつユニタリで、2乗すると単位行列になる：
+\(X^2 = Y^2 = Z^2 = I\)。
+</p>
+
+<h3 id="sec-4-2-1">回転演算子</h3>
+
+<p>
+出発点は、行列の指数関数に関する次の展開公式である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">命題（対合的行列の指数関数）</span>
+正方行列 \(A\) が \(A^2 = I\) を満たすなら、任意の実数 \(x\) に対して
+\[
+e^{iAx} = \cos x\, I + i \sin x\, A .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+指数関数の定義級数を偶数次と奇数次に分ける。\(A^2 = I\) より
+\(A^{2k} = I\)、\(A^{2k+1} = A\) だから
+\[
+e^{iAx} = \sum_{n=0}^{\infty} \frac{(ix)^n}{n!} A^n
+= \sum_{k=0}^{\infty} \frac{(-1)^k x^{2k}}{(2k)!}\, I
++ i \sum_{k=0}^{\infty} \frac{(-1)^k x^{2k+1}}{(2k+1)!}\, A
+= \cos x \, I + i \sin x \, A .
+\]
+（行列指数関数の級数は絶対収束するので並べ替えは正当である。）<span class="qed">∎</span></p>
+</div>
+
+<p>
+Pauli 行列はすべて \(A^2=I\) を満たすので、この公式が直ちに使える。
+そこで各軸まわりの<strong>回転演算子 (rotation operator)</strong> を次で定義する。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（回転演算子）</span>
+実数 \(\theta\) に対して
+\[
+R_x(\theta) \equiv e^{-i\theta X/2},\qquad
+R_y(\theta) \equiv e^{-i\theta Y/2},\qquad
+R_z(\theta) \equiv e^{-i\theta Z/2}.
+\]
+上の命題より、行列表示は
+\[
+R_x(\theta) = \begin{pmatrix}
+\cos\frac{\theta}{2} &amp; -i\sin\frac{\theta}{2} \\[2pt]
+-i\sin\frac{\theta}{2} &amp; \cos\frac{\theta}{2}
+\end{pmatrix},\qquad
+R_y(\theta) = \begin{pmatrix}
+\cos\frac{\theta}{2} &amp; -\sin\frac{\theta}{2} \\[2pt]
+\sin\frac{\theta}{2} &amp; \cos\frac{\theta}{2}
+\end{pmatrix},\qquad
+R_z(\theta) = \begin{pmatrix}
+e^{-i\theta/2} &amp; 0 \\
+0 &amp; e^{i\theta/2}
+\end{pmatrix}.
+\]
+</div>
+
+<p>
+いくつか基本的な確認をしておく。
+\(R_y(\theta)\ket{0} = \cos\frac{\theta}{2}\ket{0} + \sin\frac{\theta}{2}\ket{1}\)
+であり、これは Bloch 球（§1.2）で北極から角 \(\theta\) だけ傾けた
+（\(\varphi = 0\) 面内の）状態にほかならない。
+また第1〜3章で使ってきたゲートは、大域位相を除いて回転演算子で書ける：
+\[
+X = i\,R_x(\pi),\qquad
+Z = i\,R_z(\pi),\qquad
+S = e^{i\pi/4} R_z(\pi/2),\qquad
+T = e^{i\pi/8} R_z(\pi/4).
+\]
+最後の 2 つは位相ゲート \(S = \mathrm{diag}(1, i)\)、
+\(\pi/8\) ゲート \(T = \mathrm{diag}(1, e^{i\pi/4})\) の定義から直接確かめられる。
+大域位相 \(e^{i\alpha}\) は測定統計に一切影響しない（§2.2.7）ので、
+単独の量子ビットに対しては無視してよいが、
+<strong>制御演算の中に入ると相対位相に化けて物理的意味を持つ</strong>（§4.3.1）。
+このため本章では大域位相を落とさずに追跡する。
+</p>
+
+<p>
+任意の実単位ベクトル \(\hat n = (n_x, n_y, n_z)\) に対しても、
+\(\hat n \cdot \vec\sigma \equiv n_x X + n_y Y + n_z Z\) が
+\((\hat n\cdot\vec\sigma)^2 = I\) を満たすことから
+（Pauli 行列の反交換関係 \(\{ \sigma_a, \sigma_b \} = 2\delta_{ab} I\) を使えば
+\((\hat n\cdot\vec\sigma)^2 = \sum_{a,b} n_a n_b \,\tfrac12\{\sigma_a,\sigma_b\} = |\hat n|^2 I = I\)）、
+<strong>任意軸まわりの回転</strong>
+\[
+R_{\hat n}(\theta) \equiv e^{-i\theta\, \hat n\cdot\vec\sigma/2}
+= \cos\frac{\theta}{2}\, I - i \sin\frac{\theta}{2}\,(n_x X + n_y Y + n_z Z)
+\]
+が定義できる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">「回転」の名の由来</span>
+\(R_{\hat n}(\theta)\) は Bloch 球上で軸 \(\hat n\) まわりの角 \(\theta\) の回転を引き起こす。
+これを確かめるには、状態を Bloch ベクトル \(\vec r\)（\(\rho = (I + \vec r\cdot\vec\sigma)/2\)）で表し、
+共役作用 \(\vec r\cdot\vec\sigma \mapsto R_{\hat n}(\theta)\,(\vec r\cdot\vec\sigma)\,R_{\hat n}(\theta)^\dagger\)
+の生成子を見ればよい。\(\theta\) について微分して \(\theta = 0\) と置くと、
+交換関係 \([\sigma_a, \sigma_b] = 2i\,\epsilon_{abc}\sigma_c\) から
+\[
+\frac{d}{d\theta}\Big|_{0}\, \vec r(\theta)\cdot\vec\sigma
+= -\frac{i}{2}\,[\hat n\cdot\vec\sigma,\ \vec r\cdot\vec\sigma]
+= (\hat n \times \vec r)\cdot\vec\sigma ,
+\]
+すなわち \(\dot{\vec r} = \hat n \times \vec r\)。これはまさに軸 \(\hat n\)・角速度 1 の回転の方程式である。
+角 \(\theta\) の回転にユニタリ側では \(\theta/2\) が現れる（\(4\pi\) 周期：
+\(R_{\hat n}(2\pi) = -I\)）のはスピン \(1/2\) 特有の二価性で、
+大域位相を除けば \(2\pi\) で元に戻る。
+例えば Hadamard ゲートは \(H = (X+Z)/\sqrt2\) なので、
+軸 \(\hat n = (1,0,1)/\sqrt2\) について \(H = e^{i\pi/2} R_{\hat n}(\pi)\)、
+つまり「\(x\) 軸と \(z\) 軸の中間の軸まわりの \(180^\circ\) 回転」である。
+\(H\) の共役作用が \(X \leftrightarrow Z\)、\(Y \mapsto -Y\) の入れ替えになることも
+この描像から一目で読める。
+</div>
+
+<h3 id="sec-4-2-2">Z-Y 分解定理</h3>
+
+<p>
+回転演算子だけで 1 量子ビットユニタリの全体を尽くせることを示すのが次の定理である。
+Euler 角による回転の分解の、ユニタリ群 \(U(2)\) 版と言ってよい。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Z-Y 分解）</span>
+任意の 1 量子ビットユニタリ \(U\) に対し、実数 \(\alpha, \beta, \gamma, \delta\) が存在して
+\[
+U = e^{i\alpha}\, R_z(\beta)\, R_y(\gamma)\, R_z(\delta).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>まず右辺を具体的に計算する。行列の積を実行すると</p>
+
+<div class="equation" id="eq-zy-matrix">
+\[
+e^{i\alpha} R_z(\beta) R_y(\gamma) R_z(\delta)
+= \begin{pmatrix}
+e^{i(\alpha - \beta/2 - \delta/2)} \cos\frac{\gamma}{2} &amp;
+-\,e^{i(\alpha - \beta/2 + \delta/2)} \sin\frac{\gamma}{2} \\[4pt]
+e^{i(\alpha + \beta/2 - \delta/2)} \sin\frac{\gamma}{2} &amp;
+e^{i(\alpha + \beta/2 + \delta/2)} \cos\frac{\gamma}{2}
+\end{pmatrix}
+\]
+</div>
+
+<p>となる。逆に、任意のユニタリ \(U\) がこの形に書けることを示せばよい。</p>
+<p>
+\(U\) の第 1 列は単位ベクトルだから、
+\(0 \le \gamma \le \pi\)（したがって \(\cos\frac{\gamma}{2}, \sin\frac{\gamma}{2} \ge 0\)）と
+実数 \(\varphi_1, \varphi_2\) を使って
+\[
+U = \begin{pmatrix}
+e^{i\varphi_1} \cos\frac{\gamma}{2} &amp; u_{12} \\
+e^{i\varphi_2} \sin\frac{\gamma}{2} &amp; u_{22}
+\end{pmatrix}
+\]
+と書ける。第 2 列は第 1 列と直交する単位ベクトルであり、
+\(2\) 次元で第 1 列に直交するベクトルは位相倍を除いて一意だから、ある実数 \(\chi\) により
+\[
+\begin{pmatrix} u_{12} \\ u_{22} \end{pmatrix}
+= e^{i\chi} \begin{pmatrix} -e^{-i\varphi_2} \sin\frac{\gamma}{2} \\ e^{-i\varphi_1} \cos\frac{\gamma}{2} \end{pmatrix}
+= \begin{pmatrix} -e^{i\varphi_3} \sin\frac{\gamma}{2} \\ e^{i\varphi_4} \cos\frac{\gamma}{2} \end{pmatrix},
+\qquad \varphi_3 \equiv \chi - \varphi_2,\quad \varphi_4 \equiv \chi - \varphi_1
+\]
+と表せる。ここで \(\varphi_3, \varphi_4\) の定義から自動的に<strong>整合条件</strong></p>
+
+<div class="equation" id="eq-zy-consistency">
+\[
+\varphi_1 + \varphi_4 = \varphi_2 + \varphi_3
+\]
+</div>
+
+<p>が成り立つ（\(\varphi_1 + \varphi_4 = \varphi_1 + (\chi - \varphi_1) = \chi\)、
+\(\varphi_2 + \varphi_3 = \varphi_2 + (\chi - \varphi_2) = \chi\) で、両辺とも \(\chi\) に等しい）。
+あとは<a class="eq-ref" href="#eq-zy-matrix"></a> の 4 つの位相と \(\varphi_1,\dots,\varphi_4\) を突き合わせて
+\[
+\alpha - \tfrac{\beta}{2} - \tfrac{\delta}{2} = \varphi_1,\quad
+\alpha + \tfrac{\beta}{2} - \tfrac{\delta}{2} = \varphi_2,\quad
+\alpha - \tfrac{\beta}{2} + \tfrac{\delta}{2} = \varphi_3,\quad
+\alpha + \tfrac{\beta}{2} + \tfrac{\delta}{2} = \varphi_4
+\]
+を解けばよい。未知数は 3 つ、方程式は 4 本だが、
+4 本の間には<a class="eq-ref" href="#eq-zy-consistency"></a> と同じ従属関係（第 1 式＋第 4 式＝第 2 式＋第 3 式）があるので、
+\[
+\alpha = \frac{\varphi_1 + \varphi_4}{2},\qquad
+\beta = \varphi_2 - \varphi_1,\qquad
+\delta = \varphi_3 - \varphi_1
+\]
+が全部の式を満たす。実際、第 4 式は
+\(\alpha + \frac{\beta+\delta}{2} = \frac{\varphi_1+\varphi_4}{2} + \frac{\varphi_2+\varphi_3-2\varphi_1}{2}
+= \frac{\varphi_4 + (\varphi_2+\varphi_3) - \varphi_1}{2} = \varphi_4\)
+となり、<a class="eq-ref" href="#eq-zy-consistency"></a> を使って成立する。
+なお \(\gamma = 0\) または \(\pi\) の場合は列の一方が消えるため
+\(\varphi\) の一部が不定になるが、そのときは \(U\) が対角（または反対角）行列であり、
+\(\gamma = 0\)、適当な \(\alpha, \beta\)（\(\delta = 0\)）で直接<a class="eq-ref" href="#eq-zy-matrix"></a> の形に書ける。<span class="qed">∎</span></p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">パラメータの数え上げ</span>
+\(2\times2\) ユニタリの実自由度は 4（\(U(2)\) は 4 次元 Lie 群）であり、
+Z-Y 分解の \((\alpha,\beta,\gamma,\delta)\) がちょうどそれを座標付けている。
+また、\(y\) 軸と \(z\) 軸に特別な意味はない：
+互いに平行でない任意の 2 軸 \(\hat n, \hat m\) について
+\(U = e^{i\alpha} R_{\hat n}(\beta_1) R_{\hat m}(\gamma_1) R_{\hat n}(\beta_2) \cdots\)
+の形の分解が（一般には因子数を増やして）可能である。
+この一般化は §4.5.3 で {H, T} の万能性を示すときに効いてくる。
+</div>
+
+<h3 id="sec-4-2-3">ABC 分解</h3>
+
+<p>
+次の系は一見技巧的だが、§4.3 で制御 \(U\) 演算を作る鍵になる。
+ポイントは「\(X\) を挟むと打ち消し合って恒等になる 3 つ組」に \(U\) を分解することである。
+</p>
+
+<div class="thm-box">
+<span class="box-title">系（ABC 分解）</span>
+任意の 1 量子ビットユニタリ \(U\) に対し、
+1 量子ビットユニタリ \(A, B, C\) と実数 \(\alpha\) が存在して
+\[
+ABC = I \qquad\text{かつ}\qquad U = e^{i\alpha}\, A X B X C .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+まず補題を用意する。\(X^2 = I\) を指数関数の級数の各項に挟み込むと
+\(X e^{M} X = e^{XMX}\) が任意の行列 \(M\) について成り立つ。
+これと反交換性 \(XYX = -Y\)、\(XZX = -Z\) を合わせれば</p>
+
+<div class="equation" id="eq-x-conjugation">
+\[
+X R_y(\theta) X = X e^{-i\theta Y/2} X = e^{-i\theta\, XYX/2} = e^{+i\theta Y/2} = R_y(-\theta),
+\qquad
+X R_z(\theta) X = R_z(-\theta)
+\]
+</div>
+
+<p>を得る。つまり「\(X\) で挟むと \(y\)・\(z\) 軸まわりの回転は逆回しになる」。
+</p>
+<p>
+Z-Y 分解 \(U = e^{i\alpha} R_z(\beta) R_y(\gamma) R_z(\delta)\) をとり、
+\[
+A \equiv R_z(\beta)\, R_y\!\Big(\frac{\gamma}{2}\Big),\qquad
+B \equiv R_y\!\Big(-\frac{\gamma}{2}\Big)\, R_z\!\Big(-\frac{\delta+\beta}{2}\Big),\qquad
+C \equiv R_z\!\Big(\frac{\delta-\beta}{2}\Big)
+\]
+と定める。同軸回転の加法性 \(R_z(\theta_1)R_z(\theta_2) = R_z(\theta_1+\theta_2)\)（\(R_y\) も同様）により
+\[
+ABC = R_z(\beta)\, R_y\!\Big(\frac{\gamma}{2}\Big) R_y\!\Big(-\frac{\gamma}{2}\Big)\,
+R_z\!\Big(-\frac{\delta+\beta}{2}\Big) R_z\!\Big(\frac{\delta-\beta}{2}\Big)
+= R_z(\beta) R_z(-\beta) = I .
+\]
+一方、<a class="eq-ref" href="#eq-x-conjugation"></a> を使うと
+\[
+XBX = X R_y\!\Big(-\frac{\gamma}{2}\Big) X \cdot X R_z\!\Big(-\frac{\delta+\beta}{2}\Big) X
+= R_y\!\Big(\frac{\gamma}{2}\Big)\, R_z\!\Big(\frac{\delta+\beta}{2}\Big)
+\]
+だから
+\[
+A\,(XBX)\,C
+= R_z(\beta)\, R_y\!\Big(\frac{\gamma}{2}\Big) R_y\!\Big(\frac{\gamma}{2}\Big)\,
+R_z\!\Big(\frac{\delta+\beta}{2}\Big) R_z\!\Big(\frac{\delta-\beta}{2}\Big)
+= R_z(\beta)\, R_y(\gamma)\, R_z(\delta) = e^{-i\alpha} U .
+\]
+よって \(U = e^{i\alpha} A X B X C\)。<span class="qed">∎</span></p>
+</div>
+
+<div class="example-box">
+<span class="box-title">例：Hadamard ゲートの Z-Y 分解</span>
+\(H = \frac{1}{\sqrt2}\begin{pmatrix} 1 &amp; 1 \\ 1 &amp; -1 \end{pmatrix}\)
+に証明の手続きをそのまま適用する。
+成分の絶対値がすべて \(1/\sqrt2\) だから \(\gamma = \pi/2\)。
+位相を読み取ると \(\varphi_1 = \varphi_2 = 0\)、
+\((1,2)\) 成分 \(= -e^{i\varphi_3}/\sqrt2 = +1/\sqrt2\) より \(\varphi_3 = \pi\)、
+\((2,2)\) 成分 \(= e^{i\varphi_4}/\sqrt2 = -1/\sqrt2\) より \(\varphi_4 = \pi\)。
+整合条件 \(\varphi_1 + \varphi_4 = \varphi_2 + \varphi_3\)（\(\pi = \pi\)）を満たしており、
+\[
+\alpha = \frac{\varphi_1+\varphi_4}{2} = \frac{\pi}{2},\qquad
+\beta = \varphi_2 - \varphi_1 = 0,\qquad
+\delta = \varphi_3 - \varphi_1 = \pi .
+\]
+すなわち \(H = e^{i\pi/2} R_y(\pi/2) R_z(\pi)\)。検算：
+\[
+e^{i\pi/2} R_y\!\Big(\frac{\pi}{2}\Big) R_z(\pi)
+= i\cdot\frac{1}{\sqrt2}\begin{pmatrix} 1 &amp; -1 \\ 1 &amp; 1\end{pmatrix}
+\begin{pmatrix} -i &amp; 0 \\ 0 &amp; i \end{pmatrix}
+= \frac{i}{\sqrt2}\begin{pmatrix} -i &amp; -i \\ -i &amp; i\end{pmatrix}
+= \frac{1}{\sqrt2}\begin{pmatrix} 1 &amp; 1 \\ 1 &amp; -1 \end{pmatrix} = H .
+\]
+なお分解は一意ではない（位相 \(\varphi_i\) の \(2\pi\) の任意性、\(\gamma\) の符号の取り方などによる）。
+書き下したら行列を掛けて検算する習慣が大切である。
+</div>
+</section>
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-3">制御演算<span class="en">Controlled operations</span></h2>
+
+<p>
+「もしあの量子ビットが 1 なら、この量子ビットに \(U\) を作用させる」——
+条件分岐は計算の基本である。量子回路における条件分岐が<strong>制御演算</strong>であり、
+この節でそれを CNOT と 1 量子ビットゲートだけから系統的に組み立てる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（制御 \(U\) 演算）</span>
+\(U\) を 1 量子ビット（一般には \(k\) 量子ビット）のユニタリとする。
+<strong>制御 \(U\) 演算 (controlled-\(U\))</strong> は、制御ビット \(\ket{c}\)（\(c = 0,1\)）と
+標的ビット \(\ket{t}\) に対して
+\[
+\ket{c}\ket{t} \;\longmapsto\; \ket{c}\, U^{c}\ket{t}
+\]
+と作用する 2 量子ビット（\(1+k\) 量子ビット）ユニタリである。
+基底の順序を \(\ket{00},\ket{01},\ket{10},\ket{11}\) に取ればブロック行列で
+\(\begin{pmatrix} I &amp; 0 \\ 0 &amp; U \end{pmatrix}\) と書ける。
+回路図では制御ビットに黒丸 ●、標的に箱 \(U\) を描き、両者を縦線で結ぶ。
+CNOT は \(U = X\) の場合であり、標的の記号として ⊕ を使う（\(\ket{c,t}\mapsto\ket{c,\,t\oplus c}\)）。
+</div>
+
+<h3 id="sec-4-3-1">大域位相が相対位相になること</h3>
+
+<p>
+構成に入る前に、§4.2 で予告した「制御演算の中では大域位相が物理的になる」ことを見ておく。
+\(U' = e^{i\alpha} U\) は単独では \(U\) と区別できないが、制御版は異なる：
+制御 \(U'\) は \(\ket{1}\ket{t} \mapsto e^{i\alpha}\ket{1}U\ket{t}\) とし、
+\(\ket{0}\ket{t}\) には位相を付けないから、制御ビットの重ね合わせに<strong>相対位相</strong> \(e^{i\alpha}\) を刻む。
+とくに \(U = I\) と取った「制御位相」は、標的に何もしない代わりに
+\[
+\ket{c}\ket{t} \mapsto e^{i\alpha c}\ket{c}\ket{t}
+= \Big(\Phi(\alpha)\ket{c}\Big)\ket{t},
+\qquad
+\Phi(\alpha) \equiv \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; e^{i\alpha} \end{pmatrix}
+\]
+となり、<strong>制御ビット単独への 1 量子ビットゲート \(\Phi(\alpha)\) と完全に等価</strong>である。
+「制御」演算なのに標的が要らないという一見奇妙な事実は、
+位相が「どちらのビットに付いたか」を問えない（\(e^{i\alpha c}\) は \(c\) だけの関数）ことの表れであり、
+次の構成で位相因子 \(e^{i\alpha}\) を処理する道具になる。
+なお \(\Phi(\alpha) = e^{i\alpha/2} R_z(\alpha)\) である。
+</p>
+
+<h3 id="sec-4-3-2">CNOT と 1 量子ビットゲートによる制御 \(U\) の構成</h3>
+
+<div class="thm-box">
+<span class="box-title">定理（制御 \(U\) の構成）</span>
+任意の 1 量子ビットユニタリ \(U\) に対する制御 \(U\) 演算は、
+CNOT 2 個と 1 量子ビットゲート 4 個（ABC 分解の \(A, B, C\) と位相ゲート \(\Phi(\alpha)\)）で
+厳密に実現できる。
+</div>
+
+<figure>
+<svg viewBox="0 0 680 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- symbol -->
+  <line x1="15" y1="40" x2="90" y2="40" class="line"/>
+  <line x1="15" y1="105" x2="90" y2="105" class="line"/>
+  <circle cx="52" cy="40" r="4" class="accent-fill"/>
+  <line x1="52" y1="40" x2="52" y2="90" class="line" stroke-width="1.5"/>
+  <rect x="37" y="90" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="46" y="111" class="label">U</text>
+  <text x="105" y="80" class="label">=</text>
+  <!-- construction -->
+  <line x1="130" y1="40" x2="660" y2="40" class="line"/>
+  <line x1="130" y1="105" x2="660" y2="105" class="line"/>
+  <!-- C -->
+  <rect x="150" y="90" width="32" height="30" class="gate" stroke-width="1.5"/>
+  <text x="160" y="111" class="label">C</text>
+  <!-- CNOT 1 -->
+  <circle cx="225" cy="40" r="4" class="accent-fill"/>
+  <line x1="225" y1="40" x2="225" y2="114" class="line" stroke-width="1.5"/>
+  <circle cx="225" cy="105" r="9" class="line" stroke-width="1.5"/>
+  <line x1="216" y1="105" x2="234" y2="105" class="line" stroke-width="1.5"/>
+  <!-- B -->
+  <rect x="265" y="90" width="32" height="30" class="gate" stroke-width="1.5"/>
+  <text x="275" y="111" class="label">B</text>
+  <!-- CNOT 2 -->
+  <circle cx="340" cy="40" r="4" class="accent-fill"/>
+  <line x1="340" y1="40" x2="340" y2="114" class="line" stroke-width="1.5"/>
+  <circle cx="340" cy="105" r="9" class="line" stroke-width="1.5"/>
+  <line x1="331" y1="105" x2="349" y2="105" class="line" stroke-width="1.5"/>
+  <!-- A -->
+  <rect x="380" y="90" width="32" height="30" class="gate" stroke-width="1.5"/>
+  <text x="390" y="111" class="label">A</text>
+  <!-- phase on control -->
+  <rect x="450" y="25" width="52" height="30" class="gate" stroke-width="1.5"/>
+  <text x="458" y="46" class="label">Φ(α)</text>
+</svg>
+<figcaption>図 4.1：制御 \(U\) 演算の構成。\(U = e^{i\alpha}AXBXC\)、\(ABC = I\)、
+\(\Phi(\alpha) = \mathrm{diag}(1, e^{i\alpha})\)。</figcaption>
+</figure>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+ABC 分解（§4.2.3）により \(U = e^{i\alpha} AXBXC\)、\(ABC = I\) となる
+\(A, B, C, \alpha\) を取り、図 4.1 の回路を作る。
+制御ビットの値 \(c\) で場合分けする。
+</p>
+<p>
+\(c = 0\) のとき：CNOT は作用せず、標的には左から順に \(C, B, A\) が掛かる。
+演算子としては（右が先）\(ABC = I\)。制御ビットには \(\Phi(\alpha)\ket0 = \ket0\)。
+よって全体は恒等演算である。
+</p>
+<p>
+\(c = 1\) のとき：CNOT の位置で標的に \(X\) が入り、標的への演算は
+\(A X B X C = e^{-i\alpha} U\)。制御ビットは \(\Phi(\alpha)\ket1 = e^{i\alpha}\ket1\) で
+位相 \(e^{i\alpha}\) を供給し、合わせて \(\ket{1}\,U\ket{t}\) を得る。
+両方の場合を合わせると \(\ket c\ket t \mapsto \ket c\, U^c \ket t\)、
+すなわち制御 \(U\) である。<span class="qed">∎</span></p>
+</div>
+
+<p>
+補足を三つ。
+（i）「制御ビットが 0 のとき作用させる」演算（回路図では白丸 ○）は、
+制御ビットを \(X\) で挟んで \(0 \leftrightarrow 1\) を反転すれば黒丸の場合に帰着する。
+（ii）制御 \(Z\) は \(\mathrm{diag}(1,1,1,-1)\) であり、
+\(\ket{c}\ket{t} \mapsto (-1)^{ct}\ket c\ket t\) と書けば
+<strong>制御と標的の区別がない対称なゲート</strong>だとわかる。
+（iii）\(HZH = X\) より \(\text{CNOT} = (I\otimes H)\,\text{CZ}\,(I\otimes H)\)。
+CNOT と CZ は 1 量子ビットゲートを除いて等価である。
+</p>
+
+<h3 id="sec-4-3-3">2 重制御演算 \(C^2(U)\)</h3>
+
+<p>
+制御ビットが 2 つの場合、すなわち
+\(\ket{c_1}\ket{c_2}\ket{t} \mapsto \ket{c_1}\ket{c_2}\,U^{c_1 c_2}\ket t\)
+（両方が 1 のときだけ \(U\)）を \(C^2(U)\) と書く。
+\(U = X\) の場合が Toffoli ゲートである。鍵になるのは \(U\) の「平方根」を使う次の構成である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（\(C^2(U)\) の構成）</span>
+\(V\) を \(V^2 = U\) を満たすユニタリとする（ユニタリは正規行列なので平方根が必ず存在する）。
+このとき \(C^2(U)\) は、制御 \(V\)、制御 \(V^\dagger\)、CNOT 2 個からなる図 4.2 の回路で実現できる。
+</div>
+
+<figure>
+<svg viewBox="0 0 640 205" xmlns="http://www.w3.org/2000/svg">
+  <!-- symbol -->
+  <line x1="15" y1="40" x2="90" y2="40" class="line"/>
+  <line x1="15" y1="95" x2="90" y2="95" class="line"/>
+  <line x1="15" y1="160" x2="90" y2="160" class="line"/>
+  <circle cx="52" cy="40" r="4" class="accent-fill"/>
+  <circle cx="52" cy="95" r="4" class="accent-fill"/>
+  <line x1="52" y1="40" x2="52" y2="145" class="line" stroke-width="1.5"/>
+  <rect x="37" y="145" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="46" y="166" class="label">U</text>
+  <text x="103" y="105" class="label">=</text>
+  <!-- construction -->
+  <line x1="125" y1="40" x2="620" y2="40" class="line"/>
+  <line x1="125" y1="95" x2="620" y2="95" class="line"/>
+  <line x1="125" y1="160" x2="620" y2="160" class="line"/>
+  <!-- CV (control c2) -->
+  <circle cx="175" cy="95" r="4" class="accent-fill"/>
+  <line x1="175" y1="95" x2="175" y2="145" class="line" stroke-width="1.5"/>
+  <rect x="160" y="145" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="168" y="166" class="label">V</text>
+  <!-- CNOT c1->c2 -->
+  <circle cx="250" cy="40" r="4" class="accent-fill"/>
+  <line x1="250" y1="40" x2="250" y2="104" class="line" stroke-width="1.5"/>
+  <circle cx="250" cy="95" r="9" class="line" stroke-width="1.5"/>
+  <line x1="241" y1="95" x2="259" y2="95" class="line" stroke-width="1.5"/>
+  <!-- CV† (control c2) -->
+  <circle cx="325" cy="95" r="4" class="accent-fill"/>
+  <line x1="325" y1="95" x2="325" y2="145" class="line" stroke-width="1.5"/>
+  <rect x="306" y="145" width="38" height="30" class="gate" stroke-width="1.5"/>
+  <text x="312" y="166" class="label">V†</text>
+  <!-- CNOT c1->c2 -->
+  <circle cx="400" cy="40" r="4" class="accent-fill"/>
+  <line x1="400" y1="40" x2="400" y2="104" class="line" stroke-width="1.5"/>
+  <circle cx="400" cy="95" r="9" class="line" stroke-width="1.5"/>
+  <line x1="391" y1="95" x2="409" y2="95" class="line" stroke-width="1.5"/>
+  <!-- CV (control c1) -->
+  <circle cx="475" cy="40" r="4" class="accent-fill"/>
+  <line x1="475" y1="40" x2="475" y2="145" class="line" stroke-width="1.5"/>
+  <rect x="460" y="145" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="468" y="166" class="label">V</text>
+</svg>
+<figcaption>図 4.2：\(V^2 = U\) を使った \(C^2(U)\) の構成。</figcaption>
+</figure>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+制御ビットの値 \((c_1, c_2)\) を固定して標的に掛かる演算子を追う。
+1 番目の制御 \(V\) は \(V^{c_2}\)、CNOT を通過した後の中段の値は \(c_1 \oplus c_2\) なので
+2 番目は \((V^\dagger)^{c_1\oplus c_2}\)、CNOT で中段が \(c_2\) に戻り、
+最後の制御 \(V\)（制御は上段）は \(V^{c_1}\)。標的への合成は、\(V\) の冪同士は可換だから
+\[
+V^{c_1}\,(V^\dagger)^{c_1\oplus c_2}\, V^{c_2} = V^{\,c_1 + c_2 - (c_1\oplus c_2)} = V^{\,2 c_1 c_2} = U^{\,c_1 c_2}
+\]
+となる。ここで恒等式 \(c_1 \oplus c_2 = c_1 + c_2 - 2c_1 c_2\) を使った。
+制御ビットの値は途中で変化するが最終的に元に戻っており、これはまさに \(C^2(U)\) である。<span class="qed">∎</span></p>
+</div>
+
+<div class="example-box">
+<span class="box-title">例：Toffoli ゲート</span>
+\(U = X\) の平方根として
+\[
+V = \frac{(1-i)(I+iX)}{2} = \frac12\begin{pmatrix} 1-i &amp; 1+i \\ 1+i &amp; 1-i \end{pmatrix}
+\]
+を取る。指数形で書けば \(e^{i\pi X/4} = (I + iX)/\sqrt2\) より
+\(V = e^{-i\pi/4}\, e^{i\pi X/4}\) だから、
+\[
+V^2 = e^{-i\pi/2}\, e^{i\pi X/2} = (-i)\,(iX) = X
+\]
+が直ちに確かめられる。
+よって Toffoli ゲートは制御 \(V\)・制御 \(V^\dagger\)・CNOT に分解でき、
+それぞれは §4.3.2 により CNOT + 1 量子ビットゲートに落ちる。
+つまり <strong>Toffoli は CNOT と 1 量子ビットゲートだけで作れる</strong>。
+古典可逆回路では 2 ビットの可逆ゲートだけから Toffoli（普遍ゲート）は作れないことが知られており、
+これは量子回路が古典可逆回路より真に器用である最初の証拠である。
+</div>
+
+<h3 id="sec-4-3-4">Toffoli ゲートの H, T, CNOT による構成</h3>
+
+<p>
+フォールトトレラント実装に向くゲートは {H, S, T, CNOT} である（第10章）。
+そのため、Toffoli をこれらだけで書けることが実用上決定的に重要になる。
+次の回路がそれを与える（\(T^\dagger = T^{-1}\) は \(T\) の 7 乗としても作れる）。
+</p>
+
+<figure>
+<svg viewBox="0 0 880 215" xmlns="http://www.w3.org/2000/svg">
+  <line x1="20" y1="45" x2="860" y2="45" class="line"/>
+  <line x1="20" y1="105" x2="860" y2="105" class="line"/>
+  <line x1="20" y1="165" x2="860" y2="165" class="line"/>
+  <text x="2" y="50" class="label">a</text>
+  <text x="2" y="110" class="label">b</text>
+  <text x="2" y="170" class="label">c</text>
+  <!-- H on c -->
+  <rect x="55" y="150" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="63" y="171" class="label">H</text>
+  <!-- CNOT b->c -->
+  <circle cx="120" cy="105" r="4" class="accent-fill"/>
+  <line x1="120" y1="105" x2="120" y2="174" class="line" stroke-width="1.5"/>
+  <circle cx="120" cy="165" r="9" class="line" stroke-width="1.5"/>
+  <line x1="111" y1="165" x2="129" y2="165" class="line" stroke-width="1.5"/>
+  <!-- T† on c -->
+  <rect x="153" y="150" width="34" height="30" class="gate" stroke-width="1.5"/>
+  <text x="159" y="171" class="label">T†</text>
+  <!-- CNOT a->c -->
+  <circle cx="222" cy="45" r="4" class="accent-fill"/>
+  <line x1="222" y1="45" x2="222" y2="174" class="line" stroke-width="1.5"/>
+  <circle cx="222" cy="165" r="9" class="line" stroke-width="1.5"/>
+  <line x1="213" y1="165" x2="231" y2="165" class="line" stroke-width="1.5"/>
+  <!-- T on c -->
+  <rect x="255" y="150" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="264" y="171" class="label">T</text>
+  <!-- CNOT b->c -->
+  <circle cx="320" cy="105" r="4" class="accent-fill"/>
+  <line x1="320" y1="105" x2="320" y2="174" class="line" stroke-width="1.5"/>
+  <circle cx="320" cy="165" r="9" class="line" stroke-width="1.5"/>
+  <line x1="311" y1="165" x2="329" y2="165" class="line" stroke-width="1.5"/>
+  <!-- T† on c -->
+  <rect x="353" y="150" width="34" height="30" class="gate" stroke-width="1.5"/>
+  <text x="359" y="171" class="label">T†</text>
+  <!-- CNOT a->c -->
+  <circle cx="422" cy="45" r="4" class="accent-fill"/>
+  <line x1="422" y1="45" x2="422" y2="174" class="line" stroke-width="1.5"/>
+  <circle cx="422" cy="165" r="9" class="line" stroke-width="1.5"/>
+  <line x1="413" y1="165" x2="431" y2="165" class="line" stroke-width="1.5"/>
+  <!-- T on c, T on b -->
+  <rect x="455" y="150" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="464" y="171" class="label">T</text>
+  <rect x="455" y="90" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="464" y="111" class="label">T</text>
+  <!-- H on c -->
+  <rect x="510" y="150" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="518" y="171" class="label">H</text>
+  <!-- CNOT a->b -->
+  <circle cx="590" cy="45" r="4" class="accent-fill"/>
+  <line x1="590" y1="45" x2="590" y2="114" class="line" stroke-width="1.5"/>
+  <circle cx="590" cy="105" r="9" class="line" stroke-width="1.5"/>
+  <line x1="581" y1="105" x2="599" y2="105" class="line" stroke-width="1.5"/>
+  <!-- T on a, T† on b -->
+  <rect x="640" y="30" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="649" y="51" class="label">T</text>
+  <rect x="638" y="90" width="34" height="30" class="gate" stroke-width="1.5"/>
+  <text x="644" y="111" class="label">T†</text>
+  <!-- CNOT a->b -->
+  <circle cx="720" cy="45" r="4" class="accent-fill"/>
+  <line x1="720" y1="45" x2="720" y2="114" class="line" stroke-width="1.5"/>
+  <circle cx="720" cy="105" r="9" class="line" stroke-width="1.5"/>
+  <line x1="711" y1="105" x2="729" y2="105" class="line" stroke-width="1.5"/>
+</svg>
+<figcaption>図 4.3：Toffoli ゲートの {H, T, T†, CNOT} による構成。
+T ゲート 7 個（うち T† 3 個）、CNOT 6 個、H 2 個。</figcaption>
+</figure>
+
+<p>
+<strong>なぜこれで Toffoli になるのか</strong>を、位相の勘定で確かめよう。
+使う事実は二つだけである：
+計算基底上で \(T\ket{x} = e^{i\pi x/4}\ket x\)、\(T^\dagger\ket x = e^{-i\pi x/4}\ket x\)（\(x=0,1\)）、
+および CNOT が標的のビット値を XOR で更新すること。
+</p>
+
+<p>
+入力を計算基底 \(\ket{a, b, c}\) とする。最初の \(H\) で標的は
+\(\frac{1}{\sqrt2}\sum_{t=0,1} (-1)^{ct} \ket t\) と展開される。
+以後、標的のビット値は CNOT のたびに
+\(t \to t\oplus b \to t\oplus a\oplus b \to t\oplus a \to t\)
+と変化し、その合間に \(T^\dagger, T, T^\dagger, T\) が順に位相を付ける。
+基底成分 \(\ket t\) が拾う位相の合計は
+\[
+\exp\!\Big[\frac{i\pi}{4}\Big( -(t\oplus b) + (t\oplus a\oplus b) - (t\oplus a) + t \Big)\Big]
+\equiv \exp\!\Big[\frac{i\pi}{4}\, s(a,b,t)\Big].
+\]
+\(s\) を評価すると、\((a,b) = (0,0), (0,1), (1,0)\) の場合は打ち消し合って \(s = 0\)、
+\((a,b) = (1,1)\) の場合のみ \(s = t - (t\oplus 1) + t - (t\oplus 1) = 2(2t-1)\) となる
+（\(a\oplus b = 0\) に注意）。
+すなわち \(ab = 0\) なら標的は位相を受けず、最後の \(H\) で元の \(\ket c\) に戻る。
+\(ab = 1\) なら \(\ket t\) 成分が位相 \(e^{i\pi(2t-1)/2} = i(-1)^{t+1}\) を受け、標的の状態は
+\[
+\frac{1}{\sqrt2}\sum_t (-1)^{ct}\, i(-1)^{t+1} \ket t
+= -i\cdot \frac{1}{\sqrt2}\sum_t (-1)^{(c\oplus 1)t}\ket t
+\;\xrightarrow{\ H\ }\; -i\,\ket{c\oplus 1}.
+\]
+つまり標的は望みどおり反転するが、余分な位相 \(-i\)（\(ab=1\) の分岐のみ）が残る。
+これを相殺するのが回路後半の \(a, b\) に対する
+\(T(b),\ \text{CNOT}(a\to b),\ T(a),\ T^\dagger(b),\ \text{CNOT}(a\to b)\) の部分である。
+同じ勘定で、この部分が制御ビットに付ける位相は
+\[
+\exp\!\Big[\frac{i\pi}{4}\Big( b + a - (a\oplus b) \Big)\Big]
+= \exp\!\Big[\frac{i\pi}{4}\cdot 2ab\Big] = i^{\,ab}
+\]
+（ビット値は 2 つの CNOT で元に戻る）。\(ab = 1\) のとき \(+i\) が供給されて \(-i\) と相殺し、
+全体として厳密に \(\ket{a,b,c} \mapsto \ket{a,b,\,c\oplus ab}\)、すなわち Toffoli ゲートになる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">T カウントという指標</span>
+第10章で見るように、フォールトトレラント実装では
+Clifford ゲート（H, S, CNOT など）は比較的安価に、
+\(T\) ゲートは魔法状態蒸留などを要して桁違いに高価になる。
+そのため実用的な回路設計では「\(T\) ゲートの個数（T カウント）」が主要なコスト指標であり、
+上の構成の T カウント 7 は補助ビットなしでは最適であることが知られている。
+</div>
+
+<h3 id="sec-4-3-5">多重制御演算 \(C^n(U)\) と作業ビット</h3>
+
+<p>
+制御ビットを \(n\) 個に増やした
+\[
+C^n(U):\quad \ket{c_1 c_2 \cdots c_n}\ket{t} \mapsto \ket{c_1 c_2 \cdots c_n}\, U^{\,c_1 c_2 \cdots c_n}\ket t
+\]
+（全制御ビットが 1 のときだけ \(U\)）も、
+<strong>作業ビット（work qubit / ancilla）</strong>を借りれば Toffoli の積み上げで簡単に作れる。
+アイデアは、論理積 \(c_1 c_2 \cdots c_n\) を作業ビット上に段階的に計算し、
+その結果を制御ビットとして \(U\) を一度だけ作用させ、最後に計算を巻き戻す、というものである。
+</p>
+
+<figure>
+<svg viewBox="0 0 620 330" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="40" x2="580" y2="40" class="line"/>
+  <line x1="60" y1="85" x2="580" y2="85" class="line"/>
+  <line x1="60" y1="130" x2="580" y2="130" class="line"/>
+  <line x1="60" y1="185" x2="580" y2="185" class="line"/>
+  <line x1="60" y1="230" x2="580" y2="230" class="line"/>
+  <line x1="60" y1="290" x2="580" y2="290" class="line"/>
+  <text x="10" y="45" class="label">c₁</text>
+  <text x="10" y="90" class="label">c₂</text>
+  <text x="10" y="135" class="label">c₃</text>
+  <text x="10" y="190" class="label">|0⟩</text>
+  <text x="10" y="235" class="label">|0⟩</text>
+  <text x="10" y="295" class="label">|t⟩</text>
+  <!-- Toffoli c1,c2 -> w1 -->
+  <circle cx="140" cy="40" r="4" class="accent-fill"/>
+  <circle cx="140" cy="85" r="4" class="accent-fill"/>
+  <line x1="140" y1="40" x2="140" y2="194" class="line" stroke-width="1.5"/>
+  <circle cx="140" cy="185" r="9" class="line" stroke-width="1.5"/>
+  <line x1="131" y1="185" x2="149" y2="185" class="line" stroke-width="1.5"/>
+  <!-- Toffoli c3,w1 -> w2 -->
+  <circle cx="225" cy="130" r="4" class="accent-fill"/>
+  <circle cx="225" cy="185" r="4" class="accent-fill"/>
+  <line x1="225" y1="130" x2="225" y2="239" class="line" stroke-width="1.5"/>
+  <circle cx="225" cy="230" r="9" class="line" stroke-width="1.5"/>
+  <line x1="216" y1="230" x2="234" y2="230" class="line" stroke-width="1.5"/>
+  <!-- controlled-U from w2 -->
+  <circle cx="310" cy="230" r="4" class="accent-fill"/>
+  <line x1="310" y1="230" x2="310" y2="275" class="line" stroke-width="1.5"/>
+  <rect x="295" y="275" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="303" y="296" class="label">U</text>
+  <!-- Toffoli c3,w1 -> w2 (uncompute) -->
+  <circle cx="395" cy="130" r="4" class="accent-fill"/>
+  <circle cx="395" cy="185" r="4" class="accent-fill"/>
+  <line x1="395" y1="130" x2="395" y2="239" class="line" stroke-width="1.5"/>
+  <circle cx="395" cy="230" r="9" class="line" stroke-width="1.5"/>
+  <line x1="386" y1="230" x2="404" y2="230" class="line" stroke-width="1.5"/>
+  <!-- Toffoli c1,c2 -> w1 (uncompute) -->
+  <circle cx="480" cy="40" r="4" class="accent-fill"/>
+  <circle cx="480" cy="85" r="4" class="accent-fill"/>
+  <line x1="480" y1="40" x2="480" y2="194" class="line" stroke-width="1.5"/>
+  <circle cx="480" cy="185" r="9" class="line" stroke-width="1.5"/>
+  <line x1="471" y1="185" x2="489" y2="185" class="line" stroke-width="1.5"/>
+  <text x="150" y="210" class="label-muted">c₁c₂</text>
+  <text x="235" y="255" class="label-muted">c₁c₂c₃</text>
+</svg>
+<figcaption>図 4.4：作業ビット 2 個を使った \(C^3(U)\) の構成。
+前半の Toffoli で論理積を作業ビットに計算し、制御 \(U\) の後、逆順の Toffoli で巻き戻す。</figcaption>
+</figure>
+
+<p>
+一般の \(n\) では、作業ビット \(n-1\) 個を \(\ket 0\) に用意し、
+Toffoli\((c_1, c_2 \to w_1)\)、Toffoli\((c_k, w_{k-2} \to w_{k-1})\)（\(k = 3,\dots,n\)）で
+\(w_{n-1} = c_1 c_2 \cdots c_n\) を得る。
+そこから制御 \(U\) を 1 回、そして Toffoli 列を逆順に適用して作業ビットを \(\ket 0\) に戻す。
+巻き戻し（uncompute）を怠ると作業ビットが制御ビットとエンタングルしたまま残り、
+以後の干渉を壊すので必ず必要である（§3.2.5 の可逆計算と同じ思想）。
+コストは Toffoli \(2(n-1)\) 個＋制御 \(U\) 1 個。
+Toffoli は図 4.3 により定数個の基本ゲートに落ちるから、
+<strong>\(C^n(U)\) は \(O(n)\) 個の基本ゲート（＋制御 \(U\) 1 個）で実現できる</strong>。
+作業ビットを使わない構成も可能だが、その場合は \(O(n^2)\) 個程度に増える。
+</p>
+</section>
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-4">測定<span class="en">Measurement</span></h2>
+
+<p>
+これまでの回路はユニタリ演算だけで組み立ててきたが、
+計算結果を古典情報として取り出すには最後に<strong>測定</strong>が要る。
+本節では、測定を回路の中でどう扱えばよいかを整理する。
+結論を先に言えば、<strong>測定は回路のどこに現れても、原理的には末尾へ先送りできる</strong>。
+このことは回路の解析を著しく簡単にする。
+</p>
+
+<p>
+回路図の約束を一つ足しておく。ゲートを通る 1 本線は量子ビットの時間発展を表すが、
+<strong>測定の後に流れるのは古典ビット</strong>であり、これを<strong>二重線</strong>で描く。
+測定そのものは、扇形の目盛りと指針を描いたメーター記号の箱で表す（図 4.5）。
+測定結果 \(m \in \{0,1\}\) で他の量子ビットのゲートを制御する操作、
+すなわち結果が 1 のときだけ \(U\) を掛ける操作を
+<strong>古典制御 (classically-controlled)</strong> という。
+制御線を二重線で描いて量子制御と区別する。
+</p>
+
+<h3 id="sec-4-4-1">遅延測定の原理</h3>
+
+<div class="thm-box">
+<span class="box-title">原理（遅延測定 / principle of deferred measurement）</span>
+回路の途中で行う測定は、常に回路の末尾まで遅らせることができる。
+そのとき、測定結果で古典制御していたゲートは、
+測定していた量子ビットを制御ビットとする<strong>量子制御ゲート</strong>で置き換えればよい。
+</div>
+
+<div class="proof-box">
+<span class="box-title">なぜそう言えるか</span>
+<p>
+核心は次の一つの等式である。ある量子ビット \(q\) を計算基底で測定し、
+その結果 \(m\) が 1 のときだけ他のレジスタに \(U\) を掛ける、という
+「測定 → 古典制御 \(U\)」の手順を考える。これを、
+「まず \(q\) を制御ビットとする量子制御 \(U\) を掛け、その<strong>後で</strong> \(q\) を測定する」
+という手順に置き換えても、
+<strong>他のレジスタの最終状態も、測定結果 \(m\) の統計も、完全に一致する</strong>。
+</p>
+<p>
+理由は、計算基底の測定も制御演算も、どちらも制御量子ビットの計算基底に対して
+<strong>対角</strong>だからである。制御ビットと標的の合成状態を
+\(\ket{\psi} = \alpha\ket{0}\ket{t_0} + \beta\ket{1}\ket{t_1}\) と書くと、
+</p>
+<ul>
+<li>測定を先にする場合：確率 \(|\alpha|^2\) で \(m=0\)・状態 \(\ket0\ket{t_0}\)（\(U\) は掛からない）、
+確率 \(|\beta|^2\) で \(m=1\)・状態 \(\ket1\, U\ket{t_1}\)。</li>
+<li>制御を先にする場合：量子制御 \(U\) の後の状態は
+\(\alpha\ket0\ket{t_0} + \beta\ket1\, U\ket{t_1}\)。これを測定すれば、
+確率 \(|\alpha|^2\) で \(\ket0\ket{t_0}\)、確率 \(|\beta|^2\) で \(\ket1\, U\ket{t_1}\)。</li>
+</ul>
+<p>
+両者は測定結果ごとに同じ状態・同じ確率を与える。
+測定は制御ビットのポピュレーション \(|\alpha|^2, |\beta|^2\) を変えず、
+量子制御 \(U\) も制御ビットの計算基底成分を混ぜないので、二つの操作は交換する。
+この置き換えを、回路中のすべての「早すぎる測定」に順に適用すれば、
+測定をすべて末尾へ押しやれる。<span class="qed">∎</span></p>
+</div>
+
+<div class="caution-box">
+<span class="box-title">遅延測定は等価だが、無料ではない</span>
+遅延測定の原理は<strong>理論解析のための道具</strong>である。
+古典制御ゲートを量子制御ゲートに置き換えると、測定していたはずの量子ビットを
+最後までコヒーレントに保たねばならず、必要な量子メモリと維持コストは増える。
+逆に、途中で測定して古典制御に落とせるなら、その量子ビットは以後古典ビットとして
+扱え、実装は楽になる。「原理的にどちらでもよい」ことと「実装上どちらが得か」は別問題である。
+</div>
+
+<h3 id="sec-4-4-2">暗黙測定の原理</h3>
+
+<div class="thm-box">
+<span class="box-title">原理（暗黙測定 / principle of implicit measurement）</span>
+回路の終わりで、それ以降どのゲートにも関与しない量子ビットは、
+測定されているものとみなしてよい。
+すなわち、残り（保持する）量子ビットの測定統計は、
+放棄する量子ビットを計算基底で測定してもしなくても変わらない。
+</div>
+
+<div class="proof-box">
+<span class="box-title">なぜそう言えるか</span>
+<p>
+最終的に興味があるのが保持レジスタ \(A\) の測定統計だけで、
+放棄レジスタ \(B\) には以後いっさい演算も測定もしないとする。
+このとき \(A\) について予測される統計はすべて、縮約密度演算子
+\(\rho_A = \tr_B(\rho_{AB})\) だけで決まる（§2.4）。
+一方、\(B\) を計算基底 \(\{\ket{b}\}\) で測定して結果を忘れると、
+合成状態は \(\sum_b (I_A\otimes\ketbra{b}{b})\,\rho_{AB}\,(I_A\otimes\ketbra{b}{b})\)
+へと移るが、その \(A\) 側の縮約は
+\[
+\tr_B\!\Big[\sum_b (I\otimes\ketbra{b}{b})\rho_{AB}(I\otimes\ketbra{b}{b})\Big]
+= \sum_b \bra{b}\rho_{AB}\ket{b} = \tr_B(\rho_{AB}) = \rho_A
+\]
+で不変である（対角成分の和は部分トレースそのもの）。
+要するに<strong>「捨てる」＝「測って結果を捨てる」</strong>であり、
+測定するかどうかは保持側からは見分けられない。<span class="qed">∎</span></p>
+</div>
+
+<h3 id="sec-4-4-3">測定記号と古典制御——テレポーテーションを例に</h3>
+
+<p>
+二つの原理の使いどころを、量子テレポーテーション（§1.3.7）の回路で見る。
+Alice は未知の状態 \(\ket\psi\) と、Bob と共有した Bell 対の片方を持つ。
+Alice が \(\ket\psi\) と自分の Bell 半分に CNOT と \(H\) を掛けて<strong>両者を測定</strong>し、
+得た 2 ビット \((M_1, M_2)\) を Bob に古典通信する。
+Bob は受け取ったビットに応じて自分の量子ビットに \(X^{M_2}\) と \(Z^{M_1}\) を掛け、
+\(\ket\psi\) を復元する。この「測定結果による古典制御」がテレポーテーションの要である。
+</p>
+
+<figure>
+<svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="40" x2="360" y2="40" class="line"/>
+  <line x1="60" y1="95" x2="360" y2="95" class="line"/>
+  <line x1="60" y1="160" x2="660" y2="160" class="line"/>
+  <text x="8" y="45" class="label">|ψ⟩</text>
+  <text x="2" y="100" class="label-muted">Bell</text>
+  <text x="2" y="165" class="label-muted">Bell</text>
+  <!-- CNOT q1->q2 -->
+  <circle cx="120" cy="40" r="4" class="accent-fill"/>
+  <line x1="120" y1="40" x2="120" y2="104" class="line" stroke-width="1.5"/>
+  <circle cx="120" cy="95" r="9" class="line" stroke-width="1.5"/>
+  <line x1="111" y1="95" x2="129" y2="95" class="line" stroke-width="1.5"/>
+  <!-- H on q1 -->
+  <rect x="160" y="25" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="168" y="46" class="label">H</text>
+  <!-- meter on q1 (M1) -->
+  <rect x="230" y="25" width="34" height="30" class="gate" stroke-width="1.5"/>
+  <path d="M 237 47 A 10 10 0 0 1 257 47" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="247" y1="47" x2="256" y2="32" class="line" stroke-width="1.5"/>
+  <!-- meter on q2 (M2) -->
+  <rect x="230" y="80" width="34" height="30" class="gate" stroke-width="1.5"/>
+  <path d="M 237 102 A 10 10 0 0 1 257 102" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="247" y1="102" x2="256" y2="87" class="line" stroke-width="1.5"/>
+  <text x="270" y="30" class="label-muted">M₁</text>
+  <text x="270" y="85" class="label-muted">M₂</text>
+  <!-- classical double lines: M2 -> X control, M1 -> Z control -->
+  <!-- M2 (from q2 meter) travels then down to X gate control at x=470 -->
+  <line x1="264" y1="92" x2="470" y2="92" class="line" stroke-width="0.8"/>
+  <line x1="264" y1="98" x2="470" y2="98" class="line" stroke-width="0.8"/>
+  <line x1="467" y1="95" x2="470" y2="150" class="line" stroke-width="0.8"/>
+  <line x1="473" y1="95" x2="476" y2="150" class="line" stroke-width="0.8"/>
+  <rect x="455" y="145" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="465" y="166" class="label">X</text>
+  <!-- M1 -> Z gate control at x=560 -->
+  <line x1="264" y1="37" x2="560" y2="37" class="line" stroke-width="0.8"/>
+  <line x1="264" y1="43" x2="560" y2="43" class="line" stroke-width="0.8"/>
+  <line x1="557" y1="40" x2="557" y2="150" class="line" stroke-width="0.8"/>
+  <line x1="563" y1="40" x2="563" y2="150" class="line" stroke-width="0.8"/>
+  <rect x="545" y="145" width="30" height="30" class="gate" stroke-width="1.5"/>
+  <text x="555" y="166" class="label">Z</text>
+  <text x="600" y="165" class="label">|ψ⟩</text>
+</svg>
+<figcaption>図 4.5：量子テレポーテーション。上 2 本を測定して得た古典ビット \(M_1, M_2\)（二重線）で、
+Bob 側の \(X, Z\) を古典制御する。遅延測定の原理により、この 2 つの測定は
+末尾へ動かし、代わりに量子制御 \(X, Z\) を用いる回路と等価である。</figcaption>
+</figure>
+
+<p>
+ここで遅延測定の原理を使うと、Alice の 2 つの測定は
+回路の末尾へ動かせる。すなわち Bob 側の \(X^{M_2}, Z^{M_1}\) を、
+Alice の量子ビットを<strong>量子制御</strong>とする制御 \(X\)・制御 \(Z\) に置き換え、
+測定はその後にまとめて行ってよい。こうすると回路全体がユニタリ演算と末尾の測定だけになる。
+すべて量子ゲートで書いた形で恒等性を確かめられるので、
+「テレポーテーション回路は結局 Bell 対を作って壊すだけの恒等変換に等しい」という
+見通しのよい解析ができる。
+一方、実際のテレポーテーションでは Alice と Bob が離れており、
+量子制御は使えず古典通信で結果を送るしかない——だからこそ測定と古典制御が本質的である。
+暗黙測定の原理のほうは、たとえば Alice の 2 量子ビットが復元後に不要になる場面で、
+それらを測定するか捨てるかを気にせず \(\ket\psi\) の統計を論じてよいことを保証する。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-5">万能量子ゲート<span class="en">Universal quantum gates</span></h2>
+
+<p>
+本章の主定理群がここに集まる。目標は、
+「有限種類のゲートだけで、あらゆる量子計算を（厳密に、あるいは任意精度で）実現できる」
+という<strong>万能性 (universality)</strong> を確立することである。
+議論は三段階で進む。
+</p>
+
+<ol>
+<li><strong>2 準位ユニタリの万能性</strong>（§4.5.1）：
+任意の \(d\times d\) ユニタリは、一度に高々 2 つの基底状態だけを混ぜる
+「2 準位ユニタリ」の積に厳密に分解できる。</li>
+<li><strong>{1 量子ビットゲート, CNOT} の万能性</strong>（§4.5.2）：
+各 2 準位ユニタリは CNOT と 1 量子ビットゲートで実装できる。
+①②を合わせて、この連続無限個のゲート集合が厳密な意味で万能となる。</li>
+<li><strong>離散集合の万能性</strong>（§4.5.3）：
+さらに有限集合 {H, T, CNOT} だけで任意のユニタリを<strong>任意精度で近似</strong>でき、
+しかも近似は効率的（Solovay–Kitaev）である。</li>
+</ol>
+
+<p>
+そのうえで、「万能」と言っても<strong>ほとんどのユニタリは指数個のゲートを要する</strong>
+という限界（§4.5.4）と、計算量クラス BQP との関係（§4.5.5）を述べる。
+</p>
+
+<h3 id="sec-4-5-1">2 準位ユニタリの万能性</h3>
+
+<div class="def-box">
+<span class="box-title">定義（2 準位ユニタリ）</span>
+\(d\) 次元空間のユニタリ \(U\) が<strong>2 準位 (two-level)</strong> であるとは、
+ある 2 つの計算基底状態 \(\ket s, \ket t\) の張る 2 次元部分空間の上でのみ非自明に作用し、
+残りの基底状態は不変に保つことをいう。行列としては、
+\(s, t\) 行・列に \(2\times2\) ユニタリブロックが入り、他は単位行列であるものを指す。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（2 準位分解）</span>
+任意の \(d\times d\) ユニタリ \(U\) は、高々 \(\dfrac{d(d-1)}{2}\) 個の
+2 準位ユニタリの積として厳密に書ける。
+</div>
+
+<p>
+証明の心臓部は、Gauss の消去法とまったく同じ発想である。
+2 準位ユニタリを左から掛けて \(U\) の非対角成分を一つずつ消し、
+最終的に単位行列にしてしまう。まず \(d = 3\) で手順を具体的に見る。
+</p>
+
+<div class="example-box">
+<span class="box-title">例：\(3\times3\) の消去手順</span>
+<p>
+\(U = \begin{pmatrix} a &amp; d &amp; g \\ b &amp; e &amp; h \\ c &amp; f &amp; j \end{pmatrix}\)
+とする。第 1 列 \((a,b,c)^{\mathrm T}\) を \((1,0,0)^{\mathrm T}\) に変えることを狙う。
+</p>
+<p>
+<strong>手順 1（\(b\) を消す）。</strong>
+\(N \equiv \sqrt{|a|^2 + |b|^2}\) とおき、行 1, 2 だけを混ぜる 2 準位ユニタリ
+\[
+U_1 = \begin{pmatrix}
+\dfrac{a^*}{N} &amp; \dfrac{b^*}{N} &amp; 0 \\[6pt]
+\dfrac{b}{N} &amp; -\dfrac{a}{N} &amp; 0 \\[6pt]
+0 &amp; 0 &amp; 1
+\end{pmatrix}
+\]
+を左から掛ける。すると \((U_1 U)_{21} = \dfrac{b}{N}a - \dfrac{a}{N}b = 0\)、
+\((U_1 U)_{11} = \dfrac{|a|^2+|b|^2}{N} = N\) となり、第 1 列は \((N, 0, c)^{\mathrm T}\)。
+（もし初めから \(b = 0\) なら \(U_1 = I\) とする。）
+</p>
+<p>
+<strong>手順 2（\(c\) を消す）。</strong>
+第 1 列 \((N, 0, c)^{\mathrm T}\) はユニタリの列だから単位ベクトルで、\(N^2 + |c|^2 = 1\)。
+行 1, 3 を混ぜる 2 準位ユニタリ
+\[
+U_2 = \begin{pmatrix}
+N &amp; 0 &amp; c^* \\
+0 &amp; 1 &amp; 0 \\
+c &amp; 0 &amp; -N
+\end{pmatrix}
+\]
+を左から掛けると \((U_2 U_1 U)_{11} = N^2 + |c|^2 = 1\)、\((U_2 U_1 U)_{31} = cN - Nc = 0\)。
+いま第 1 列は \((1,0,0)^{\mathrm T}\) に等しい。
+</p>
+<p>
+\(U_2 U_1 U\) はユニタリで第 1 列が \((1,0,0)^{\mathrm T}\) だから、
+列の正規直交性より<strong>第 1 行も自動的に \((1,0,0)\)</strong> になる。
+残るのは右下の \(2\times2\) ブロックで、これ自体ユニタリである。
+</p>
+<p>
+<strong>手順 3。</strong> その右下ブロックを対角化する 2 準位ユニタリ \(U_3\)（行 2, 3 に作用）を左から掛ければ、
+\(U_3 U_2 U_1 U = I\)。よって
+\[
+U = U_1^\dagger\, U_2^\dagger\, U_3^\dagger .
+\]
+2 準位ユニタリの逆も 2 準位だから、\(U\) は 3 個 \(= \dfrac{3\cdot2}{2}\) の 2 準位ユニタリの積である。
+</p>
+</div>
+
+<div class="proof-box">
+<span class="box-title">一般の \(d\) への帰納</span>
+<p>
+同じ操作を一般化する。第 1 列を \((1,0,\dots,0)^{\mathrm T}\) にするには、
+下から順に \(U_{d-1}, \dots, U_1\)（各々が行 \(k\) と行 1 を混ぜる 2 準位ユニタリ）を
+高々 \(d-1\) 個掛ければよい（すでに 0 の成分に対応する因子は省ける）。
+消し終えると第 1 行・第 1 列がともに \((1,0,\dots,0)\) となり、
+問題は右下の \((d-1)\times(d-1)\) ユニタリブロックに縮む。
+</p>
+<p>
+帰納法により、\((d-1)\) 次のブロックは高々
+\((d-2) + (d-3) + \cdots + 1 = \dfrac{(d-1)(d-2)}{2}\) 個の 2 準位ユニタリで単位行列にできる。
+第 1 列の処理に使った \(d-1\) 個と合わせると、総数は高々
+\[
+(d-1) + \frac{(d-1)(d-2)}{2} = \frac{d(d-1)}{2}.
+\]
+これらを \(V_1, \dots, V_m\)（\(m \le d(d-1)/2\)）とすれば \(V_m \cdots V_1 U = I\)、
+すなわち \(U = V_1^\dagger \cdots V_m^\dagger\)。各因子は 2 準位ユニタリである。<span class="qed">∎</span></p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">これはまだ「万能」の半分</span>
+2 準位分解は<strong>厳密</strong>で、近似を含まない。ただし 2 準位ユニタリ自体は
+（\(s, t\) の選び方と \(2\times2\) ブロックの連続パラメータを含む）まだ連続無限個ある。
+次項でこれを CNOT と 1 量子ビットゲートに落とし、
+§4.5.3 で 1 量子ビットゲートを有限集合で近似すれば、はじめて有限集合の万能性が完成する。
+また因子数 \(d(d-1)/2\) は \(d = 2^n\) では \(O(4^n)\) であり、
+「厳密実装は一般に指数コスト」という §4.5.4 の限界を既に予感させる。
+</div>
+
+<h3 id="sec-4-5-2">1 量子ビットゲートと CNOT の万能性</h3>
+
+<p>
+残る課題は、\(n\) 量子ビット空間（\(d = 2^n\)）上の 1 個の 2 準位ユニタリを、
+CNOT と 1 量子ビットゲートで実装することである。
+2 準位ユニタリ \(U\) が計算基底状態 \(\ket s\) と \(\ket t\)
+（\(s, t\) は \(n\) ビット列）の張る 2 次元部分空間に作用し、
+そこで \(2\times2\) ユニタリ \(\tilde U\) として働くとする。
+道具は<strong>Gray 符号</strong>である。
+</p>
+
+<div class="def-box">
+<span class="box-title">Gray 符号</span>
+2 つのビット列 \(s\) と \(t\) をつなぐ<strong>Gray 符号</strong>とは、
+\(s\) から始まり \(t\) で終わる列 \(g_0 = s, g_1, g_2, \dots, g_\ell = t\) であって、
+隣り合う \(g_{i}, g_{i+1}\) がちょうど 1 ビットだけ異なるものをいう。
+そのような列は長さ \(\ell \le n\) で必ず取れる（\(s\) と \(t\) の相違ビットを 1 つずつ反転していけばよい）。
+</div>
+
+<div class="proof-box">
+<span class="box-title">2 準位ユニタリの実装</span>
+<p>
+Gray 符号 \(g_0, \dots, g_\ell\) を一つ選ぶ。手順は三段である。
+</p>
+<ol>
+<li><strong>移送。</strong> \(g_0 \to g_1 \to \cdots \to g_{\ell-1}\) の各ステップで異なる 1 ビットを、
+残りのビットを制御にした<strong>多重制御 NOT</strong>（\(C^{n-1}(X)\)、必要なら制御を 0 で条件付け）で反転する。
+これにより基底状態 \(\ket s = \ket{g_0}\) は \(\ket{g_{\ell-1}}\) へ移送される。
+\(\ket{g_{\ell-1}}\) と \(\ket{g_\ell} = \ket{t}\) はちょうど 1 ビット（第 \(j\) ビットとする）だけ異なる。</li>
+<li><strong>本体。</strong> その第 \(j\) ビットを標的、他の \(n-1\) ビットを制御として、
+\(C^{n-1}(\tilde U)\)（他の全ビットが \(g_{\ell-1}\) と \(t\) の共通値に一致するときだけ \(\tilde U\) を掛ける多重制御ゲート）を作用させる。
+これは 2 次元部分空間 \(\{\ket{g_{\ell-1}}, \ket{t}\}\) 上でちょうど \(\tilde U\) を実現する。</li>
+<li><strong>巻き戻し。</strong> 手順 1 の多重制御 NOT 列を逆順に掛け、移送を元に戻す。</li>
+</ol>
+<p>
+全体として、部分空間 \(\{\ket s, \ket t\}\) 上でのみ \(\tilde U\) が作用し、
+他の基底状態は移送と巻き戻しで打ち消されて不変——まさに 2 準位ユニタリ \(U\) である。
+使ったのは多重制御ゲート \(C^{n-1}(X)\) と \(C^{n-1}(\tilde U)\) のみで、
+これらは §4.3.5 により作業ビットを使って \(O(n)\) 個の Toffoli に、
+さらに §4.3.4 で CNOT と 1 量子ビットゲートに落ちる。
+したがって<strong>1 つの 2 準位ユニタリは \(O(n)\) 個の CNOT と 1 量子ビットゲートで実装できる</strong>。<span class="qed">∎</span></p>
+</div>
+
+<div class="example-box">
+<span class="box-title">例：\(\ket{000}\) と \(\ket{111}\) を混ぜる 2 準位ユニタリ</span>
+\(n = 3\)、\(s = 000\)、\(t = 111\) とする。Gray 符号として
+\(000 \to 001 \to 011 \to 111\) を選ぶ。移送は
+\(C^2(X)\)（ビット 3 を反転、ビット 1, 2 を制御——ただし値 0 で条件付け）などを組み合わせて
+\(\ket{000}\to\ket{011}\)（=\(g_{\ell-1}\)）まで運ぶ。
+\(\ket{011}\) と \(\ket{111}\) は第 1 ビットだけ違うので、
+第 1 ビットを標的・第 2, 3 ビットを制御にした \(C^2(\tilde U)\) を掛け、
+最後に移送を巻き戻す。連続パラメータを持つのは唯一 \(C^2(\tilde U)\) の \(\tilde U\) だけで、
+残りは離散的な NOT 系ゲートである。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（万能性・厳密版）</span>
+CNOT と（すべての）1 量子ビットユニタリからなるゲート集合は<strong>万能</strong>である：
+任意の \(n\) 量子ビットユニタリ \(U\) は、この集合の有限個のゲートの積として厳密に表せる。
+一般には \(O(n^2 4^n)\) 個のゲートを要する。
+</div>
+
+<p>
+実際、§4.5.1 で \(U\) を高々 \(2^{n-1}(2^n-1) = O(4^n)\) 個の 2 準位ユニタリに分解し、
+各々を上の手続きで \(O(n)\) 個の基本ゲートに落とせば、総数は \(O(n^2 4^n)\) となる。
+指数的だが、これは「一般のユニタリ」に対する上界であり、
+構造を持つ有用な \(U\)（QFT など）はずっと少ないゲートで書けることを次章以降で見る。
+</p>
+
+<h3 id="sec-4-5-3">離散集合 {H, T, CNOT}（と S）</h3>
+
+<p>
+前項の「すべての 1 量子ビットゲート」はまだ連続無限集合である。
+これを<strong>有限集合</strong>に置き換えたい。標準的な選択が {H, T, CNOT} である
+（位相ゲート \(S = T^2\) も含めるが、\(S\) は \(T\) から作れる）。
+これらは厳密には万能でない——生成される 1 量子ビットゲートは可算個しかないから、
+連続体である \(U(2)\) をすべて出すことは不可能である。
+しかし次の意味で<strong>近似的に万能</strong>である：
+1 量子ビットゲートの成す連続体の中で、これらが生成する集合は<strong>稠密</strong>になる。
+</p>
+
+<div class="proof-box">
+<span class="box-title">なぜ稠密になるか——無理数角の回転</span>
+<p>
+鍵は \(T\) と \(HTH\) の合成である。大域位相を除けば
+\(T = R_z(\pi/4)\)（\(z\) 軸まわり \(\pi/4\) 回転）であり、
+\(H\) が \(z\) 軸を \(x\) 軸に写すので \(HTH = R_x(\pi/4)\)（\(x\) 軸まわり \(\pi/4\) 回転）である。
+両者の積を計算すると、回転の合成公式（\(R_{\hat n}(\theta) = \cos\frac\theta2 I - i\sin\frac\theta2\,\hat n\cdot\vec\sigma\)）から
+\[
+R_z\!\Big(\frac\pi4\Big) R_x\!\Big(\frac\pi4\Big)
+= \Big(\cos\tfrac\pi8 I - i\sin\tfrac\pi8 Z\Big)\Big(\cos\tfrac\pi8 I - i\sin\tfrac\pi8 X\Big)
+= \cos^2\tfrac\pi8\, I - i\Big[\dots\Big]\cdot\vec\sigma .
+\]
+これはある軸 \(\hat n\) まわりの角 \(\theta\) の回転 \(R_{\hat n}(\theta)\) であって、
+\(I\) の係数を読むと
+\[
+\cos\frac\theta2 = \cos^2\frac\pi8 .
+\]
+</p>
+<p>
+ここで決定的な事実は、こうして定まる \(\theta\) が<strong>\(\pi\) の無理数倍</strong>である
+（\(\theta/\pi \notin \mathbb Q\)）ことである。したがって
+\(R_{\hat n}(\theta)^k\) \((k = 1, 2, 3, \dots)\) の回転角 \(k\theta\ (\mathrm{mod}\ 2\pi)\) は
+円周上で決して同じ点に戻らず、稠密に分布する（無理数回転の稠密性）。
+すなわち \(R_{\hat n}(\alpha)\) を任意の \(\alpha\) について任意精度で近似できる。
+</p>
+<p>
+さらに \(H R_{\hat n}(\theta) H = R_{\hat m}(\theta)\) は<strong>別の軸</strong> \(\hat m\) まわりの同角回転を与える
+（\(\hat n \neq \pm\hat m\)）。異なる 2 軸まわりの回転を任意角で作れれば、
+それらの合成で \(SU(2)\) の任意の元を任意精度で近似できる（§4.2 の一般化 Euler 分解）。
+CNOT を加えれば、§4.5.1–§4.5.2 の構成を通じて任意の \(n\) 量子ビットユニタリを近似できる。
+以上より {H, T, CNOT} は<strong>近似的に万能</strong>である。<span class="qed">∎</span></p>
+</div>
+
+<p>
+「任意精度で近似できる」だけでは足りない——近似に指数的なゲート数が要るなら実用にならない。
+これを救うのが次の定理である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Solovay–Kitaev）</span>
+{H, T, CNOT} のように \(SU(2)\)（一般には \(SU(d)\)）で稠密な集合を固定する。
+任意の 1 量子ビットユニタリ \(U\) と精度 \(\varepsilon &gt; 0\) に対し、
+生成集合から選んだ長さ
+\[
+O\!\left(\log^{c}\frac1\varepsilon\right),\qquad c \approx 2
+\]
+のゲート列 \(V\) で、\(\|U - V\| &lt; \varepsilon\) を満たすものが構成できる。
+しかもこの列は \(U\) から効率的に（\(\varepsilon\) の多重対数時間で）求められる。
+<br>
+証明は<a href="appendixA3.html">付録A3</a>で与える。
+そこで実際に示すのは \(c \approx 4\) の版であり、
+議論を精密にすると \(c\) は 2 の近くまで下げられる。
+\(c \ge 1\) は証明されているが、最良の \(c\) の値は未解決である。
+</div>
+
+<div class="remark-box">
+<span class="box-title">計算量への含意</span>
+Solovay–Kitaev 定理は「離散化のコストは安い」ことを保証する。
+連続なゲート集合で \(g\) 個のゲートを使う回路があれば、各ゲートを精度
+\(\varepsilon/g\) で {H, T, CNOT} 列に置き換えると、全体の誤差は \(g\cdot(\varepsilon/g) = \varepsilon\) 以下に収まり、
+総ゲート数は \(g\cdot O(\log^c(g/\varepsilon))\) にしか増えない——<strong>多重対数のオーバーヘッド</strong>で済む。
+したがって「どの（合理的な）万能ゲート集合を選ぶか」は、
+効率の議論では多項式的な違いしか生まず、計算量クラス BQP（§4.5.5）の定義は
+ゲート集合の選択に依存しない。これが有限集合で理論を組み立ててよい根拠である。
+</div>
+
+<h3 id="sec-4-5-4">ほとんどのユニタリは指数的に難しい</h3>
+
+<p>
+万能性は「作れる」ことを言うが、「安く作れる」とは言っていない。
+実際、<strong>ほとんどすべてのユニタリは、近似するだけで指数個のゲートを要する</strong>。
+これは数え上げ（体積論法）でわかる。
+</p>
+
+<div class="proof-box">
+<span class="box-title">数え上げのスケッチ</span>
+<p>
+サイズ \(g\) の有限ゲート集合を使い、\(n\) 量子ビット上で \(m\) 個のゲートからなる回路を考える。
+各ゲートは「どの種類か」と「どの量子ビットに掛けるか」の選択で決まる。
+量子ビットの選び方は高々 \(n^2\) 通り（1・2 量子ビットゲート）なので、
+長さ \(m\) の回路の総数は高々
+\[
+\big(g\, n^2\big)^m
+\]
+である——これは \(m\) について<strong>単一指数</strong>でしか増えない。
+</p>
+<p>
+一方、近似したい対象は \(SU(2^n)\) であり、その実次元は \(4^n - 1\)。
+この多様体を精度 \(\varepsilon\) の網で覆うには、体積比から
+\[
+\Omega\!\left(\left(\frac1\varepsilon\right)^{4^n - 1}\right)
+\]
+個の相異なる点（ゲート列）が必要である。生成できる回路数がこれを上回るには
+\[
+(g\, n^2)^m \ \gtrsim\ \left(\frac1\varepsilon\right)^{4^n-1}
+\quad\Longrightarrow\quad
+m \ =\ \Omega\!\left(\frac{4^n \log(1/\varepsilon)}{\log(n)}\right)
+\]
+が必要になる。すなわち<strong>典型的な \(U\) の実現には \(m = \Omega(4^n)\) 個のゲートが要る</strong>。
+覆いきれない \(U\) は「精度 \(\varepsilon\) で近似不能」であり、それが体積のほとんどを占める。<span class="qed">∎</span></p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">古典との対称性</span>
+この状況は古典回路と同じである。\(n\) 入力のブール関数は \(2^{2^n}\) 個あるのに対し、
+サイズ \(m\) の回路は単一指数個しか作れないため、
+ほとんどのブール関数は指数サイズの回路を要する（Shannon の数え上げ論法）。
+量子でも古典でも、<strong>「効率的に計算できるもの」は全体のごく一部</strong>にすぎない。
+アルゴリズム設計とは、その希少な効率的領域の中に有用な問題を見つける営みである。
+</div>
+
+<h3 id="sec-4-5-5">量子計算量：BQP</h3>
+
+<p>
+以上の道具立てを使うと、量子版の効率的計算クラスを回路で定義できる。
+§3.2 の古典 BPP の量子対応物が <strong>BQP</strong>（bounded-error quantum polynomial time）である。
+</p>
+
+<div class="def-box">
+<span class="box-title">BQP（回路的定義）</span>
+言語 \(L \subseteq \{0,1\}^*\) が <strong>BQP</strong> に属するとは、
+多項式サイズの<strong>一様な量子回路族</strong> \(\{Q_n\}\)——
+{H, T, CNOT} など固定の万能集合からなり、入力長 \(n\) に対する回路 \(Q_n\) の設計図を
+古典計算機が多項式時間で出力できる——が存在して、
+入力 \(x\)（を計算基底に初期化し、補助ビットは \(\ket 0\)）に回路を掛けて指定ビットを測定したとき、
+\[
+x \in L \ \Rightarrow\ \Pr[\text{受理}] \ge \tfrac23,\qquad
+x \notin L \ \Rightarrow\ \Pr[\text{受理}] \le \tfrac13
+\]
+となることをいう。誤り確率 \(1/3\) は反復＋多数決で指数的に下げられる（§3.2.2 と同じ Chernoff 増幅）。
+Solovay–Kitaev により、この定義は万能集合の選択に依存しない。
+</div>
+
+<p>
+古典シミュレーションとの関係を整理しておく。
+\(n\) 量子ビットの状態は \(2^n\) 個の振幅を持つベクトルである。
+そのため、量子回路をそのまま古典計算機で追うと指数的なメモリと時間がかかる。
+これが「量子計算は古典より難しく<strong>見える</strong>」ことの源であり、
+Feynman の出発点（§4.7）でもある。
+包含関係としては
+\[
+\mathrm{BPP} \ \subseteq\ \mathrm{BQP} \ \subseteq\ \mathrm{PSPACE}
+\]
+が知られる。左の包含は「量子回路は古典乱択回路を（Toffoli とアダマールで乱数を作って）模倣できる」ことから、
+右の包含は「振幅を経路和として一つずつ多項式領域で足し上げられる」ことから従う。
+\(\mathrm{BQP} \neq \mathrm{BPP}\) の証明は \(\mathrm{P} \neq \mathrm{PSPACE}\) を導いてしまうので、
+現在の技術では極めて難しい。
+量子計算の優位を支えているのは、Shor のアルゴリズムのような
+<strong>特定の問題での指数的高速化の証拠</strong>と、
+オラクル分離などの相対化された結果である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-6">量子回路モデルの総括<span class="en">Summary of the quantum circuit model</span></h2>
+
+<p>
+ここまでで量子回路モデルの部品がそろった。
+計算モデルとして何を要求しているのかを、古典計算との対応で一覧にしておく。
+量子回路による計算とは、次の五つの要素からなる。
+</p>
+
+<div class="def-box">
+<span class="box-title">量子回路モデルの構成要素</span>
+<ol>
+<li><strong>古典資源。</strong> 量子計算機は真空に浮いているのではない。
+回路の設計図の生成（一様性、§3.1.2）、測定結果の後処理、
+乱択アルゴリズムの制御など、多項式時間の<strong>古典計算</strong>が全体を取り仕切る。
+量子回路は大きな古典アルゴリズムの中のサブルーチンである。</li>
+<li><strong>適切な状態空間。</strong> \(n\) 個の量子ビットからなる
+\(2^n\) 次元 Hilbert 空間 \((\mathbb C^2)^{\otimes n}\)。
+計算基底 \(\ket{x_1\cdots x_n}\) が基準の座標系を与える。</li>
+<li><strong>初期状態の準備。</strong> 計算開始時に、
+指定した計算基底状態（標準的には \(\ket{0}^{\otimes n}\)）に初期化できること。
+入力データはここに古典ビット列としてセットする。</li>
+<li><strong>万能ゲートによる変換。</strong> 状態を、
+万能集合（例：{H, T, CNOT}）からのゲートを並べたユニタリ回路で発展させられること。
+§4.5 で見たとおり、この有限集合で任意のユニタリを効率的なオーバーヘッドで近似できる。</li>
+<li><strong>計算基底での測定。</strong> 一部（または全部）の量子ビットを計算基底で測定し、
+古典的な答えを取り出せること。遅延・暗黙測定の原理（§4.4）により、
+測定は末尾にまとめてよい。</li>
+</ol>
+</div>
+
+<p>
+この五点は、第7章で論じる物理的実現の要件（DiVincenzo の基準）とも対応する。
+第III部の量子情報理論では、より一般の<strong>量子操作</strong>へと拡張される
+（測定・ノイズ・環境との相互作用を含む非ユニタリ過程。第8章）。本章のモデルはその「理想化・可逆」な核である。
+なお、混合状態・一般測定・ノイズを取り込んだより広い枠組みでも、
+「純粋状態＋ユニタリ＋計算基底測定」というこの回路モデルは
+（補助系を足せば）<strong>本質的に同じ計算能力</strong>を持つことが後に示される。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-7">量子系のシミュレーション<span class="en">Simulation of quantum systems</span></h2>
+
+<p>
+量子回路モデルの最初の本格的な応用として、
+量子系そのものの時間発展を計算する<strong>量子シミュレーション</strong>を構成する。
+歴史的にも、これは Feynman が量子計算機を構想した動機であった。
+</p>
+
+<h3 id="sec-4-7-1">意義と困難</h3>
+
+<p>
+量子系の状態はヒルベルト空間の次元とともに指数的に増える。
+\(n\) 個の 2 準位系（スピンなど）を古典計算機で厳密に扱うには
+\(2^n\) 個の複素振幅を保持し、\(2^n\times2^n\) の行列を掛けねばならない。
+\(n\) が数十を超えると、地球上のどんな古典計算機のメモリにも収まらない。
+これが<strong>量子多体系の困難</strong>であり、化学・物性・高エネルギー物理に共通する壁である。
+</p>
+
+<p>
+Feynman の洞察は「<strong>量子系を別の量子系で模倣すればよい</strong>」というものだった。
+制御可能な \(n\) 量子ビットの回路で、興味ある系の Hamiltonian \(H\) による時間発展
+\(e^{-iHt}\) を実装できれば、指数的な古典コストを回避できる。
+問題は、任意の \(H\) に対して \(e^{-iHt}\) をどう<strong>効率的な回路</strong>に落とすかである。
+一般の \(H\) では §4.5.4 の限界どおり指数コストだが、
+物理的に重要な Hamiltonian は<strong>局所的</strong>——少数の粒子間の相互作用の和——であり、
+この構造が鍵になる。
+</p>
+
+<h3 id="sec-4-7-2">Trotter 公式とアルゴリズム</h3>
+
+<p>
+局所 Hamiltonian は各項が少数の量子ビットにしか作用しないので、
+<strong>個々の項 \(e^{-iH_k t}\) は簡単に実装できる</strong>。
+問題は \(H = \sum_k H_k\) の項どうしが一般に非可換なため、
+\(e^{-iHt} \neq \prod_k e^{-iH_k t}\) となることである。
+このギャップを制御するのが Trotter（–Suzuki）公式である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（Trotter 公式）</span>
+\(A, B\) をエルミート演算子とする。任意の実数 \(t\) に対して
+\[
+\lim_{n\to\infty}\Big(e^{iAt/n}\, e^{iBt/n}\Big)^{n} = e^{i(A+B)t}.
+\]
+有限の刻み \(\Delta t\) に対しては
+\[
+e^{i(A+B)\Delta t} = e^{iA\Delta t}\, e^{iB\Delta t} + O(\Delta t^2)
+\]
+であり、対称化した<strong>2 次公式</strong>では誤差が一段落ちて
+\[
+e^{i(A+B)\Delta t} = e^{iA\Delta t/2}\, e^{iB\Delta t}\, e^{iA\Delta t/2} + O(\Delta t^3).
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+指数関数を \(\Delta t\) について Taylor 展開する。
+\[
+e^{iA\Delta t}\, e^{iB\Delta t}
+= \Big(I + iA\Delta t - \tfrac12 A^2\Delta t^2 + \cdots\Big)
+  \Big(I + iB\Delta t - \tfrac12 B^2\Delta t^2 + \cdots\Big)
+\]
+\[
+= I + i(A+B)\Delta t - \tfrac12\big(A^2 + 2AB + B^2\big)\Delta t^2 + O(\Delta t^3).
+\]
+一方
+\[
+e^{i(A+B)\Delta t} = I + i(A+B)\Delta t - \tfrac12(A+B)^2\Delta t^2 + O(\Delta t^3),
+\qquad (A+B)^2 = A^2 + AB + BA + B^2.
+\]
+両者の差は \(\Delta t^2\) の項だけに現れ、
+\[
+e^{iA\Delta t}e^{iB\Delta t} - e^{i(A+B)\Delta t}
+= -\tfrac12\big(2AB - AB - BA\big)\Delta t^2 + O(\Delta t^3)
+= -\tfrac12[A, B]\,\Delta t^2 + O(\Delta t^3).
+\]
+交換子 \([A,B]\) が誤差を支配し、大きさは \(O(\Delta t^2)\)。
+これで 1 次公式が示せた。
+</p>
+<p>
+極限公式は \(\Delta t = t/n\) と置いて得る。1 ステップの誤差が \(O(1/n^2)\)、
+ユニタリは作用素ノルムを保つので、\(n\) ステップの誤差は望遠鏡和と三角不等式により
+\[
+\Big\|\big(e^{iAt/n}e^{iBt/n}\big)^n - e^{i(A+B)t}\Big\| \le n\cdot O\!\Big(\frac1{n^2}\Big) = O\!\Big(\frac1n\Big) \xrightarrow[n\to\infty]{} 0.
+\]
+</p>
+<p>
+2 次公式は対称化による。\(e^{iA\Delta t/2}e^{iB\Delta t}e^{iA\Delta t/2}\) を同様に展開すると、
+配置が \(\Delta t \to -\Delta t\) の下で対称なため \(\Delta t^2\) の誤差項が相殺し、
+最初に残る誤差は \(\Delta t^3\) になる。<span class="qed">∎</span></p>
+</div>
+
+<div class="thm-box">
+<span class="box-title">アルゴリズム（局所 Hamiltonian のシミュレーション）</span>
+\(H = \sum_{k=1}^{L} H_k\)、各 \(H_k\) は高々 \(c\) 個の量子ビットに作用するとする。
+時間 \(t\) の発展 \(e^{-iHt}\) を精度 \(\varepsilon\) で近似するには：
+<ol>
+<li>\(t\) を \(n\) 個の刻み \(\Delta t = t/n\) に分ける。</li>
+<li>各刻みで \(\displaystyle\prod_{k=1}^{L} e^{-iH_k \Delta t}\)（または対称版）を適用する。</li>
+<li>各 \(e^{-iH_k \Delta t}\) は高々 \(c\) 量子ビットのユニタリなので、
+§4.5 の万能構成で定数個の基本ゲートに落とす。</li>
+</ol>
+Trotter 誤差は \(O(L^2 t^2 / n)\) なので、\(n = O(L^2 t^2/\varepsilon)\) と取れば精度 \(\varepsilon\) を達成でき、
+総ゲート数は \(O(n L) = O(L^3 t^2/\varepsilon)\)——\(L, t, 1/\varepsilon\) について<strong>多項式</strong>である。
+</div>
+
+<p>
+残るのは「各 \(e^{-iH_k\Delta t}\) を実際にどう回路にするか」である。
+Pauli テンソル積 \(H_k = Z_1 Z_2 \cdots Z_c\) の型を例に取ろう。
+これは計算基底で対角で、固有値は関与ビットの<strong>パリティ</strong>で決まる：
+\(Z\otimes\cdots\otimes Z\,\ket{x_1\cdots x_c} = (-1)^{x_1\oplus\cdots\oplus x_c}\ket{x_1\cdots x_c}\)。
+したがって \(e^{-i Z\otimes\cdots\otimes Z\,\Delta t}\) は「パリティに応じた位相 \(e^{\mp i\Delta t}\)」を与えるだけであり、
+CNOT でパリティを 1 本の量子ビットに集めて位相回転 \(R_z\) を掛け、CNOT を巻き戻せばよい。
+\(c = 3\) の場合の回路を図 4.6 に示す。
+</p>
+
+<figure>
+<svg viewBox="0 0 560 210" xmlns="http://www.w3.org/2000/svg">
+  <line x1="55" y1="40" x2="530" y2="40" class="line"/>
+  <line x1="55" y1="95" x2="530" y2="95" class="line"/>
+  <line x1="55" y1="160" x2="530" y2="160" class="line"/>
+  <text x="18" y="45" class="label">x₁</text>
+  <text x="18" y="100" class="label">x₂</text>
+  <text x="18" y="165" class="label">x₃</text>
+  <!-- CNOT 1->3 -->
+  <circle cx="110" cy="40" r="4" class="accent-fill"/>
+  <line x1="110" y1="40" x2="110" y2="169" class="line" stroke-width="1.5"/>
+  <circle cx="110" cy="160" r="9" class="line" stroke-width="1.5"/>
+  <line x1="101" y1="160" x2="119" y2="160" class="line" stroke-width="1.5"/>
+  <!-- CNOT 2->3 -->
+  <circle cx="175" cy="95" r="4" class="accent-fill"/>
+  <line x1="175" y1="95" x2="175" y2="169" class="line" stroke-width="1.5"/>
+  <circle cx="175" cy="160" r="9" class="line" stroke-width="1.5"/>
+  <line x1="166" y1="160" x2="184" y2="160" class="line" stroke-width="1.5"/>
+  <!-- Rz on q3 -->
+  <rect x="235" y="143" width="86" height="34" class="gate" stroke-width="1.5"/>
+  <text x="248" y="165" class="label">R_z(2Δt)</text>
+  <!-- CNOT 2->3 -->
+  <circle cx="375" cy="95" r="4" class="accent-fill"/>
+  <line x1="375" y1="95" x2="375" y2="169" class="line" stroke-width="1.5"/>
+  <circle cx="375" cy="160" r="9" class="line" stroke-width="1.5"/>
+  <line x1="366" y1="160" x2="384" y2="160" class="line" stroke-width="1.5"/>
+  <!-- CNOT 1->3 -->
+  <circle cx="440" cy="40" r="4" class="accent-fill"/>
+  <line x1="440" y1="40" x2="440" y2="169" class="line" stroke-width="1.5"/>
+  <circle cx="440" cy="160" r="9" class="line" stroke-width="1.5"/>
+  <line x1="431" y1="160" x2="449" y2="160" class="line" stroke-width="1.5"/>
+</svg>
+<figcaption>図 4.6：\(e^{-i Z\otimes Z\otimes Z\,\Delta t}\) の回路実装。
+左の CNOT 2 個で第 3 ビットにパリティ \(x_1\oplus x_2\oplus x_3\) を集め、
+\(R_z(2\Delta t) = e^{-iZ\Delta t}\) で位相 \(e^{-i(-1)^{\text{parity}}\Delta t}\) を刻み、
+右の CNOT 2 個で巻き戻す。</figcaption>
+</figure>
+
+<div class="proof-box">
+<span class="box-title">図 4.6 が正しい理由</span>
+<p>
+入力 \(\ket{x_1 x_2 x_3}\) に対し、左 2 個の CNOT は第 3 ビットを
+\(x_3 \to x_3\oplus x_1 \to x_3\oplus x_1\oplus x_2\) と更新し、
+第 1, 2 ビットは不変に保つ。第 3 ビットにパリティ \(p \equiv x_1\oplus x_2\oplus x_3\) が乗る。
+中央の \(R_z(2\Delta t) = e^{-iZ\Delta t} = \mathrm{diag}(e^{-i\Delta t}, e^{+i\Delta t})\) は
+第 3 ビットに位相 \(e^{-i(-1)^{p}\Delta t}\) を与える。右 2 個の CNOT は第 3 ビットを元の \(x_3\) に戻す。
+位相は基底状態全体に掛かる大域因子なので、正味の作用は
+\[
+\ket{x_1 x_2 x_3} \mapsto e^{-i(-1)^{x_1\oplus x_2\oplus x_3}\Delta t}\ket{x_1 x_2 x_3}
+= e^{-i Z\otimes Z\otimes Z\,\Delta t}\ket{x_1 x_2 x_3}
+\]
+であり、まさに求める発展である。他の Pauli 型 \(H_k\)（\(X, Y\) を含む）は、
+各ビットを基底変換（\(X\) には \(H\)、\(Y\) には \(H S^\dagger\)）で \(Z\) 軸に回してから
+同じ回路を使い、最後に基底を戻せばよい。<span class="qed">∎</span></p>
+</div>
+
+<h3 id="sec-4-7-3">例：2 スピン系</h3>
+
+<div class="example-box">
+<span class="box-title">例：横磁場のかかった 2 スピン</span>
+<p>
+Hamiltonian
+\[
+H = \underbrace{J\, Z_1 Z_2}_{H_1} + \underbrace{h\,(X_1 + X_2)}_{H_2}
+\]
+を考える（\(J\) は結合、\(h\) は横磁場）。\(H_1\) と \(H_2\) は非可換
+（\([Z_1 Z_2,\, X_1] \neq 0\)）なので \(e^{-iHt}\) は素直には分解できない。
+1 次 Trotter で
+\[
+e^{-iHt} \approx \Big(e^{-iJ Z_1 Z_2\,\Delta t}\; e^{-ih X_1\Delta t}\; e^{-ih X_2\Delta t}\Big)^{n},
+\qquad \Delta t = \frac tn .
+\]
+</p>
+<p>
+各因子の回路化は容易である。
+\(e^{-iJ Z_1 Z_2\Delta t}\) は図 4.6 を 2 ビットに縮めた形——CNOT\((1\to2)\)、
+\(R_z(2J\Delta t)\) を第 2 ビットに、CNOT\((1\to2)\)。
+\(e^{-ih X_j\Delta t} = R_x(2h\Delta t)_j\) は 1 量子ビット回転そのもので、
+\(H R_z(2h\Delta t) H\) としても作れる。
+\(n\) を大きくするほど Trotter 誤差 \(O(t^2/n)\) は小さくなり、
+横磁場 Ising 模型の実時間発展を任意精度で追える。
+</p>
+</div>
+
+<h3 id="sec-4-7-4">展望</h3>
+
+<p>
+量子シミュレーションは、量子計算の応用の中でも
+「なぜ量子計算機が要るのか」がもっとも直接的に見える分野である。
+Trotter 分解は最も基本的な手法である。
+その後、より高次の積公式、線形結合ユニタリ (LCU)、量子信号処理・qubitization など、
+誤差とゲート数のスケーリングを改善する技法が数多く発展した。
+また、時間発展 \(e^{-iHt}\) を部品として使う代表例が第5章の<strong>量子位相推定</strong>であり、
+これはハミルトニアンの固有エネルギー（分子の基底状態エネルギーなど、量子化学の中心課題）を
+取り出す鍵になる。
+</p>
+
+<p>
+実機で意味のあるシミュレーションをするには、Trotter 誤差だけでなく
+ハードウェアのノイズを抑えねばならず、第III部の量子誤り訂正・フォールトトレランスが不可欠になる。
+本章で組み上げた回路モデルは、そうした応用すべての共通言語である。
+次章からは、この言語で書かれた具体的なアルゴリズム——
+まず量子 Fourier 変換とその応用——に進む。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第4章のまとめ</span>
+<ul>
+<li>量子回路は左から右へ時間が流れ、ワイヤはループ・合流・分岐を持たない。ゲートはユニタリ、末尾で計算基底測定。</li>
+<li>1 量子ビット演算：対合行列の公式 \(e^{iAx}=\cos x\,I + i\sin x\,A\) から回転 \(R_x, R_y, R_z, R_{\hat n}\) を定義。Z-Y 分解 \(U = e^{i\alpha}R_z(\beta)R_y(\gamma)R_z(\delta)\) と、\(ABC=I\)・\(U = e^{i\alpha}AXBXC\) の ABC 分解が制御演算の鍵。</li>
+<li>制御演算：制御 \(U\) は CNOT 2 個＋1 量子ビットゲート（ABC＋位相 \(\Phi(\alpha)\)）で厳密構成。\(C^2(U)\) は \(V^2=U\) を用いて構成し、Toffoli は CNOT と 1 量子ビットゲート（{H,T,CNOT} で T カウント 7）に落ちる。\(C^n(U)\) は作業ビットで \(O(n)\) 個の Toffoli に帰着。</li>
+<li>測定：遅延測定の原理（測定は末尾へ送れる、古典制御→量子制御）と暗黙測定の原理（末尾で放棄する量子ビットは測定したとみなせる、捨てる＝測って忘れる）。テレポーテーションが古典制御の代表例。</li>
+<li>万能性（厳密）：任意の \(d\times d\) ユニタリは高々 \(d(d-1)/2\) 個の 2 準位ユニタリに分解でき（Gauss 消去型）、各 2 準位ユニタリは Gray 符号を使って CNOT＋1 量子ビットゲートで実装。ゆえに {1 量子ビットゲート, CNOT} は万能（一般に \(O(n^2 4^n)\) ゲート）。</li>
+<li>万能性（離散・近似）：{H, T, CNOT}（＋S=T²）は近似的に万能。\(T\) と \(HTH\) の合成が無理数角の回転を与え稠密性を生む。Solovay–Kitaev により精度 \(\varepsilon\) の近似は \(O(\log^c(1/\varepsilon))\) ゲートで済み、ゲート集合の選択は多項式的にしか効かない。</li>
+<li>限界：数え上げ（体積論法）より、ほとんどのユニタリは近似に \(\Omega(4^n)\) 個のゲートを要する。効率的に計算できるものは全体のごく一部（古典の Shannon 論法と同型）。</li>
+<li>計算量：BQP は多項式サイズ一様量子回路＋有界誤差で定義。\(\mathrm{BPP}\subseteq\mathrm{BQP}\subseteq\mathrm{PSPACE}\)。古典シミュレーションは振幅が \(2^n\) 個あるため一般に指数コスト。</li>
+<li>量子系のシミュレーション：Feynman の動機。Trotter 公式 \(e^{i(A+B)\Delta t}=e^{iA\Delta t}e^{iB\Delta t}+O(\Delta t^2)\)（対称版は \(O(\Delta t^3)\)、誤差は \([A,B]\) 由来）。局所 Hamiltonian \(H=\sum_k H_k\) は多項式ゲートでシミュレート可能。\(e^{-iZ\otimes Z\otimes Z\,\Delta t}\) は CNOT でパリティを集めて \(R_z\) を掛け巻き戻す回路で実現。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

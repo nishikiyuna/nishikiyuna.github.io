@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="可換な正演算子の幾何平均に関する行列不等式と、超演算子への適用による Lieb の同時凹性定理の完全な証明">
+  <title>付録A6 Lieb の定理の証明 — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="appendixA6" data-chapter="A6">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 付録6 に対応</span>
+  付録A6 Lieb の定理の証明
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この付録の概要</span>
+§11.4 で強劣加法性
+\(S(A,B,C)+S(B)\le S(A,B)+S(B,C)\) を証明したとき、
+出発点である <strong>Lieb の定理</strong>——
+\((A,B)\mapsto\tr(X^\dagger A^tXB^{1-t})\) が正行列の組について同時凹であること——
+だけは証明せずに引用した。本付録でその穴を埋める。
+証明は 2 段構えである。まず<strong>可換な正演算子の組</strong>についての行列不等式（補題A6.3）を、
+\(t=1/2\) の場合に Cauchy–Schwarz だけで示し、二進有理数へ広げて連続性で \([0,1]\) 全体へ延ばす（§A6.3）。
+次に、その補題を<strong>超演算子</strong>（行列に作用する線形写像）に適用するという一手で
+Lieb の定理を導く（§A6.4）。
+「行列の左からの掛け算と右からの掛け算は互いに可換な正演算子である」——
+この一見当たり前の事実が、非可換性の困難を回避する鍵になる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a6-1">準備<span class="en">Preliminaries</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（演算子の半順序）</span>
+行列 \(A,B\) について、\(B-A\) が正演算子（すなわち \(\bra u(B-A)\ket u\ge0\) がすべての \(\ket u\) で成立）
+のとき \(A\le B\) と書く。\(A\le B\) は演算子の集合上の半順序である
+（推移的・反対称的・反射的）。
+</div>
+
+<div class="thm-box">
+<span class="box-title">命題A6.1（共役で半順序が保たれる）</span>
+\(A\le B\) ならば、任意の行列 \(X\) について \(XAX^\dagger \le XBX^\dagger\)。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+任意の \(\ket u\) に対し
+\(\bra u X(B-A)X^\dagger\ket u = \bra v (B-A)\ket v\ge0\)
+（\(\ket v\equiv X^\dagger\ket u\)）。<span class="qed">∎</span>
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（本付録で使うノルム）</span>
+行列 \(A\) に対し
+\[
+\|A\| \equiv \max_{\braket uu=1}\bigl|\bra u A\ket u\bigr|
+\]
+と定義する。
+<strong>これは作用素ノルムではなく、いわゆる数域半径 (numerical radius) である</strong>点に注意する。
+本付録の議論はこの量の性質だけを使う。
+</div>
+
+<div class="thm-box">
+<span class="box-title">命題A6.2（ノルムの性質）</span>
+\(A\) の固有値の絶対値の最大を \(\lambda(A)\) と書く。
+<ol>
+<li>\(\|A\|\ge\lambda(A)\)。</li>
+<li>\(A\) がエルミートなら \(\|A\|=\lambda(A)\)。</li>
+<li>\(AB\) と \(BA\) は同じ固有値を持つ。</li>
+<li>\(AB\) がエルミートなら \(\|AB\|\le\|BA\|\)。</li>
+<li>\(A\) が正なら、\(\|A\|\le1\) と \(A\le I\) は同値である。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>1.</strong> \(A\ket v=\mu\ket v\)（\(\ket v\) は単位ベクトル）なら
+\(|\bra vA\ket v|=|\mu|\)。最大化すれば \(\|A\|\ge\lambda(A)\)。
+</p>
+<p>
+<strong>2.</strong> エルミートならスペクトル分解 \(A=\sum_i\mu_i\ketbra ii\)（\(\mu_i\) は実）ができ、
+\(\ket u=\sum_ic_i\ket i\) に対し
+\(|\bra uA\ket u|=|\sum_i\mu_i|c_i|^2|\le\lambda(A)\sum_i|c_i|^2=\lambda(A)\)。
+1 と合わせて等号。
+</p>
+<p>
+<strong>3.</strong> \(A\) が可逆なら
+\(\det(xI-AB)=\det\bigl(A(xA^{-1}-B)\bigr)=\det\bigl((xA^{-1}-B)A\bigr)=\det(xI-BA)\)
+となり特性多項式が一致する。可逆でない場合は \(A+\epsilon I\)（\(\epsilon\to0\)）で近似し、
+特性多項式の係数が連続であることから従う。
+</p>
+<p>
+<strong>4.</strong> \(AB\) がエルミートなら 2 より \(\|AB\|=\lambda(AB)\)。
+3 より \(\lambda(AB)=\lambda(BA)\)。1 より \(\lambda(BA)\le\|BA\|\)。つなげればよい。
+</p>
+<p>
+<strong>5.</strong> \(A\) が正ならエルミートなので 2 より \(\|A\|\) は最大固有値である。
+\(A\le I\) は「\(I-A\ge0\)」すなわち「\(A\) の全固有値が 1 以下」と同値だから、
+\(\|A\|\le1\) と同値。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（超演算子と Hilbert–Schmidt 内積）</span>
+行列の空間に作用する線形写像を<strong>超演算子 (superoperator)</strong> と呼ぶ。
+行列の空間には <strong>Hilbert–Schmidt 内積</strong>
+\[
+\langle X, Y\rangle \equiv \tr\bigl(X^\dagger Y\bigr)
+\]
+が入り、これで内積空間になる。
+超演算子 \(\mathcal A\) が<strong>正</strong>であるとは、
+この内積に関して \(\langle X,\mathcal A(X)\rangle=\tr\bigl(X^\dagger\mathcal A(X)\bigr)\ge0\)
+がすべての \(X\) で成り立つことをいう。
+</div>
+
+<div class="thm-box">
+<span class="box-title">命題A6.3（左乗算・右乗算の超演算子）</span>
+行列 \(A,B\) に対し、左乗算と右乗算の超演算子を
+\[
+\mathcal L_A(X) \equiv AX, \qquad \mathcal R_B(X) \equiv XB
+\]
+で定める。このとき
+<ol>
+<li>\(\mathcal L_A\) と \(\mathcal R_B\) は<strong>常に可換</strong>である：
+\(\mathcal L_A\mathcal R_B = \mathcal R_B\mathcal L_A\)（どちらも \(X\mapsto AXB\)）。</li>
+<li>\(A\) が正なら \(\mathcal L_A\) は Hilbert–Schmidt 内積に関して正の（エルミートな）超演算子である。
+\(\mathcal R_B\) についても同様。</li>
+<li>\(\mathcal L_A^{\,t} = \mathcal L_{A^t}\)、\(\mathcal R_B^{\,t}=\mathcal R_{B^t}\)
+（\(A,B\) が正で \(t\ge0\)）。より一般に、任意の実関数 \(f\) について
+\(f(\mathcal L_A)=\mathcal L_{f(A)}\)、\(f(\mathcal R_B)=\mathcal R_{f(B)}\)。</li>
+</ol>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+<strong>1.</strong> 行列積の結合律そのものである：\(\mathcal L_A\mathcal R_B(X)=A(XB)=(AX)B=\mathcal R_B\mathcal L_A(X)\)。
+</p>
+<p>
+<strong>2.</strong> エルミート性：\(A^\dagger=A\) のとき
+\(\langle \mathcal L_A(Y),X\rangle = \tr\bigl((AY)^\dagger X\bigr)
+= \tr\bigl(Y^\dagger A X\bigr) = \langle Y,\mathcal L_A(X)\rangle\)。
+正値性：\(X\) の列ベクトルを \(\ket{x_1},\dots,\ket{x_d}\) と書くと
+\[
+\tr\bigl(X^\dagger AX\bigr) = \sum_j \bra{x_j}A\ket{x_j} \ \ge\ 0 .
+\]
+\(\mathcal R_B\) については
+\(\tr(X^\dagger XB)=\tr\bigl(B^{1/2}X^\dagger XB^{1/2}\bigr)=\tr\bigl((XB^{1/2})^\dagger(XB^{1/2})\bigr)\ge0\)。
+</p>
+<p>
+<strong>3.</strong> \(\mathcal L_A\mathcal L_{A'}=\mathcal L_{AA'}\) なので
+\(\mathcal L_A^{\,n}=\mathcal L_{A^n}\)（多項式についても同様）。
+関数計算は多項式近似（あるいはスペクトル分解）で定義されるから、連続性により
+任意の実関数 \(f\) について \(f(\mathcal L_A)=\mathcal L_{f(A)}\)。
+右乗算は \(\mathcal R_B\mathcal R_{B'}=\mathcal R_{B'B}\) と順序が逆になるが、
+同じ \(B\) の冪については \(\mathcal R_B^{\,n}=\mathcal R_{B^n}\) であり、結論は変わらない。<span class="qed">∎</span>
+</p>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a6-2">Lieb の定理<span class="en">Lieb's theorem</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（同時凹性）</span>
+2 つの行列の実数値関数 \(f(A,B)\) が<strong>同時凹 (jointly concave)</strong> であるとは、
+任意の \(0\le\lambda\le1\) と 2 組 \((A_1,B_1),(A_2,B_2)\) について
+\[
+f\bigl(\lambda A_1+(1-\lambda)A_2,\ \lambda B_1+(1-\lambda)B_2\bigr)
+\ \ge\ \lambda f(A_1,B_1) + (1-\lambda) f(A_2,B_2)
+\]
+が成り立つことをいう。各引数ごとの凹性より真に強い条件である。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理A6.4（Lieb, 1973）</span>
+\(X\) を任意の行列、\(0\le t\le1\) とする。関数
+\[
+f(A,B) \equiv \tr\bigl(X^\dagger A^{t} X B^{1-t}\bigr)
+\]
+は正行列 \(A,B\) について同時凹である。
+</div>
+
+<p>
+証明は §A6.4 で与える。その前に、鍵となる行列不等式を用意する。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a6-3">鍵となる補題<span class="en">The key lemma</span></h2>
+
+<div class="thm-box">
+<span class="box-title">補題A6.5</span>
+\(R_1,R_2,S_1,S_2,T_1,T_2\) を正演算子とし、
+それぞれの組が可換であるとする：
+\[
+[R_1,R_2]=[S_1,S_2]=[T_1,T_2]=0 .
+\]
+さらに
+\[
+R_1 \ \ge\ S_1+T_1,\qquad R_2 \ \ge\ S_2+T_2
+\]
+を仮定する。このとき、すべての \(0\le t\le1\) について行列不等式
+\[
+R_1^{\,t}R_2^{\,1-t} \ \ge\ S_1^{\,t}S_2^{\,1-t} + T_1^{\,t}T_2^{\,1-t}
+\]
+が成り立つ。
+</div>
+
+<div class="remark-box">
+<span class="box-title">主張の読み方</span>
+\(R_1^{t}R_2^{1-t}\) は可換な正演算子の「重み付き幾何平均」である。
+補題は「幾何平均が和について優加法的である」と述べており、
+これは <strong>\(t=1/2\)、スカラーの場合の \(\sqrt{r_1r_2}\ge\sqrt{s_1s_2}+\sqrt{t_1t_2}\)</strong>
+（\(r_i\ge s_i+t_i\)）の行列版である。
+スカラー版は Cauchy–Schwarz そのものであり、行列版の証明もそれを 2 回使う。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（\(t=1/2\) の場合）</span>
+<p>
+簡単のため \(R_1,R_2\) は可逆とする（そうでなければ \(R_i+\epsilon I\) に対して示し、
+\(\epsilon\to0\) の極限を取ればよい）。
+</p>
+<p>
+<strong>ステップ1：Cauchy–Schwarz を 2 回。</strong>
+任意のベクトル \(\ket x,\ket y\) を取る。
+\(S_1,S_2\) が可換なので \(S_1^{1/2}S_2^{1/2}\) はエルミート、\(T\) についても同様である。
+三角不等式と Cauchy–Schwarz から
+\[
+\begin{aligned}
+\Bigl|\bra x\bigl(S_1^{1/2}S_2^{1/2}+T_1^{1/2}T_2^{1/2}\bigr)\ket y\Bigr|
+&amp;\le \bigl|\bra xS_1^{1/2}S_2^{1/2}\ket y\bigr| + \bigl|\bra xT_1^{1/2}T_2^{1/2}\ket y\bigr|\\
+&amp;\le \bigl\|S_1^{1/2}\ket x\bigr\|\,\bigl\|S_2^{1/2}\ket y\bigr\|
+   + \bigl\|T_1^{1/2}\ket x\bigr\|\,\bigl\|T_2^{1/2}\ket y\bigr\| .
+\end{aligned}
+\]
+右辺は \(\mathbb R^2\) の 2 つのベクトル
+\(\bigl(\|S_1^{1/2}x\|,\|T_1^{1/2}x\|\bigr)\) と
+\(\bigl(\|S_2^{1/2}y\|,\|T_2^{1/2}y\|\bigr)\) の内積だから、
+もう一度 Cauchy–Schwarz を使って
+\[
+\le \sqrt{\Bigl(\|S_1^{1/2}x\|^2+\|T_1^{1/2}x\|^2\Bigr)
+          \Bigl(\|S_2^{1/2}y\|^2+\|T_2^{1/2}y\|^2\Bigr)}
+= \sqrt{\bra x(S_1+T_1)\ket x\ \bra y(S_2+T_2)\ket y} .
+\]
+仮定 \(S_1+T_1\le R_1\)、\(S_2+T_2\le R_2\) より</p>
+
+<div class="equation" id="eq-a6-cs">
+\[
+\Bigl|\bra x\bigl(S_1^{1/2}S_2^{1/2}+T_1^{1/2}T_2^{1/2}\bigr)\ket y\Bigr|
+\ \le\ \sqrt{\bra xR_1\ket x\ \bra yR_2\ket y}.
+\]
+</div>
+<p>
+<strong>ステップ2：ノルムの評価に翻訳する。</strong>
+\(M \equiv S_1^{1/2}S_2^{1/2}+T_1^{1/2}T_2^{1/2}\) と略記する。
+単位ベクトル \(\ket u\) を任意に取り、<a class="eq-ref" href="#eq-a6-cs"></a> を
+\(\ket x=R_1^{-1/2}\ket u\)、\(\ket y=R_2^{-1/2}\ket u\) に適用すると、右辺は
+\[
+\sqrt{\bra uR_1^{-1/2}R_1R_1^{-1/2}\ket u\ \bra uR_2^{-1/2}R_2R_2^{-1/2}\ket u}
+= \sqrt{\braket uu\,\braket uu} = 1
+\]
+なので
+\[
+\bigl\|R_1^{-1/2}\,M\,R_2^{-1/2}\bigr\| \ \le\ 1 .
+\]
+</p>
+<p>
+<strong>ステップ3：積の入れ替え。</strong>
+ここで欲しいのは「\(R_1\) と \(R_2\) の \(-1/4\) 乗で両側から挟んだ形」である。そこで
+\[
+\mathcal A \equiv R_1^{-1/4}R_2^{-1/4}\,M\,R_2^{-1/2},
+\qquad
+\mathcal B \equiv R_2^{1/4}R_1^{-1/4}
+\]
+と置く。\(R_1,R_2\) が可換であることを使うと
+\[
+\mathcal A\mathcal B = R_1^{-1/4}R_2^{-1/4}\,M\,R_2^{-1/4}R_1^{-1/4},
+\qquad
+\mathcal B\mathcal A = R_1^{-1/2}\,M\,R_2^{-1/2}.
+\]
+\(\mathcal A\mathcal B\) はエルミートである（\(M\) がエルミートで、
+両側の \(R_1^{-1/4}R_2^{-1/4}\) は互いにエルミートかつ可換だから）。
+命題A6.2 の 4 とステップ2 より
+\[
+\|\mathcal A\mathcal B\| \ \le\ \|\mathcal B\mathcal A\|
+= \bigl\|R_1^{-1/2}MR_2^{-1/2}\bigr\| \ \le\ 1 .
+\]
+</p>
+<p>
+<strong>ステップ4：半順序に戻す。</strong>
+\(M\ge0\)（可換な正演算子の積 \(S_1^{1/2}S_2^{1/2}\) は正、その和も正）なので
+\(\mathcal A\mathcal B = Y M Y^\dagger\)（\(Y\equiv R_1^{-1/4}R_2^{-1/4}\)）は正演算子である。
+命題A6.2 の 5 より \(\|\mathcal A\mathcal B\|\le1\) は \(\mathcal A\mathcal B\le I\) と同値、すなわち
+\[
+R_1^{-1/4}R_2^{-1/4}\,M\,R_2^{-1/4}R_1^{-1/4} \ \le\ I .
+\]
+最後に命題A6.1（共役で半順序が保たれる）を \(X=R_1^{1/4}R_2^{1/4}\) で適用し、
+\(R_1,R_2\) の可換性を使えば
+\[
+M = S_1^{1/2}S_2^{1/2}+T_1^{1/2}T_2^{1/2}
+\ \le\ R_1^{1/4}R_2^{1/4}\cdot I\cdot R_2^{1/4}R_1^{1/4}
+= R_1^{1/2}R_2^{1/2} .
+\]
+これが \(t=1/2\) の場合である。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（一般の \(t\) へ）</span>
+<p>
+補題の結論が成り立つ \(t\) の全体を \(I\subseteq[0,1]\) と書く。
+</p>
+<p>
+<strong>\(0,1\in I\)。</strong>\(t=1\) では主張は \(R_1\ge S_1+T_1\) そのもの、
+\(t=0\) では \(R_2\ge S_2+T_2\) そのものである。
+<strong>\(1/2\in I\)</strong> は上で示した。
+</p>
+<p>
+<strong>\(I\) は中点について閉じている。</strong>
+\(\mu,\eta\in I\) とする。すなわち
+\[
+R_1^{\mu}R_2^{1-\mu} \ge S_1^{\mu}S_2^{1-\mu}+T_1^{\mu}T_2^{1-\mu},
+\qquad
+R_1^{\eta}R_2^{1-\eta} \ge S_1^{\eta}S_2^{1-\eta}+T_1^{\eta}T_2^{1-\eta}.
+\]
+これは<strong>補題の仮定の形そのもの</strong>である。実際、
+\[
+R_1'\equiv R_1^{\mu}R_2^{1-\mu},\quad R_2'\equiv R_1^{\eta}R_2^{1-\eta},\quad
+S_1'\equiv S_1^{\mu}S_2^{1-\mu},\quad \dots
+\]
+と置けば、これらはすべて正演算子で、対ごとに可換であり
+（もとの \(R_1,R_2\) などが可換なので、その冪の積も可換）、
+上の 2 式が \(R_1'\ge S_1'+T_1'\)、\(R_2'\ge S_2'+T_2'\) にあたる。
+すでに示した \(t=1/2\) の場合を適用すると
+\[
+(R_1')^{1/2}(R_2')^{1/2} \ \ge\ (S_1')^{1/2}(S_2')^{1/2} + (T_1')^{1/2}(T_2')^{1/2}.
+\]
+可換性を使って左辺を整理すると
+\[
+(R_1^{\mu}R_2^{1-\mu})^{1/2}(R_1^{\eta}R_2^{1-\eta})^{1/2}
+= R_1^{(\mu+\eta)/2}\,R_2^{1-(\mu+\eta)/2},
+\]
+右辺の各項も同様である。すなわち \(\nu\equiv(\mu+\eta)/2\in I\)。
+</p>
+<p>
+<strong>結論。</strong>\(0,1\in I\) と中点閉性から、\([0,1]\) の
+<strong>二進有理数</strong>（\(k/2^m\) の形）はすべて \(I\) に属する。
+二進有理数は \([0,1]\) で稠密であり、
+不等式の両辺は \(t\) について連続（\(A^t=e^{t\log A}\) は \(t\) の連続関数）だから、
+極限を取って \(I=[0,1]\) を得る。<span class="qed">∎</span>
+</p>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a6-4">補題から Lieb の定理へ<span class="en">From the lemma to Lieb's theorem</span></h2>
+
+<p>
+補題A6.5 は「可換な」正演算子についての主張だった。
+一方 Lieb の定理に現れる \(A\) と \(B\) は可換とは限らない。
+このギャップを埋める着想が、<strong>補題を行列にではなく超演算子に適用する</strong>ことである。
+命題A6.3 で見たとおり、左乗算 \(\mathcal L_A\) と右乗算 \(\mathcal R_B\) は
+<strong>\(A,B\) が可換でなくても必ず可換</strong>だからである。
+</p>
+
+<div class="proof-box">
+<span class="box-title">定理A6.4（Lieb の定理）の証明</span>
+<p>
+\(0\le\lambda\le1\) と正行列 \(A_1,A_2,B_1,B_2\) を固定し、
+次の 6 つの超演算子を定義する：
+\[
+\begin{aligned}
+\mathcal S_1(X) &amp;\equiv \lambda A_1X, &amp;\qquad
+\mathcal S_2(X) &amp;\equiv \lambda XB_1,\\
+\mathcal T_1(X) &amp;\equiv (1-\lambda)A_2X, &amp;\qquad
+\mathcal T_2(X) &amp;\equiv (1-\lambda)XB_2,\\
+\mathcal R_1 &amp;\equiv \mathcal S_1+\mathcal T_1, &amp;\qquad
+\mathcal R_2 &amp;\equiv \mathcal S_2+\mathcal T_2 .
+\end{aligned}
+\]
+</p>
+<p>
+<strong>補題の仮定を確かめる。</strong>
+\(\mathcal S_1\) は左乗算、\(\mathcal S_2\) は右乗算なので、命題A6.3 の 1 より可換である。
+\(\mathcal T_1,\mathcal T_2\) についても同様。
+\(\mathcal R_1\) は左乗算どうしの和なので、行列
+\[
+A \equiv \lambda A_1+(1-\lambda)A_2
+\]
+による左乗算 \(\mathcal L_{A}\) に等しく、同様に \(\mathcal R_2=\mathcal R_{B}\)
+（\(B\equiv\lambda B_1+(1-\lambda)B_2\) による右乗算）である。
+したがって \(\mathcal R_1,\mathcal R_2\) も可換。
+命題A6.3 の 2 より、6 つすべてが Hilbert–Schmidt 内積に関して正の超演算子である。
+最後に \(\mathcal R_1=\mathcal S_1+\mathcal T_1\)、\(\mathcal R_2=\mathcal S_2+\mathcal T_2\)
+は定義そのもの（等号なので \(\ge\) を満たす）。
+</p>
+<p>
+<strong>補題を適用する。</strong>補題A6.5 より、\(0\le t\le1\) について
+\[
+\mathcal R_1^{\,t}\,\mathcal R_2^{\,1-t}
+\ \ge\ \mathcal S_1^{\,t}\,\mathcal S_2^{\,1-t} + \mathcal T_1^{\,t}\,\mathcal T_2^{\,1-t}
+\]
+が超演算子の不等式として成り立つ。
+</p>
+<p>
+<strong>行列に翻訳する。</strong>命題A6.3 の 3 より、
+左乗算・右乗算の超演算子の冪は、行列の冪による左乗算・右乗算である。よって
+\[
+\mathcal R_1^{\,t}\mathcal R_2^{\,1-t}(X) = A^{t}\,X\,B^{1-t},
+\]
+\[
+\mathcal S_1^{\,t}\mathcal S_2^{\,1-t}(X) = (\lambda A_1)^{t}X(\lambda B_1)^{1-t}
+= \lambda\,A_1^{t}XB_1^{1-t},
+\]
+\[
+\mathcal T_1^{\,t}\mathcal T_2^{\,1-t}(X) = (1-\lambda)\,A_2^{t}XB_2^{1-t}
+\]
+（スカラー因子は \(\lambda^t\cdot\lambda^{1-t}=\lambda\) とまとまる）。
+</p>
+<p>
+<strong>Hilbert–Schmidt 内積で \(X\cdot X\) 成分を取る。</strong>
+超演算子の不等式 \(\mathcal P\ge\mathcal Q\) は
+\(\langle X,\mathcal P(X)\rangle\ge\langle X,\mathcal Q(X)\rangle\) を意味するから、
+\[
+\tr\Bigl[X^\dagger\bigl(\lambda A_1+(1-\lambda)A_2\bigr)^{t}X
+\bigl(\lambda B_1+(1-\lambda)B_2\bigr)^{1-t}\Bigr]
+\ \ge\
+\lambda\,\tr\bigl(X^\dagger A_1^{t}XB_1^{1-t}\bigr)
++ (1-\lambda)\,\tr\bigl(X^\dagger A_2^{t}XB_2^{1-t}\bigr).
+\]
+左辺は \(f\bigl(\lambda A_1+(1-\lambda)A_2,\ \lambda B_1+(1-\lambda)B_2\bigr)\)、
+右辺は \(\lambda f(A_1,B_1)+(1-\lambda)f(A_2,B_2)\) である。
+これはまさに同時凹性の定義そのものである。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">証明を振り返る</span>
+Lieb の定理の難しさは、\(A^t\) と \(B^{1-t}\) が非可換な行列の関数であることにあった。
+証明はその難しさを 2 段階で回避している。
+<ol>
+<li><strong>可換な場合に問題を還元する。</strong>補題A6.5 は可換な演算子についての主張であり、
+その証明は本質的に Cauchy–Schwarz を 2 回使うだけの初等的なものである。
+非可換性が入り込むのはステップ3 の \(\|\mathcal{AB}\|\le\|\mathcal{BA}\|\) だけで、
+そこも命題A6.2 の一般論で処理できる。</li>
+<li><strong>非可換性を「掛ける側」と「掛けられる側」に分離する。</strong>
+行列 \(A\) と \(B\) は可換でなくても、
+「左から \(A\) を掛ける」操作と「右から \(B\) を掛ける」操作は必ず可換である。
+超演算子の言葉に移すことで、非可換な問題が可換な問題に化けた。</li>
+</ol>
+この「左乗算と右乗算に分ける」手筋は、量子情報の相対エントロピー関係の議論
+（相対モジュラー作用素の理論）で系統的に使われるものの、最も初等的な現れである。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a6-5">強劣加法性への接続<span class="en">Back to strong subadditivity</span></h2>
+
+<p>
+これで §11.4 の証明の連鎖が完成した。全体を確認しておく。
+</p>
+
+<div class="def-box">
+<span class="box-title">強劣加法性までの道筋</span>
+<ol>
+<li><strong>Lieb の定理</strong>（本付録）：
+\((A,B)\mapsto\tr(X^\dagger A^tXB^{1-t})\) は同時凹。</li>
+<li><strong>条件付きエントロピーの凹性</strong>（§11.4.1 補題1）：
+補間関数 \(I_t(\rho_{AB})=\tr\bigl(\rho_{AB}^{\,t}(I_A\otimes\rho_B)^{1-t}\bigr)\) は、
+Lieb の定理（\(X=I\)）と「\(\rho_{AB}\mapsto(\rho_{AB},I\otimes\tr_A\rho_{AB})\) が線形」
+であることの合成として凹である。
+\(t\to1\) の差分商を取ると \(S(A|B)\ln2\) が現れ、
+凹関数の極限は凹だから \(S(A|B)\) が凹関数だと分かる。</li>
+<li><strong>鍵補題</strong>（§11.4.1 補題2）：
+\(T(\rho_{ABC})=S(C|A)+S(C|B)\) は（部分トレースが線形なので）凹であり、
+純粋状態では \(S(A,C)=S(B)\)、\(S(B,C)=S(A)\) から \(T=0\)。
+任意の状態を純粋状態の混合に分解して凹性を使えば \(T\ge0\)。</li>
+<li><strong>強劣加法性</strong>（§11.4.1 ステップ3）：
+参照系を付けて純粋化し、補題2 を系の名前を読み替えて適用すれば
+\(S(A,B,C)+S(B)\le S(A,B)+S(B,C)\) を得る。</li>
+</ol>
+</div>
+
+<div class="remark-box">
+<span class="box-title">なぜここまで手間がかかるのか</span>
+古典の対応物 \(H(X,Y,Z)+H(Y)\le H(X,Y)+H(Y,Z)\) は
+条件付き相互情報量の非負性 \(I(X;Z|Y)\ge0\) の書き換えにすぎず、
+「\(y\) ごとに分解して各点で非負」という初等的な議論で済んだ（§11.2.3）。
+量子では \(B\) の値で条件付けた状態への分解が存在しない。
+さらに条件付きエントロピー \(S(A|B)\) は負になりうるので、
+古典の直観（Venn 図の各領域が非負）が完全に破綻している。
+<br>
+その代わりに使えるのが<strong>凹性</strong>である。
+「純粋状態で成り立つ等式を、凹性によって混合状態の不等式に格上げする」
+というのが §11.4 の戦略であり、その凹性を保証する解析的な重い機械が
+Lieb の定理だった、というのが全体の構図である。
+強劣加法性が 1973 年まで証明されなかったのも無理はない。
+</div>
+
+<div class="remark-box">
+<span class="box-title">その後の発展</span>
+本付録の証明は Lieb と Ruskai による原証明の系譜に属する。
+その後、強劣加法性には別経路の証明も見つかっている。
+たとえば量子相対エントロピーの<strong>単調性</strong>
+（トレース保存 CP 写像で \(S(\rho\|\sigma)\) が増えないこと）から直接導く道があり、
+そちらは Lieb の定理を経由しない。
+また、等号成立条件（\(B\) を挟んで \(A\) と \(C\) が「量子 Markov 連鎖」をなす）や、
+等号からのずれを定量化する強化版（recoverability 型の不等式）も
+2010 年代に整備された。いずれも本書の範囲を超えるが、
+出発点は本付録で証明した Lieb の定理である。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">付録A6 のまとめ</span>
+<ul>
+<li>準備：演算子の半順序は共役 \(A\mapsto XAX^\dagger\) で保たれる。
+数域半径 \(\|A\|=\max_{\braket uu=1}|\bra uA\ket u|\) について、
+エルミートなら最大固有値に一致し、\(AB\) がエルミートなら \(\|AB\|\le\|BA\|\)、
+正演算子では \(\|A\|\le1\iff A\le I\)。</li>
+<li><strong>補題A6.5</strong>：対ごとに可換な正演算子で \(R_1\ge S_1+T_1\)、\(R_2\ge S_2+T_2\) なら
+\(R_1^tR_2^{1-t}\ge S_1^tS_2^{1-t}+T_1^tT_2^{1-t}\)。
+\(t=1/2\) は Cauchy–Schwarz を 2 回使って示し、
+「\(\mu,\eta\in I\Rightarrow(\mu+\eta)/2\in I\)」から二進有理数へ、連続性で \([0,1]\) 全体へ広げる。</li>
+<li><strong>Lieb の定理</strong>は、補題を<strong>超演算子</strong>
+（\(\mathcal S_1(X)=\lambda A_1X\)、\(\mathcal S_2(X)=\lambda XB_1\) など）に適用して得られる。
+左乗算と右乗算は \(A,B\) が非可換でも必ず可換であり、
+Hilbert–Schmidt 内積で \(X\cdot X\) 成分を取れば同時凹性の式がそのまま現れる。
+非可換性を「掛ける側と掛けられる側」に分離するのが決め手である。</li>
+<li>これで §11.4 の連鎖——Lieb → 条件付きエントロピーの凹性 →
+補題 \(S(C|A)+S(C|B)\ge0\) → 純粋化 → 強劣加法性——が完成する。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

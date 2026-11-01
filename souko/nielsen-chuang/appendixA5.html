@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="鍵配送問題、落とし戸付き一方向関数、RSA の構成と正当性の証明、素因数分解経由と位数発見経由の 2 つの破り方、Diffie–Hellman と耐量子暗号">
+  <title>付録A5 公開鍵暗号と RSA — 量子計算・量子情報ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="appendixA5" data-chapter="A5">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Nielsen &amp; Chuang 付録5 に対応</span>
+  付録A5 公開鍵暗号と RSA
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この付録の概要</span>
+§1.1 と §5.3 で「Shor のアルゴリズムは RSA を破る」と述べた。
+その主張を正確にするために、RSA が何をどう守っているのかを本付録で押さえる。
+共通鍵暗号が抱える鍵配送問題（§A5.1）から出発し、
+一方向関数と落とし戸を使った公開鍵暗号の枠組み（§A5.2）を経て、
+RSA の構成と正当性を証明する（§A5.3）。
+最後に、量子計算機が RSA を破る 2 つの経路——素因数分解経由と位数発見経由——を示し、
+何が守られ何が守られないのかを整理する（§A5.4）。
+数論の道具は<a href="appendixA4.html">付録A4</a> をそのまま使う。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a5-1">鍵配送問題<span class="en">The key distribution problem</span></h2>
+
+<p>
+§12.6.1 で見たように、ワンタイムパッドは完全秘匿な暗号である。
+Alice と Bob が \(n\) ビットの一様ランダムな秘密鍵 \(k\) を共有していれば、
+\(c=m\oplus k\) を送ることで盗聴者に一切の情報を与えずにメッセージ \(m\) を伝えられる
+（\(I(M:C)=0\)）。
+</p>
+
+<p>
+問題は前提のほうにある。<strong>鍵をどうやって共有するのか</strong>。
+鍵はメッセージと同じ長さが必要で、しかも使い回せない。
+Alice と Bob が事前に会って大量の鍵を交換しておけるなら話は済むが、
+見ず知らずの相手と今すぐ安全な通信を始めたい場合には無理である。
+これが<strong>鍵配送問題 (key distribution problem)</strong> である。
+</p>
+
+<p>
+古典的な通信路だけを使う限り、この問題には原理的な壁がある。
+盗聴者 Eve が通信路の内容を<strong>受動的に複製</strong>しても痕跡は残らないので、
+Alice と Bob には「鍵が漏れていないこと」を確かめる手立てがない。
+解決の方向は 2 つある。
+</p>
+
+<ul>
+<li><strong>計算量に頼る（本付録）</strong>：Eve が理論上は鍵を計算できるが、
+現実的な時間では計算できないような仕掛けを作る。これが公開鍵暗号である。</li>
+<li><strong>物理法則に頼る（§12.6）</strong>：量子力学では未知の状態を複製できず、
+盗み見れば必ず痕跡が残る。これが量子鍵配送である。</li>
+</ul>
+
+<p>
+量子計算機は前者の土台を掘り崩し、後者の実現手段を与える。
+本付録は前者の代表である RSA を扱う。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a5-2">一方向関数と公開鍵暗号<span class="en">One-way functions and public key cryptography</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（一方向関数・落とし戸）</span>
+関数 \(f\) が<strong>一方向 (one-way)</strong> であるとは、
+<ul>
+<li>\(f(x)\) の計算は効率よく（多項式時間で）できるが、</li>
+<li>\(f(x)\) から \(x\) を求めることは効率よくできない</li>
+</ul>
+ことをいう。さらに、秘密の追加情報（<strong>落とし戸, trapdoor</strong>）を知っていれば
+逆算が効率よくできるとき、\(f\) を<strong>落とし戸付き一方向関数</strong>と呼ぶ。
+</div>
+
+<div class="remark-box">
+<span class="box-title">一方向関数は「存在が証明されていない」</span>
+一方向関数の存在は未証明である。
+実際、一方向関数が存在すれば \(\mathrm P\ne\mathrm{NP}\) が従う
+（\(f\) の逆像を求める問題は、\(x\) が証拠として与えられれば \(f(x)\) の計算で検証できるので
+NP に属する。多項式時間で解けないなら \(\mathrm P\ne\mathrm{NP}\)）。
+したがって公開鍵暗号の安全性は、証明された定理ではなく<strong>信じられている仮定</strong>の上に立つ。
+この点が、物理法則を根拠とする量子鍵配送（§12.6）との決定的な違いである。
+</div>
+
+<div class="def-box">
+<span class="box-title">公開鍵暗号の枠組み</span>
+Alice は 2 つの鍵を作る。
+<ul>
+<li><strong>公開鍵</strong> \(P\)：誰にでも公開する。暗号化 \(E_P\) に使う。</li>
+<li><strong>秘密鍵</strong> \(S\)：Alice だけが持つ。復号 \(D_S\) に使う。</li>
+</ul>
+要件は次の 3 つである。
+<ol>
+<li>すべてのメッセージ \(M\) について \(D_S(E_P(M))=M\)（正しく戻る）。</li>
+<li>\(E_P\) と \(D_S\) はともに効率よく計算できる。</li>
+<li>\(P\) だけを知っている者が \(E_P(M)\) から \(M\) を求めることは、
+現実的な時間では不可能である（\(E_P\) が落とし戸付き一方向関数で、
+落とし戸が \(S\) である）。</li>
+</ol>
+この枠組みでは<strong>事前の秘密の共有が不要</strong>である。
+Bob は Alice の公開鍵を電話帳から引いてくればよい。
+</div>
+
+<p>
+一方向性の候補として何を使うか。付録A4 で見たとおり、
+<strong>掛け算は易しいが素因数分解は難しい</strong>と信じられている。
+この非対称性を落とし戸付き一方向関数に仕立てたのが RSA である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a5-3">RSA 暗号系<span class="en">The RSA cryptosystem</span></h2>
+
+<div class="def-box">
+<span class="box-title">RSA（Rivest–Shamir–Adleman, 1978）</span>
+<strong>鍵生成（Alice）</strong>
+<ol>
+<li>大きな素数 \(p,q\) を 2 つランダムに選び、\(n=pq\) と置く。</li>
+<li>\(\varphi(n)=(p-1)(q-1)\) を計算する（付録A4 系A4.6）。</li>
+<li>\(\varphi(n)\) と互いに素な整数 \(e\)（\(1&lt;e&lt;\varphi(n)\)）を選ぶ。</li>
+<li>拡張 Euclid の互除法（§A4.2.2）で
+\[
+d \equiv e^{-1} \pmod{\varphi(n)},\qquad\text{すなわち}\quad ed \equiv 1 \pmod{\varphi(n)}
+\]
+を計算する（\(\gcd(e,\varphi(n))=1\) より存在する。付録A4 系A4.2）。</li>
+<li><strong>公開鍵</strong> \(P=(e,n)\) を公開し、<strong>秘密鍵</strong> \(S=(d,n)\) を秘匿する。
+\(p,q,\varphi(n)\) も秘匿する（これらが分かれば \(d\) が計算できてしまう）。</li>
+</ol>
+<strong>暗号化（Bob）</strong>：メッセージを \(M\in\{0,1,\dots,n-1\}\) として
+\[
+E(M) = M^{e} \bmod n .
+\]
+<strong>復号（Alice）</strong>：
+\[
+D(C) = C^{d} \bmod n .
+\]
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理A5.1（RSA の正当性）</span>
+上の設定の下で、すべての \(M\in\{0,1,\dots,n-1\}\) について
+\[
+D\bigl(E(M)\bigr) = M^{ed} \equiv M \pmod n .
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+構成より \(ed\equiv1\pmod{\varphi(n)}\)、すなわちある整数 \(k\ge0\) について
+\[
+ed = 1 + k\,\varphi(n).
+\]
+</p>
+<p>
+<strong>場合1：\(\gcd(M,n)=1\)。</strong>
+Euler の定理（付録A4 定理A4.7）より \(M^{\varphi(n)}\equiv1\pmod n\)。したがって
+\[
+M^{ed} = M^{1+k\varphi(n)} = M\cdot\bigl(M^{\varphi(n)}\bigr)^{k} \equiv M\cdot1^k = M \pmod n .
+\]
+</p>
+<p>
+<strong>場合2：\(\gcd(M,n)\ne1\)。</strong>
+\(n=pq\) なので、\(p\) と \(q\) の少なくとも一方が \(M\) を割る。
+両方が割る場合は \(M\equiv0\pmod n\) で \(M^{ed}\equiv0\equiv M\) だから自明。
+そこで（対称性より）\(p\mid M\) かつ \(q\nmid M\) とする。
+</p>
+<ul>
+<li><strong>法 \(p\) では</strong>：\(M\equiv0\) なので \(M^{ed}\equiv0\equiv M\pmod p\)。</li>
+<li><strong>法 \(q\) では</strong>：\(q\nmid M\) だから Fermat の小定理より \(M^{q-1}\equiv1\pmod q\)。
+\(\varphi(n)=(p-1)(q-1)\) は \(q-1\) の倍数なので \(M^{\varphi(n)}\equiv1\pmod q\)、したがって
+\[
+M^{ed} = M\cdot\bigl(M^{\varphi(n)}\bigr)^{k} \equiv M \pmod q .
+\]</li>
+</ul>
+<p>
+\(M^{ed}-M\) は \(p\) でも \(q\) でも割り切れる。\(p\ne q\) は互いに素だから、
+中国剰余定理（付録A4 定理A4.5）——あるいは単に素因数分解の一意性——により
+積 \(n=pq\) でも割り切れる。すなわち \(M^{ed}\equiv M\pmod n\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="example-box">
+<span class="box-title">例（小さな数での実演）</span>
+\(p=5,\ q=11\) とすると \(n=55\)、\(\varphi(n)=4\cdot10=40\)。
+\(e=3\) は \(40\) と互いに素なので採用できる。
+拡張 Euclid で \(3d\equiv1\pmod{40}\) を解くと \(d=27\)（\(3\cdot27=81=2\cdot40+1\) ✓）。
+公開鍵は \((3,55)\)、秘密鍵は \((27,55)\)。
+<br>
+\(M=8\) を暗号化する：\(8^3=512=9\cdot55+17\) より \(E(8)=17\)。
+復号する：\(17^{27}\bmod55\) を繰り返し 2 乗法で計算すると
+\(17^2=289\equiv14\)、\(17^4\equiv14^2=196\equiv31\)、
+\(17^8\equiv31^2=961\equiv26\)、\(17^{16}\equiv26^2=676\equiv16\)。
+\(27=16+8+2+1\) なので
+\[
+17^{27}\equiv16\cdot26\cdot14\cdot17 \pmod{55}.
+\]
+順に \(16\cdot26=416\equiv31\)、\(31\cdot14=434\equiv49\)、\(49\cdot17=833\equiv8\)。
+たしかに \(M=8\) が戻った。
+<br>
+一方 \(M=5\) は \(\gcd(5,55)=5\ne1\) だが、定理A5.1 の場合2 により復号は成功する：
+\(5^3=125\equiv15\)、\(15^{27}\bmod55\) を同様に計算すると 5 になる。
+</div>
+
+<div class="remark-box">
+<span class="box-title">実装のコスト</span>
+<ul>
+<li><strong>鍵生成</strong>：律速は素数 \(p,q\) の生成である。
+\(L\) ビットの数をランダムに選び、素数判定にかける、を繰り返す。
+素数定理より \(L\) ビットの数が素数である確率は約 \(1/(L\ln2)\) なので、
+期待 \(O(L)\) 回の試行で見つかる。
+素数判定は Miller–Rabin 型の乱択判定で \(O(L^3)\)（決定的には AKS。§3.2.2）なので、
+鍵生成全体で \(O(L^4)\)。</li>
+<li><strong>暗号化・復号</strong>：べき乗剰余であり、繰り返し 2 乗法で \(O(L^3)\)（§5.3.1）。</li>
+</ul>
+いずれも \(L\) の多項式なので、数千ビットの鍵でも古典計算機で十分扱える。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-a5-4">RSA を破る<span class="en">Breaking RSA</span></h2>
+
+<p>
+Eve は公開鍵 \((e,n)\) と暗号文 \(C=M^e\bmod n\) を持っている。
+どうすれば \(M\) を得られるか。2 つの経路がある。
+</p>
+
+<h3 id="sec-a5-4-1">経路1：素因数分解</h3>
+
+<p>
+\(n=pq\) の素因数分解が分かれば、\(\varphi(n)=(p-1)(q-1)\) が計算でき、
+拡張 Euclid で \(d\equiv e^{-1}\pmod{\varphi(n)}\) が求まる。
+これは<strong>秘密鍵そのものの復元</strong>であり、以後 Alice と同じことができる。
+</p>
+
+<p>
+古典最良の素因数分解アルゴリズム（数体篩法）のコストは
+\(\exp\bigl(O(L^{1/3}(\log L)^{2/3})\bigr)\) と準指数的であり、
+\(L\) が数千ビットなら現実的な時間では終わらない。
+これが RSA の安全性の根拠である。
+一方 Shor のアルゴリズム（§5.3）は \(O(L^3)\) の多項式時間で分解する。
+</p>
+
+<h3 id="sec-a5-4-2">経路2：位数発見（素因数分解を経ない）</h3>
+
+<p>
+実は Eve は \(n\) を分解しなくても、位数発見だけで復号できる。
+この経路は「RSA を破るのに秘密鍵を知る必要はない」ことを示していて興味深い。
+</p>
+
+<div class="thm-box">
+<span class="box-title">命題A5.2</span>
+Eve が暗号文 \(C=M^e\bmod n\) の法 \(n\) での位数 \(r\)、
+すなわち \(C^r\equiv1\pmod n\) を満たす最小の正整数を求められるなら、
+Eve は \(M\) を復元できる。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+<p>
+まず \(\gcd(C,n)=1\) の場合を扱う（そうでなければ \(\gcd(C,n)\) 自身が \(n\) の
+非自明な因数であり、互除法で得られるので経路1 に落ちる）。
+</p>
+<p>
+Euler の定理（付録A4）より \(r\) は \(\varphi(n)\) を割り切る。
+一方 \(e\) は \(\varphi(n)\) と互いに素だから、その約数である \(r\) とも互いに素である。
+したがって \(e\) は法 \(r\) で逆元 \(d'\) を持つ（付録A4 系A4.2）：
+\[
+e\,d' = 1 + k\,r \qquad(\exists k\in\mathbb Z_{\ge0}).
+\]
+拡張 Euclid で \(d'\) は効率よく計算できる。
+</p>
+<p>
+この \(d'\) 乗で復号できる：
+\[
+C^{d'} = \bigl(M^{e}\bigr)^{d'} = M^{ed'} = M^{1+kr}
+= M\cdot\bigl(M^{r}\bigr)^{k} \pmod n .
+\]
+ここで \(M^r\equiv1\pmod n\) を示せばよい。
+\(C=M^e\) の位数が \(r\) なので \(M^{er}\equiv1\)。
+\(M\) の位数を \(t\) とすると \(t\mid er\)。
+また \(t\mid\varphi(n)\) で \(\gcd(e,\varphi(n))=1\) だから \(\gcd(t,e)=1\)、
+したがって \(t\mid r\)、すなわち \(M^{r}\equiv1\pmod n\)。
+よって \(C^{d'}\equiv M\pmod n\)。<span class="qed">∎</span>
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">2 つの経路の違い</span>
+経路1 で得られるのは真の秘密鍵 \(d\)（\(e\) の法 \(\varphi(n)\) での逆元）である。
+経路2 で得られるのは \(d'\)（\(e\) の法 \(r\) での逆元）にすぎず、
+\(r\mid\varphi(n)\) なので両者は関係しているが一般には別物である。
+それでも復号には十分である——
+<strong>RSA は、秘密鍵を特定しなくても破れる</strong>。
+なお経路2 は暗号文 1 つごとに位数発見を走らせる必要があるのに対し、
+経路1 は一度分解すれば以後のすべての通信を読める。
+どちらの経路も、量子計算機では §5.3 のアルゴリズムで多項式時間で実行できる。
+</div>
+
+<h3 id="sec-a5-4-3">Diffie–Hellman と離散対数</h3>
+
+<p>
+公開鍵暗号にはもう 1 つの系統があり、こちらも量子計算機に破られる。
+</p>
+
+<div class="def-box">
+<span class="box-title">Diffie–Hellman 鍵共有（1976）</span>
+公開のパラメータとして大きな素数 \(p\) と \(\mathbb Z_p^*\) の生成元 \(g\) を固定する
+（生成元の存在は付録A4 定理A4.8）。
+<ol>
+<li>Alice は秘密の \(a\) を選び \(A=g^a\bmod p\) を公開する。</li>
+<li>Bob は秘密の \(b\) を選び \(B=g^b\bmod p\) を公開する。</li>
+<li>Alice は \(B^a=g^{ab}\)、Bob は \(A^b=g^{ab}\) を計算する。
+両者は同じ値 \(g^{ab}\bmod p\) を共有鍵として得る。</li>
+</ol>
+Eve は \(g,p,A,B\) を知るが \(g^{ab}\) は知らない。
+Eve が \(A=g^a\) から \(a\) を求める問題が<strong>離散対数問題</strong>である。
+</div>
+
+<p>
+離散対数は古典では効率的な解法が知られていないが、
+§5.4.2 で見たように<strong>2 次元の周期発見</strong>として量子的に多項式時間で解ける。
+したがって Diffie–Hellman も、そしてそれを楕円曲線群に移した楕円曲線暗号も、
+大規模な誤り耐性量子計算機の前では安全でない。
+</p>
+
+<div class="remark-box">
+<span class="box-title">何が守られ、何が守られないか</span>
+<ul>
+<li><strong>破られる</strong>：素因数分解に依拠する暗号（RSA）と、
+離散対数に依拠する暗号（Diffie–Hellman、ElGamal、楕円曲線暗号）。
+いずれもアーベル群の隠れ部分群問題（§5.4.3）に帰着し、量子 Fourier 変換で解ける。</li>
+<li><strong>直ちには破られない</strong>：格子問題・符号理論・多変数多項式・
+ハッシュに基づく暗号（総称して<strong>耐量子計算機暗号, post-quantum cryptography</strong>）。
+これらの背景にある問題は非アーベル群や格子の構造に関わり、
+現在のところ量子アルゴリズムによる多項式時間解法は知られていない。
+ただし「知られていない」だけで、安全性が証明されているわけではない点は
+古典の場合と変わらない。</li>
+<li><strong>共通鍵暗号</strong>（AES など）は、Grover の探索（第6章）で鍵探索が
+二次加速されるだけである。鍵長を 2 倍にすれば元の安全性が回復する。
+指数的な脅威ではない。</li>
+<li><strong>量子鍵配送</strong>（§12.6）は計算量的仮定を一切使わないので、
+量子計算機の登場に影響されない。
+これが「物理法則に安全性を置く」ことの意味である。</li>
+</ul>
+なお現実的な注意として、Shor のアルゴリズムで 2048 ビット RSA を破るには、
+誤り訂正込みで数百万〜数千万物理量子ビット規模の計算機が必要と見積もられている
+（第10章のオーバーヘッド）。
+現行の小規模デバイスで RSA が破れるわけではない。
+</div>
+
+<div class="caution-box">
+<span class="box-title">補足：教科書 RSA の危うさ</span>
+本付録で述べた素の RSA（<em>textbook RSA</em>）は、
+理論的な骨格としては正しいが、そのまま実用してはならない。
+決定的な変換なので同じ平文が同じ暗号文になり、
+短い平文や小さな \(e\) に対する攻撃も知られている。
+実際の運用では、乱数を混ぜた<strong>パディング</strong>（OAEP など）を施して
+確率的な暗号にする。
+これは RSA の数論的な core とは独立の話題なので、本ノートでは触れるにとどめる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">付録A5 のまとめ</span>
+<ul>
+<li>ワンタイムパッドは完全秘匿だが、鍵配送問題が残る。
+古典的にはこれを計算量（公開鍵暗号）で、量子的には物理法則（QKD、§12.6）で解決する。</li>
+<li>公開鍵暗号は落とし戸付き一方向関数に基づく。
+一方向関数の存在は未証明で（存在すれば \(\mathrm P\ne\mathrm{NP}\)）、
+安全性は証明された定理ではなく仮定である。</li>
+<li><strong>RSA</strong>：\(n=pq\)、\(ed\equiv1\pmod{\varphi(n)}\)、
+暗号化 \(M\mapsto M^e\)、復号 \(C\mapsto C^d\)。
+正当性は Euler の定理から従い、\(\gcd(M,n)\ne1\) の場合も
+法 \(p\)・法 \(q\) に分けて中国剰余定理で貼り合わせれば成り立つ。
+鍵生成 \(O(L^4)\)、暗復号 \(O(L^3)\)。</li>
+<li>RSA を破る経路は 2 つある。
+<strong>素因数分解</strong>して \(\varphi(n)\) から秘密鍵 \(d\) を復元する経路と、
+暗号文の<strong>位数 \(r\)</strong> を求めて \(d'\equiv e^{-1}\pmod r\) で復号する経路である。
+後者は秘密鍵を知らないまま復号する。どちらも §5.3 の量子アルゴリズムで多項式時間になる。</li>
+<li>Diffie–Hellman・楕円曲線暗号は離散対数に依拠し、§5.4.2 により同様に破られる。
+耐量子計算機暗号（格子など）は現時点で多項式時間解法が知られていないが、
+安全性が証明されているわけではない。
+共通鍵暗号は Grover による二次加速だけなので鍵長を倍にすれば足りる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>
