@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="平面ダイアグラムを演算子として読む規則：頂点の物理的規格化、完全性関係、F 移動、因果的アイソトピー">
+  <title>第12章 平面ダイアグラム — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter12" data-chapter="12">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第12章に対応</span>
+  第12章 平面ダイアグラム
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本書の目標のひとつは、ラベル付きの世界線の絵（融合・分裂する頂点を含む）を入力すると複素数（振幅）を返す、
+Kauffman ブラケットに似た<strong>図式的な計算規則</strong>を作ることである。
+<a href="chapter08.html">第8章</a>〜<a href="chapter10.html">第10章</a>で集めた部品（融合則、\(F\) 行列、\(R\) 行列）を、
+本章から<a href="chapter15.html">第15章</a>にかけて公理的に整理する。
+本章はその第一歩で、線が上下に交差しない<strong>平面ダイアグラム (planar diagram)</strong> だけを扱う。
+これは \((1+1)\) 次元を動く粒子の絵とみなせ、起こりうる非自明な事象は融合と分裂だけである。
+ダイアグラムを演算子として読む約束、基底状態（融合木）の直交性と完全性、\(F\) 移動、
+そして許される変形（因果的アイソトピー）を定める。
+本章の規格化は「物理的規格化」（ループの値が 1）であり、
+<a href="chapter14.html">第14章</a>以降では位相的に自然な別の規格化（ループの値が \(d_a\)）に切り替える。
+組みひも（交差）は<a href="chapter13.html">第13章</a>で加える。
+図式計算の手短な入門だけが欲しい場合は<a href="chapter16.html">第16章</a>から読むこともできる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-12-1">演算子としてのダイアグラム<span class="en">Diagrams as Operators</span></h2>
+
+<p>
+前提をまとめておく。粒子種 \(a,b,c,\dots\) があり、矢印付きのラベル線で描く。
+真空 \(I\) はただひとつあり、点線で描くか、まったく描かない。
+各粒子には反粒子 \(\bar a\) があり、線の矢印を逆にすると粒子が反粒子に変わる。
+自己双対な粒子（\(a=\bar a\)）の線には矢印を付けない。
+融合則は \(N_{ab}^c\)（<a href="chapter08.html">第8章</a>）で与えられ、
+五角形方程式を満たす \(F\) 行列（<a href="chapter09.html">第9章</a>）が与えられているとする。
+本章の規則で定まる数学的構造は<strong>ユニタリ融合圏 (unitary fusion category)</strong> と呼ばれる。
+</p>
+
+<p>
+ダイアグラムは下から上へ時間が流れるように描き、線を厳密に水平には描かない。
+下端も上端も真空である（端の出ている線がない）ダイアグラムは<strong>複素数（振幅）</strong>を表す。
+端の出た線を持つダイアグラムは、より大きな閉じたダイアグラムの部品とみなせるが、
+それ自体にも量子力学的な意味を与える。
+</p>
+
+<div class="def-box">
+<span class="box-title">規約（ケットとブラ）</span>
+上端に出ていく線はケット空間に、下端に出ていく線はブラ空間に属する（線上の矢印の向きとは無関係）。
+上下両方に端を持つダイアグラムは、下から入る \(M_{\text{in}}\) 本の線を入力、上へ出る \(M_{\text{out}}\) 本の線を出力とする演算子であり、
+<div class="equation" id="eq-12-op">\[
+\text{演算子} \;=\; \sum_{n,m,q} C_{n,m,q}\;\ket{n,M_{\text{out}};q}\bra{m,M_{\text{in}};q}
+\]</div>
+と書ける。\(\ket{n,M;q}\) は、\(M\) 個の粒子全体が量子数 \(q\) に融合する状態の完全正規直交系で、\(n\) はその中の番号である。
+係数 \(C_{n,m,q}\) がダイアグラムの中身を表す。
+</div>
+
+<p>
+式 <a class="eq-ref" href="#eq-12-op"></a> が \(q\) について対角であることは、
+入ってくる粒子全体の量子数と出ていく粒子全体の量子数が等しいこと、すなわち
+<a href="chapter08.html">第8章</a>の局所性原理（全電荷の保存）の表れである。
+これは新しい公理として置く必要はなく、本章の他の規則から導かれる。
+外線にラベルを書いた場合は、その線の量子数がそのラベルに固定される。ラベルのない外線は量子数の重ね合わせを許す。
+</p>
+
+<div class="thm-box">
+<span class="box-title">原理（エルミート共役）</span>
+ダイアグラムを水平軸に関して上下反転し、<strong>さらにすべての矢印の向きを逆にする</strong>と、エルミート共役になる。
+係数は \(C_{n,m,q}\to C_{n,m,q}^{*}\) と複素共役になり、ケットとブラが入れ替わる。
+</div>
+
+<p>
+反転と矢印の逆転を両方行うので、上向きの矢印は上向きのまま、下向きの矢印は下向きのまま残る点に注意する。
+こうしておけば、ブラとケットを貼り合わせて内積を作るとき矢印の向きが揃ってつながる
+（<a href="chapter02.html">第2章</a>で \(\ket{0}\) の絵をひっくり返して \(\bra{0}\) を作ったのと同じ操作である）。
+</p>
+
+<p>
+特別な場合として、下端に線がないダイアグラムはケット
+\(\ket{\text{ket}}=\sum_{n,q}C_{n,\emptyset,q}\ket{n,M_{\text{out}};q}\)、
+上端に線がないダイアグラムはブラ
+\(\bra{\text{bra}}=\sum_{m,q}C_{\emptyset,m,q}\bra{m,M_{\text{in}};q}\)
+を表す。前者は「真空を受け取ってケットを出す演算子」、後者は「ケットを受け取って数を出す演算子」とも読める。
+</p>
+
+<h3 id="sec-12-1-1">§12.1.1 演算子を積み重ねる</h3>
+
+<p>
+ダイアグラムを縦に積むと、下の図の上端（ケット）と上の図の下端（ブラ）が縮約される。
+係数 \(C^{(1)}\) を持つ図の上に \(C^{(5)}\) を持つ図を積めば、中間状態の正規直交性から
+クロネッカーのデルタが出て、合成した図の係数は行列の積
+\[
+C^{(6)}_{n,m,q}=\sum_{n'}C^{(5)}_{n,n',q}\,C^{(1)}_{n',m,q}
+\]
+になる。ブラの図をケットの図の上に積めば内積 \(\sum_{m,q}C^{(4)}_{\emptyset,m,q}C^{(3)}_{m,\emptyset,q}\) というスカラーが得られ、
+「真空で始まり真空で終わる図は複素数」という最初の主張と整合する。
+この貼り合わせは<a href="chapter07.html">第7章</a>で境界付き多様体を貼り合わせた操作と同じ構造をしている。
+</p>
+</section>
+
+<section>
+<h2 id="sec-12-2">状態の基底<span class="en">Basis of States</span></h2>
+
+<p>
+式 <a class="eq-ref" href="#eq-12-op"></a> で使った正規直交基底 \(\ket{n,M;q}\) を、粒子数の少ない方から具体的に定めていく。
+</p>
+
+<h3 id="sec-12-2-1">§12.2.1 1粒子</h3>
+
+<p>
+1粒子の完全正規直交基底は粒子種そのもの \(\ket{a}\)（真空 \(\ket{I}\) を含む）で、\(\braket{a}{b}=\delta_{ab}\) である。
+ラベル \(a\) の付いたまっすぐな線は<strong>射影演算子</strong> \(\ketbra{a}{a}\) を表す。
+したがってラベル \(a\) の線の上にラベル \(b\) の線を継ぐと
+\[
+\ketbra{b}{b}\,\ketbra{a}{a}=\delta_{ab}\,\ketbra{a}{a}
+\]
+となる。より一般に、下から \(a\) が入り上から \(b\) が出るどんな図も \(a\neq b\) なら 0 である
+（局所性、あるいは「変身禁止 (no-transmutation)」の原理）。
+</p>
+
+<p>
+粒子種は完全系をなすので、恒等演算子は \(\sum_a\ketbra{a}{a}\) であり、これを<strong>ラベルのない線</strong>で表す。
+ラベル付きの線にラベルなしの線を継ぐと、ラベル付きの線が延びるだけである。
+逆に言えば、ラベルなしの線にラベル \(b\) の線をつなぐと、その線全体にラベル \(b\) が付く。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（恒等演算子と真空粒子）</span>
+ラベルなしの線が表す恒等演算子は「入ってきた粒子をそのまま出す」演算子であって、真空粒子 \(I\) の線（点線、または描かない線）とは別物である。
+</div>
+
+<h3 id="sec-12-2-2">§12.2.2 2粒子</h3>
+
+<p>
+2粒子の状態を指定するには、各粒子の種類と融合チャネルが要る。
+これを<strong>頂点</strong>で描く：下から \(c\) の線が上がり、左上へ \(a\)、右上へ \(b\) が分かれる図がケット \(\ket{a,b;c}\) である。
+\(N_{ab}^c=0\) なら図の値は 0 とする。許されるすべての \(\ket{a,b;c}\) が2粒子の完全正規直交系をなす。
+平面ダイアグラムでは左右の順序に意味があり、\(a\neq b\) なら \(\ket{a,b;c}\) と \(\ket{b,a;c}\) は直交する
+（位置の情報は捨てても「どちらが左か」という位相的情報は残る）。
+頂点を上下反転したものがブラ \(\bra{a,b;c}\) である。
+</p>
+
+<p>
+厳密にはこの「ケット」は、1本の線 \(c\) を入力として2本の線を出力する演算子 \(\ket{a,b;c}\bra{c}\) である。
+そのためブラとケットを積んだ内積はただの数ではなく「数 × \(c\) の線」になる。
+\(N_{ab}^c\gt 1\) のときは頂点に添字 \(\mu\in\{1,\dots,N_{ab}^c\}\) が要るが、§12.5 までは省略する。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- ket vertex -->
+  <line x1="60" y1="135" x2="60" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="95" x2="30" y2="45" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="95" x2="90" y2="45" class="line" stroke-width="1.5"/>
+  <text x="22" y="38" class="label">a</text>
+  <text x="88" y="38" class="label">b</text>
+  <text x="66" y="130" class="label">c</text>
+  <text x="22" y="165" class="label-muted">ケット |a,b;c⟩</text>
+  <!-- bra vertex -->
+  <line x1="190" y1="45" x2="190" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="190" y1="85" x2="160" y2="135" class="line" stroke-width="1.5"/>
+  <line x1="190" y1="85" x2="220" y2="135" class="line" stroke-width="1.5"/>
+  <text x="196" y="56" class="label">c</text>
+  <text x="148" y="130" class="label">a</text>
+  <text x="224" y="130" class="label">b</text>
+  <text x="152" y="165" class="label-muted">ブラ ⟨a,b;c|</text>
+  <!-- bubble -->
+  <line x1="320" y1="20" x2="320" y2="50" class="line accent" stroke-width="1.5"/>
+  <path d="M 320 50 L 295 85 L 320 120" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 320 50 L 345 85 L 320 120" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="320" y1="120" x2="320" y2="150" class="line accent" stroke-width="1.5"/>
+  <text x="326" y="32" class="label">c′</text>
+  <text x="280" y="90" class="label">a</text>
+  <text x="350" y="90" class="label">b</text>
+  <text x="326" y="148" class="label">c</text>
+  <text x="372" y="90" class="label">= δcc′</text>
+  <line x1="435" y1="20" x2="435" y2="150" class="line" stroke-width="1.5"/>
+  <text x="441" y="90" class="label">c</text>
+  <text x="290" y="172" class="label-muted">バブルの除去（物理的規格化）</text>
+</svg>
+<figcaption>図 12.1：頂点のケットとブラ、および両者を積んでできるバブル。物理的規格化ではバブルは係数なしで1本の線に置き換わる（時間は下から上）。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">規則（頂点の正規直交性・物理的規格化）</span>
+ケット \(\ket{a,b;c}\) の上にブラ \(\bra{a',b';c'}\) を積んだ図（線 \(c\) が \(a,b\) に分裂し、再び \(c'\) に融合する「バブル」）は
+<div class="equation" id="eq-12-bubble">\[
+\bigl(\text{バブル}\bigr)\;=\;\delta_{aa'}\,\delta_{bb'}\,\delta_{cc'}\;\times\;\bigl(c\text{ の線}\bigr)
+\]</div>
+に等しい。右辺に数係数が付かないことが<strong>物理的規格化 (physics normalization)</strong> の内容である。
+\(\delta_{aa'}\delta_{bb'}\) は1粒子の射影の直交性から自動的に出るので、
+ふつうは内側の2本を \(a,b\) と書いて「バブル \(=\delta_{cc'}\times(c\text{ の線})\)」と略記する。
+\(c=c'\) が必要なことは変身禁止の原理と整合する。
+</div>
+
+<p>
+特に \(c=c'=I\) とすると、頂点は対生成 \(\ket{\bar a,a;I}\) とその共役（対消滅）になり、
+バブルは粒子 \(a\) の閉じたループになる。したがって
+\[
+\bigl(a\text{ のループ}\bigr)=\braket{\text{state}}{\text{state}}=1\qquad(\text{物理的規格化})
+\]
+である。この値は<a href="chapter14.html">第14章</a>で \(d_a\) に変更されるので、どちらの規格化で書かれた式かを常に意識しておく。
+</p>
+
+<div class="thm-box">
+<span class="box-title">規則（2本の線の完全性関係）</span>
+\(\ket{a,b;c}\) は完全系なので \(\sum_{a,b,c}\ketbra{a,b;c}{a,b;c}\) は2本のラベルなしの線（恒等演算子）に等しい。
+両端に \(x\)、\(y\) の線を継いでラベルを固定すると
+<div class="equation" id="eq-12-complete">\[
+\bigl(x\text{ と }y\text{ の平行な2本の線}\bigr)\;=\;\sum_{c}\;\ketbra{x,y;c}{x,y;c}
+\]</div>
+となる。右辺の各項は「\(x,y\) が \(c\) に融合し、再び \(x,y\) に分裂する」図である（物理的規格化）。
+</div>
+
+<p>
+2本入って2本出る一般の演算子は \(\sum C^{x,y;c}_{a,b}\,\ket{x,y;c}\bra{a,b;c}\) と書ける。
+図では「\(a,b\) が \(c\) に融合し、\(c\) が \(x,y\) に分裂する」図の重ね合わせである。
+</p>
+
+<h3 id="sec-12-2-3">§12.2.3 3粒子</h3>
+
+<p>
+3粒子の完全正規直交系は<strong>融合木 (fusion tree)</strong> で与えられる。
+左の2粒子 \(a,b\) がまず \(d\) に融合し、次に \(d\) と \(c\) が \(e\) に融合する木を
+\[
+\ket{(a,b);d}\otimes\ket{d,c;e}
+\]
+と書く（括弧は根から遠い側の対を示す。<a href="chapter08.html">第8章</a>の記法と同じ）。
+\(N_{ab}^d=0\) または \(N_{dc}^e=0\) なら値は 0 である。ブラは上下反転と矢印の逆転で得る。
+</p>
+
+<div class="proof-box">
+<span class="box-title">導出（木の正規直交性と完全性は2粒子の規則から従う）</span>
+ブラの木をケットの木の上に積むと、左の枝に \(d\to(a,b)\to(a',b')\to d'\) というバブルができる。
+式 <a class="eq-ref" href="#eq-12-bubble"></a> により \(\delta_{aa'}\delta_{bb'}\delta_{dd'}\) が出て、バブルは1本の \(d\) 線になる。
+残った図は \(e\to(d,c)\to(d,c')\to e'\) のバブルなので \(\delta_{cc'}\delta_{ee'}\) が出る。結果は
+\[
+\delta_{aa'}\delta_{bb'}\delta_{cc'}\delta_{dd'}\delta_{ee'}\times\bigl(e\text{ の線}\bigr)
+\]
+である。完全性も同様で、\(\sum_{a,b,c,d,e}\)（木のケット）（木のブラ）において、まず中央の \(d,c,e\) の部分に
+式 <a class="eq-ref" href="#eq-12-complete"></a> を使うと \(d\) と \(c\) の平行線になり、
+\(c\) の和はラベルなしの線、残る \(a,b,d\) の和は2本のラベルなしの線になる。
+こうして3本のラベルなしの線（恒等演算子）が得られる。
+</div>
+
+<p>
+これらの基底を使えば任意の演算子を展開できる。たとえば2粒子を受け取り3粒子を出す最も一般の演算子は
+\(\sum C\,\bigl[\ket{(x,y);w}\otimes\ket{w,z;e}\bigr]\bra{a,b;e}\) である。
+</p>
+
+<h3 id="sec-12-2-4">§12.2.4 再び \(F\) 行列</h3>
+
+<p>
+3粒子の木は別の順序でも作れる。\(b\) と \(c\) を先に \(f\) に融合し、次に \(a\) と \(f\) を \(e\) に融合する木
+\(\ket{a,f;e}\otimes\ket{(b,c);f}\) も完全正規直交系であり、同じ議論で
+\(\delta_{aa'}\delta_{bb'}\delta_{cc'}\delta_{ff'}\delta_{ee'}\) という直交性を満たす。
+2つの木は同じ Hilbert 空間の異なる基底であり、その変換が \(F\) 行列である。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 175" xmlns="http://www.w3.org/2000/svg">
+  <!-- left tree ((a,b)d,c)e -->
+  <line x1="30" y1="30" x2="60" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="90" y1="30" x2="60" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="75" x2="90" y2="120" class="line accent" stroke-width="1.5"/>
+  <line x1="150" y1="30" x2="90" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="90" y1="120" x2="90" y2="155" class="line" stroke-width="1.5"/>
+  <text x="24" y="22" class="label">a</text>
+  <text x="86" y="22" class="label">b</text>
+  <text x="146" y="22" class="label">c</text>
+  <text x="56" y="106" class="label">d</text>
+  <text x="97" y="152" class="label">e</text>
+  <!-- middle -->
+  <text x="185" y="85" class="label">=  Σ [F]</text>
+  <text x="188" y="108" class="label-muted">f について和</text>
+  <!-- right tree (a,(b,c)f)e -->
+  <line x1="300" y1="30" x2="360" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="360" y1="30" x2="390" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="420" y1="30" x2="390" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="390" y1="75" x2="360" y2="120" class="line accent" stroke-width="1.5"/>
+  <line x1="360" y1="120" x2="360" y2="155" class="line" stroke-width="1.5"/>
+  <text x="294" y="22" class="label">a</text>
+  <text x="356" y="22" class="label">b</text>
+  <text x="416" y="22" class="label">c</text>
+  <text x="384" y="106" class="label">f</text>
+  <text x="367" y="152" class="label">e</text>
+</svg>
+<figcaption>図 12.2：F 移動。左の木（a と b を先に融合）を、右の木（b と c を先に融合）の重ね合わせに書き換える。係数は直下の規則にある F 行列要素。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">規則（\(F\) 移動）</span>
+<div class="equation" id="eq-12-F">\[
+\ket{(a,b);d}\otimes\ket{d,c;e}\;=\;\sum_f\,\bigl[F^{abc}_{e}\bigr]_{df}\;\ket{a,f;e}\otimes\ket{(b,c);f}
+\]</div>
+上下反転したブラの木については係数が複素共役になる：
+\[
+\bra{(a,b);d}\otimes\bra{d,c;e}\;=\;\sum_f\,\bigl[F^{abc}_{e}\bigr]^{*}_{df}\;\bra{a,f;e}\otimes\bra{(b,c);f}.
+\]
+\(F\) は外側の添字 \(d,f\) についてユニタリなので
+\[
+\bigl[F^{abc}_e\bigr]^{*}_{df}=\bigl(\bigl[F^{abc}_e\bigr]^{\dagger}\bigr)_{fd}=\bigl(\bigl[F^{abc}_e\bigr]^{-1}\bigr)_{fd}
+\]
+が成り立つ。
+</div>
+
+<h3 id="sec-12-2-5">§12.2.5 さらに多くの粒子</h3>
+
+<p>
+粒子が増えても同じである。融合木の「枝分かれの形」ひとつひとつが完全正規直交基底を定め、
+異なる形の基底どうしは \(F\) 移動の繰り返しで結ばれる（4粒子なら木の形は5通り。<a href="chapter09.html">第9章</a>の五角形の頂点に対応）。
+すべての粒子が、左上から右下へ走る1本の幹から順に枝分かれする形を<strong>標準基底 (standard basis)</strong> と呼ぶことがある。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(F\) 移動による閉じた図の評価）</span>
+真空から始まり真空で終わる図で、下半分が「\(d\) と \(e\) が先に \(c\) に融合する形」の木、
+上半分が「\(b\) と \(d\) が先に \(f\) に融合する形」の木になっているものを考える（全体の電荷は \(\bar a\) で、外側を \(a\) の線が回って閉じる）。
+上下の木の形が違うのでそのままでは直交性が使えない。
+下半分に \(F\) 移動の逆を施すと \(\sum_x\bigl[(F^{bde}_{\bar a})^{-1}\bigr]_{cx}\) が掛かり、
+下半分が上半分と同じ形（中間線 \(x\)）になる。木の直交性から \(\delta_{xf}\) が出て、
+ユニタリ性を使うと図の値は
+\[
+\bigl[(F^{bde}_{\bar a})^{-1}\bigr]_{cf}=\bigl[F^{bde}_{\bar a}\bigr]^{*}_{fc}
+\]
+となる（物理的規格化）。「\(F\) で上下の木の形を揃え、直交性で潰す」が評価の基本戦略である。
+</div>
+</section>
+
+<section>
+<h2 id="sec-12-3">因果的アイソトピー<span class="en">Causal Isotopy</span></h2>
+
+<p>
+Kauffman ブラケットでは、ひもを切らない限り図を自由に変形しても値が変わらなかった（ひもをリボンとみなした正則アイソトピー不変性）。
+平面ダイアグラムでこれに対応する性質、すなわち線を切らず交差もさせない任意の変形で値が変わらない性質を
+<strong>平面アイソトピー不変性 (planar isotopy invariance)</strong> と呼ぶ。
+</p>
+
+<p>
+しかし物理系にどこまでの位相不変性を期待してよいかは別問題である。
+数学的な TQFT や結び目不変量では全方向が同等で、水平（空間方向）に走る線を鉛直（時間方向）に曲げてもよい。
+一方、現実の物理系では一般に時間方向は空間方向と区別される。
+そこで本章から<a href="chapter15.html">第15章</a>までは、平面アイソトピー不変性を仮定せず、次の弱い不変性だけを仮定する。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（因果的アイソトピー）</span>
+<strong>因果的アイソトピー (causal isotopy)</strong> とは、どの線・どの頂点についても<strong>時間方向の向きを変えない</strong>滑らかな変形のことである。
+時間を前向きに進む粒子の経路を、途中で時間を逆行するように曲げてはならない（逆向きの粒子についても同様）。
+この制約のもとでの変形に対して図の値は不変である。
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>変形</th><th>因果的アイソトピーで</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>上向きの線を左右にうねらせる（常に上向きのまま）</td><td>許される</td><td>粒子はずっと時間を前向きに進む</td></tr>
+<tr><td>離れた2つの頂点の時間的な前後を入れ替える</td><td>許される</td><td>頂点の時間順序は意味を持たない</td></tr>
+<tr><td>まっすぐな線を、いったん下向きに折り返す「ジグザグ」に変える</td><td>一般には許されない</td><td>対生成と対消滅という余分な事象が加わる</td></tr>
+<tr><td>頂点から上へ出る \(a\) を曲げて、下から入る \(\bar a\) に変える</td><td>一般には許されない</td><td>\(a\) と \(\bar a\) の対消滅（生成）事象が加わる</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+下の2つの変形がどれだけずれるかは、ジグザグについては<a href="chapter14.html">第14章</a>で、
+頂点の足の曲げについては §12.4.1 と<a href="chapter14.html">第14章</a>で調べる。
+<a href="chapter16.html">第16章</a>で扱う単純な理論ではこれらも許される（時間と空間を自由に入れ替えられる）が、そのような理論は一般的ではない。
+</p>
+</section>
+
+<section>
+<h2 id="sec-12-4">物理的規格化での平面ダイアグラム規則のまとめ<span class="en">Summary of Planar Diagram Rules in Physics Normalization</span></h2>
+
+<p>
+以上の規則により、真空で始まり真空で終わる任意の平面ダイアグラムを複素数に評価できる（端のある図は簡単な演算子の形に簡約できる）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">規則のまとめ（平面ダイアグラム・物理的規格化）</span>
+<ol>
+<li>因果的アイソトピー（時間方向の向きを変えない変形）で図を自由に変形してよい。</li>
+<li>真空 \(I\) の線は自由に付け足したり取り除いたりしてよい。</li>
+<li>線の矢印を逆にすると粒子は反粒子になる。</li>
+<li>領域は量子数を局所的に保つ。線は、他の線と融合するか分裂するまで同じ量子数を持つ。</li>
+<li>融合・分裂の頂点は \(N_{ab}^c\gt 0\) のときだけ許される。粒子と反粒子の対生成・対消滅（真空からの分裂・真空への融合）はその特別な場合である。</li>
+<li>エルミート共役は、上下反転と矢印の逆転である。</li>
+<li>\(F\) 移動 <a class="eq-ref" href="#eq-12-F"></a> で融合木の形を変えてよい。</li>
+<li>完全性関係 <a class="eq-ref" href="#eq-12-complete"></a> を挿入してよい。</li>
+<li>上半分と下半分が同じ枝分かれの木になったら、木の正規直交性（バブルの除去 <a class="eq-ref" href="#eq-12-bubble"></a>）で評価を完了する。</li>
+</ol>
+</div>
+
+<p>
+入力として必要なのは、考えている物理系に固有の \(F\) 行列だけである。
+複雑な図を数に落とす手順は何通りもあるが、結果は規則を使う順序によらない。
+これを保証するのが五角形方程式と Mac Lane のコヒーレンス定理である。
+ここまでの構造（Hilbert 空間と \(F\) 行列）がユニタリ融合圏であり、
+\((2+1)\) 次元の理論を記述するには、さらに組みひもの規則（<a href="chapter13.html">第13章</a>）が必要になる。
+</p>
+
+<h3 id="sec-12-4-1">§12.4.1 簡単な例</h3>
+
+<div class="example-box">
+<span class="box-title">例（頂点の足を曲げると \(F\) の要素が出る）</span>
+§12.3 で「一般には許されない」とした変形の右辺、すなわち
+「真空から \(a\) と \(\bar a\) が対生成し、\(a\) はそのまま上へ出ていき、\(\bar a\) は下から来た \(b\) と融合して \(c\) になる」図を評価する
+（上へ出る \(a\) の線をたどると、下に曲がって \(\bar a\) として頂点に入っている）。
+まず、対生成の点を \(b\) の線に真空線 \(I\) でつなぐ（規則 2）。
+すると \(a\)、\(\bar a\)、\(b\) の3本が「\(a\) と \(\bar a\) が先に \(I\) にまとまる形」の木 \(\ket{(a,\bar a);I}\otimes\ket{I,b;b}\) をなすので、\(F\) 移動で
+「\(\bar a\) と \(b\) が先に中間線 \(f\) にまとまる形」に書き換える。その \(\bar a\) と \(b\) はすぐ上で \(c\) に融合するのでバブルができ、
+直交性から \(f=c\) だけが残ってバブルは消える。結果は
+<div class="equation" id="eq-12-bend">\[
+\bigl(a\text{ の足を曲げた頂点}\bigr)\;=\;\bigl[F^{a\bar a b}_{b}\bigr]_{Ic}\;\times\;\bigl(b\text{ から }a,c\text{ が分裂する素直な頂点}\bigr)
+\]</div>
+である（物理的規格化）。つまり足を曲げた頂点は素直な頂点に比例するが、比例係数は一般に 1 ではない。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（2つのループが線 \(c\) を共有する図）</span>
+\(a\) のループと \(b\) のループが横に並び、境目で1本の線 \(c\) を共有している閉じた図（「8」を横倒しにして中央に縦線を入れた形）を考える。
+下半分に式 <a class="eq-ref" href="#eq-12-bend"></a> を、上半分にそのエルミート共役を使うと、
+係数 \(\bigl|[F^{a\bar a b}_b]_{Ic}\bigr|^2\) が出て、残りは「\(b\) が \(a,c\) に分裂して再び \(b\) に融合し、その \(b\) が閉じてループになる」図になる。
+これは頂点が許される限りバブルの除去とループ \(=1\) により値 1 を持つので、
+\[
+\bigl(\text{図の値}\bigr)=\bigl|[F^{a\bar a b}_b]_{Ic}\bigr|^2
+\]
+である。同じ図を<a href="chapter14.html">第14章</a>の規格化で再計算する。
+</div>
+</section>
+
+<section>
+<h2 id="sec-12-5">付録：高い融合多重度<span class="en">Appendix: Higher Fusion Multiplicities</span></h2>
+
+<p>
+どこかのチャネルで \(N_{ab}^c\gt 1\) となる理論では、各頂点に添字 \(\mu\in\{1,\dots,N_{ab}^c\}\) を付ける。
+木の状態はこの添字についても正規直交である。バブルの除去と完全性関係は次のように変わる（物理的規格化）。
+\[
+\bigl(\text{下の頂点 }\mu\text{、上の頂点 }\nu\text{ のバブル}\bigr)=\delta_{cd}\,\delta_{\mu\nu}\times\bigl(c\text{ の線}\bigr),
+\qquad
+\bigl(a,b\text{ の平行線}\bigr)=\sum_{c,\mu}\ketbra{a,b;c,\mu}{a,b;c,\mu}.
+\]
+ここで \(c\) は下の線、\(d\) は上の線のラベルである。完全性関係では上下の頂点が同じ \(\mu\) を持ち、\(\mu\) についても和を取る。
+このときの \(F\) 行列の添字の付け方は<a href="chapter09.html">第9章</a>で述べた通りである。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第12章のまとめ</span>
+<ul>
+<li>端のない（真空で始まり真空で終わる）図は複素数、上下に端のある図は演算子を表す。上端はケット、下端はブラで、縦に積むと縮約される。</li>
+<li>エルミート共役は、上下反転とすべての矢印の逆転である。</li>
+<li>ラベル付きの線は射影 \(\ketbra{a}{a}\)、ラベルなしの線は恒等演算子。頂点 \(\ket{a,b;c}\) は正規直交かつ完全で、物理的規格化ではバブルは係数なしで消え、ループの値は 1 である。</li>
+<li>融合木の枝分かれの形ごとに基底が定まり、基底の変換は \(F\) 移動 \(\bigl[F^{abc}_e\bigr]_{df}\) で行う。上下の木の形を揃えて直交性で潰せば、任意の平面ダイアグラムを評価できる。</li>
+<li>一般の理論で許される変形は因果的アイソトピー（時間方向の向きを変えない変形）だけである。足を曲げると \(\bigl[F^{a\bar a b}_b\bigr]_{Ic}\) のような係数が現れる。</li>
+<li>ここまでの構造がユニタリ融合圏である。原書の演習では、\(F\) による図の評価、局所性原理の導出、\(F\) 移動の変種を扱う。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

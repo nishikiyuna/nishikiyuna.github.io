@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="(2+1) 次元の量子重力がトポロジカル場の量子論になる理由と、Chern–Simons 理論との対応">
+  <title>第6章 量子重力についての短い寄り道 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter06" data-chapter="6">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第6章に対応</span>
+  第6章 量子重力についての短い寄り道
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+トポロジカルな理論が最初に研究された動機のひとつは量子重力であった。本章はその背景を紹介する短い章で、原書でも「初読では飛ばしてよい」とされている。
+筋書きは次のとおりである。量子重力を「あらゆる時空の歴史についての和」として書き、物質を無視し、さらに次元を \((2+1)\) に下げる。
+すると重力波が存在しなくなり、古典解は平坦な時空だけになる。残る自由度は時空の<strong>トポロジー</strong>だけで、
+トポロジーを固定した経路積分 \(Z(\calM)\) は、適切なゲージ群の Chern–Simons 理論の分配関数（<a href="chapter05.html">第5章</a>）に一致する。
+つまり \((2+1)\) 次元の量子重力は TQFT である。
+時間とともに空間のトポロジーが変わる時空まで考えるという視点は、<a href="chapter07.html">第7章</a>の TQFT の公理につながる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-1">なぜ難しいか<span class="en">Why This Is Hard</span></h2>
+
+<p>
+量子重力について確実にわかっていることは少ない。確かなのは、関与するはずの基本定数、すなわち重力定数 \(G\)、光速 \(c\)、Planck 定数 \(\hbar\) の値である。
+これらから作れるエネルギースケールが <strong>Planck スケール</strong>
+\[
+E_{\text{Planck}} = \sqrt{\frac{\hbar c^5}{G}}\approx 10^{28}\ \text{eV}
+\]
+である。対応する長さは Planck 長 \(l_{\text{Planck}} = \sqrt{\hbar G/c^3} = \hbar c/E_{\text{Planck}}\approx 1.6\times10^{-35}\,\text{m}\) で、
+「太陽の半径：原子の半径」と「原子の半径：Planck 長」がほぼ同じ比になるほど小さい。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>現象</th><th>エネルギースケール</th></tr></thead>
+<tbody>
+<tr><td>身の回りの温度</td><td>約 \(0.03\) eV</td></tr>
+<tr><td>化学・可視光・生物</td><td>約 \(1\) eV</td></tr>
+<tr><td>LHC（加速器実験の最高到達点）</td><td>約 \(10^{13}\) eV</td></tr>
+<tr><td>観測された最高エネルギーの宇宙線</td><td>約 \(10^{20}\) eV</td></tr>
+<tr><td>Planck スケール</td><td>約 \(10^{28}\) eV</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+Planck スケールの物理を推測するとは、加速器実験が到達した範囲より 15 桁も先を推測することである。
+宇宙線の観測はもう少し高いエネルギーに届くが、稀で制御できない事象なので引き出せる情報は少なく、それでも Planck スケールまで 8 桁足りない。
+低エネルギーの実験から得た物理原理が Planck スケールでも成り立つ保証はない。
+確実に要求できるのは、低エネルギーの有効理論が現に観測される世界と一致することだけである。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-2">どのアプローチか<span class="en">Which Approach?</span></h2>
+
+<p>
+量子重力へのアプローチは複数あり、互いに激しく論争してきた。
+原書はどれが有望かについての判断を控えたうえで、次の点を強調する。
+これらの研究の多くは、たとえ成果が物理より数学に関するものであったとしても、非常に興味深く重要な発見をもたらした。
+TQFT はその代表的な産物である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-3">一般原理は何か<span class="en">Some General Principles?</span></h2>
+
+<p>
+観測から 15 桁離れたスケールを考える以上、「これだけは常に成り立つ」と信じる一般原理を選ぶ必要がある。
+多くの研究者が最も基本的だと考えるのは、量子力学の Feynman 描像、すなわち<strong>あらゆる時空の歴史を足し上げる</strong>という原理である。
+量子的な分配関数を
+<div class="equation" id="eq-6-sum">\[
+Z = \sum_{\text{すべての宇宙}}\ee^{\ii S/\hbar}
+\]</div>
+と書く。和は宇宙のあらゆる可能な歴史にわたる、究極の経路和である。
+このままでは手がつけられないので、2段階で単純化する。
+</p>
+
+<h3>単純化 (1)：物質を無視する</h3>
+
+<p>
+物質を含まない真空だけの宇宙を考える。宇宙に含まれるのは時空の計量だけになる。
+重力の Einstein–Hilbert 作用は
+<div class="equation" id="eq-6-EH">\[
+S_{\text{Einstein}}\sim\int_{\calM}\dd^Dx\;R\,\sqrt{-\det(g)}
+\]</div>
+で、積分は \(D\) 次元時空多様体 \(\calM\) 全体にわたる。\(g\) は計量テンソル（\(\dd s^2 = g_{\mu\nu}\dd x^\mu\dd x^\nu\)）、\(R\) は Ricci スカラーである。
+\(R\) は多様体の曲がり具合を測る量で、半径 \(\epsilon\) の小さな球の体積を平坦な空間での体積と比べると
+\[
+\frac{V(B^D\subset\calM)}{V(B^D\subset\R^D)} = 1-\frac{\epsilon^2R}{6(D+2)}+\cdots
+\]
+となる。これを <a class="eq-ref" href="#eq-6-sum"></a> に入れると
+<div class="equation" id="eq-6-gravityPI">\[
+Z = \int\mathcal{D}g(x)\;\ee^{\ii S_{\text{Einstein}}[g(x)]/\hbar}
+\]</div>
+となり、あらゆる時空計量について積分することになる。
+物質がなくても計量は揺らぐことができ（その揺らぎが<strong>重力波</strong>である）、模型は自明でない。
+この段階でも、多くの追加の仮定なしにこの経路積分に完全な意味を与えた人はいない。
+</p>
+
+<h3>単純化 (2)：\((2+1)\) 次元にする</h3>
+
+<p>
+次元を下げると物事が単純になるのはよくあることで、ここでも劇的な単純化が起こる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">事実（\((2+1)\) 次元には重力波がない）</span>
+\((2+1)\) 次元の計量には、重力波を担うだけの自由度がない（§6.4）。
+その結果、真空の Einstein 方程式の古典解は \(R=0\) だけで、4次元未満では \(R=0\) は曲率がまったくないことを意味する。
+宇宙は平坦で、揺らぎもない。宇宙定数 \(\Lambda\) がある場合の解は \(R_{\mu\nu}=2\Lambda g_{\mu\nu}\) である。
+</div>
+
+<p>
+それなら \((2+1)\) 次元の重力は完全に自明かというと、そうではない。
+時空多様体はいたるところ曲率 0 でも、<strong>非自明なトポロジー</strong>をもつことができる。
+興味の対象は、時空多様体がとりうるさまざまなトポロジーになる。そこで <a class="eq-ref" href="#eq-6-sum"></a> を
+<div class="equation" id="eq-6-topsum">\[
+Z = \sum_{\text{多様体 }\calM}\ \int_{\calM}\mathcal{D}g(x)\;\ee^{\ii S[g(x)]/\hbar} = \sum_{\text{多様体 }\calM}Z(\calM)
+\]</div>
+と書き直す。和は宇宙がとりうるトポロジーにわたり、\(\int_{\calM}\mathcal{D}g\) は多様体のトポロジーを \(\calM\) に固定したうえでの計量の積分である。
+</p>
+
+<p>
+この量に興味があるのは次の問いに答えるためである。ある時刻 \(t\) での（\(d\) 次元の）宇宙のトポロジーを知っているとして、時間が進むとそのトポロジーが変わる振幅はいくらか。
+時空は \(\calM=\Sigma\times\text{時間}\) の形なのか、それとも下図のように途中で分岐するのか。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <!-- time arrow -->
+  <line x1="70" y1="160" x2="70" y2="30" class="line" stroke-width="1.5"/>
+  <path d="M 64 40 L 70 28 L 76 40" class="line" fill="none" stroke-width="1.5"/>
+  <text x="40" y="100" class="label-muted">時間</text>
+  <!-- bottom circle -->
+  <ellipse cx="230" cy="155" rx="40" ry="10" class="line accent" fill="none" stroke-width="1.5"/>
+  <!-- top circles -->
+  <ellipse cx="170" cy="35" rx="30" ry="8" class="line accent" fill="none" stroke-width="1.5"/>
+  <ellipse cx="290" cy="35" rx="30" ry="8" class="line accent" fill="none" stroke-width="1.5"/>
+  <!-- sides -->
+  <path d="M 190 155 C 190 105 140 85 140 35" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 270 155 C 270 105 320 85 320 35" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 200 35 C 200 80 260 80 260 35" class="line" fill="none" stroke-width="1.5"/>
+  <text x="335" y="40" class="label-muted">空間 = 円 2 つ</text>
+  <text x="285" y="160" class="label-muted">空間 = 円 1 つ</text>
+</svg>
+<figcaption>図 6.1：空間的な切り口（一定時刻の断面）のトポロジーが時間とともに変わる時空多様体の例。下端では円1つ、上端では円2つになる。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">結果（\((2+1)\) 次元重力 ＝ Chern–Simons 理論）</span>
+<a class="eq-ref" href="#eq-6-topsum"></a> の \(Z(\calM)\) は、ゲージ群を適切に選んだ Chern–Simons 理論の分配関数（第5章 §5.2）にちょうど一致する。
+Achúcarro と Townsend (1986) が最初に指摘し、Witten (1988) らが発展させた。対応の中身は §6.5 で述べる。
+</div>
+
+<h3 id="sec-6-3-1">§6.3.1 量子重力との関係についての補足</h3>
+
+<p>
+弦理論でない流儀の量子重力では、<a class="eq-ref" href="#eq-6-gravityPI"></a> を評価することが主目標になる。
+そのためには宇宙の計量を記述する変数が必要で、いくつかの異なるアプローチが似た構造に行き着く。
+</p>
+
+<ul>
+<li><strong>ループ量子重力 (loop quantum gravity)</strong>：重力をゲージ理論の形に書き直したうえで、Wilson ループ演算子を理論の基本変数にとる。</li>
+<li><strong>時空の離散化</strong>：時空を離散化し、可能な離散化のしかたについて和をとる。Planck 長ほどの小さなスケールで、時空が巨視的な滑らかな多様体のように見える理由はない。</li>
+</ul>
+
+<p>
+一定の仮定のもとで、この2つは非常に近い関係にあるらしい。
+時空の離散化からトポロジカルな重力が出てくる話は原書 §23.3 で再び取り上げられる。
+格子ゲージ理論の Wilson ループや、状態和による離散的な構成に馴染みがあれば、どちらの考え方も身近に感じられるはずである。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-4">補遺：\((2+1)\) 次元に重力波がないこと<span class="en">Appendix: No Gravity Waves in (2 + 1)-Dimensions</span></h2>
+
+<h3>自由度の数え上げ</h3>
+
+<p>
+短い議論は位相空間の自由度の勘定である（Carlip による）。\(n\) 次元時空の一般相対論を考える。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>内訳</th><th>時空1点あたりの個数</th></tr></thead>
+<tbody>
+<tr><td>一定時刻の空間計量（\((n-1)\times(n-1)\) の対称行列）</td><td>\(n(n-1)/2\)</td></tr>
+<tr><td>その共役運動量</td><td>\(n(n-1)/2\)</td></tr>
+<tr><td>Einstein 方程式のうち拘束条件であるもの</td><td>\(-n\)</td></tr>
+<tr><td>座標の選び方で消せる自由度</td><td>\(-n\)</td></tr>
+<tr><td><strong>物理的自由度</strong></td><td>\(n(n-1)-2n = n(n-3)\)</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+\(n=4\) では 4 で、重力波の2つの偏極とその共役運動量にあたる。<strong>\(n=3\) では 0</strong> となり、局所的な自由度がない。
+ハミルトニアン形式でゲージ理論の物理的自由度を「変数 − 拘束 − ゲージ固定」と数えるのと同じ勘定である。
+</p>
+
+<h3>線形化した重力波による確認</h3>
+
+<p>
+もう少し具体的に見る。平坦計量を \(\eta_{\mu\nu}=\diag[-1,1,1,\dots]\) とし、そこからの小さなずれ \(g=\eta+h\) を考えて、トレース反転
+\[
+\bar h_{\mu\nu} = h_{\mu\nu}-\frac12\,\eta_{\mu\nu}\,\eta^{\rho\sigma}h_{\rho\sigma}
+\]
+を作る。どの次元でも真空中の重力波は \(\partial_\nu\bar h^{\mu\nu}=0\) と \(\Box\,\bar h_{\mu\nu}=0\) を満たす（添字の上げ下げは \(\eta\) で行う）。
+平面波解は
+\[
+\bar h_{\mu\nu} = \epsilon_{\mu\nu}\,\ee^{\ii k^\rho x_\rho},\qquad k^\mu k_\mu=0
+\]
+で、偏極テンソル \(\epsilon_{\mu\nu}\) は光的な波数ベクトルに直交する：
+<div class="equation" id="eq-6-transverse">\[
+\epsilon_{\mu\nu}k^\nu=0 .
+\]</div>
+ここでゲージ自由度を考慮しなければならない。座標を取り直すと、曲率を変えずに計量の形を変えられる。
+座標変換 \(x\to x-\xi\) のもとで
+\[
+\bar h_{\mu\nu}\to\bar h_{\mu\nu}-\partial_\mu\xi_\nu-\partial_\nu\xi_\mu+\eta_{\mu\nu}\,\partial_\alpha\xi^\alpha
+\]
+と変わる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">主張（\((2+1)\) 次元の重力波は純ゲージ）</span>
+\((2+1)\) 次元では、<a class="eq-ref" href="#eq-6-transverse"></a> を満たすどんな \(\epsilon_{\mu\nu}\) に対しても、\(\xi_\mu = A_\mu\,\ee^{\ii k^\rho x_\rho}\) の形の座標変換をうまく選んで
+\[
+\bar h_{\mu\nu} = \partial_\mu\xi_\nu+\partial_\nu\xi_\mu-\eta_{\mu\nu}\,\partial_\alpha\xi^\alpha
+\]
+と書ける。つまりこの波は座標変換で消せる純ゲージであり、時空は完全に平坦なままである。この \(\bar h\) から曲率を計算すると 0 になる。
+</div>
+
+<div class="proof-box">
+<span class="box-title">確認</span>
+平面波を代入すると、条件は（\(A\) に吸収できる定数因子を除いて）
+\[
+\epsilon_{\mu\nu} = A_\mu k_\nu+A_\nu k_\mu-\eta_{\mu\nu}\,A^\sigma k_\sigma
+\]
+となる。右辺は \(k^\mu k_\mu=0\) のもとで自動的に <a class="eq-ref" href="#eq-6-transverse"></a> を満たす。
+\((2+1)\) 次元の対称テンソル \(\epsilon_{\mu\nu}\) の成分は 6 個、<a class="eq-ref" href="#eq-6-transverse"></a> は 3 個の条件なので、残る自由度は 3 個。
+\(A_\mu\) のパラメータもちょうど 3 個あるから、与えられた \(\epsilon\) に対して \(A\) について解ける。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-6-5">補遺：Chern–Simons 理論と \((2+1)\) 次元一般相対論の関係<span class="en">Appendix: Relation of Chern–Simons Theory to (2 + 1)-Dimensional GR</span></h2>
+
+<p>
+重力から Chern–Simons 理論への対応では、<strong>Chern–Simons ゲージ場が計量を表す</strong>。
+計量の異なる配位の間のゲージ同値性（座標の取り直しなど）が、Chern–Simons 場のゲージ同値性に翻訳される。
+作用は <a class="eq-ref" href="#eq-6-EH"></a> で、宇宙定数 \(\Lambda\neq0\) を許すときは \(R\) を \(R-2\Lambda\) に置き換える。
+計量の符号も2通り考えられる。Minkowski（Lorentz）計量の場合を \((2+1)\) 次元、Euclid 計量の場合を 3 次元と呼ぶ。
+ゲージ群は計量の符号と \(\Lambda\) の符号で決まる。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>計量</th><th>\(\Lambda&gt;0\)</th><th>\(\Lambda=0\)</th><th>\(\Lambda&lt;0\)</th></tr></thead>
+<tbody>
+<tr><td>Euclid</td><td>\(SO(4)=SU(2)\times SU(2)\)</td><td>\(ISO(3)\)（3次元 Euclid 群 \(E(3)\)）</td><td>\(SO(3,1)\)</td></tr>
+<tr><td>Minkowski</td><td>\(SO(3,1)\)</td><td>\(ISO(2,1)\)（\((2+1)\) 次元 Poincaré 群）</td><td>\(SO(2,2)=SO(2,1)\times SO(2,1)\)</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+ここで \(SO(p,q)\) は、\(1\) を \(p\) 個、\(-1\) を \(q\) 個並べた対角行列 \(\eta\) に対して \(M^T=\eta M^{-1}\eta\) を満たす \((p+q)\times(p+q)\) 行列の群である。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（Euclid 計量、\(\Lambda&gt;0\)：最も扱いやすい場合）</span>
+Einstein–Hilbert 作用は、ゲージ群 \(SO(4)=SU(2)\times SU(2)\) の Chern–Simons 作用（第5章の非可換 Chern–Simons 作用の形）に厳密に書き直せる。
+得られる理論は \(SU(2)_k\) の<strong>2重化 (double)</strong>、すなわち \(SU(2)_k\) とその鏡像 \(SU(2)_{-k}\) の積である。
+レベルは宇宙定数と Newton 定数 \(G\) によって
+\[
+k = \frac{1}{4G\sqrt{\Lambda}}
+\]
+と定まる。2重化した理論は第5章 §5.3.6 でアノマリーを打ち消す方法として現れたもので、原書の第23–24章、第31–33章で詳しく扱われる。
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（非コンパクト群の難しさ）</span>
+上の表で \(SO(4)\) 以外のゲージ群はすべて<strong>非コンパクト</strong>である。
+非コンパクト群の Chern–Simons 理論の扱い方はよくわかっておらず、コンパクト群の公式を素朴に真似ると誤った式や見通しの悪い式になることが知られている。
+Minkowski 計量の3つの場合のうち、きちんと定義された量子重力理論になる見込みが最も高いのは \(\Lambda&lt;0\) とされる。
+このときも2重化した Chern–Simons 理論 \(SO(2,1)_k\times SO(2,1)_{-k}\) になり、レベルは \(k=1/(4G\sqrt{-\Lambda})\) である。
+ただし後年 Witten (2007) は、Chern–Simons 理論だけで \((2+1)\) 次元の重力を完全に記述できるかについて疑問を呈している。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第6章のまとめ</span>
+<ul>
+<li>量子重力のスケールは \(E_{\text{Planck}}=\sqrt{\hbar c^5/G}\approx10^{28}\) eV で、加速器実験の到達範囲の 15 桁先にある。頼れる原理として「あらゆる時空の歴史についての和」を採用する。</li>
+<li>物質を無視すると、Einstein–Hilbert 作用を計量について経路積分する問題になる。揺らぐ計量（重力波）があるため一般には難しい。</li>
+<li>\((2+1)\) 次元では物理的自由度が \(n(n-3)=0\) で重力波がない。線形化した波はすべて座標変換で消せる純ゲージで、古典解は平坦（宇宙定数があれば一定曲率）な時空だけである。</li>
+<li>残る自由度は時空のトポロジーで、\(Z=\sum_{\calM}Z(\calM)\)。空間のトポロジーが時間とともに変わる振幅が問いになる。</li>
+<li>\(Z(\calM)\) は適切なゲージ群の Chern–Simons 分配関数に一致する。Euclid 計量・\(\Lambda&gt;0\) では \(SU(2)_k\times SU(2)_{-k}\)、\(k=1/(4G\sqrt\Lambda)\)。それ以外の場合はゲージ群が非コンパクトで扱いが難しい。</li>
+<li>\((2+1)\) 次元の量子重力は TQFT である。TQFT への関心の多くはこの関係に由来する。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

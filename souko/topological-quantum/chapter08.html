@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="粒子タイプ・融合則・融合多重度 N、Fibonacci と Ising の融合木、量子次元、曲面上の基底状態縮退、融合空間と分裂空間">
+  <title>第8章 融合と Hilbert 空間の構造 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter08" data-chapter="8">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第8章に対応</span>
+  第8章 融合と Hilbert 空間の構造
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter07.html">第7章</a>で見たように、TQFT は2次元曲面 \(\Sigma\) ごとに Hilbert 空間 \(V(\Sigma)\) を割り当てる。
+曲面上に粒子（エニオン）が載っているとき、この空間の次元は粒子の種類を反映する。
+本章の目的は、その Hilbert 空間の構造を<strong>融合 (fusion)</strong> という操作だけから理解することである。
+粒子タイプの集合と融合則 \(a\times b=\sum_c N_{ab}^c\,c\) を与えると、
+多粒子状態の基底が<strong>融合木</strong>のラベル付けとして数え上げられ、
+量子次元 \(d_a\) が行列 \(N_a\) の最大固有値として決まり、
+さらに任意の向き付け可能な曲面上の基底状態縮退まで計算できる。
+組みひも（交換）はまだ登場しない。ここで作った空間の上で、
+<a href="chapter09.html">第9章</a>の \(F\) 行列（基底変換）と
+<a href="chapter10.html">第10章</a>の \(R\) 行列（交換）が作用する。
+著者はこの第8〜10章を本全体の要と位置づけている。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-1">粒子と融合の基本 — 可換な場合<span class="en">Basics of Particles and Fusion — The Abelian Case</span></h2>
+
+<p>
+エニオン理論を指定する最初のデータは、有限個のラベルからなる<strong>粒子タイプ (particle type)</strong> の集合である。
+ラベルを \(a,b,c,\dots\) と書く。世界線の図式（<a href="chapter04.html">第4章</a>で導入した図式記法の続き）では、
+時間を上向きにとり、各世界線に粒子タイプのラベルを付ける。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（融合・分裂・真空・反粒子）</span>
+<ul>
+<li><strong>融合 (fusion)</strong>：2本の世界線 \(a,b\) が合流して1本の \(c\) になること。\(a\times b=b\times a=c\) と書く。
+時間を逆にたどった過程（\(c\) が \(a\) と \(b\) に分かれる）を<strong>分裂 (splitting)</strong> という。口語では両方まとめて「融合」と呼ぶことも多い。</li>
+<li><strong>真空 (identity, vacuum)</strong>：ちょうど1つの粒子タイプ \(I\) があり、任意の \(a\) に対して \(a\times I=a\) を満たす。
+粒子が何もないことと同じなので、図では点線で描くか、描かずに済ませる。</li>
+<li><strong>反粒子 (antiparticle)</strong>：各 \(a\) に対して \(a\times\bar a=I\) となる \(\bar a\) がただ1つ存在する。
+時間を順行する \(a\) は、逆行する \(\bar a\) と同じものである。したがって \(a\) と \(\bar a\) が融合して真空になる過程は、
+1本の世界線が時空の中で U ターンする図として描ける。</li>
+</ul>
+</div>
+
+<p>
+融合は2粒子が空間的に接近していることを要求しない。2つの粒子を囲む円を描き、
+その内側の「合計の粒子タイプ」を問えば、それが融合の結果である。
+2粒子 \(a,b\) の状態を表すケットは、\(c\) から \(a\) と \(b\) が分かれる分裂図として描かれる。
+これは「左に \(a\)、右に \(b\) があり、全体の量子数（全融合チャネル）が \(c\)」という現在の状況がどう生じたかの時空履歴と読める。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（真空の記号）</span>
+真空は文脈により \(1\)、\(0\)、\(I\)、\(e\) などと書かれる。融合が加法で表される模型では \(0\)、乗法なら \(1\) が自然だからである。
+このノートでは原書に合わせて \(I\) を使う。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（電荷–磁束模型の可換エニオン）</span>
+<a href="chapter04.html">第4章</a>の電荷–磁束複合体の模型で、統計角が \(\theta=\pi p/m\)（\(p,m\) は互いに素で、両方が奇数ではない）のとき、
+粒子タイプは \(a=0,1,\dots,m-1\) の \(m\) 種で、\(a\) 番目は基本粒子 \(a\) 個分の電荷と磁束を持つ。融合則は \(m\) を法とする加法
+\[
+a\times b=(a+b)\bmod m
+\]
+である。真空は電荷も磁束もない \(a=0\)。\(\theta=\pi/4\) の場合、基本エニオン2個の融合である「2」は自分自身の反粒子になる。
+</div>
+
+<p>
+自分自身が反粒子である粒子（\(a=\bar a\)）の世界線には矢印が要らない。真空 \(I\) は常に自分自身の反粒子である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-2">複数の融合チャネル — 非可換な場合<span class="en">Multiple Fusion Channels — The Nonabelian Case</span></h2>
+
+<p>
+非可換エニオンでは、粒子数とともに Hilbert 空間の次元が増える（<a href="chapter03.html">第3章</a>）。
+その仕組みが<strong>複数の融合チャネル</strong>である。
+</p>
+
+<div class="equation" id="eq-8-multi">\[
+a\times b=c+d+\cdots
+\]</div>
+
+<p>
+これは「\(a\) と \(b\) は \(c\) にも \(d\) にも……なりうる」ことを表し、各チャネルは互いに直交する状態に対応する。
+融合則のどれか1つでも右辺に2個以上の粒子が現れる理論を<strong>非可換 (nonabelian)</strong> という。
+\(a\times b\) のチャネルが \(s\) 個あれば、2粒子 \(a,b\) は \(s\) 次元の Hilbert 空間（\(V(\Sigma)\) の一部）を持つ。
+</p>
+
+<div class="remark-box">
+<span class="box-title">直観（角運動量の合成との類比とその限界）</span>
+スピン 1/2 の合成 \(\tfrac12\otimes\tfrac12=0\oplus1\) は、2つのスピンが一重項にも三重項にもなれることを言う。
+融合チャネルもこれに似ており、2粒子が離れていても「どのチャネルに融合する波動関数にあるか」を語れる。\(J=0\) が真空に当たる。
+ただし類比は完全ではない。エニオンの個々の粒子は内部自由度（スピン 1/2 の上下に当たるもの）を持たず、
+融合の結果にも \(m_z\) のような自由度はない。情報は「チャネルのラベル」だけに宿る。
+</div>
+
+<h3>局所性</h3>
+
+<p>
+エニオンの物理を貫く原理が<strong>局所性 (locality)</strong> である。粒子の量子数（「電荷」）は局所的に保存する。
+</p>
+
+<div class="thm-box">
+<span class="box-title">原理（局所性と無変換則）</span>
+<ul>
+<li><strong>無変換則 (no-transmutation)</strong>：粒子 \(a\) がある時空領域に入り、そこから1個の粒子だけが出てくるなら、それは必ず \(a\) である。
+したがって、途中で局所的にどれほど複雑なことが起きていても、遠くから見ればその図は「\(a\) が単に伝播する図」の定数倍に等しい。</li>
+<li><strong>融合チャネルはその粒子の組に局在する</strong>：\(b\) と \(c\) が \(d\) に融合するなら、\(b\) と \(c\) の間でいくら組みひもをしても \(d\) は変わらない。
+さらに \(d\) と \(a\) が \(f\) に融合するなら、\(a,b,c\) の間のどんな組みひもも全体のチャネル \(f\) を変えない。
+一方 \(a\) を \(b\) や \(c\) と組むと、全体が \(f\) という制約のもとで \(b,c\) のチャネルは変わりうる。</li>
+</ul>
+</div>
+
+<p>
+2粒子の融合チャネルは、片方の粒子だけを測っても決められない。両方を囲むループを使う測定（たとえば干渉実験）が必要である。
+ここもスピンとの違いで、スピンなら個別に測って合成の結果が分かる場合があるが、エニオンでは個別測定は融合チャネルについて何も教えない。
+この性質が、後で見るトポロジカル量子計算の誤り耐性の源になる（<a href="chapter11.html">第11章</a>）。
+</p>
+
+<h3>非可換な場合の反粒子</h3>
+
+<p>
+複数チャネルがある場合、反粒子は「融合して真空に<strong>なりうる</strong>相手」として定義する：
+\[
+a\times\bar a=I+(\text{他のチャネル}) .
+\]
+各 \(a\) に対してそのような粒子はただ1つである。\(a\times a=I+\cdots\) なら \(a\) は自分自身の反粒子で、世界線に矢印を付けない。
+</p>
+
+<h3 id="sec-8-2-1">§8.2.1 例：Fibonacci エニオン</h3>
+
+<p>
+最も単純な非可換の例が <strong>Fibonacci エニオン</strong>である。\(\nu=12/5\) 量子 Hall 状態でこれに非常に近いものが実現すると考えられており、
+\(SU(2)_3\) Chern–Simons 理論と密接に関係する（正確には \((G_2)_1\) Chern–Simons 理論と一致し、\(SU(2)_3\) は Fibonacci に加えて余分な粒子を含む）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Fibonacci エニオンの融合則）</span>
+粒子タイプは \(\{I,\tau\}\) の2つ。融合則は
+<div class="equation" id="eq-8-fib">\[
+I\times I=I,\qquad I\times\tau=\tau,\qquad \tau\times\tau=I+\tau .
+\]</div>
+はじめの2つは真空の性質そのもので、内容があるのは最後の規則だけである。この規則から \(\tau=\bar\tau\) であり、世界線に矢印は要らない。
+</div>
+
+<p>
+\(\tau\) 2個の Hilbert 空間は2次元（チャネル \(I\) と \(\tau\)）。3個では3次元になる。
+はじめの2個が \(\tau\) に融合した場合、その組は1個の \(\tau\) のように振る舞い、3個目の \(\tau\) と2通りに融合できるからである。
+3粒子の基底には量子計算の文脈で次の名前が付いている。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>状態</th><th>左2個のチャネル</th><th>3個全体のチャネル</th></tr></thead>
+<tbody>
+<tr><td>\(\ket{0}\)</td><td>\(I\)</td><td>\(\tau\)</td></tr>
+<tr><td>\(\ket{1}\)</td><td>\(\tau\)</td><td>\(\tau\)</td></tr>
+<tr><td>\(\ket{N}\)</td><td>\(\tau\)</td><td>\(I\)</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+\(\ket{N}\) は「非計算 (non-computational)」状態の意味で、多くの計算方式では使わない。
+局所性により、3粒子の間の組みひもは全体のチャネルを変えないので、\(\ket{N}\) は位相を除いて不変であり、
+\(\ket0,\ket1\) の張る2次元空間（全体が \(\tau\)）も保たれる。
+また左2個の組みひもは \(\ket0\) と \(\ket1\) を混ぜない（左2個のチャネルの固有状態だから）。
+しかし2個目と3個目を組むと \(\ket0\) と \(\ket1\) の間の回転が起きる。これは<a href="chapter10.html">第10章</a>で具体的に計算する。
+</p>
+
+<p>
+4個の場合は、まず融合木（正確には分裂木）の枝分かれの形を決め、上端の枝をすべて \(\tau\) として、内部の辺のラベルを数える。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <!-- left-leaning tree -->
+  <line x1="40" y1="30" x2="160" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="100" y1="30" x2="70" y2="60" class="line" stroke-width="1.5"/>
+  <line x1="160" y1="30" x2="100" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="220" y1="30" x2="130" y2="120" class="line" stroke-width="1.5"/>
+  <text x="36" y="22" class="label">τ</text>
+  <text x="96" y="22" class="label">τ</text>
+  <text x="156" y="22" class="label">τ</text>
+  <text x="216" y="22" class="label">τ</text>
+  <text x="68" y="88" class="label">x</text>
+  <text x="98" y="118" class="label">y</text>
+  <text x="130" y="150" class="label">z</text>
+  <text x="30" y="178" class="label-muted">(x, y, z) の許される組は 5 通り</text>
+  <!-- balanced tree -->
+  <line x1="280" y1="30" x2="310" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="340" y1="30" x2="310" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="380" y1="30" x2="410" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="440" y1="30" x2="410" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="310" y1="70" x2="360" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="410" y1="70" x2="360" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="360" y1="120" x2="360" y2="150" class="line" stroke-width="1.5"/>
+  <text x="276" y="22" class="label">τ</text>
+  <text x="336" y="22" class="label">τ</text>
+  <text x="376" y="22" class="label">τ</text>
+  <text x="436" y="22" class="label">τ</text>
+  <text x="314" y="104" class="label">u</text>
+  <text x="396" y="104" class="label">v</text>
+  <text x="368" y="144" class="label">w</text>
+  <text x="290" y="178" class="label-muted">(u, v, w) も 5 通り</text>
+</svg>
+<figcaption>図 8.1：4個の Fibonacci エニオンの2種類の融合木。どちらの木で数えても Hilbert 空間の次元は同じ 5 になる。</figcaption>
+</figure>
+
+<p>
+左の木では、\(x\in\{I,\tau\}\)、\(x=I\) なら \(y=\tau\)、\(x=\tau\) なら \(y\in\{I,\tau\}\)、同様に \(y=I\) なら \(z=\tau\)、\(y=\tau\) なら \(z\in\{I,\tau\}\) であり、
+\((x,y,z)=(I,\tau,I),(I,\tau,\tau),(\tau,I,\tau),(\tau,\tau,I),(\tau,\tau,\tau)\) の5通り。
+右の木でも \((u,v,w)=(I,I,I),(I,\tau,\tau),(\tau,I,\tau),(\tau,\tau,I),(\tau,\tau,\tau)\) の5通りになる。
+融合の順序を変えても次元は変わらない。異なる木は<strong>同じ Hilbert 空間の異なる基底</strong>であり、その間の変換が<a href="chapter09.html">第9章</a>の主題である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（Fibonacci エニオンの Hilbert 空間の次元）</span>
+\(\tau\) が 2, 3, 4, 5 個のとき次元は 2, 3, 5, 8 で、Fibonacci 数列に従う（これが名前の由来）。大きな \(N\) では
+<div class="equation" id="eq-8-fibdim">\[
+\dim(\text{\(N\) 個の \(\tau\)})=\mathrm{Fib}_N\sim\left(\frac{1+\sqrt5}{2}\right)^{N},
+\]</div>
+すなわち \(\tau\) の<strong>量子次元</strong>は黄金比 \(d_\tau=(1+\sqrt5)/2\) である（\(\sim\) は「のように増大する」の意味）。
+</div>
+
+<h3 id="sec-8-2-2">§8.2.2 例：Ising エニオン</h3>
+
+<p>
+<strong>Ising エニオン</strong>は \(SU(2)_2\) Chern–Simons 理論とごく近い関係にあり、
+\(\nu=5/2\) 量子 Hall 状態、トポロジカル超伝導体などのいわゆる Majorana 系で実現すると考えられている。
+名前は2次元臨界 Ising 模型を記述する共形場理論との関係に由来する。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Ising エニオンの融合則）</span>
+粒子タイプは \(\{I,\sigma,\psi\}\) の3つ。真空との融合以外の規則は
+<div class="equation" id="eq-8-ising">\[
+\psi\times\psi=I,\qquad \psi\times\sigma=\sigma,\qquad \sigma\times\sigma=I+\psi .
+\]</div>
+\(\psi=\bar\psi\)、\(\sigma=\bar\sigma\) であり、世界線に矢印は要らない。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（記法と \(SU(2)_2\) との違い）</span>
+\(\psi\) を \(\epsilon\) と書く流儀もある。\(SU(2)_2\) では \(I,\sigma,\psi\) を \(0,\tfrac12,1\) あるいは \(0,1,2\) と呼ぶ。
+Ising と \(SU(2)_2\) は融合則が同じだが、スピン因子の一部と Frobenius–Schur 指標が異なる。
+</div>
+
+<p>
+\(\psi\) は何と融合しても結果が1通りなので、理論全体は非可換でも \(\psi\) 自身は<strong>可換な粒子</strong>、あるいは<strong>単純カレント (simple current)</strong> と呼ばれる。
+\(\psi\) を多数融合するのは簡単で、対ごとに一意に真空になる。
+</p>
+
+<p>
+\(\sigma\) を多数融合する場合が非自明である。最初の2個は \(I\) か \(\psi\) に融合するが、3個目を加えると全体は必ず \(\sigma\) になる
+（\(I\times\sigma=\psi\times\sigma=\sigma\)）。4個目を加えると再び \(I\) か \(\psi\) の2通り。
+こうして木のラベル付けを数えると次の結果を得る。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（Ising の \(\sigma\) の Hilbert 空間の次元）</span>
+\(N\) 個の \(\sigma\) の融合チャネルの総数は \(2^{\lfloor N/2\rfloor}\) である。
+別の数え方として、\(\sigma\) を2個ずつ対にすると各対が \(I\) か \(\psi\) の2状態系（1量子ビット）になり、
+その後の \(I\) と \(\psi\) 同士の融合は一意である。次元が \((\sqrt2)^N\) で増えるので、量子次元は \(d_\sigma=\sqrt2\)。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-3">融合と N 行列<span class="en">Fusion and the N matrices</span></h2>
+
+<p>
+ここまでで、エニオン理論は「有限個の粒子タイプ、ただ1つの真空、各粒子にただ1つの反粒子」を持つものとして形を成してきた。
+一般の融合則は次のように書く。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（融合多重度）</span>
+<div class="equation" id="eq-8-N">\[
+a\times b=\sum_c N_{ab}^c\,c .
+\]</div>
+和は全粒子タイプにわたる。非負整数 \(N_{ab}^c\) を<strong>融合多重度 (fusion multiplicity)</strong> という。
+\(a\) と \(b\) が \(c\) に融合できなければ \(N_{ab}^c=0\)、右辺に \(c\) が1回現れれば \(1\)、複数回現れればその回数である。
+より形式的には、\(N_{ab}^c\) は「\(a\) と \(b\) が全量子数 \(c\) に融合する」ことに対応する Hilbert 空間の次元である。
+</div>
+
+<p>
+\(N_{ab}^c&gt;1\) とは、同じ \(c\) への融合が複数の直交する仕方で起こることを意味する。
+このとき頂点に添字 \(\mu\in\{1,\dots,N_{ab}^c\}\) を付けてどの仕方かを指定する。
+\(SU(2)\) の角運動量合成（および \(SU(2)_k\) Chern–Simons 理論）では起きないが、\(SU(3)\) の表現の合成
+\(8\otimes8=1\oplus8\oplus8\oplus10\oplus\overline{10}\oplus27\) で 8 が2回現れるのが身近な例である。
+単純な理論の多くでは \(N_{ab}^c\in\{0,1\}\) で、可換エニオンでは 1 を超えない。以下では主にこの場合を扱う
+（\(N_{ab}^c&gt;1\) の扱いは<a href="chapter09.html">第9章</a>の付録）。
+</p>
+
+<h3>多粒子の融合と次元の数え上げ</h3>
+
+<p>
+<a class="eq-ref" href="#eq-8-N"></a> を繰り返し使うと、3粒子の融合は
+</p>
+<div class="equation" id="eq-8-three">\[
+a\times b\times c=\sum_d N_{ab}^d\,(d\times c)=\sum_{d,e}N_{ab}^d N_{dc}^e\,e
+\]</div>
+<p>
+となる。2つの \(N\) は融合木の2つの頂点に対応する。Hilbert 空間の次元は可能な融合木の総数であり、
+\[
+\dim(a\times b)=\sum_c N_{ab}^c,\qquad
+\dim(a\times b\times c)=\sum_{d,e}N_{ab}^d N_{dc}^e .
+\]
+</p>
+
+<div class="thm-box">
+<span class="box-title">性質（融合多重度の基本性質）</span>
+\[
+\begin{aligned}
+&amp;\text{融合の可換性 } a\times b=b\times a: &amp;&amp; N_{ab}^c=N_{ba}^c\\
+&amp;\text{時間反転}: &amp;&amp; N_{ab}^c=N_{\bar a\bar b}^{\bar c}\\
+&amp;\text{真空との自明な融合}: &amp;&amp; N_{aI}^c=\delta_{ac}\\
+&amp;\text{逆元の存在と一意性}: &amp;&amp; N_{ab}^I=\delta_{a\bar b}
+\end{aligned}
+\]
+ただ1つの真空を持つ粒子タイプの集合と、これらの公理を満たす \(N_{ab}^c\) の組を<strong>可換融合環 (commutative fusion ring)</strong> という。
+すべての TQFT は可換融合環で記述されるが、逆に、どの TQFT とも整合しない可換融合環も存在する。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（非可換な融合環）</span>
+\(N_{ab}^c\neq N_{ba}^c\) を許す環（たとえば非可換群を融合環とするもの）は、完全なエニオン理論（(2+1) 次元 TQFT）ではなく平面図式の代数を定める。
+ただしそれを材料にして完全な TQFT を構成する方法があり、本の後半で使われる。
+</div>
+
+<h3>便利な定義と記法</h3>
+
+<ul>
+<li><strong>単純カレント</strong>：粒子 \(a\) が、どの \(b\) に対しても融合の結果がただ1種 \(a\times b=c_b\) になるもの。
+同値な言い方は「すべての \(b\) に対して \(\sum_c N_{ab}^c=1\)」。</li>
+<li>分裂図には \(N^{ab}_c\)、融合図には \(N_{ab}^c\) と書き分けることもあるが、両者は等しいので \(N_{ab}^c\) を使う。</li>
+<li>多粒子への一般化：\(a,b,c\) が \(e\) に融合する空間の次元を
+<div class="equation" id="eq-8-Nabce">\[
+N_{abc}^e=\sum_d N_{ab}^d N_{dc}^e
+\]</div>
+と書く。同様に \(N_{abcd}^e=\sum_{f,g}N_{ab}^fN_{fc}^gN_{gd}^e\)。</li>
+</ul>
+
+<div class="def-box">
+<span class="box-title">定義（完全対称な \(N_{abc}\)）</span>
+<div class="equation" id="eq-8-Nabc">\[
+N_{abc}\equiv N_{abc}^I=\sum_d N_{ab}^dN_{dc}^I=N_{ab}^{\bar c} .
+\]</div>
+\(a,b,c\) が真空に融合する仕方の数である。最後の等号は \(N_{dc}^I=\delta_{d\bar c}\) による。
+図では、頂点に下から入る \(\bar c\) の線を折り返して上向きの \(c\) にすることに当たる。
+\(N_{abc}\) は添字の入れ替えについて<strong>完全対称</strong>である。
+</div>
+
+<p>
+この記法では \(N_{aI}^c=\delta_{ac}\) と \(N_{ab}^I=\delta_{a\bar b}\) は同じ式になる。また対称性と時間反転から
+</p>
+<div class="equation" id="eq-8-Nsym">\[
+N_{ab}^c=N_{a\bar c}^{\bar b}=N_{\bar a c}^{b}
+\]</div>
+<p>のような恒等式が得られる。</p>
+
+<h3>多数のエニオンの融合と量子次元</h3>
+
+<p>
+同じ種類 \(a\) の粒子を5個、左から順に融合する木を考える。中間のラベルを \(b,c,d\)、全体を \(e\) とすると
+\[
+\dim(\text{5個の }a)=\sum_e N_{aaaaa}^e=\sum_{b,c,d,e}N_{aa}^bN_{ba}^cN_{ca}^dN_{da}^e
+=\sum_{b,c,d,e}N_{aa}^bN_{ab}^cN_{ac}^dN_{ad}^e .
+\]
+テンソル \(N_{ab}^c\) を、\(a\) を固定して添字 \(b,c\) を持つ行列 \([N_a]_b^{\,c}\) とみなすと、これは行列の積で
+\(\sum_e[(N_a)^4]_a^{\,e}\) と書ける。\(p\) 個なら \([N_a]^{p-1}\) を計算すればよい。
+量子次元 \(d_a\) は「\(a\) を \(p\) 個融合した空間の次元が \((d_a)^p\) で増える」ことで定義されていた（<a href="chapter03.html">第3章</a>）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">公式（量子次元）</span>
+<div class="equation" id="eq-8-da">\[
+d_a=\text{行列 }N_a\text{ の最大固有値}
+\]</div>
+これは常に正の実数である。\(N\) の対称性から \(d_a=d_{\bar a}\)。
+</div>
+
+<div class="proof-box">
+<span class="box-title">導出の要点</span>
+\(N_a=U\Lambda U^{-1}\) と対角化すると \([N_a]^p=U\Lambda^pU^{-1}\)。
+\(p\) が大きいとき、最大固有値 \(\lambda_1\) の \(p\) 乗が他の固有値の \(p\) 乗を圧倒するので、
+\([N_a]^p\) の成分はすべて \(\lambda_1^p\) に比例するとみなせる。「のように増大する」という主張なので、1 程度の係数や \(p\) と \(p-1\) の違いは気にしなくてよい。
+なお \(N_a\) の固有値は一般には複素数でありうるが、絶対値が他のどの固有値にも劣らない正の実固有値が必ず存在し、それを \(d_a\) の正確な定義とする。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（Fibonacci と Ising の \(N\) 行列）</span>
+基底を \((I,\tau)\) の順にとると
+\[
+N_\tau=\begin{pmatrix}0&amp;1\\1&amp;1\end{pmatrix}.
+\]
+第1行は \(\tau\times I=\tau\)、第2行は \(\tau\times\tau=I+\tau\) を表す。固有方程式 \(\lambda^2-\lambda-1=0\) の大きい方の根が
+\(d_\tau=(1+\sqrt5)/2\) で、<a class="eq-ref" href="#eq-8-fibdim"></a> と一致する。
+Ising では基底 \((I,\sigma,\psi)\) の順に
+\[
+N_\sigma=\begin{pmatrix}0&amp;1&amp;0\\1&amp;0&amp;1\\0&amp;1&amp;0\end{pmatrix},
+\]
+第2行が \(\sigma\times\sigma=I+\psi\) を表す。固有値は \(0,\pm\sqrt2\) で、\(d_\sigma=\sqrt2\)。
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（\(N_a\) は一般には対称行列でない）</span>
+Fibonacci と Ising で \(N_a\) が対称なのは、すべての粒子が自分自身の反粒子だからである。
+一般には <a class="eq-ref" href="#eq-8-Nsym"></a> より \(N_{ab}^c=N_{a\bar c}^{\bar b}\) なので、\(b=\bar b\)、\(c=\bar c\) が成り立たないときは対称とは限らない。
+</div>
+
+<h3 id="sec-8-3-1">§8.3.1 結合性</h3>
+
+<p>
+融合の結果は融合の順序に依らない：\((a\times b)\times c=a\times(b\times c)\)。
+\(a\times b\times c\) が \(e\) になる仕方の数 \(N_{abc}^e\) を、先に \(a,b\) を \(d\) に融合して数えても、先に \(b,c\) を \(f\) に融合して数えても、
+同じ Hilbert 空間を記述しているのだから同じ答えになる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（結合性の条件と \(N\) 行列の同時対角化）</span>
+<div class="equation" id="eq-8-assoc">\[
+\sum_d N_{ab}^dN_{cd}^e=\sum_f N_{cb}^fN_{af}^e .
+\]</div>
+\(N_{ab}^c=[N_a]_b^{\,c}\) を行列とみなせば、これは
+<div class="equation" id="eq-8-comm">\[
+[N_a,N_c]=0
+\]</div>
+と同値で、すべての \(N\) 行列は互いに可換である。さらに \(N_{\bar a}=N_a^{T}\)（<a class="eq-ref" href="#eq-8-Nsym"></a> より）と \([N_a,N_{\bar a}]=0\) から各 \(N_a\) は正規行列であり、
+互いに可換な正規行列の組は1つのユニタリ行列 \(U\) で同時対角化できる：
+<div class="equation" id="eq-8-diag">\[
+[U^\dagger N_aU]_{xy}=\delta_{xy}\,\lambda_x^{(a)} .
+\]</div>
+</div>
+
+<p>
+驚くべきことに、性質の良い（「モジュラーな」）エニオン理論では、この \(U\) が<a href="chapter07.html">第7章</a>で現れた<strong>モジュラー \(S\) 行列</strong>そのものになる
+（<a href="chapter17.html">第17章</a>の Verlinde 公式）。モジュラーでない理論や、エニオン理論に対応しない融合環でも
+<a class="eq-ref" href="#eq-8-diag"></a> の対角化はでき、その \(U\) は擬 \(S\) 行列 (mock \(S\)-matrix) と呼ばれることがある。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-4">融合の応用：2次元多様体上の Hilbert 空間の次元<span class="en">Application of Fusion: Dimension of Hilbert Space on 2-Manifolds</span></h2>
+
+<p>
+融合則だけから、向き付け可能な2次元曲面 \(\Sigma\) 上の基底状態縮退 \(\dim V(\Sigma)\) が計算できる
+（向き付け不可能な曲面で定義できる TQFT は一部に限られるので、ここでは扱わない）。
+出発点は粒子のない球面で、可縮でないループがないから
+\[
+\dim V(S^2)=1 .
+\]
+</p>
+
+<div class="thm-box">
+<span class="box-title">原理（球面上の粒子は全体として真空に融合する）</span>
+粒子は全量子数を保存する仕方でしか生成できない。真空から始めた球面上の粒子は、全部を融合すると \(I\) でなければならない。したがって
+<div class="equation" id="eq-8-one">\[
+\dim V(S^2\text{ に非自明なエニオン1個})=0,\qquad
+\dim V(S^2\text{ に }a\text{ と }\bar a)=1 .
+\]</div>
+2粒子が互いの反粒子でなければ次元は 0 である。ここでは粒子の位置を固定して数えている（位置の違いは位相的に同値）。
+</div>
+
+<h3>穴あき球面からトーラスへ</h3>
+
+<p>
+粒子のあった場所をくり抜いて穴（puncture）にし、そこに任意の粒子タイプを詰め直すことを考える。
+一方の穴に \(a\) を入れたら、もう一方には \(\bar a\) しか入れられない。したがって
+\[
+\dim V(S^2\text{ にラベルなしの穴2つ})=\text{粒子タイプの数} .
+\]
+穴が2つあいた球面は円筒と同相で、2つの穴の縁を縫い合わせる（<strong>手術 (surgery)</strong>）とトーラスになる。よって
+\[
+\dim V(T^2)=\text{粒子タイプの数}
+\]
+という<a href="chapter07.html">第7章</a>の結果が再現される。
+縫い合わせられるのは、2つの穴が互いに反対の粒子タイプを持つときである。これは TQFT の貼り合わせ公理そのもので、
+時間方向 \(S^1_{\text{time}}\) も込めると、貼り合わせているのは \(S^1_{\text{puncture}}\times S^1_{\text{time}}\) という2次元面同士であり、
+その上の波動関数の内積が2つの穴の量子数を互いに共役にする。
+</p>
+
+<h3>パンツ分解</h3>
+
+<p>
+3粒子 \(a,b,c\) を載せた球面では、3つが真空に融合する仕方が \(N_{abc}=N_{ab}^{\bar c}\) 通りある。
+3つ穴の球面は形から<strong>パンツ (pair of pants)</strong> と呼ばれる。
+\(S^2\) と \(T^2\) 以外の向き付け可能な曲面はすべて、パンツの穴同士を縫い合わせて作れる（<strong>パンツ分解</strong>）。
+縮退度を求めるには、縫い目に付けるラベルの可能な割り当てを、パンツごとの因子 \(N_{abc}\) を掛けながら数えればよい。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（種数の高い曲面の縮退度）</span>
+<ul>
+<li>種数2の曲面（2つ穴トーラス）：2枚のパンツを3か所で縫い合わせる。
+\[
+\dim V(\text{種数 2})=\sum_{a,b,c}N_{abc}\,N_{\bar a\bar b\bar c} .
+\]</li>
+<li>エニオン \(a\) を1個載せたトーラス：穴のラベルが \(b,\bar b,a\) のパンツで \(b\) と \(\bar b\) を縫う。
+<div class="equation" id="eq-8-La">\[
+\dim V(T^2\text{ に }a\text{ が1個})=\sum_b N_{b\bar ba}\equiv L_a .
+\]</div></li>
+<li>種数3の曲面：穴が1つあいたトーラス3個を、中央のパンツ1枚でつなぐ。
+<div class="equation" id="eq-8-g3">\[
+\dim V(\text{種数 3})=\sum_{a,b,c}L_aL_bL_c\,N_{\bar a\bar b\bar c} .
+\]</div></li>
+</ul>
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（トーラスなら粒子1個でも許される理由）</span>
+球面では粒子1個の状態は存在しないが、種数が1以上で非可換な理論なら可能である。
+たとえば \(a\times\bar a=I+c\) のとき、対 \(a,\bar a\) を生成し、片方を非自明なサイクルに沿って一周させてから相手と融合させると、
+一周する間に量子数が変わりうるので、真空に戻らず \(c\) が1個残ることがある。球面ではこの対は必ず真空に対消滅する。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（Fibonacci エニオン）</span>
+3粒子が真空に融合できるのは
+\[
+N_{III}=1,\qquad N_{\tau\tau I}=N_{\tau I\tau}=N_{I\tau\tau}=1,\qquad N_{\tau\tau\tau}=1
+\]
+の5通りで、他の \(N_{abc}\) は 0。上下のパンツでラベルを合わせるので
+\[
+\dim V(\text{種数 2})=5 .
+\]
+また \(L_I=N_{III}+N_{\tau\tau I}=2\)、\(L_\tau=N_{\tau\tau\tau}=1\)（トーラス上に \(\tau\) が1個の状態はちょうど1つ）。これを <a class="eq-ref" href="#eq-8-g3"></a> に入れると
+\(8+3\cdot2+1=15\)、すなわち \(\dim V(\text{種数 3})=15\) を得る。
+</div>
+
+<p>
+原書の演習では、種数 \(g\) の一般式（Verlinde による \(\Tr[M^{g-1}]\) の形）と、\(g\) が大きいとき縮退度が \(\calD^{2g}\)（\(\calD^2=\sum_ad_a^2\)）で増えること、
+および \(d_ad_b=\sum_cN_{ab}^cd_c\) を扱う。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-5">積理論<span class="en">Product Theories</span></h2>
+
+<p>
+2つのエニオン理論 \(T\)（粒子 \(A,B,C,\dots\)、真空 \(I\)）と \(t\)（粒子 \(a,b,c,\dots\)、真空 \(i\)）から、<strong>積理論</strong> \(T\times t\) を作れる。
+Hilbert 空間は両者の Hilbert 空間のテンソル積であり、積理論の粒子は各理論から1つずつ選んだ組
+\[
+\alpha=(Y,x),\qquad Y\in T,\ x\in t
+\]
+である（\(Y\otimes x\) と書いてもよい）。2つの理論を同じ場所に同時に置いたものと考えればよく、
+\(T\) の粒子だけ（\(t\) 側は \(i\)）、\(t\) の粒子だけ（\(T\) 側は \(I\)）、両方の組み合わせ、のすべてが存在する。
+2枚の平面を重ねる描像から、理論を<strong>積み重ねる (stacking)</strong> ともいう。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（積理論の融合多重度）</span>
+\[
+N_{(A,a),(B,b)}^{(C,c)}=N_{A,B}^{C}\,N_{a,b}^{c} .
+\]
+各理論での融合が独立だからである。テンソル積で次元が掛け算になることの表れでもある。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（Ising × Fibonacci）</span>
+Ising の真空を \(i\) と書くと、粒子は \((i,I),(i,\tau),(\sigma,I),(\sigma,\tau),(\psi,I),(\psi,\tau)\) の6種である。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-8-6">付録：融合空間・分裂空間のテンソルによる記述<span class="en">Appendix: Tensor Description of Fusion and Splitting Spaces</span></h2>
+
+<p>
+これまで描いてきた図に、もう少し正確な数学的意味を与える（物理的な理解で足りる読者は飛ばしてもよい、と原書は述べている）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（融合空間と分裂空間）</span>
+各 \(N_{ab}^c\) に対して、<strong>融合空間 (fusion space)</strong> \(V_{ab}^c\) と<strong>分裂空間 (splitting space)</strong> \(V_c^{ab}\) を定める。次元は
+\[
+\dim V_{ab}^c=\dim V_c^{ab}=N_{ab}^c=N_c^{ab} .
+\]
+それぞれに添字 \(\mu\) で番号付けられた正規直交基底をとる。
+<ul>
+<li>下の \(c\) が上の \(a,b\) に分かれる<strong>分裂図</strong>（頂点に \(\mu\)）はケット \(\ket{a,b;c,\mu}\in V_c^{ab}\)。</li>
+<li>その Hermite 共役である<strong>融合図</strong>（下の \(a,b\) が上の \(c\) に合流）はブラ \(\bra{a,b;c,\mu}\in V_{ab}^c\)。</li>
+</ul>
+\(N_{ab}^c=1\) なら状態は1つで \(\mu\) は書かない。\(N_{ab}^c=0\) の頂点は許されず、そのような頂点を含む図の値は 0 とする。
+</div>
+
+<p>
+1個のエニオン \(e\) が3個 \(a,b,c\) に分かれる分裂空間 \(V_e^{abc}\)（共役は \(V_{abc}^e\)）は、2通りに記述できる（ここで \(e\) は真空とは限らない）。
+先に \(a,b\) をまとめる木では、基底は
+</p>
+<div class="equation" id="eq-8-left">\[
+\ket{(a,b);d,\mu}\otimes\ket{d,c;e,\nu}\in V_d^{ab}\otimes V_e^{dc}\subseteq V_e^{abc},
+\qquad V_e^{abc}\cong\bigoplus_d V_d^{ab}\otimes V_e^{dc},
+\]</div>
+<p>次元は \(\sum_dN_d^{ab}N_e^{dc}=N_e^{abc}\)。先に \(b,c\) をまとめる木では</p>
+<div class="equation" id="eq-8-right">\[
+\ket{a,f;e,\lambda}\otimes\ket{(b,c);f,\eta}\in V_e^{af}\otimes V_f^{bc}\subseteq V_e^{abc},
+\qquad V_e^{abc}\cong\bigoplus_f V_e^{af}\otimes V_f^{bc},
+\]</div>
+<p>次元は \(\sum_fN_e^{af}N_f^{bc}=N_e^{abc}\)。まとめると</p>
+<div class="equation" id="eq-8-iso">\[
+V_e^{abc}\cong\bigoplus_d V_d^{ab}\otimes V_e^{dc}\cong\bigoplus_f V_e^{af}\otimes V_f^{bc} .
+\]</div>
+
+<p>
+2つは同じ空間の同型な記述であり、次元を等置すると結合性の条件 <a class="eq-ref" href="#eq-8-assoc"></a> が再現される。
+この同型を具体的に与えるのが<a href="chapter09.html">第9章</a>の \(F\) 行列である。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（括弧の役割）</span>
+\((a,b)\) や \((b,c)\) の括弧は、どの分裂が木の葉に最も近いかを示す。括弧を省くと、
+たとえば Fibonacci で \(\ket{\tau\tau;\tau}\otimes\ket{\tau\tau;\tau}\) が <a class="eq-ref" href="#eq-8-left"></a> と <a class="eq-ref" href="#eq-8-right"></a> のどちらの状態か区別できなくなる。
+両者は同型ではあるが別の空間に住むケットである。
+</div>
+
+<p>
+より複雑な空間も同様に書ける。たとえば
+\[
+V_e^{aaaaa}\cong\bigoplus_{b,c,d}V_b^{aa}\otimes V_c^{ba}\otimes V_d^{ca}\otimes V_e^{da}
+\]
+で、直和の各項（\(b,c,d\) を固定したもの）が「多数のエニオンの融合」で使った左から順に融合する木1本に当たる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第8章のまとめ</span>
+<ul>
+<li>エニオン理論の基本データは、有限個の粒子タイプ、ただ1つの真空 \(I\)、各粒子にただ1つの反粒子 \(\bar a\)、そして融合則 \(a\times b=\sum_cN_{ab}^c\,c\)。</li>
+<li>右辺に複数の粒子が現れる融合則を持つ理論が非可換。多粒子の Hilbert 空間の基底は融合木のラベル付けで、情報は粒子の内部自由度ではなく融合チャネルに宿る。</li>
+<li>局所性：融合チャネルはその粒子の組に局在し、組の内部の組みひもでは変わらない。チャネルを知るには組全体を囲む測定が要る。</li>
+<li>Fibonacci：\(\tau\times\tau=I+\tau\)、次元は Fibonacci 数、\(d_\tau=(1+\sqrt5)/2\)。Ising：\(\sigma\times\sigma=I+\psi\)、\(\psi\times\sigma=\sigma\)、\(\psi\times\psi=I\)、次元は \(2^{\lfloor N/2\rfloor}\)、\(d_\sigma=\sqrt2\)。</li>
+<li>\(N_{ab}^c=N_{ba}^c=N_{\bar a\bar b}^{\bar c}\)、\(N_{aI}^c=\delta_{ac}\)、\(N_{ab}^I=\delta_{a\bar b}\)。\(N_{abc}=N_{ab}^{\bar c}\) は完全対称。</li>
+<li>量子次元 \(d_a\) は行列 \(N_a\) の最大固有値。結合性から \([N_a,N_c]=0\) で、全 \(N_a\) は同時対角化でき、モジュラーな理論ではその行列が \(S\) 行列になる。</li>
+<li>曲面の縮退度はパンツ分解で数える：\(\dim V(S^2)=1\)、\(\dim V(T^2)=\)粒子タイプ数、種数2は \(\sum N_{abc}N_{\bar a\bar b\bar c}\)。Fibonacci では種数 2, 3 で 5, 15。</li>
+<li>積理論の粒子は組 \((Y,x)\)、融合多重度は積。融合木の異なる形は同じ空間 \(V_e^{abc}\) の異なる直和分解で、その間の同型が次章の \(F\) 行列。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

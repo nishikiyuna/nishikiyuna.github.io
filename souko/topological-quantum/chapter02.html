@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Kauffman ブラケット不変量の定義と計算、世界線の結び目と量子振幅、ひねりとスピン統計、結び目による量子計算、分数量子 Hall 効果">
+  <title>第2章 Kauffman ブラケット不変量と物理との関係 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter02" data-chapter="2">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第2章に対応</span>
+  第2章 Kauffman ブラケット不変量と物理との関係
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本書全体の「予告編」に当たる章である。
+まず結び目不変量とは何かを、<strong>Kauffman ブラケット不変量</strong>という具体例で学ぶ。
+規則は二つだけ（輪を数 \(d\) に置き換える・交差を二通りにほどく）で、手で計算できる。
+次に、(2+1) 次元のトポロジカルな量子系では、粒子の世界線が作る結び目の不変量が
+そのまま<strong>時空過程の量子振幅</strong>になることを述べる。
+ここから、ひものひねりと粒子のスピンの関係（スピン統計定理）、
+局所的には区別できない複数の状態（ブラとケットの図式）、
+結び目を編むことによる量子計算とその誤り耐性、という本書の主要な話題が一通り顔を出す。
+最後に実験系の代表である分数量子 Hall 効果に触れ、付録で結び目理論の基本用語
+（Reidemeister 移動・ねじれ数・絡み数）を整理する。
+ここで直観として導入したことは、<a href="chapter03.html">第3章</a>以降で一つずつ精密化される。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-1">結び目不変量という考え方<span class="en">The Idea of a Knot Invariant</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（トポロジカルな同値と結び目不変量）</span>
+二つの結び目が<strong>トポロジカルに同値 (topologically equivalent)</strong> であるとは、
+ひもを切らずに滑らかに変形して一方を他方に移せることをいう。
+<strong>結び目不変量 (knot invariant)</strong> とは、結び目（の絵）に対して決まった規則で出力（数や多項式）を対応させる写像で、
+同値な結び目には必ず同じ出力を与えるものをいう。
+</div>
+
+<p>
+使い方は単純である。二つの結び目を規則に入れて<strong>違う出力</strong>が出たら、
+その二つは切らずに移り合えないと直ちに結論できる。
+複雑な結び目では、同値かどうかを目で見て判定することは極めて難しいので、この種の道具が役に立つ。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（用語と逆命題）</span>
+<ul>
+<li>厳密には<strong>結び目 (knot)</strong> は1本のひも（円周 \(S^1\) の \(\R^3\) などへの自己交差のない埋め込み）、
+<strong>絡み目 (link)</strong> は複数本のひもからなるものを指す。物理ではまとめて「結び目」と呼ぶことが多く、本書もそうする。どちらも端の余りは許さない。</li>
+<li>逆は成り立たない。出力が同じでも同値とは限らない。
+Kauffman 不変量が自明な結び目と同じ値 \(d\) になる非自明な結び目があるかどうかは未解決問題である。</li>
+<li>ここでの「同値」は正確には正則イソトピー（ひもを幅のあるリボンとみなした同値）を意味する。§2.2.1 と §2.6.1 で説明する。</li>
+</ul>
+</div>
+
+<h3>Kauffman ブラケット不変量の規則</h3>
+
+<p>
+例として <strong>Kauffman ブラケット不変量</strong>を使う。
+これは本質的には Jones が発見した不変量で、Kauffman がそれを非常に簡単な規則で説明し直した。
+スカラー変数 \(A\) を一つ用意する（当面はただの変数。後で値を入れる）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Kauffman ブラケットの二つの規則）</span>
+<ol>
+<li><strong>輪の規則</strong>：何も貫いていない単純な輪は、図から取り除いて数
+<div class="equation" id="eq-2-d">\[ d = -A^2 - A^{-2} \]</div>
+に置き換えてよい。</li>
+<li><strong>スケイン関係式 (skein rule)</strong>：交差を一つ選び、それを交差のない二通りのつなぎ替えの和に置き換える。
+二通りには重み \(A\) と \(A^{-1}\) が付く（図 2.1）。</li>
+</ol>
+何も描かれていない図の値は 1 とする。したがって輪1個は \(d\)、絡まっていない輪 \(n\) 個は \(d^n\) である。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
+  <!-- crossing: "/" over -->
+  <line x1="30" y1="95" x2="90" y2="35" class="line" stroke-width="1.5"/>
+  <line x1="30" y1="35" x2="52" y2="57" class="line" stroke-width="1.5"/>
+  <line x1="68" y1="73" x2="90" y2="95" class="line" stroke-width="1.5"/>
+  <text x="108" y="70" class="label">=  A</text>
+  <!-- vertical smoothing )( -->
+  <path d="M 160 35 Q 190 65 160 95" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 220 35 Q 190 65 220 95" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="246" y="70" class="label">+  A⁻¹</text>
+  <!-- horizontal smoothing -->
+  <path d="M 320 35 Q 350 65 380 35" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 320 95 Q 350 65 380 95" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="30" y="122" class="label-muted">右上がりの線が手前（上）を通る交差</text>
+</svg>
+<figcaption>図 2.1：Kauffman ブラケットのスケイン関係式。右上がりのひもが手前を通る交差は、
+左右に分かれるつなぎ替え（重み \(A\)）と上下に分かれるつなぎ替え（重み \(A^{-1}\)）の和になる。
+図全体を 90 度回すと、左上がりのひもが手前の交差に対する同じ規則（\(A\) と \(A^{-1}\) の役割が入れ替わった形）が得られる。</figcaption>
+</figure>
+
+<p>
+計算の手順は次のとおりである。スケイン関係式を繰り返し使って交差をすべて消す。
+すると係数付きの図がたくさん生じるが、どの図も単純な輪だけからなるので、輪1個につき \(d\) を掛ければ値が決まる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（規約の違い）</span>
+<ul>
+<li>大多数の文献はここと同じ規約だが、\(A\) と \(A^{-1}\) を入れ替えた定義を使う文献も少なくない。</li>
+<li>最終結果を \(d\) で割り、自明な結び目の値を 1（輪 \(n\) 個で \(d^{n-1}\)）とする規格化もよく使われる。むしろそちらが通常の「ブラケット」で、本書の規格化は Kauffman が topological bracket と呼ぶものである。</li>
+<li>「ブラケット」の名は、結び目の絵を括弧 \(\langle\ \cdot\ \rangle\) で囲んで値を表す記法に由来する。本書は括弧を省き、図そのものが数値を表すとみなす。</li>
+<li>\(d\) は後に「次元 (dimension)」の意味を持つことが分かる（<a href="chapter03.html">第3章</a>の量子次元）。</li>
+</ul>
+</div>
+
+<div class="example-box">
+<span class="box-title">例（一回ひねった輪）</span>
+輪を8の字状に折り返して交差を2個持たせた図を考える。これは自明な結び目を変形しただけなので、値は \(d\) になるはずである。
+2個の交差をそれぞれほどくと \(2^2 = 4\) 個の図が生じ、輪の数はそれぞれ 2, 1, 3, 2 個になる。したがって
+\[
+A\cdot A\, d^2 + A\cdot A^{-1}\, d + A^{-1}\cdot A\, d^3 + A^{-1}\cdot A^{-1}\, d^2
+= (A^2 + A^{-2})\,d^2 + d + d^3 = -d^3 + d + d^3 = d .
+\]
+途中で \(A^2 + A^{-2} = -d\) を使った。期待どおり \(d\) が得られ、輪を何度折り返しても結果は変わらない。
+この規則が実際に不変量を定めること（Reidemeister 移動 II・III で値が変わらないこと）は原書の演習で確かめる。
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（計算量の爆発）</span>
+交差が \(N\) 個ある結び目では、この手順は \(2^N\) 個の図を生む。
+交差 100 個の結び目は簡単に描けるが、\(2^{100}\) 個の図の評価は世界最大の計算機でも不可能である。
+つまり複雑な結び目に対しては、Kauffman 不変量は古典計算機では事実上計算できない。
+この「欠点」が §2.4 で量子計算の話に転じる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-2">物理との関係<span class="en">Relation to Physics</span></h2>
+
+<p>
+結び目不変量と量子物理の間には次の関係がある。
+ある種の「トポロジカルな量子系」では、時空過程の振幅が Kauffman ブラケットのような結び目不変量で直接計算できる。
+本書で扱うのは主に空間2次元 + 時間1次元、すなわち <strong>(2+1) 次元</strong>の系である
+（(3+1) 次元以上にもトポロジカルな系はあるが、(2+1) 次元のほうがよく分かっている）。
+</p>
+
+<p>
+次のような時空過程を考える。2次元の系（円板）で、ある時刻に真空から粒子・反粒子の対が生成され、
+続いてもう一対が生成される。一方の粒子が他方のまわりを一周し、その後それぞれの対が再び出会って対消滅しようとする。
+時間を縦軸に取ると、粒子の<strong>世界線 (world line)</strong> は時空の中で二つの絡んだ輪を描く
+（上向きの矢印が粒子、下向きが反粒子）。
+最後に全部が真空に戻ることもあれば、ある確率振幅で対が束縛状態を作って真空に戻らないこともある。
+</p>
+
+<div class="thm-box">
+<span class="box-title">主張（振幅は結び目不変量である）</span>
+トポロジカルな理論では、このような過程の量子振幅は世界線の<strong>トポロジーだけ</strong>で決まり、
+幾何学的な詳細（Hamiltonian の細部、粒子の速さ、どこまで近づいたか）によらない。
+したがって「世界線の作る結び目 \(\mapsto\) 振幅」という対応は結び目不変量である。
+</div>
+
+<p>
+振幅といえば系の詳細に依存するのが普通なので、これは驚くべき性質である。
+量子系と結び目不変量のこの結びつきは Witten (1989) によって明らかにされた。
+こうした理論は最初、量子重力の研究者が抽象的な可能性として考えたものだが（<a href="chapter06.html">第6章</a>）、
+現在では実際にこのように振る舞う凝縮系がいくつも知られている。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（非自明な組みひも統計を持つと考えられる実験系）</span>
+<ul>
+<li>2次元電子系（あるいはボソン系）：分数量子 Hall 効果、分数 Chern 絶縁体</li>
+<li>量子スピン液体</li>
+<li>ある種の超伝導体・超流動体</li>
+<li>ある種の量子誤り訂正符号</li>
+</ul>
+詳しくは<a href="chapter37.html">第37章</a>。
+</div>
+
+<p>
+すべてのトポロジカルな理論が Kauffman ブラケットに対応するわけではないが、対応するものは多い。
+HOMFLY 不変量のような別の結び目不変量が現れる系もある。次の表は代表的な「類」である。
+各類は Chern–Simons 理論 \(SU(N)_k\)（<a href="chapter05.html">第5章</a>）の名で呼ばれ、
+同じ類の中には組みひもで生じる位相がわずかに異なる複数の理論が含まれる。
+</p>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>類</th><th>結び目不変量</th><th>実現の候補</th></tr>
+</thead>
+<tbody>
+<tr><td>\(SU(2)_2\)（Ising 類）</td><td>Kauffman、\(A = \ii^{\alpha} \ee^{\pm \ii\pi/8}\)</td>
+<td>\(\nu = 5/2\) 分数量子 Hall 状態、2次元 \(p\) 波超伝導体、\({}^3\mathrm{He}\)-A 超流動薄膜、スピン軌道結合・超伝導・磁性を組み合わせた人工構造（Majorana 物質）</td></tr>
+<tr><td>\(SU(2)_3\)</td><td>Kauffman、\(A = \ii^{\alpha} \ee^{\pm \ii\pi/10}\)</td>
+<td>\(\nu = 12/5\) 分数量子 Hall 状態（知られている唯一の候補）</td></tr>
+<tr><td>\(SU(2)_4\)</td><td>Kauffman、\(A = \ii^{\alpha} \ee^{\pm \ii\pi/12}\)</td>
+<td>\(\nu = 2 + 2/3\) 分数量子 Hall 状態の可能性</td></tr>
+<tr><td>\(SU(2)_1\)（セミオン）</td><td>Kauffman、\(A = \ee^{\pm \ii\pi/6}\)</td>
+<td>回転ボソンの分数量子 Hall 系、カイラル量子スピン液体</td></tr>
+<tr><td>\(SU(3)_2\)</td><td>HOMFLY</td>
+<td>非偏極 \(\nu = 4/7\) 分数量子 Hall 状態の可能性</td></tr>
+</tbody>
+</table></div>
+<p>
+ここで \(\alpha\) は整数である。\(SU(2)_k\) の行では \(A = \ii^\alpha \ee^{\pm\ii\pi/(2(k+2))}\) という形になっており、
+<a class="eq-ref" href="#eq-2-d"></a> から \(|d| = 2\cos\!\big(\pi/(k+2)\big)\) である
+（\(k=1\) で 1、\(k=2\) で \(\sqrt2\)、\(k=3\) で黄金比 \((1+\sqrt5)/2\)、\(k=4\) で \(\sqrt3\)）。
+Kauffman ブラケットとトポロジカルな理論の対応の詳細は<a href="chapter22.html">第22章</a>で扱う。
+</p>
+
+<h3 id="sec-2-2-1">§2.2.1 ひねりとスピン統計</h3>
+
+<p>
+Kauffman ブラケットをもう少し注意深く調べる。ひもの途中に小さなカール（ひもが自分自身と1回交差して小さな輪を作る部分）があるとしよう。
+ひもの他の部分がどうつながっているかは気にせず、カールの交差だけをスケイン関係式でほどく。
+一方のつなぎ替えではカールが消えてまっすぐなひもになり、他方ではまっすぐなひもと独立した輪1個になる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（カールの値）</span>
+<div class="equation" id="eq-2-curl">\[
+\big(\text{カール付きのひも}\big) = \big(A + A^{-1} d\big)\,\big(\text{まっすぐなひも}\big)
+= \big(A - A - A^{-3}\big)\big(\text{まっすぐなひも}\big) = -A^{-3}\,\big(\text{まっすぐなひも}\big) .
+\]</div>
+カールを取り除くと因子 \(-A^{-3}\) が生じる（交差の上下が逆のカールなら \(-A^{3}\)）。
+</div>
+
+<p>
+カールは切らずにほどけるのだから、これは「同値な結び目は同じ値を持つ」という主張に反するように見える。
+解決は、カール付きのひもとまっすぐなひもが実は<strong>同値でない</strong>と認めることである。
+ひもを無限に細い線ではなく、庭のホースや<strong>リボン</strong>のように幅を持つものと考える。
+カールしたホースを引っ張ってまっすぐにすると、ホースには1回転の<strong>ひねり（自己ツイスト）</strong>が残る。
+つまり
+\[
+\text{カール付きのひも} \;=\; \text{1回ひねったひも} \;=\; -A^{-3}\times\text{ひねりのないひも}
+\]
+である。数学の言葉では、カールの有無は全同位（アンビエント・イソトピー）では同じだが正則イソトピーでは異なる（§2.6.1）。
+結び目は \(S^1\) の埋め込みではなくリボンの埋め込み、すなわち各点で結び目に直交するベクトル（リボンの向き）を指定したものと考えるべきなのである。
+</p>
+
+<div class="remark-box">
+<span class="box-title">直観（ひねり = 粒子の自転）</span>
+時間を縦に取ると、ひねりのあるひもは「その場に留まったまま軸のまわりに \(2\pi\) 回転する粒子」の世界線である。
+量子論では、スピンを持つ粒子は \(2\pi\) 回転で位相を得る。
+\(-A^{-3}\) はまさにその位相であり、矛盾ではなく量子論として当然期待される結果である。
+</div>
+
+<div class="thm-box">
+<span class="box-title">結果（スピン統計定理の図式的証明）</span>
+カールの図を時空図として読むと、交差は<strong>二つの同種粒子の交換</strong>を表す
+（対生成された粒子が隣の粒子と入れ替わる）。これを引っ張ってまっすぐにした図は、
+<strong>一つの粒子が自分の軸のまわりに1回転する</strong>過程である。
+二つの図は同じ過程の変形なので、得られる位相は等しい：
+\[
+\text{交換の位相（統計）} = \text{\(2\pi\) 回転の位相（スピン）} .
+\]
+</div>
+
+<p>
+(2+1) 次元ではこの位相は \(\pm1\) に限らず任意の値を取りうるが（<a href="chapter03.html">第3章</a>）、
+統計の位相とスピンの位相は必ず一致する。
+スピン統計定理には Lorentz 不変性が必要だと思われがちだが、Lorentz 不変性は十分条件であって必要条件ではない。
+また非可換統計の場合には交換の位相が複数ありうるが、図の同値性そのものは変わらない。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（Jones 多項式）</span>
+カール付きのひもとまっすぐなひもを同じとみなす不変量も簡単に作れる。
+Kauffman ブラケットを計算し、自己ツイスト1個につき因子 \(-A^{-3}\) を取り除けばよい。
+自己ツイストの数は向き付けた結び目のねじれ数 \(w\)（§2.6.2）で数えられ、
+\[
+\text{Jones}(\text{結び目}) = (-A^{-3})^{\,w(\text{結び目})}\ \text{Kauffman}(\text{結び目})
+\]
+が有名な <strong>Jones 多項式</strong>である。これは三種類の Reidemeister 移動すべてで不変、つまり全同位の不変量になる
+（伝統的には \(t = A^{-4}\) の関数として書き、さらに \(d\) で割って自明な結び目の値を 1 にすることが多い）。
+</div>
+
+<h3 id="sec-2-2-2">§2.2.2 黒板枠</h3>
+
+<p>
+ひもに自己ツイストがあるかどうかを指定する必要があるので、<strong>黒板枠 (blackboard framing)</strong> という約束を使う。
+描かれた線は実際にはリボンを表し、そのリボンは常に黒板（紙面）の平面内に平らに置かれている、と約束するのである。
+ひもに自己ツイストを持たせたいときは、ひねったリボンを描く代わりにカールとして描く。
+以後、本書の図はすべてこの約束で読む。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-3">ブラとケット<span class="en">Bras and Kets</span></h2>
+
+<p>
+多くのトポロジカルな理論（<strong>非可換 (nonabelian)</strong> な理論）には、非常に変わった性質がある。
+基底状態（真空）から粒子・正孔の対を二組作り、粒子について局所的に測れる量（位置、スピンなど）をすべて教えられたとする。
+絶縁体・超伝導体・電荷密度波のような普通のギャップのある系なら、それで波動関数は完全に決まる。
+ところがトポロジカルな系では決まらない。粒子は自分の時空での履歴を「覚えている」のである
+（その情報は粒子から離れた領域、つまり真空の性質に書き込まれている。<a href="chapter04.html">第4章</a>以降で見る）。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（局所的に同じで履歴の異なる二状態）</span>
+同じ時刻面上の同じ4点に粒子がある二つの状態を考える（図 2.2）。
+\(\ket{0}\) は隣り合う二点ずつが対生成された状態、\(\ket{1}\) は外側の二点と内側の二点がそれぞれ対生成された状態である。
+時間は下から上に流れ、世界線は下に垂れた弧（カップ）になる。
+ケットの時間を反転する（上下を逆にする）とブラ \(\bra{0}\), \(\bra{1}\) が得られる。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- |0> -->
+  <text x="14" y="52" class="label">|0⟩ =</text>
+  <line x1="60" y1="40" x2="200" y2="40" class="line" stroke-width="1" stroke-dasharray="4 3"/>
+  <path d="M 75 40 C 75 95 115 95 115 40" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 145 40 C 145 95 185 95 185 40" class="line accent" fill="none" stroke-width="1.5"/>
+  <circle cx="75" cy="40" r="3" class="accent-fill"/>
+  <circle cx="115" cy="40" r="3" class="accent-fill"/>
+  <circle cx="145" cy="40" r="3" class="accent-fill"/>
+  <circle cx="185" cy="40" r="3" class="accent-fill"/>
+  <!-- |1> -->
+  <text x="234" y="52" class="label">|1⟩ =</text>
+  <line x1="280" y1="40" x2="420" y2="40" class="line" stroke-width="1" stroke-dasharray="4 3"/>
+  <path d="M 295 40 C 295 125 405 125 405 40" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 330 40 C 330 85 370 85 370 40" class="line accent" fill="none" stroke-width="1.5"/>
+  <circle cx="295" cy="40" r="3" class="accent-fill"/>
+  <circle cx="330" cy="40" r="3" class="accent-fill"/>
+  <circle cx="370" cy="40" r="3" class="accent-fill"/>
+  <circle cx="405" cy="40" r="3" class="accent-fill"/>
+  <!-- time arrow -->
+  <line x1="442" y1="110" x2="442" y2="40" class="line" stroke-width="1.2"/>
+  <path d="M 442 32 L 437 44 L 447 44 Z" class="accent-fill"/>
+  <text x="426" y="128" class="label-muted">時間</text>
+  <text x="60" y="142" class="label-muted">点線：ある時刻の空間面。弧：過去に対生成された粒子の世界線</text>
+</svg>
+<figcaption>図 2.2：粒子の位置は同じだが対生成の組み合わせが異なる二つの状態。</figcaption>
+</figure>
+
+<p>
+この二状態が線形独立であることは内積で分かる。内積はケットの図の上にブラの図を貼り合わせ、
+できた閉じた図の Kauffman ブラケットを求めればよい。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（内積と線形独立性）</span>
+\[
+\braket{0}{0} = \braket{1}{1} = d^2 ,\qquad \braket{0}{1} = d .
+\]
+\(\braket00\) は並んだ輪2個、\(\braket11\) は入れ子の輪2個、\(\braket01\) は弧が互い違いにつながって輪1個になるからである。
+\(|d| \neq 1\) なら \(|\braket01|^2 \neq \braket00\braket11\) なので、\(\ket0\) と \(\ket1\) は線形独立である。
+</div>
+
+<p>
+このままではケットは規格化されていない。ブラとケットのそれぞれに \(1/d\) を掛ければ規格化された状態になる。
+物理的には、\(\ket0\) や \(\ket1\) は真空から対を生成して得られる状態であり、
+図を貼り合わせて得られる内積はそれらの状態の内積そのものである。
+たとえば \(\braket01\) は、真空から出発して \(\ket1\) を作る操作で時間発展し、
+続いて \(\ket0\) を作る操作の逆で時間発展して真空に戻る振幅と読める。
+</p>
+
+<p>
+さらに、ブラとケットの間に<strong>組みひも (braid)</strong>——粒子同士を入れ替える世界線の絡み——を挟むことができる。
+組みひもは \(\ket0, \ket1\) の張る2次元ベクトル空間にユニタリ変換として作用し、
+その行列要素 \(\bra{0}\,\text{Braid}\,\ket{0}\) などは、貼り合わせてできる結び目の Kauffman ブラケットを計算すれば求まる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-4">結び目による量子計算<span class="en">Quantum Computation with Knots</span></h2>
+
+<p>
+状態を \(\ket0\), \(\ket1\) と書いたのは量子ビットを意識してのことである。
+トポロジカルな量子系に関心を持つ大きな理由の一つが量子計算にある。
+</p>
+
+<h3>トポロジカルな系は古典計算機を超える</h3>
+
+<p>
+交差 100 個の結び目の Kauffman 不変量は、古典計算機では \(2^{100}\) 個の図を評価しなければならず計算できない。
+ところが、実験室に Kauffman 型のトポロジカルな系があれば、それを<strong>物理的に測定</strong>できる。
+</p>
+<ol>
+<li>系を真空状態に用意する。</li>
+<li>真空から粒子・正孔対を引き出す。</li>
+<li>粒子を動かして、世界線が目的の結び目を描くようにする。</li>
+<li>粒子を再び出会わせて対消滅させる。対消滅するものもあれば、束縛状態を作って真空に戻らないものもある。</li>
+</ol>
+
+<div class="thm-box">
+<span class="box-title">結果（対消滅確率と Kauffman 不変量）</span>
+すべての対が消滅して真空に戻る確率は、規格化を除いて、
+その結び目の Kauffman ブラケット不変量の絶対値の2乗に等しい（振幅が Kauffman 不変量だから）。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（規格化）</span>
+対を一組引き出してすぐ戻せば確率 1 で消滅するが、その時空図は輪1個で Kauffman 不変量は \(d\) である。
+したがって振幅にするには \(d\) の冪で割る規格化が必要になる。
+原書は「真空から引き出して真空に戻す対ごとに \(1/\sqrt d\) の因子」と注記している。
+§2.3 で2対のケットとブラをそれぞれ \(1/d\) で規格化したのと同じ趣旨で、
+対生成1回・対消滅1回ごとに \(1/\sqrt d\) を付けると輪1個の値がちょうど 1 になる。
+</div>
+
+<p>
+大きな結び目の Kauffman 不変量は、ほとんどすべての \(A\) の値に対して、近似することすら古典計算機には事実上不可能である。
+それがトポロジカルな系を持っていれば容易にできるのだから、この系は古典計算機を超える計算能力を持つ。
+「複雑な量子系の計算は古典計算機には無理だが、その系自体は自分の運動方程式を解いている」という
+Manin (1980) や Feynman の発想と同じ構図である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（万能性）</span>
+少数の特別な値を除く固定した \(A\) に対して、Kauffman ブラケットを評価できる能力は量子計算機の計算能力と等価である。
+したがってこの系——<strong>トポロジカル量子計算機 (topological quantum computer)</strong>——で
+Shor の素因数分解のような任意の量子アルゴリズムを実行できる。
+トポロジカルな系を量子計算に使うという着想は Freedman と Kitaev による。
+</div>
+
+<h3>なぜこの方式がよいのか：誤りへの耐性</h3>
+
+<p>
+通常の量子計算機では、スピンのような二準位系を量子ビットとする。
+計算中に光子やフォノンなどの雑音が量子ビットと相互作用すると誤りやデコヒーレンスが生じ、計算が壊れる。
+誤りから守る方法はあるが（<a href="chapter26.html">第26章</a>・<a href="chapter27.html">第27章</a>）、非常に難しい。
+</p>
+
+<p>
+トポロジカル量子計算機では事情が違う。雑音は粒子を揺さぶり、世界線を少しくねらせるだろう。
+しかし世界線が作る結び目の<strong>トポロジーが変わらない限り、誤りは生じない</strong>。
+計算結果は結び目のトポロジーだけで決まるからである。
+この意味でトポロジカル量子計算機は原理的に誤りから保護されている
+（もちろん、十分強い雑音は結び目のトポロジーを変えて誤りを起こしうる）。
+量子計算の詳細は<a href="chapter11.html">第11章</a>で扱う。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-5">分数量子 Hall 効果についての手短な注釈<span class="en">Some Quick Comments about Fractional Quantum Hall Effect</span></h2>
+
+<p>
+<strong>分数量子 Hall 効果 (fractional quantum Hall effect, FQHE)</strong> は、
+強磁場・低温（典型的には 1 K 以下）の2次元電子系で起こる。
+多数の FQHE 状態があり、それぞれ<strong>占有率 (filling fraction)</strong> \(\nu = p/q\)（\(p, q\) は小さな整数）で区別される。
+\(\nu\) は印加磁場を変えるなどして実験的に変えられる。詳しくは<a href="chapter37.html">第37章</a>。
+</p>
+
+<p>
+この系がトポロジカルであることは、単純な電気抵抗の測定から見て取れる。
+</p>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>測定</th><th>配置</th><th>結果</th></tr>
+</thead>
+<tbody>
+<tr><td>縦抵抗</td><td>電流と電圧端子がほぼ平行</td><td>\(V = 0\)。散逸のない流れ（超伝導体のよう）</td></tr>
+<tr><td>Hall 抵抗</td><td>電流端子と電圧端子がトポロジカルに交差</td><td>\(V = \dfrac{h}{e^2}\dfrac{1}{\nu}\, I\)。量子化された抵抗</td></tr>
+</tbody>
+</table></div>
+
+<p>
+Hall 電圧の量子化 \(V/I = (h/e^2)(1/\nu)\) は \(10^{10}\) 分の 1 程度という極めて高い精度で成り立つ。
+さらに驚くべきは、この値が試料の形、不純物の有無、端子の位置や付け方によらないことである。
+必要なのは電流端子と電圧端子が「トポロジカルに交差している」ことだけである。
+銅の棒の抵抗なら端子間の距離や試料の形で完全に変わってしまうことと比べると、
+細部に一切よらないこの性質は、何か頑健でトポロジカルなことが起きている強い証拠である。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（高エネルギー物理との対比）</span>
+高エネルギー物理では、高エネルギーに対称性の高い統一理論があり、低温で対称性が破れて身のまわりの物理が現れると考える。
+ここでは逆である。高温の磁場中の電子には特別な対称性がないが、低温にすると巨大な対称性が<strong>創発</strong>する。
+トポロジカルな理論は時空のあらゆる微分同相（滑らかな変形）のもとで対称である。
+</div>
+
+<p>
+FQHE で組みひもを編む対象は<strong>準粒子 (quasiparticle)</strong> である。
+これは FQHE 超流体の点渦のようなもので、散逸のない流体にふさわしく、反渦と対消滅しない限り永久に存続する。
+<a href="chapter01.html">第1章</a>の Kelvin は、散逸のないエーテル中で結ばれた渦を考えた。
+ここでは散逸のない FQHE 流体中の点渦を時間の中で動かし、<strong>時空の中に</strong>結び目を作る。Kelvin はほとんど正しかったのである。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-2-6">付録：結び目理論の基礎をもう少し<span class="en">Appendix: More Knot Theory Basics</span></h2>
+
+<h3 id="sec-2-6-1">§2.6.1 イソトピーと Reidemeister 移動</h3>
+
+<div class="def-box">
+<span class="box-title">定義（全同位と Reidemeister 移動）</span>
+二つの結び目（の絵）が<strong>全同位 (ambient isotopic)</strong> であるとは、ひもを切らずに一方を他方へ変形できることをいう。
+このとき二つの絵は、交差の上下を変えない滑らかな変形と、次の三種類の <strong>Reidemeister 移動</strong>の列で結ばれる
+（Reidemeister, 1927）。
+<ul>
+<li><strong>I 型</strong>：1本のひもにカールを一つ作る・消す。</li>
+<li><strong>II 型</strong>：2本のひもの一方を他方の上（または下）に重ねて交差を二つ作る・消す。</li>
+<li><strong>III 型</strong>：2本のひもの交差点の上（または下）を、3本目のひもがまたいで反対側へ移る。</li>
+</ul>
+それぞれ、交差の上下をすべて反転した鏡像の移動も含める。
+</div>
+
+<p>
+必要な移動の回数は非常に多くなりうる。交差 \(c\) 個の図が自明な結び目であるとき、
+\((236c)^{11}\) 回以内の移動でほどけるというのが現在知られている最良の定理である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（正則イソトピーと枠付き結び目）</span>
+量子物理の文脈では、§2.2.1 で見たとおり、ひもをリボンとして扱う<strong>正則イソトピー (regular isotopy)</strong> が問題になる。
+リボンとして扱うことを強調して結び目・絡み目が<strong>枠付き (framed)</strong> であるという。線で描いた図は黒板枠のリボンを表す。
+二つの図が正則イソトピックであるとは、<strong>II 型と III 型の移動だけ</strong>で結ばれることをいう。
+I 型の移動はリボンにひねりを入れるが、II 型・III 型はひねりを生じない。
+</div>
+
+<p>
+正確には、絡み目の図の正則イソトピーでは、向きが逆の二つのカールを打ち消す移動（I′ 型、あるいは O 型と呼ばれる）も許す。
+逆向きのひねりは相殺してリボンとしては元に戻るからである。
+Kauffman ブラケットは II 型・III 型で不変な正則イソトピー不変量であり、I 型では <a class="eq-ref" href="#eq-2-curl"></a> の因子だけ変わる。
+</p>
+
+<h3 id="sec-2-6-2">§2.6.2 ねじれ数と絡み数</h3>
+
+<p>
+結び目・絡み目のすべてのひもに矢印（向き）を付ける。各交差に符号 \(\epsilon = \pm 1\) を次のように定める。
+上を通るひもの向きに沿って進むとき、下を通るひもの向きに乗り換えるには<strong>左へ曲がる</strong>必要がある交差を正（\(\epsilon = +1\)）、
+右へ曲がる必要がある交差を負（\(\epsilon = -1\)）とする。
+この定義は図を回転しても変わらず、2本のひもの向きを同時に反転しても変わらない。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（ねじれ数と絡み数）</span>
+向き付けられた（1本のひもからなる）結び目の<strong>ねじれ数 (writhe)</strong> \(w\) は、全交差の符号の和である：
+\[
+w(\text{knot}) = \sum_{\text{交差}} \epsilon(\text{交差}) .
+\]
+2本のひもからなる向き付けられた絡み目の<strong>絡み数 (linking number)</strong> \(\operatorname{lk}\) は
+\[
+\operatorname{lk}(\text{link}) = \frac12 \sum_{\substack{\text{異なる2本の}\\ \text{ひもの間の交差}}} \epsilon(\text{交差})
+\]
+である。
+</div>
+
+<p>
+II 型・III 型の移動はねじれ数を変えないが、I 型は \(\pm1\) だけ変える。
+したがってねじれ数は正則イソトピーの不変量であるが、全同位の不変量ではない。
+§2.2.1 の Jones 多項式で \((-A^{-3})^{w}\) を掛けるのは、I 型で生じる Kauffman ブラケットの因子をねじれ数の変化でちょうど打ち消すためである。
+たとえば §2.2.1 のカールを上向きに向き付けると、その交差は負である。
+</p>
+
+<p>
+原書の演習では、左右の三葉結び目の Kauffman 不変量を計算して両者が同値でないことを示す問題、
+\(A\) の特別な値で可換エニオン（ボソン・フェルミオン・セミオン）が得られることを確かめる問題、
+HOMFLY 多項式や結び目の和を扱う問題が用意されている。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第2章のまとめ</span>
+<ul>
+<li>結び目不変量は、同値な結び目に同じ出力を与える規則であり、出力が違えば結び目は同値でない。</li>
+<li>Kauffman ブラケットは、輪 \(= d = -A^2 - A^{-2}\) とスケイン関係式（交差 \(= A\,\cdot\) 一方のつなぎ替え \(+ A^{-1}\cdot\) 他方）の二つの規則で定まる。交差 \(N\) 個の図の評価には \(2^N\) 項が必要になる。</li>
+<li>(2+1) 次元のトポロジカルな系では、世界線の結び目の不変量が時空過程の量子振幅を与える。</li>
+<li>カールは因子 \(-A^{-3}\) を与える。ひもはリボン（黒板枠）と考えるべきで、カール = ひねり = 粒子の \(2\pi\) 回転。交換の位相とスピンの位相は等しい（スピン統計定理）。</li>
+<li>非可換な理論では、局所的に同じでも履歴の異なる線形独立な状態があり（\(\braket00=\braket11=d^2\), \(\braket01=d\)）、組みひもはその空間にユニタリに作用する。</li>
+<li>Kauffman 不変量の評価は古典計算機には困難だが、粒子を編めば測定でき、しかも万能量子計算と等価である。結果はトポロジーだけで決まるので雑音に強い。</li>
+<li>分数量子 Hall 効果は代表的な実験系で、Hall 抵抗 \(V/I = (h/e^2)(1/\nu)\) が試料の細部によらず量子化される。</li>
+<li>正則イソトピー = II 型・III 型の Reidemeister 移動による同値。ねじれ数は正則イソトピー不変量で、これで補正すると Jones 多項式になる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

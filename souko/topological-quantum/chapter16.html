@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="アイソトピー不変な理論のダイアグラム規則のまとめ：Levin–Wen 流の F 行列、ループの重み、泡の収縮、R 行列による交差の解消、各種の拘束条件">
+  <title>第16章 平面的または3次元的アイソトピーをもつ良い理論 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter16" data-chapter="16">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第16章に対応</span>
+  第16章 平面的または3次元的アイソトピーをもつ良い理論
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter12.html">第12</a>〜<a href="chapter15.html">15章</a>では、エニオンのダイアグラム代数を非常に一般的な形で組み立てた。
+一般の理論では、線の曲げ伸ばしでジグザグ因子や頂点の回転に伴う因子が現れ、時空の変形に対する不変性に制限がつく（<a href="chapter14.html">第14章</a>）。
+本章はそれらの面倒が消える「良い」理論——ダイアグラムをどう連続変形しても値が変わらない<strong>アイソトピー不変</strong>な理論——に話を限り、
+評価規則を使いやすい形にまとめ直す。原書が「Easier Version」と呼ぶ章で、内容は第9〜15章の規則の（記法を変えた）要約である。
+前半は交差のない<strong>平面ダイアグラム</strong>（\(F\) 行列とループの重み \(d_a\) だけで評価できる）、
+後半は交差を \(R\) 行列で解消する<strong>3次元的な（リボン）アイソトピー</strong>を扱う。
+ここでの \(F\) 行列の記法は Levin–Wen の弦ネット模型と同じもので、後の章の格子模型や状態和の構成で直接使われる。
+ほとんどすべての組みひも付き理論はこの形に書ける。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<p>
+TQFT に期待したのは、ラベル付きの結び目・絡み目ダイアグラムを複素振幅に写す規則であって、時空の滑らかな変形（アイソトピー）で値が変わらないものだった。
+本章の理論は、世界線を<strong>リボン</strong>とみなしたうえでの任意の滑らかな変形に対して同じ振幅を与える。
+これを<strong>リボンアイソトピー不変性</strong>（結び目・絡み目に限れば正則アイソトピー不変性、<a href="chapter02.html">第2章</a>）という。
+交差を含む図でも、変形で平面的な図に直せるなら同じ値をもつ。
+</p>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-16-1">平面ダイアグラム<span class="en">Planar Diagrams</span></h2>
+
+<p>
+まず上下の交差のないダイアグラムだけを考え、<strong>平面アイソトピー不変性</strong>（平面内での任意の変形で値が不変）をもつ理論に限る。
+<a href="chapter12.html">第12章</a>と同じく、ダイアグラムを2つに切って片側をケット、もう片側をブラと読む解釈は生きている。
+どの方向を時間とみなしてもよく（通常は上向き）、これは入ってくる線をブラともケットとも読める同型があること（<a href="chapter14.html">第14章</a>）の反映である。
+\((1+1)\) 次元を動く粒子の世界線と思ってもよい。
+</p>
+
+<h3 id="sec-16-1-1">§16.1.1 平面ダイアグラムの規則</h3>
+
+<p>
+平面アイソトピー不変な理論では、線を切らず交差させない限り、どんな変形も許される。具体的には次のことを仮定する。
+</p>
+<ul>
+<li>ジグザグをまっすぐに伸ばしてよい。<a href="chapter14.html">第14章</a>の言葉ではすべての \(\epsilon_a=+1\)。</li>
+<li>頂点の足を上下に自由に曲げてよい（曲げても余分な因子が出ない）。3本の足がすべて上向き、あるいはすべて下向きの頂点も許す。</li>
+</ul>
+
+<div class="def-box">
+<span class="box-title">定義（アイソトピー不変な理論の \(F\) 行列：Levin–Wen の規約）</span>
+4本の外線 \(a,b,c,e\) をもつ木を考える。左辺は \(a,b\) が1つの頂点に、\(c,e\) がもう1つの頂点に集まり、両者を内線 \(d\) がつなぐ形（H 字を横に寝かせた形）。
+右辺は \(b,c\) が上の頂点に、\(a,e\) が下の頂点に集まり、内線 \(f\) がつなぐ形である：
+<div class="equation" id="eq-16-Fdef">\[
+\Big(\text{内線 } d \text{ の木}\Big) \;=\; \sum_f F^{bad}_{ecf}\,\Big(\text{内線 } f \text{ の木}\Big).
+\]</div>
+\(F^{bad}_{ecf}\) がゼロでないためには、4つの頂点がすべて許された融合でなければならない：
+\(N_{abd}=N_{ce\bar d}=N_{bcf}=N_{ae\bar f}=1\)（外線はすべて頂点に流れ込む向き、\(d\) は \(c,e\) 側から \(a,b\) 側へ、\(f\) は \(a,e\) 側から \(b,c\) 側へ向かう）。
+ユニタリな理論では、\(a,b,c,e\) を固定したとき \(F\) は添字 \(d,f\) についてユニタリ行列である。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <!-- left: H-shape with horizontal internal edge d -->
+  <line x1="40" y1="40" x2="70" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="40" y1="130" x2="70" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="85" x2="120" y2="85" class="line accent" stroke-width="1.5"/>
+  <line x1="120" y1="85" x2="150" y2="40" class="line" stroke-width="1.5"/>
+  <line x1="120" y1="85" x2="150" y2="130" class="line" stroke-width="1.5"/>
+  <text x="24" y="38" class="label">b</text>
+  <text x="24" y="140" class="label">a</text>
+  <text x="156" y="38" class="label">c</text>
+  <text x="156" y="140" class="label">e</text>
+  <text x="90" y="76" class="label">d</text>
+  <text x="185" y="90" class="label">=  Σ F</text>
+  <text x="232" y="110" class="label-muted">f について和</text>
+  <!-- right: I-shape with vertical internal edge f -->
+  <line x1="330" y1="45" x2="375" y2="55" class="line" stroke-width="1.5"/>
+  <line x1="420" y1="45" x2="375" y2="55" class="line" stroke-width="1.5"/>
+  <line x1="375" y1="55" x2="375" y2="115" class="line accent" stroke-width="1.5"/>
+  <line x1="330" y1="125" x2="375" y2="115" class="line" stroke-width="1.5"/>
+  <line x1="420" y1="125" x2="375" y2="115" class="line" stroke-width="1.5"/>
+  <text x="314" y="44" class="label">b</text>
+  <text x="428" y="44" class="label">c</text>
+  <text x="314" y="136" class="label">a</text>
+  <text x="428" y="136" class="label">e</text>
+  <text x="384" y="90" class="label">f</text>
+</svg>
+<figcaption>図 16.1：F 移動の模式図（矢印は省略）。内線 d でつながった木を、内線 f でつながった木の重ね合わせに書き直す。係数が F の成分（上添字 b, a, d、下添字 e, c, f）。</figcaption>
+</figure>
+
+<p>
+この章では図の向き（どの方向を時間とするか）は意味をもたない。図 <a class="eq-ref" href="#eq-16-Fdef"></a> の両辺を同時に回転したり、足を上下に曲げたりしても、同じ \(F\) 行列がそのまま使える。
+<a href="chapter09.html">第9章</a>で定義した \(F\) 行列とは、足を曲げ矢印を付け替えることで
+</p>
+<div class="equation" id="eq-16-Frel">\[
+F^{bad}_{ecf} = [F^{\bar a\bar b\bar c}_{e}]_{df}
+\]</div>
+<p>
+と対応する。\(F\) 移動を図の一部に繰り返し適用すれば、ダイアグラムの構造を自在に組み替えられる。
+\(F\) 移動に加えて、次の3つの規則を使う。
+</p>
+
+<div class="thm-box">
+<span class="box-title">規則（ループの重み・泡の収縮・完全性）</span>
+<p><strong>(i) ループの重み。</strong> \(a\) とラベルされた閉じたループは数 \(d_a\) に等しい：
+\[
+\bigcirc_a = d_a = d_{\bar a}, \qquad d_I=1 .
+\]
+\(d_a=d_{\bar a}\) は球面性の仮定による。\(d_I=1\) なので真空のループは自由に付け外しできる。</p>
+<p><strong>(ii) 泡の収縮（局所性・直交規格化）。</strong> 線 \(c\) が \(a,b\) に分岐し、再び合流して \(d\) になる「泡」は
+<div class="equation" id="eq-16-bubble">\[
+\Big(c \to (a,b) \to d\Big) = \delta_{cd}\,\sqrt{\frac{d_a d_b}{d_c}}\;\Big(c \text{ の線}\Big)
+\]</div>
+となる。\(N_{ab}^c=1\) でなければ値はゼロ。</p>
+<p><strong>(iii) 完全性関係。</strong> 平行な2本の線 \(a,b\) は、融合チャネル \(c\) についての和に分解できる：
+<div class="equation" id="eq-16-complete">\[
+\Big(a,\,b \text{ の平行線}\Big) = \sum_c \sqrt{\frac{d_c}{d_a d_b}}\;\Big((a,b)\to c \to (a,b)\Big).
+\]</div></p>
+<p>符号の約束：\(d\) に負のものがあるとき、(ii)(iii) の平方根の前の符号は \(d_a&lt;0\) かつ \(d_b&lt;0\) のときに限り負にとる。</p>
+</div>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="75" x2="80" y2="75" class="line" stroke-width="1.5"/>
+  <circle cx="110" cy="75" r="30" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="140" y1="75" x2="190" y2="75" class="line" stroke-width="1.5"/>
+  <text x="50" y="66" class="label">c</text>
+  <text x="105" y="36" class="label">a</text>
+  <text x="105" y="126" class="label">b</text>
+  <text x="162" y="66" class="label">d</text>
+  <text x="210" y="80" class="label">=  δ(c,d) √(d_a d_b / d_c)</text>
+  <line x1="390" y1="75" x2="445" y2="75" class="line" stroke-width="1.5"/>
+  <text x="412" y="66" class="label">c</text>
+</svg>
+<figcaption>図 16.2：泡の収縮。遠くから見れば泡は見えず、線の種類は変わらない（局所性）。</figcaption>
+</figure>
+
+<p>
+(i) の規格化は Kauffman ブラケット（<a href="chapter02.html">第2章</a>）のループの値 \(d\) の一般化で、ループを \(\braket{\text{状態}}{\text{状態}}\) と読むなら、規格化されていないケットを使っていることを意味する（<a href="chapter14.html">第14章</a>）。
+この \(d_a\) が、融合空間の次元の増え方から定義した量子次元（<a href="chapter03.html">第3章</a>、<a href="chapter08.html">第8章</a>）と符号を除いて一致することは<a href="chapter17.html">第17章</a>で示す。
+</p>
+<p>
+(ii) は<a href="chapter14.html">第14章</a>の直交規格化の図を横倒しにしたもので、物理的には<a href="chapter08.html">第8章</a>の局所性原理の表現である。
+特に、ループに1本だけ線が生えた<strong>おたまじゃくし (tadpole)</strong> 型の図は、その線が真空でない限りゼロになる（<strong>おたまじゃくし禁止則</strong>）。
+(iii) は<a href="chapter14.html">第14章</a>の完全性関係そのもので、ここでは図をどの向きに置いて使ってもよい。
+</p>
+
+<h3 id="sec-16-1-2">§16.1.2 平面アイソトピー不変な理論のダイアグラム規則のまとめ</h3>
+
+<p>
+以上の規則で、端のない任意の平面ダイアグラムは \(F\) と \(d\) の積からなる複素数に評価できる（端のあるダイアグラムはブラ・ケット・演算子を表す、<a href="chapter12.html">第12章</a>）。
+<a href="chapter12.html">第12章</a>の規則一覧に対応する、簡単になった版が次である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">規則のまとめ（平面アイソトピー不変な理論）</span>
+<ol>
+<li>線を切らない限り、ダイアグラムを連続的に自由に変形してよい（ここでは交差は無いとする）。</li>
+<li>真空 \(I\) とラベルされた線は自由に付け加えたり取り除いたりしてよい。</li>
+<li>線の矢印を逆にすると、粒子は反粒子に変わる（\(a\leftrightarrow\bar a\)）。</li>
+<li>線は、他の線と融合するか分裂するまで、その量子数を保つ。</li>
+<li>頂点は \(N_{ab}^c&gt;0\) のときに許される。粒子・反粒子の対生成・対消滅（\(N_{a\bar a}^I=1\)）もこれに含まれる。</li>
+<li>\(F\) 移動でダイアグラムの構造を変えてよい。</li>
+<li>完全性関係 <a class="eq-ref" href="#eq-16-complete"></a> と泡の収縮 <a class="eq-ref" href="#eq-16-bubble"></a> でダイアグラムの構造を変えてよい。</li>
+<li>どのダイアグラムも最終的にループの集まりに帰着でき、種類 \(a\) のループ1個につき \(d_a\) を掛ける。</li>
+</ol>
+</div>
+
+<h3 id="sec-16-1-3">§16.1.3 負の \(d_a\) とユニタリ性</h3>
+
+<p>
+この章では \(d_a\) が負になることを許す。ただし<a href="chapter14.html">第14章</a>と同じく
+</p>
+<div class="equation" id="eq-16-sign">\[
+\sgn[d_a]\,\sgn[d_b] = \sgn[d_c] \qquad (N_{ab}^c&gt;0 \text{ のとき})
+\]</div>
+<p>
+を仮定する（強い制限ではない）。
+ループを内積 \(\braket{\text{状態}}{\text{状態}}\) と読むと、負の \(d_a\) は正定値でない内積を意味し、量子力学では許されない。
+そこで、負の \(d_a\) をそのまま使う評価を<strong>非ユニタリな評価</strong>と呼び、図の読み方を少し改めることでユニタリな理論を表すものとして扱う（<a href="chapter14.html">第14章</a>の方式）。
+規則一覧に次の2つを加える。
+</p>
+
+<div class="thm-box">
+<span class="box-title">追加規則（負の \(d\) をもつ理論のユニタリな評価）</span>
+<ul>
+<li><strong>(0′)</strong> 時空の対称性を破り、時間の向きを決める（通常は紙面の上向き）。</li>
+<li><strong>(0)</strong> 評価の前に、図に含まれる<strong>負 \(d\) キャップ</strong>の個数 \(n\) を数える。規則 1〜8 で評価し終えた結果に \((-1)^n\) を掛ける。</li>
+</ul>
+負 \(d\) キャップとは、時間が進む向きに見て、\(d&lt;0\) の粒子2個が出会って対消滅する、または \(d&gt;0\) の粒子1個に融合する箇所である。
+すなわち、下から \(a,b\) が来て上へ \(c\) が出る頂点は \(d_a&lt;0\) かつ \(d_b&lt;0\) のとき負 \(d\) キャップであり（\(c=I\) なら山型のキャップで、\(d_a&lt;0\) のとき）、
+下から \(c\) が来て \(a,b\) に分かれる頂点や谷型のカップは負 \(d\) キャップにならない。矢印の向きは関係しない。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（\(d_a&lt;0\) の単一ループ）</span>
+素朴な評価ではループの値は \(d_a&lt;0\)。ループには山型のキャップが1つあるので \(n=1\)、結果に \((-1)^1\) を掛けて \(|d_a|&gt;0\) を得る。
+\(\braket{\text{状態}}{\text{状態}}\) と読める図にふさわしく、正の値になっている。
+</div>
+
+<p>
+「アイソトピー不変だが \(d_a\) が負」という状況はごく普通に現れる。負の \(d\) が必要になる根本の理由は Frobenius–Schur 指標が負であることにあり、
+セミオン理論 \(SU(2)_1\) や、一般の \(SU(2)_k\) がその例である。
+</p>
+
+<h3 id="sec-16-1-4">§16.1.4 拘束条件と例</h3>
+
+<p>
+平面アイソトピー不変なダイアグラム代数には多くの拘束条件が課される。それぞれがどこから来るかを順に見る。
+</p>
+
+<h4>五角形方程式</h4>
+<p>
+<a href="chapter09.html">第9章</a>の \(F\) 行列の整合性条件を、関係式 <a class="eq-ref" href="#eq-16-Frel"></a> で本章の記法に直すと
+</p>
+<div class="equation" id="eq-16-pentagon">\[
+F^{c\bar f g}_{edl}\,F^{baf}_{e\bar l k} = \sum_h F^{baf}_{gch}\,F^{\bar h a g}_{edk}\,F^{cbh}_{kdl}
+\]</div>
+<p>となる（見やすさのため第9章の式で \(a,b,c,d\to\bar a,\bar b,\bar c,\bar d\) と置き換えてある）。</p>
+
+<h4>\(F\) と \(d\) の関係</h4>
+<p>
+ループの重みは \(F\) 行列で決まる：
+</p>
+<div class="equation" id="eq-16-dF">\[
+d_a = \frac{1}{F^{\bar a a I}_{\bar a a I}} .
+\]</div>
+<p>ジグザグを \(F\) 移動で真空チャネルに組み替え、\(\epsilon_a=+1\) でまっすぐに伸ばせることから従う（<a href="chapter14.html">第14章</a>の議論の書き直し）。</p>
+
+<h4>逆変換</h4>
+<p>
+\(F\) 移動の右辺に、90度回した \(F\) 移動をもう一度適用すると元の形に戻る。したがって
+</p>
+<div class="equation" id="eq-16-inv">\[
+\sum_f F^{bad}_{ecf}\,F^{cbf}_{ae\bar g} = \delta_{dg} .
+\]</div>
+
+<h4>回転</h4>
+<p>定義の図を180度回転して元の図と見比べると</p>
+<div class="equation" id="eq-16-rot">\[
+F^{bad}_{ecf} = F^{ec\bar d}_{ba\bar f} .
+\]</div>
+
+<h4>足の上げ下げ</h4>
+<p>
+頂点の足を自由に上下に曲げられるためには、<a href="chapter14.html">第14章</a>で見た曲げに伴う因子が1でなければならない。本章の記法では
+</p>
+<div class="equation" id="eq-16-updown">\[
+F^{c\bar c I}_{a\bar a b} = \sqrt{\frac{d_b}{d_a d_c}} \qquad (b\times c = a+\cdots)
+\]</div>
+<p>であり、平方根の符号は \(d_a\) と \(d_c\) がともに負のときに限り負にとる。</p>
+
+<h4>ユニタリ性</h4>
+<p>\(F\) 行列は基底変換なのでユニタリである：</p>
+\[
+\sum_f F^{bad}_{ecf}\,[F^{bad'}_{ecf}]^* = \delta_{dd'}, \qquad
+\sum_d F^{bad}_{ecf}\,[F^{bad}_{ecf'}]^* = \delta_{ff'} .
+\]
+<p>前者を逆変換の式 <a class="eq-ref" href="#eq-16-inv"></a> と比べると</p>
+<div class="equation" id="eq-16-conj">\[
+[F^{bad}_{ecf}]^* = F^{cbf}_{ae\bar d} .
+\]</div>
+
+<h4>エルミート共役</h4>
+<p>
+<a href="chapter12.html">第12章</a>の水平軸に関する反転（振幅は複素共役になる）を \(F\) 移動の式に施して元の式と比べると
+</p>
+<div class="equation" id="eq-16-herm">\[
+F^{bad}_{ecf} = [F^{\bar a\bar b\bar d}_{\bar c\bar e f}]^* = [F^{\bar c\bar e d}_{\bar a\bar b\bar f}]^* = F^{\bar e\bar a f}_{\bar b\bar c d} .
+\]</div>
+<p>2番目の等号は回転 <a class="eq-ref" href="#eq-16-rot"></a>、3番目は <a class="eq-ref" href="#eq-16-conj"></a> を併用して得られる。</p>
+
+<h4>鏡映（独立な仮定）</h4>
+<p>
+\(F\) 移動の図を左右反転した式も成り立つと要請することが多い。左右鏡映対称性をもつ理論では
+</p>
+<div class="equation" id="eq-16-refl">\[
+F^{bad}_{ecf} = F^{ce\bar d}_{abf}
+\]</div>
+<p>
+が成り立つ。これは \((2+1)\) 次元でアイソトピー不変な理論には必要な条件だが、平面ダイアグラム代数としては上の諸条件から独立な仮定である。
+エルミート共役の式と合わせると、自然な形の
+</p>
+\[
+F^{bad}_{ecf} = [F^{\bar b\bar a\bar d}_{\bar e\bar c\bar f}]^*
+\]
+<p>を得る。</p>
+
+<div class="example-box">
+<span class="box-title">例（泡を \(F\) 移動で評価する）</span>
+泡 \(a\to(c,b)\to d\) を、矢印の付け替えのあと \(F\) 移動で組み替えると、\(\sum_f F^{\bar c a\bar b}_{\bar d c f}\) を係数として「線 \(a\)–\(d\) に、\(c\) のループが内線 \(f\) でぶら下がった図」になる。
+おたまじゃくし禁止則から \(f=I\) だけが残り、したがって \(a=d\)。ループは \(d_c\) を与えるので、泡の値は \(\delta_{ad}F^{\bar c a\bar b}_{\bar a c I}\,d_c\) である。
+これを泡の収縮 <a class="eq-ref" href="#eq-16-bubble"></a> の値 \(\sqrt{d_cd_b/d_a}\) と等置し、\(b\to\bar b\) と書き直すと
+\[
+F^{\bar c a b}_{\bar a c I} = \sqrt{\frac{d_b}{d_a d_c}} \qquad (c\times b = a+\cdots)
+\]
+を得る（符号は \(d_a,d_b\) がともに負のときに限り負）。この式は <a class="eq-ref" href="#eq-16-updown"></a> と <a class="eq-ref" href="#eq-16-herm"></a> からも導ける。
+規則どうしが互いに整合していることの確認になっている。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（シータ図）</span>
+2つの頂点を3本の線 \(a,b,c\) で結んだ図を<strong>シータ図</strong> \(\Theta(a,b,c)\) という。泡の収縮で \(a,b\) の泡を潰すと \(c\) のループが残り、
+\[
+\Theta(a,b,c) = d_c\sqrt{\frac{d_ad_b}{d_c}} = \sqrt{d_ad_bd_c}
+\]
+となる。最右辺の平方根は、\(d_a,d_b,d_c\) がすべて正の場合を除いて負にとる。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（四面体図）</span>
+四面体の辺に6つのラベルを載せた図（平面図として、あるいは球面上の図として読む）を評価する。
+変形して \(F\) 移動を1回行い、泡の収縮を2回使うと内線の添字が \(f\) に固定され、最後に \(f\) のループが残る：
+<div class="equation" id="eq-16-G">\[
+G^{bad}_{ecf} \equiv F^{bad}_{ecf}\; d_f\,\sqrt{\frac{d_bd_c}{d_f}}\,\sqrt{\frac{d_ad_e}{d_f}} .
+\]</div>
+各平方根は、分子の2つの \(d\) がともに負のときに限り負にとる。大きさは \(F^{bad}_{ecf}\sqrt{d_ad_bd_cd_e}\) である。
+平面内の回転対称性から \(G^{bad}_{ecf}=G^{dba}_{f\bar e\bar c}\)、回転の式 <a class="eq-ref" href="#eq-16-rot"></a> から \(G^{bad}_{ecf}=G^{ec\bar d}_{ba\bar f}\) が従う。
+後者は平面図の恒等式でありながら、四面体を3次元的に回したように見える。この2つを組み合わせると四面体を好きな向きに回せ、
+さらに鏡映対称性 <a class="eq-ref" href="#eq-16-refl"></a> を仮定すれば鏡像もとれるので、対称性で結ばれた24個の四面体図が等しくなる（<strong>四面体対称性</strong>）。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（四面体対称性は常にとれるとは限らない）</span>
+球面的な圏であっても、完全な四面体対称性をもつゲージに持ち込めない例が知られている。比較的単純なモジュラー圏にもそうした例があるが、知られている限りそれらは融合多重度 \(N_{ab}^c&gt;1\) をもつ。
+四面体図 \(G\) は、後の章の状態和（Turaev–Viro 型）や弦ネット模型で基本的な構成要素になる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-16-2">組みひもダイアグラム再訪<span class="en">Braiding Diagrams Revisited</span></h2>
+
+<p>
+平面の理論を、\((2+1)\) 次元の（正則）アイソトピー不変な理論に拡張する。内容は<a href="chapter13.html">第13章</a>の要点の再掲である。
+</p>
+<ul>
+<li>平面アイソトピーにより、紙面内での変形はすべて許される。</li>
+<li>線をリボンとみなして3次元的に変形してよい（正則アイソトピー）。黒板フレーミングでリボンを紙面に寝かせ、表を白、裏を黒に塗ったとする。
+変形の結果が再び黒板フレーミングで、すべてのリボンの白い面が手前を向いていれば、その変形は値を変えない。</li>
+</ul>
+<p>
+こうした変形だけで交差が消えて平面ダイアグラムになることも多い。一般には交差は消しきれないので、\(R\) 行列を使う。
+</p>
+
+<div class="thm-box">
+<span class="box-title">規則（交差の解消）</span>
+<p><strong>頂点直上の交差。</strong> \(c\) から分岐した \(a,b\) が1回交差している図は、交差のない頂点の \(R^{ab}_c\) 倍である。逆向きの交差では \([R^{ab}_c]^{-1}\) 倍になる。
+この移動の両辺でリボンの同じ面が手前を向いており、ねじれは導入されない。</p>
+<p><strong>裸の交差。</strong> 完全性関係 <a class="eq-ref" href="#eq-16-complete"></a> と合わせると、2本の線 \(a,b\) の交差そのものを平面図の和に展開できる：
+<div class="equation" id="eq-16-uncross">\[
+\Big(a,b \text{ の交差}\Big) = \sum_c \sqrt{\frac{d_c}{d_ad_b}}\;R^{ab}_c\;\Big((a,b)\to c\to(b,a)\Big),
+\]</div>
+上下を逆にした交差では \(R^{ab}_c\) の代わりに \([R^{ba}_c]^{-1}\) が入る。平方根の符号は \(d_a,d_b\) がともに負のときに限り負。</p>
+<p>アイソトピー不変な理論では、これらの式は図を紙面上でどの向きに回しても同じ形で使える。</p>
+</div>
+
+<p>
+交差を平面図に直す操作を<strong>交差の解消 (resolution of a crossing)</strong> という。これですべての図が平面ダイアグラムに帰着し、§16.1.2 の規則で評価できる。
+規則一覧は次のように拡張される。
+</p>
+
+<div class="thm-box">
+<span class="box-title">追加規則（3次元のアイソトピー不変な理論）</span>
+<ul>
+<li><strong>(1′)</strong>（規則 1 の置き換え）線を切らず、線をリボンとして扱う限り、ダイアグラムを3次元的に連続変形してよい。
+結び目・絡み目では正則アイソトピーがそのまま許される。融合・分裂の頂点を含む図では、平面アイソトピーは常に許され、
+平面から出る変形ではリボンの面を追跡する：白い面を手前にした黒板フレーミングから始め、変形後も白い面を手前にした黒板フレーミングに戻っていること。</li>
+<li><strong>(9)</strong> 上下の交差は \(R\) 行列を使って平面ダイアグラムに直せる。</li>
+</ul>
+</div>
+
+<h3 id="sec-16-2-1">§16.2.1 拘束条件</h3>
+
+<h4>回転と共役</h4>
+<p>交差を上下逆さまに回してからエルミート共役をとると、アイソトピー不変な理論で成り立つ恒等式</p>
+<div class="equation" id="eq-16-Rconj">\[
+[R^{ab}_c]^* = [R^{\bar a\bar b}_{\bar c}]^{-1}
+\]</div>
+<p>を得る。</p>
+
+<h4>六角形方程式</h4>
+<p><a href="chapter13.html">第13章</a>の \(F\) と \(R\) の整合性条件を本章の記法で書くと</p>
+<div class="equation" id="eq-16-hexagon">\[
+\begin{aligned}
+R^{ca}_e\,F^{\bar c\bar a e}_{d\bar b g}\,R^{cb}_g &amp;= \sum_f F^{\bar a\bar c e}_{d\bar b f}\,R^{cf}_d\,F^{\bar b\bar a f}_{d\bar c g},\\
+[R^{ac}_e]^{-1}F^{\bar c\bar a e}_{d\bar b g}\,[R^{bc}_g]^{-1} &amp;= \sum_f F^{\bar a\bar c e}_{d\bar b f}\,[R^{fc}_d]^{-1}F^{\bar b\bar a f}_{d\bar c g} .
+\end{aligned}
+\]</div>
+
+<h4>ツイストとの関係</h4>
+<p>
+各粒子は<a href="chapter15.html">第15章</a>のツイスト因子 \(\theta_a=\theta_{\bar a}\)（\(\theta_I=1\)）をもち、カールを解くと \(\theta_a\)、鏡像のカールでは \(\theta_a^*\) が出る。
+本章ではカールを紙面のどの向きに描いても同じで、カイラリティだけが意味をもつ。
+ツイストは \(R\) 行列で表せる（\(\theta_a=\sum_c (d_c/d_a)R^{aa}_c\)）ので、独立な公理として規則一覧に加える必要はない。
+</p>
+<p>
+\(d_a&lt;0\) で計算するときは、すべての \(d_a&gt;0\) とする方式（アイソトピー不変性を手放す Option A）に比べて \(\theta_a\) の符号が変わる点に注意する。
+曖昧さのない量として \(R^{\bar a a}_I=\epsilon_a\theta_a^*\) を使うのがよい。
+アイソトピー不変な理論では、さらに
+</p>
+<div class="equation" id="eq-16-Rtwist">\[
+R^{ab}_c = R^{a\bar a}_I\,[R^{a\bar c}_{\bar b}]^{-1} = R^{\bar b b}_I\,[R^{\bar c b}_{\bar a}]^{-1}
+\]</div>
+<p>
+が成り立つ。頂点直上の交差を、足を曲げる変形で「別の2本の交差とカール」に移し替えることで導かれる（六角形方程式で変数の1つを \(I\) と置いても得られる。原書の演習）。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-16-3">ゲージ変換<span class="en">Gauge Transformations</span></h2>
+
+<p>
+<a href="chapter09.html">第9章</a>・<a href="chapter13.html">第13章</a>と同様に、各頂点に位相 \(u^{ab}_c\) を掛けて定義し直す自由がある：
+\((a,b\to c)\) の頂点 \(= u^{ab}_c\times\)（チルダ付きゲージの頂点）。
+ただしアイソトピー不変な理論では、頂点の足を回して曲げた図が元の頂点と等しくなければならないので、位相は
+</p>
+\[
+u^{ab}_c = u^{b\bar c}_{\bar a} = u^{\bar c a}_{\bar b}
+\]
+<p>
+を満たすものに限られる。このゲージ変換のもとで \(F\) と \(R\) は
+</p>
+<div class="equation" id="eq-16-gauge">\[
+\tilde F^{bad}_{ecf} = \frac{u^{\bar b\bar c}_f\,u^{\bar a f}_e}{u^{\bar a\bar b}_d\,u^{d\bar c}_e}\,F^{bad}_{ecf},
+\qquad
+\tilde R^{ab}_c = \frac{u^{ba}_c}{u^{ab}_c}\,R^{ab}_c
+\]</div>
+<p>
+と変換する。\(F\) 移動の左辺の2頂点と右辺の2頂点の位相の比、\(R\) 移動の前後の頂点の位相の比が掛かるだけである。
+物理的な量（閉じたダイアグラムの値、\(d_a\)、\(\theta_a\)、\(R^{aa}_c\)、リボン恒等式の両辺など）はこの変換で変わらない。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-16-4">付録：融合多重度が大きい場合<span class="en">Appendix: Higher Fusion Multiplicities</span></h2>
+
+<p>
+\(N_{ab}^c&gt;1\) のとき、頂点は追加の添字 \(\mu\in\{1,\dots,N_{ab}^c\}\) をもつ（<a href="chapter09.html">第9章</a>）。本章の規則は次のように一般化される。
+</p>
+<ul>
+<li><strong>\(F\) 行列。</strong> 左辺の2頂点の添字 \(\mu,\nu\) と右辺の2頂点の添字 \(\lambda,\tau\) を持つ：
+\[
+\Big(\text{内線 } d,\ \text{頂点 }\mu,\nu\Big) = \sum_{f,\lambda,\tau}\big[F^{bad}_{ecf}\big]^{\mu\nu}_{\lambda\tau}\Big(\text{内線 } f,\ \text{頂点 }\lambda,\tau\Big).
+\]</li>
+<li><strong>泡の収縮。</strong> 泡の2頂点の添字を \(\mu,\nu\) として
+\[
+\Big(c\to(a,b)\to d\Big)_{\mu\nu} = \delta_{cd}\,\delta_{\mu\nu}\sqrt{\frac{d_ad_b}{d_c}}\;\Big(c\text{ の線}\Big).
+\]</li>
+<li><strong>完全性関係。</strong> チャネル \(c\) に加えて頂点の添字 \(\mu\)（上下の頂点で共通）についても和をとる：
+\(\sum_{c,\mu}\sqrt{d_c/(d_ad_b)}\,(\cdots)\)。</li>
+<li><strong>交差の解消。</strong> \(R\) が行列になり、
+\(\sum_{c,\mu,\nu}\sqrt{d_c/(d_ad_b)}\,[R^{ab}_c]_{\mu\nu}(\cdots)\)、逆向きの交差では \([R^{ba}_c]^{-1}_{\mu\nu}\) が入る。平方根の符号の約束は多重度のない場合と同じ。</li>
+</ul>
+<p>
+原書の演習では、三角形の泡を1つの頂点に潰す補題（\(F\) と \(\sqrt{d_jd_s/d_k}\) 型の因子が出る）と、関係式 <a class="eq-ref" href="#eq-16-Rtwist"></a> の導出を扱う。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第16章のまとめ</span>
+<ul>
+<li>「良い」理論とは、ダイアグラムの連続変形で値が変わらない理論である。平面アイソトピー不変性では \(\epsilon_a=+1\) で足の上げ下げも自由、3次元ではリボンとしての正則アイソトピーが許される。</li>
+<li>平面ダイアグラムは、Levin–Wen 規約の \(F^{bad}_{ecf}\)、ループの重み \(d_a\)、泡の収縮 \(\delta_{cd}\sqrt{d_ad_b/d_c}\)、完全性関係 \(\sum_c\sqrt{d_c/(d_ad_b)}\) だけで評価できる。</li>
+<li>\(d_a&lt;0\) を許す場合は、時間方向を決めて負 \(d\) キャップの数 \(n\) を数え、結果に \((-1)^n\) を掛けるとユニタリな理論の値になる。</li>
+<li>\(F\) は五角形方程式のほか、\(d_a=1/F^{\bar aaI}_{\bar aaI}\)、逆変換、回転、足の上げ下げ、ユニタリ性、エルミート共役の拘束を満たす。左右鏡映は独立な追加仮定である。</li>
+<li>シータ図は \(\sqrt{d_ad_bd_c}\)、四面体図は \(G^{bad}_{ecf}=F^{bad}_{ecf}\,d_f\sqrt{d_bd_c/d_f}\sqrt{d_ad_e/d_f}\)。</li>
+<li>交差は \(R\) 行列で解消する。\(R\) は六角形方程式と \([R^{ab}_c]^*=[R^{\bar a\bar b}_{\bar c}]^{-1}\) を満たし、ツイストは \(R\) から決まる。</li>
+<li>ゲージ変換の位相は \(u^{ab}_c=u^{b\bar c}_{\bar a}=u^{\bar ca}_{\bar b}\) を満たすものに限られる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

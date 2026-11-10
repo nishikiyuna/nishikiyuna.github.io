@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="トーリック符号の定義：頂点演算子とプラケット演算子、ループ気体としての符号空間、誤りストリングと訂正、一般の格子と種数、Z_N への一般化">
+  <title>第27章 トーリック符号入門 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter27" data-chapter="27">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第27章に対応</span>
+  第27章 トーリック符号入門
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter26.html">第26章</a>で準備した量子誤り訂正の考え方（スタビライザーとシンドローム）を、
+Kitaev (2003) の<strong>トーリック符号 (toric code)</strong> という具体的な符号で実現する章である。
+トーラス上の格子の各辺に量子ビットを置き、互いに可換な<strong>頂点演算子</strong>と<strong>プラケット演算子</strong>をスタビライザーとして、
+すべての固有値が \(+1\) の部分空間を符号空間に選ぶ。
+符号空間は「閉じたループの重ね合わせ」として描け、トーラスの2つの非自明サイクルを巻くループの偶奇が2個の論理量子ビットを担う。
+物理的な誤りは局所的な欠陥（頂点欠陥・プラケット欠陥）の対として現れ、欠陥が非自明サイクルを一周しない限り論理誤りにならない。
+この構造は概念的に最も単純な誤り訂正方式のひとつであり、許容できる誤り率の比較でも最良の部類に入る（比較の規則は想定するハードウェアに依存する）。小規模な実験的実現も報告されている。
+そして次の<a href="chapter28.html">第28章</a>で見るように、この符号はそのまま TQFT で記述される物質相でもある。
+本章の規約は Kitaev の原論文と \(\sigma_x\) と \(\sigma_z\) が入れ替わっているので、§27.2 の注意を最初に押さえておくこと。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-27-1">トーリック符号の Hilbert 空間<span class="en">Toric Code Hilbert Space</span></h2>
+
+<p>
+\(N_x \times N_y\) の正方格子を考え、<strong>各辺（リンク）</strong>に量子ビット（スピン \(1/2\)）を1個ずつ置く。
+周期境界条件を両方向に課すと系はトポロジー的にトーラスになる（これが "toric" の由来）。
+スピンの総数は
+\[
+N = 2 N_x N_y ,
+\]
+Hilbert 空間の次元は \(2^N\) である。
+</p>
+
+<p>
+基底には \(\sigma_z\) の固有状態（上向き・下向き）を使う。原書は図示のために次の約束を置く。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（辺の色による基底の表記）</span>
+<ul>
+<li>下向きスピン \(=\ket{1}\)（\(\sigma_z=-1\)）の辺：<strong>青く（太く）塗る</strong>。</li>
+<li>上向きスピン \(=\ket{0}\)（\(\sigma_z=+1\)）の辺：塗らない（黒のまま）。</li>
+</ul>
+\(2^N\) 個の基底状態は「どの辺を青く塗るか」のパターンと一対一に対応する。
+</div>
+
+<p>
+以下の議論はほとんどすべて、この「青い辺の絵」の言葉で進む。
+格子ゲージ理論の言葉でいえば、青い辺は \(\Z_2\) の電束線が通っているリンクだと思って読むと見通しがよい（§27.2 末尾の補足を参照）。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-27-2">頂点演算子とプラケット演算子<span class="en">Vertex and Plaquette Operators</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（頂点演算子）</span>
+頂点 \(\alpha\) に集まる4本の辺 \(i\) について
+<div class="equation" id="eq-27-V">\[
+V_\alpha = \prod_{i\,\in\,\text{vertex }\alpha} \sigma_z^{(i)} .
+\]</div>
+\(V_\alpha\) は頂点に入る下向きスピン（青い辺）の本数の<strong>偶奇</strong>を測る対角演算子で、偶数本なら \(+1\)、奇数本なら \(-1\) を返す。
+\(\sigma_z^2=1\) より \(V_\alpha^2=1\)。頂点演算子は全部で \(N_xN_y\) 個ある。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（プラケット演算子）</span>
+プラケット（最小の正方形）\(\beta\) を囲む4本の辺 \(i\) について
+<div class="equation" id="eq-27-P">\[
+P_\beta = \prod_{i\,\in\,\text{plaquette }\beta} \sigma_x^{(i)} .
+\]</div>
+\(P_\beta\) はプラケットを囲む4辺のスピンを<strong>すべて反転</strong>する（青↔黒）非対角演算子である。
+2回反転すれば元に戻るので \(P_\beta^2=1\)、固有値は \(\pm1\)。プラケット演算子も \(N_xN_y\) 個ある。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- grid -->
+  <line x1="25" y1="30" x2="355" y2="30" class="line" stroke-width="1"/>
+  <line x1="25" y1="80" x2="355" y2="80" class="line" stroke-width="1"/>
+  <line x1="25" y1="130" x2="355" y2="130" class="line" stroke-width="1"/>
+  <line x1="40" y1="15" x2="40" y2="145" class="line" stroke-width="1"/>
+  <line x1="90" y1="15" x2="90" y2="145" class="line" stroke-width="1"/>
+  <line x1="140" y1="15" x2="140" y2="145" class="line" stroke-width="1"/>
+  <line x1="190" y1="15" x2="190" y2="145" class="line" stroke-width="1"/>
+  <line x1="240" y1="15" x2="240" y2="145" class="line" stroke-width="1"/>
+  <line x1="290" y1="15" x2="290" y2="145" class="line" stroke-width="1"/>
+  <line x1="340" y1="15" x2="340" y2="145" class="line" stroke-width="1"/>
+  <!-- vertex operator at (90,80) -->
+  <line x1="40" y1="80" x2="140" y2="80" class="line accent" stroke-width="4"/>
+  <line x1="90" y1="30" x2="90" y2="130" class="line accent" stroke-width="4"/>
+  <circle cx="90" cy="80" r="5" class="accent-fill"/>
+  <text x="50" y="73" class="label">σz</text>
+  <text x="106" y="73" class="label">σz</text>
+  <text x="96" y="55" class="label">σz</text>
+  <text x="96" y="113" class="label">σz</text>
+  <text x="70" y="100" class="label">α</text>
+  <!-- plaquette operator (240,80)-(290,130) -->
+  <rect x="240" y="80" width="50" height="50" class="line accent" stroke-width="4" stroke-dasharray="7 4"/>
+  <text x="259" y="110" class="label">β</text>
+  <text x="257" y="73" class="label">σx</text>
+  <text x="257" y="147" class="label">σx</text>
+  <text x="219" y="110" class="label">σx</text>
+  <text x="296" y="110" class="label">σx</text>
+  <!-- legends -->
+  <text x="25" y="172" class="label-muted">左：頂点演算子 Vα（4辺の σz の積、青い辺の偶奇を測る）</text>
+  <text x="25" y="190" class="label-muted">右：プラケット演算子 Pβ（4辺の σx の積、4辺を反転する）</text>
+</svg>
+<figcaption>図 27.1：原書の規約での頂点演算子とプラケット演算子。量子ビットは格子の各辺の上にある。</figcaption>
+</figure>
+
+<p>
+\(\sigma_z\) 基底で \(P_\beta\) の固有状態を書くと、あるプラケットの「反転前」と「反転後」の配位の重ね合わせになる。
+\[
+P_\beta=\pm1:\qquad \frac{1}{\sqrt2}\Bigl(\ket{\text{反転前}} \pm \ket{\text{反転後}}\Bigr).
+\]
+プラケットの外の辺の状態は2つの項で共通である。この「和なら \(+1\)、差なら \(-1\)」という見方は後で何度も使う。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（規約：Kitaev の原論文とは X と Z が逆）</span>
+原書は<strong>頂点演算子を \(\sigma_z\) の積、プラケット演算子を \(\sigma_x\) の積</strong>で定義する。
+Kitaev の原論文は逆で、頂点（星）演算子が \(\sigma_x\) の積、プラケット演算子が \(\sigma_z\) の積である。
+量子情報の文献では Kitaev の規約が多く、原書の規約は物性の文献に多い。
+原書の言い方では、Kitaev の規約ではトーリック符号が<strong>格子ゲージ理論</strong>に見え、原書の規約では<strong>ループ気体 (loop gas)</strong> に見える。
+2つの規約は次のどちらかで移り合う。
+<ul>
+<li>方法1：すべてのスピンを回転して \(x\) と \(z\) を入れ替える。</li>
+<li>方法2：格子の双対変換を行い、プラケットと頂点を入れ替える。</li>
+</ul>
+この双対性は原書 §31.7（<a href="chapter31.html">第31章</a>）で詳しく論じられる。文献を読むときは、まずどちらの規約かを確かめること。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（\(\Z_2\) 格子ゲージ理論の言葉での読み方）</span>
+原書はゲージ理論との対応の詳細を §31.7 に委ねているが、ハミルトニアン形式の \(\Z_2\) ゲージ理論に慣れていれば次の辞書で読める。
+原書の規約は<strong>電場基底</strong>で書いた \(\Z_2\) ゲージ理論に当たる。
+リンク上の \(\sigma_z\) を \(\Z_2\) 電場（\(-1\) なら電束が1本通る）、\(\sigma_x\) をリンク変数（電束を1本付け外しする演算子）と読むと、
+\(V_\alpha\) は頂点 \(\alpha\) での Gauss 則の演算子（\(\Z_2\) 電荷のパリティ）、\(P_\beta\) はプラケットを回るリンク変数の積（Wilson プラケット、\(\Z_2\) 磁束）になる。
+\(V_\alpha=1\) は「電荷なしの Gauss 則」、すなわち電束線が閉じていることを表し、これが §27.3 のループ配位である。
+Kitaev の規約はこれをリンク変数が対角な基底（\(\sigma_z\) がリンク変数、星演算子 \(\prod\sigma_x\) がゲージ変換の生成子）で書いたものに当たる。
+<a href="chapter28.html">第28章</a>で頂点欠陥を電荷 \(e\)、プラケット欠陥を磁束 \(m\) と呼ぶのはこの読み方と整合している。
+</div>
+
+<h3 id="sec-27-2-1">§27.2.1 演算子はすべて可換</h3>
+
+<p>
+\(V_\alpha\) どうしは \(\sigma_z\) だけ、\(P_\beta\) どうしは \(\sigma_x\) だけでできているので、
+\([V_\alpha,V_{\alpha'}]=0\)、\([P_\beta,P_{\beta'}]=0\) は自明である。非自明なのは
+</p>
+<div class="equation" id="eq-27-comm">\[
+[V_\alpha, P_\beta]=0 \qquad (\text{すべての } \alpha,\beta).
+\]</div>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+頂点 \(\alpha\) とプラケット \(\beta\) が辺を共有しなければ明らかに可換。
+共有するときは、幾何学的に必ず<strong>ちょうど2本</strong>の辺を共有する（頂点がプラケットの角にある）。
+共有辺ごとに \(\sigma_x^{(i)}\) と \(\sigma_z^{(i)}\) の反可換から符号 \(-1\) が出るので、合計 \((-1)^2=+1\) で可換になる。
+絵でいえば、プラケットを反転しても、その角の頂点に入る青い辺の本数は \(0\) か \(\pm2\) しか変わらず、偶奇は変わらない。
+</div>
+
+<h3 id="sec-27-2-2">§27.2.2 これは完全な演算子の組か（少し足りない）</h3>
+
+<p>
+互いに可換で固有値 \(\pm1\) の演算子が \(N_xN_y + N_xN_y = 2N_xN_y\) 個あり、スピンの数 \(2N_xN_y\) と一致する。
+では全固有値を指定すれば状態が一意に決まるかというと、そうならない。演算子の間に2つの拘束があるからである。
+</p>
+<div class="equation" id="eq-27-constraintV">\[
+\prod_\alpha V_\alpha = 1 ,
+\]</div>
+<div class="equation" id="eq-27-constraintP">\[
+\prod_\beta P_\beta = 1 .
+\]</div>
+<p>
+各辺はちょうど2つの頂点に属するので、全 \(V_\alpha\) の積には各 \(\sigma_z^{(i)}\) が2回ずつ現れて恒等演算子になる。
+各辺がちょうど2つのプラケットに属することから \(P_\beta\) についても同じである（どちらもトーラスのような閉曲面で成り立つ）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（自由度の勘定）</span>
+独立に指定できる固有値は \(V\) について \(N_xN_y-1\) 個、\(P\) について \(N_xN_y-1\) 個、合わせて \(2(N_xN_y-1)\) 個の二択である。
+スピンは \(2N_xN_y\) 個あるから、<strong>二択の自由度が2つ</strong>残る。
+この残った2つが、トーリック符号で保護される<strong>2個の論理量子ビット</strong>になる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-27-3">符号空間の構成<span class="en">Building the Code Space</span></h2>
+
+<p>
+符号空間（量子情報を載せる部分空間）を次の2つの規則で定義する。誤り訂正の手続きは、この規則が満たされているかを繰り返し検査する。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（トーリック符号の符号空間）</span>
+<ul>
+<li><strong>規則1</strong>：すべての頂点で \(V_\alpha = 1\)。</li>
+<li><strong>規則2</strong>：すべてのプラケットで \(P_\beta = 1\)。</li>
+</ul>
+\(V_\alpha\) と \(P_\beta\) がこの符号の<strong>スタビライザー (stabilizer)</strong> である（<a href="chapter26.html">第26章</a> §26.4.1）。
+どれかを測って \(-1\) が出たら、物理的な誤りが起きて系が符号空間を出たことが分かる。
+</div>
+
+<p>
+<strong>規則1の意味。</strong> どの頂点にも青い辺が偶数本入る。したがって青い線には端点も分岐もなく、
+配位は<strong>閉じたループ</strong>の集まりになる（頂点で4本が出会う交差は許される）。
+</p>
+<p>
+<strong>規則2の意味。</strong> どのプラケットについても「反転前」と「反転後」が符号 \(+\) で等しく重ね合わさっている。
+\(V\) と \(P\) は可換だから、プラケットの反転はループ配位をループ配位に移し、規則1を壊さない。
+</p>
+
+<p>
+両方を満たす波動関数は次のように作れる。規則1を満たす配位をひとつ選び（参照配位）、そこからプラケット反転で到達できる配位をすべて等しい重みで足す。
+</p>
+<div class="equation" id="eq-27-loopgas">\[
+\ket{\psi} = \mathcal{N}^{-1/2} \sum_{\substack{\text{参照配位からプラケット反転で}\\ \text{到達できるループ配位}}} \ket{\text{ループ配位}} ,
+\]</div>
+<p>
+\(\mathcal N\) は和の項数である。すべてのプラケットについて反転前後が同じ重みで入るので \(P_\beta=+1\) が成り立つ。これがループ気体の描像である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（プラケット反転で変わらない量：巻き付きの偶奇）</span>
+トーラスの非自明サイクルに沿って1本の切断線を引き、それを横切る青い辺の本数を数える。
+プラケットを1つ反転すると、切断線が横切る辺は 0 本か 2 本変わるだけなので、この本数の<strong>偶奇は不変</strong>である。
+切断線を平行にずらしても偶奇は同じである。
+したがって <a class="eq-ref" href="#eq-27-loopgas"></a> の和に現れるのは、2つの非自明サイクルを巻くループの本数の偶奇が参照配位と同じ配位だけである。
+</div>
+
+<p>
+偶奇の組は4通りあるから、符号空間には4つの独立な状態がある。
+</p>
+<div class="equation" id="eq-27-four">\[
+\ket{\psi_{ee}},\quad \ket{\psi_{eo}},\quad \ket{\psi_{oe}},\quad \ket{\psi_{oo}} .
+\]</div>
+<p>
+e (even)・o (odd) は各非自明サイクルを巻く青いループの本数の偶奇である。
+原書の約束では、たとえば \(\ket{\psi_{eo}}\) は鉛直方向のサイクル（メリディアン）を巻くループが偶数本、水平方向のサイクル（ロンジチュード）を巻くループが奇数本の配位すべての和である。
+これは §27.2.2 の勘定（残り2量子ビット）と一致する。
+</p>
+
+<p>
+2個の論理量子ビットの一般の状態
+\(\alpha\ket{00}_L+\beta\ket{01}_L+\gamma\ket{10}_L+\delta\ket{11}_L\) を
+</p>
+<div class="equation" id="eq-27-encode">\[
+\ket{\psi} = \alpha\ket{\psi_{ee}} + \beta\ket{\psi_{eo}} + \gamma\ket{\psi_{oe}} + \delta\ket{\psi_{oo}}
+\]</div>
+<p>
+に符号化する。格子上のスピンが「物理」量子ビットである。
+</p>
+
+<div class="remark-box">
+<span class="box-title">直観（なぜ誤りに強いか）</span>
+\(\ket{\psi_{ee}}\) を \(\ket{\psi_{eo}}\) に変えるには、サイクルを一周する青いループを1本挿入する、つまり<strong>一列分のスピンを一斉に反転</strong>しなければならない。
+途中までしか反転しないと青い線に端点ができ、\(V_\alpha=-1\) の頂点として検出される。
+論理状態を変えるには系の大きさに比例する数の物理誤りが必要で、途中の段階は端点として見える。これが訂正を可能にする。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-27-4">誤りと誤り訂正<span class="en">Errors and Error Correction</span></h2>
+
+<p>
+符号空間の状態に、知らないうちに1個のスピンへ演算子が掛かったとする。
+\(\sigma_x\) の場合、\(\sigma_z\) の場合、両方の組合せを順に調べ、最後にそれで十分である理由を述べる。
+</p>
+
+<h3 id="sec-27-4-1">§27.4.1 \(\sigma_x\) 誤り</h3>
+
+<p>
+辺 \(i\) に \(\sigma_x^{(i)}\) が掛かると、これはすべての \(P_\beta\) と可換だが、辺 \(i\) の両端の2つの頂点の \(V_\alpha\) とは反可換である。
+\(V_\alpha\ket\psi=\ket\psi\) から
+\[
+V_\alpha\bigl[\sigma_x^{(i)}\ket{\psi}\bigr] = -\,\sigma_x^{(i)} V_\alpha\ket{\psi} = -\bigl[\sigma_x^{(i)}\ket{\psi}\bigr] ,
+\]
+すなわち辺の両端の頂点が \(V_\alpha=-1\) になる。絵でいえば、辺を1本反転したので両端の頂点に入る青い辺が奇数本になった。
+以下、\(V_\alpha=-1\) の頂点を<strong>頂点欠陥</strong>と呼ぶ。
+</p>
+
+<p>
+訂正手続きは \(V_\alpha\) を頻繁に測り、隣り合う頂点欠陥の対を見つけたら間の辺に \(\sigma_x\) を掛けて戻す。
+離れた場所で起きた複数の誤りは、それぞれ独立に直せる。
+</p>
+
+<p>
+<strong>誤りストリング。</strong> 頂点を共有する2辺に \(\sigma_x\) が掛かると、共有頂点は2回符号を変えて \(+1\) に戻り、
+欠陥はつながった「ストリング」の<strong>両端だけ</strong>に残る。一般に \(\sigma_x\) を辺の経路に沿って掛けると、欠陥は経路の両端に現れる。
+訂正は、欠陥を見つけたら近くの相手と組にし、その間に \(\sigma_x\) のストリングを掛けて欠陥を引き寄せ、対消滅させる。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（測れるのは端点だけ）</span>
+測定で分かるのは \(V_\alpha=-1\) の頂点の位置、つまりストリングの端点だけで、ストリングがどの経路を通ったかは観測できない。
+そこで訂正のときに経路を「推測」することになるが、推測が元の経路と違っていても構わない場合がある（次の結果）。
+</div>
+
+<div class="thm-box">
+<span class="box-title">結果（閉じた \(\sigma_x\) ループ ＝ 囲まれたプラケット演算子の積）</span>
+<div class="equation" id="eq-27-xloop">\[
+\prod_{i\,\in\,\text{ループ}} \sigma_x^{(i)} = \prod_{\beta\,\in\,\text{ループの内側}} P_\beta .
+\]</div>
+内側の辺は2つのプラケットに属して \(\sigma_x^2=1\) で消え、境界のループ上の \(\sigma_x\) だけが残るからである。
+符号空間では \(P_\beta=1\) なので、可縮な閉ループは符号空間に<strong>恒等演算子</strong>として作用する。
+誤りの経路と訂正の経路が違っていても、合わせて可縮な閉ループになるなら訂正は成功する。
+</div>
+
+<p>
+これに対し、ストリングが<strong>非自明サイクルを一周</strong>して閉じると（欠陥をサイクルに沿って一周させて対消滅させると）、
+欠陥は残らず符号空間には戻るが、そのサイクルを巻く青いループの本数の偶奇が変わる。これは論理誤りである。
+</p>
+<div class="equation" id="eq-27-logicalX">\[
+\alpha\ket{\psi_{ee}}+\beta\ket{\psi_{eo}}+\gamma\ket{\psi_{oe}}+\delta\ket{\psi_{oo}}
+\;\longrightarrow\;
+\alpha\ket{\psi_{oe}}+\beta\ket{\psi_{oo}}+\gamma\ket{\psi_{ee}}+\delta\ket{\psi_{eo}} .
+\]</div>
+<p>
+もう一方のサイクルを一周すれば第2添字の偶奇が入れ替わる。
+トーラスを大きくすれば、論理誤りに必要な物理誤りの個数はサイクルの長さに比例して増える。
+その前に \(V_\alpha=-1\) を検出して直し続ければ、論理情報は保たれる。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- grid -->
+  <line x1="25" y1="30" x2="355" y2="30" class="line" stroke-width="1"/>
+  <line x1="25" y1="80" x2="355" y2="80" class="line" stroke-width="1"/>
+  <line x1="25" y1="130" x2="355" y2="130" class="line" stroke-width="1"/>
+  <line x1="40" y1="15" x2="40" y2="145" class="line" stroke-width="1"/>
+  <line x1="90" y1="15" x2="90" y2="145" class="line" stroke-width="1"/>
+  <line x1="140" y1="15" x2="140" y2="145" class="line" stroke-width="1"/>
+  <line x1="190" y1="15" x2="190" y2="145" class="line" stroke-width="1"/>
+  <line x1="240" y1="15" x2="240" y2="145" class="line" stroke-width="1"/>
+  <line x1="290" y1="15" x2="290" y2="145" class="line" stroke-width="1"/>
+  <line x1="340" y1="15" x2="340" y2="145" class="line" stroke-width="1"/>
+  <!-- sigma_x string on edges -->
+  <path d="M 90 130 L 140 130 L 140 80 L 190 80" class="line accent" stroke-width="4"/>
+  <circle cx="90" cy="130" r="6" class="accent-fill"/>
+  <circle cx="190" cy="80" r="6" class="accent-fill"/>
+  <text x="146" y="110" class="label">σx</text>
+  <text x="74" y="121" class="label">e</text>
+  <text x="197" y="71" class="label">e</text>
+  <!-- sigma_z errors: edges crossed by dual path -->
+  <line x1="240" y1="80" x2="290" y2="80" class="line" stroke-width="4"/>
+  <line x1="290" y1="80" x2="290" y2="130" class="line" stroke-width="4"/>
+  <path d="M 265 55 L 265 105 L 315 105" class="line accent" stroke-width="2" stroke-dasharray="5 4"/>
+  <rect x="259" y="49" width="12" height="12" class="accent-fill"/>
+  <rect x="309" y="99" width="12" height="12" class="accent-fill"/>
+  <text x="245" y="50" class="label">m</text>
+  <text x="324" y="100" class="label">m</text>
+  <text x="243" y="98" class="label">σz</text>
+  <text x="294" y="127" class="label">σz</text>
+  <!-- legends -->
+  <text x="25" y="172" class="label-muted">左：辺に沿う σx のストリング。両端（●）が頂点欠陥 Vα = −1</text>
+  <text x="25" y="190" class="label-muted">右：σz を掛けた辺（太線）を貫く双対格子上のストリング。両端（■）がプラケット欠陥 Pβ = −1</text>
+</svg>
+<figcaption>図 27.2：2種類の誤りストリング。観測できるのは端点の欠陥だけである。記号 e, m は第28章での呼び名。</figcaption>
+</figure>
+
+<h3 id="sec-27-4-2">§27.4.2 \(\sigma_z\) 誤り</h3>
+
+<p>
+辺に \(\sigma_z\) が掛かる場合も同様である。\(\sigma_z^{(i)}\) はすべての \(V_\alpha\) と可換だが、辺 \(i\) を含む2つのプラケットの \(P_\beta\) と反可換で、
+両隣のプラケットが \(P_\beta=-1\) になる（<strong>プラケット欠陥</strong>）。
+絵でいえば、符号空間ではプラケットの反転前後が和で入っているが、\(\sigma_z\) はその辺が青い項にだけ \(-1\) を掛けるので、和が差に変わる。
+</p>
+
+<p>
+同じプラケットの異なる2辺に \(\sigma_z\) が掛かると、そのプラケットは2回符号を変えて \(+1\) に戻り、欠陥は両端のプラケットに残る。
+欠陥どうしは、\(\sigma_z\) を掛けた辺を貫いてプラケットの中心から中心へ進む経路で結ばれる。
+これは<strong>双対格子 (dual lattice)</strong> 上のストリングである。\(\sigma_x\) の場合と同じく、観測できるのは端点のプラケット欠陥だけである。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（双対格子上の閉じた \(\sigma_z\) ループ ＝ 囲まれた頂点演算子の積）</span>
+<div class="equation" id="eq-27-zloop">\[
+\prod_{i\,\in\,\text{双対ループ}} \sigma_z^{(i)} = \prod_{\alpha\,\in\,\text{双対ループの内側}} V_\alpha .
+\]</div>
+符号空間では \(V_\alpha=1\) なので、可縮な双対ループは恒等演算子として作用し、欠陥をどの経路で引き戻しても訂正は成功する。
+ループ気体の言葉では、\(\sigma_z\) の積は青いループと交わるたびに \(-1\) を拾うが、閉じた青いループは囲まれた領域に入ったら必ず出るので、交点は偶数個である。
+</div>
+
+<p>
+双対ストリングが非自明サイクルを一周すると論理誤りになる。
+水平方向のサイクルを一周する \(\sigma_z\) のストリングは、それと交わる向き、すなわち鉛直方向のサイクルを巻く青いループの本数の偶奇を測る。
+</p>
+<div class="equation" id="eq-27-logicalZ">\[
+\alpha\ket{\psi_{ee}}+\beta\ket{\psi_{eo}}+\gamma\ket{\psi_{oe}}+\delta\ket{\psi_{oo}}
+\;\longrightarrow\;
+\alpha\ket{\psi_{ee}}+\beta\ket{\psi_{eo}}-\gamma\ket{\psi_{oe}}-\delta\ket{\psi_{oo}} .
+\]</div>
+<p>
+鉛直方向のサイクルを一周するストリングなら、\(\beta\) と \(\delta\) の項に \(-1\) が付く。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（論理演算子として見る）</span>
+<a class="eq-ref" href="#eq-27-logicalX"></a> は一方の論理量子ビットのビット反転、<a class="eq-ref" href="#eq-27-logicalZ"></a> は同じ量子ビットの位相反転である。
+非自明サイクルを巻く \(\sigma_x\) のループと、それと交差するサイクルを巻く \(\sigma_z\) の双対ループは、ちょうど1本の辺で交わるので反可換になる。
+ゲージ理論の言葉では、非可縮な Wilson ループと 't Hooft ループの組が論理量子ビットの Pauli 演算子になっている。
+</div>
+
+<h3 id="sec-27-4-3">§27.4.3 \(\sigma_x\) と \(\sigma_z\) の組合せ</h3>
+
+<p>
+両方の誤りが混ざる場合（たとえば \(\sigma_y = \ii\sigma_x\sigma_z\)）、頂点欠陥とプラケット欠陥の両方が現れる。
+それぞれを別々の手続きで直せばよいが、\(\sigma_x\) と \(\sigma_z\) は反可換なので、符号に注意が要る。
+</p>
+
+<p>
+頂点欠陥を引き回して閉じた \(\sigma_x\) ループを作ると、<a class="eq-ref" href="#eq-27-xloop"></a> によりその値は内側の \(P_\beta\) の積である。
+内側にプラケット欠陥が1個あれば、ループの値は \(-1\) になる。
+同様に、プラケット欠陥を頂点欠陥のまわりに一周させて閉じた双対ループを作ると、<a class="eq-ref" href="#eq-27-zloop"></a> により \(-1\) が出る。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（ループは内側を測定する）</span>
+欠陥対を作り、一方をループに沿って一周させて対消滅させると、そのループの内側に何があるかを測定したことになる。
+頂点欠陥がプラケット欠陥を一周すると \(-1\)、その逆も \(-1\)。
+</div>
+
+<p>
+誤り訂正の観点では、この \(-1\) は波動関数全体に掛かる位相なので問題にならない。論理量子ビットは全体位相を除いて保護されている。
+一方、物質相として見るとこの \(-1\) は欠陥どうしの組みひも統計そのものであり、<a href="chapter28.html">第28章</a>の主題になる。
+</p>
+
+<h3 id="sec-27-4-4">§27.4.4 その他の誤り</h3>
+
+<p>
+1量子ビットに掛かる任意の演算子は \(\id,\sigma_x,\sigma_z,\sigma_x\sigma_z\) の線形結合で書ける。
+符号空間は頂点欠陥もプラケット欠陥もない状態として定義されているので、
+両方の欠陥を検出して消せるなら、同時に起きる物理誤りが多すぎない限り、任意の誤りを訂正できる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-27-5">異なる格子・異なるトポロジー上のトーリック符号<span class="en">The Toric Code on Different Lattices and Different Topologies</span></h2>
+
+<p>
+ここまで正方格子を使ったが、三角格子でも蜂の巣格子でも、不規則な「格子」（多角形分割）でもよい。
+頂点演算子は（集まる辺が何本でも）その頂点に入る青い辺の偶奇を測り、プラケット演算子は（何角形でも）その周の辺をすべて反転する。
+どんな形でも \(V_\alpha\) と \(P_\beta\) は互いに可換で、符号空間は <a class="eq-ref" href="#eq-27-loopgas"></a> の形のループの和で書ける。
+本質的なのは格子の幾何ではなく、<strong>面のトポロジー</strong>である。
+</p>
+
+<p>
+向き付け可能な閉曲面は種数（ハンドルの数）\(g\) で分類される。多面体分割に対する Euler の公式
+\[
+2-2g = (\text{頂点の数}) - (\text{辺の数}) + (\text{面の数})
+\]
+を、各辺にスピンが1個あることを使って書き直すと
+</p>
+<div class="equation" id="eq-27-euler">\[
+\bigl[(\text{頂点演算子の数}) + (\text{プラケット演算子の数}) - 2\bigr] + 2g = (\text{スピンの数}) .
+\]</div>
+<p>
+右辺は二択の自由度の総数、角括弧の中は拘束 <a class="eq-ref" href="#eq-27-constraintV"></a>、<a class="eq-ref" href="#eq-27-constraintP"></a> を引いた独立なスタビライザーの数である。
+残る \(2g\) が、スタビライザーの固有値を全部指定しても決まらない量子ビットの数になる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（種数 \(g\) の面上の符号空間）</span>
+種数 \(g\) の閉曲面上のトーリック符号は \(2g\) 個の論理量子ビットを持つ（符号空間の次元 \(2^{2g}=4^g\)）。
+球面（\(g=0\)）では 0 個、トーラス（\(g=1\)）では 2 個、2つ穴トーラスでは 4 個。
+これは独立な非自明サイクルが \(2g\) 本あることに対応し、各量子ビットは各サイクルを巻く青いループの本数の偶奇を表す。
+</div>
+
+<p>
+向き付け不可能な面（Klein の壺など）にも定義できるが、原書は向き付け可能な場合に限っている。
+また、Shor の9量子ビット符号（<a href="chapter26.html">第26章</a> §26.4.2）は、特異点を持つ面の上のトーリック符号と見なせる（原書の演習で扱う）。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-27-6">\(\Z_N\) トーリック符号（簡潔に）<span class="en">\(\Z_N\) Toric Code (Briefly)</span></h2>
+
+<p>
+最も単純な一般化として、各辺に \(N\) 状態系（qudit）を置く。原書は初読では飛ばしてよいとしている。
+辺 \(i\) の状態を \(s_i\in\{0,\dots,N-1\}\) で表す（\(N=2\) では \(s=0\) が黒い辺、\(s=1\) が青い辺）。
+\(e^{2\pi\ii s/N}\) という形で考えると \(N\) 周期性が自然に見える。
+\(N&gt;2\) では各辺に<strong>向き（矢印）</strong>を決めておく必要がある。向きの選び方は任意でよい。
+\(s_i\) は矢印の向きに辺を流れる \(\Z_N\) 値の「電流」と思うとよい。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（\(\Z_N\) の頂点演算子）</span>
+頂点 \(\alpha\) での電流の湧き出し・吸い込みを測る演算子を
+<div class="equation" id="eq-27-Q">\[
+Q_\alpha = \Bigl(\sum_{i\,:\,\alpha\text{ に入る辺}} \hat s_i \;-\; \sum_{i\,:\,\alpha\text{ から出る辺}} \hat s_i\Bigr) \bmod N
+\]</div>
+とする（\(\hat s_i\) は \(s_i\) を測る演算子）。固有値は \(0,\dots,N-1\)。
+\(N=2\) の頂点演算子に対応するのは \(V_\alpha = e^{2\pi\ii Q_\alpha/N}\) である。
+\(N\) を法としているので、欠陥が湧き出しか吸い込みかの区別には意味がない（\(Q_\alpha=m\) と \(m+pN\) は同じ）。
+</div>
+
+<p>
+各辺はある頂点に入り別の頂点から出るので、\(\sum_\alpha Q_\alpha \equiv 0 \pmod N\)、すなわち \(\prod_\alpha V_\alpha=1\) が成り立つ（<a class="eq-ref" href="#eq-27-constraintV"></a> の一般化）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（\(\Z_N\) のプラケット演算子）</span>
+プラケット \(\beta\) の周の各辺について
+<div class="equation" id="eq-27-A">\[
+A_\beta:\quad
+\begin{cases}
+s_i \to (s_i+1) \bmod N &amp; \text{矢印が } \beta \text{ のまわりを時計回りに向く辺}\\[2pt]
+s_i \to (s_i-1) \bmod N &amp; \text{矢印が反時計回りに向く辺}
+\end{cases}
+\]</div>
+と作用する演算子を \(A_\beta\) とする。\((A_\beta)^N=1\) なので固有値は \(e^{2\pi\ii k/N}\)（\(k=0,\dots,N-1\)）。
+</div>
+
+<p>
+1本の辺は、一方の隣接プラケットから見て時計回り、他方から見て反時計回りを向く。
+したがって両側のプラケットに \(A\) を掛けるとその辺は元に戻り、\(\prod_\beta A_\beta=1\) が従う（<a class="eq-ref" href="#eq-27-constraintP"></a> の一般化）。
+\(\sigma_x\sigma_z=-\sigma_z\sigma_x\) に当たる交換関係は、プラケット \(\beta\) の周上の辺 \(j\) について
+</p>
+<div class="equation" id="eq-27-ZNcomm">\[
+e^{2\pi\ii \hat s_j/N} A_\beta = e^{\pm 2\pi\ii/N} A_\beta\, e^{2\pi\ii \hat s_j/N}
+\]</div>
+<p>
+である。符号は辺の矢印が \(\beta\) のまわりを時計回りなら \(+\)、反時計回りなら \(-\)。
+</p>
+
+<h3 id="sec-27-6-1">§27.6.1 符号空間</h3>
+
+<p>
+\(Q_\alpha\) と \(A_\beta\) はすべて互いに可換である（原書の演習で示す）。符号空間は
+\[
+Q_\alpha = 0\ \ (\text{すべての頂点}),\qquad A_\beta = 1\ \ (\text{すべてのプラケット})
+\]
+で定義する。\(Q_\alpha=0\) は各頂点で流入と流出が \(N\) を法として釣り合うこと、つまり \(\Z_N\) 値の電流に対する <strong>Kirchhoff の第一法則</strong>であり、\(N=2\) のループ条件の一般化になっている。
+波動関数は通常どおり
+</p>
+<div class="equation" id="eq-27-ZNstate">\[
+\ket{\psi} = \mathcal N^{-1/2} \sum_{\substack{Q_\alpha=0 \text{ の参照配位から}\\ A_\beta \text{ の作用で到達できる配位}}} \ket{\text{配位}}
+\]</div>
+<p>
+と書ける。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（\(A_\beta\) は Hermite でない）</span>
+\(N&gt;2\) では \(A_\beta\) は Hermite 演算子ではないので、そのままでは測定量にならない。
+代わりに \(\tfrac12(A_\beta+A_\beta^\dagger)\) と \(\tfrac{1}{2\ii}(A_\beta-A_\beta^\dagger)\) を測ればよい。
+\(A_\beta^\dagger=A_\beta^{-1}\) なので、これらは \(A_\beta\) と同じ固有ベクトルを持つ。
+</div>
+
+<p>
+非可縮なサイクルごとに、それを横切る \(\Z_N\) 値の電流の総量が定義でき、\(A_\beta\) の作用で変わらない。
+種数 \(g\) の面には \(2g\) 本の非可縮サイクルがあるので、\(\Z_N\) トーリック符号は \(N\) 状態の qudit を \(2g\) 個記憶でき、符号空間の次元は
+\[
+N^{2g}
+\]
+である（Euler 標数を使った確認は原書の演習）。
+</p>
+
+<h3 id="sec-27-6-2">§27.6.2 誤り</h3>
+
+<p>
+<strong>頂点欠陥。</strong> ある辺の \(s\) を1だけ増やすと、その両端の頂点が \(Q_\alpha=+1\) と \(Q_\alpha=-1\) になる。
+一般に、向きのついた誤りストリングを考え、ストリングの向きと矢印がそろう辺では \(s\to s+1\)、逆向きの辺では \(s\to s-1\) とする。
+ストリングの頭に \(Q_\alpha=+1\)、尾に \(Q_\alpha=-1\) の欠陥ができる。
+\(m\) 回繰り返せば \(Q_\alpha=\pm m\) の欠陥になり、欠陥を重ねると電荷は \(N\) を法として加算される。
+欠陥は必ず \(\pm\) の対で生じ、全系の \(\sum_\alpha Q_\alpha\) は \(0\) のままである。
+</p>
+
+<p>
+\(Q_\alpha=+1\) の欠陥を時計回りに一周させて \(Q_\alpha=-1\) の相手と対消滅させると、閉じたストリングが残る。これは
+</p>
+<div class="equation" id="eq-27-ZNxloop">\[
+\bigl(Q_\alpha=+1 \text{ の欠陥を時計回りに一周}\bigr) = \prod_{\beta\,\in\,\text{内側}} A_\beta
+\]</div>
+<p>
+に等しい（<a class="eq-ref" href="#eq-27-xloop"></a> の一般化。反時計回りなら \(A_\beta^{-1}\) の積）。
+符号空間では \(A_\beta=1\) なので可縮なループは何もしないが、非可縮サイクルを一周させると符号空間内の別の状態に移り、論理誤りになる。
+</p>
+
+<p>
+<strong>プラケット欠陥。</strong> 辺 \(j\) に \(X_j = e^{2\pi\ii \hat s_j/N}\) を掛ける。
+交換関係 <a class="eq-ref" href="#eq-27-ZNcomm"></a> により、辺の矢印の左側のプラケットの \(A_\beta\) の固有値に \(e^{2\pi\ii/N}\)、右側のプラケットに \(e^{-2\pi\ii/N}\) が掛かる。
+\(X_j^{-1}\) なら逆の位相である。これらを続けて掛けると、欠陥プラケットの対を引き離せる。
+（原書の記号 \(X_j\) は \(\hat s_j\) について対角な演算子であり、\(N=2\) では \(\sigma_z\) に当たる。名前に引きずられないこと。）
+</p>
+
+<p>
+\(A_\beta=e^{2\pi\ii/N}\) の欠陥を時計回りに一周させて対消滅させると、系は符号空間に戻り、位相
+</p>
+<div class="equation" id="eq-27-ZNzloop">\[
+\bigl(A_\beta=e^{2\pi\ii/N} \text{ の欠陥を時計回りに一周}\bigr) = \prod_{\alpha\,\in\,\text{内側}} e^{2\pi\ii Q_\alpha/N}
+\]</div>
+<p>
+が付く（<a class="eq-ref" href="#eq-27-zloop"></a> の一般化）。
+ループが横切る辺の矢印がすべて内向きの場合を考えると分かりやすい。このとき一周は各辺に \(X_j\) を掛けることに当たり、
+領域に流れ込む電流の総和、すなわち内側の \(Q_\alpha\) の総和を測ることになる（矢印の向きを変えても結果は同じ）。
+これは内側の \(\Z_N\) 電荷を境界の電束で測るという、Gauss の法則そのものである。
+プラケット欠陥を非可縮サイクルに沿って一周させれば、やはり論理誤りになる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第27章のまとめ</span>
+<ul>
+<li>トーリック符号はトポロジカルな量子メモリの典型例。トーラス上の格子の各辺に量子ビットを置く（正方格子なら \(N=2N_xN_y\) 個）。</li>
+<li>原書の規約：頂点演算子 \(V_\alpha=\prod\sigma_z\)（青い辺の偶奇）、プラケット演算子 \(P_\beta=\prod\sigma_x\)（4辺の反転）。Kitaev の原論文とは \(\sigma_x\leftrightarrow\sigma_z\) が逆。</li>
+<li>\(V_\alpha\)、\(P_\beta\) はすべて可換。拘束 \(\prod V_\alpha=\prod P_\beta=1\) のため独立なのは \(2(N_xN_y-1)\) 個で、2量子ビット分の自由度が残る。</li>
+<li>符号空間は \(V_\alpha=P_\beta=1\)。波動関数は閉ループ配位の等重率の和で、非自明サイクルを巻くループの偶奇（ee, eo, oe, oo）が2個の論理量子ビットを担う。</li>
+<li>\(\sigma_x\) 誤りは辺上のストリングの両端に頂点欠陥を、\(\sigma_z\) 誤りは双対格子上のストリングの両端にプラケット欠陥を作る。測れるのは端点だけ。</li>
+<li>可縮な閉ループは内側のスタビライザーの積に等しく、符号空間に恒等的に作用する。非自明サイクルを一周するストリングだけが論理誤りを起こす。</li>
+<li>頂点欠陥がプラケット欠陥を一周すると \(-1\)。ループは内側にあるものを測定する。</li>
+<li>格子の形は任意でよく、種数 \(g\) の面では論理量子ビットは \(2g\) 個。</li>
+<li>\(\Z_N\) 版：辺に \(s\in\{0,\dots,N-1\}\) と向きを与え、\(Q_\alpha=0\)（Kirchhoff 則）と \(A_\beta=1\) で符号空間を定める。次元は \(N^{2g}\)。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>
