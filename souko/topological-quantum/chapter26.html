@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="量子誤り訂正の入門：古典の繰り返し符号、量子の複製不可能定理、3量子ビットの反転訂正符号、スタビライザーとシンドローム、Shor の9量子ビット符号">
+  <title>第26章 量子誤り訂正入門 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter26" data-chapter="26">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第26章に対応</span>
+  第26章 量子誤り訂正入門
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+トーリック符号（<a href="chapter27.html">第27章</a>）に入る前に、量子誤り訂正の基本的な考え方を導入する章である（本書の位置づけは「Optional / Easy」）。
+量子誤り訂正符号の少なくとも一部は、これまで学んだトポロジカルな考え方と非常に近い関係にある。
+古典ビットの繰り返し符号を出発点に、量子では「複製不可能」と「測定が状態を変える」という2つの障害があること、
+それでも Shor の符号のようにスタビライザーを使って訂正が可能になることを示す。
+前半の古典・量子情報の復習は多くの読者に既知の内容だろう。後半の §26.4 は完全性のために載せられており、初読では必須でない。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-26-1">古典情報と量子情報<span class="en">Classical Versus Quantum Information</span></h2>
+
+<h3 id="sec-26-1-1">§26.1.1 メモリ</h3>
+
+<p>
+<strong>古典メモリ。</strong> 古典情報の単位はビットで、0 か 1 の値をとる2状態系である。\(N\) ビットのメモリは \(2^N\) 個の状態のどれにもなれ、各状態が \(011100111\) のようなビット列に対応する。
+</p>
+<p>
+<strong>量子メモリ。</strong> 量子情報の単位は<strong>量子ビット (qubit)</strong> で、正規直交ベクトル \(\ket0,\ket1\) が張る2次元の複素ヒルベルト空間である。任意の状態は
+\[
+\ket\psi=\alpha\ket0+\beta\ket1,\qquad |\alpha|^2+|\beta|^2=1
+\]
+と書ける。\(N\) 量子ビットのメモリは \(2^N\) 次元の複素ヒルベルト空間のベクトルである。たとえば2量子ビットでは一般の状態が4つの複素パラメータで指定される：
+<div class="equation" id="eq-26-two">\[
+\ket\psi=\alpha\ket{00}+\beta\ket{01}+\gamma\ket{10}+\delta\ket{11},\qquad |\alpha|^2+|\beta|^2+|\gamma|^2+|\delta|^2=1 .
+\]</div>
+古典メモリなら4つの状態のどれにあるかを言えば足りるが、量子メモリでは4つの複素数を指定しなければならない。
+</p>
+</section>
+
+<section>
+<h2 id="sec-26-2">誤り<span class="en">Errors</span></h2>
+
+<p>
+<strong>誤り (error)</strong> とは、メモリの状態を意図した状態から偶発的にずらす過程である。1度に1ビット（1量子ビット）だけが影響を受ける場合（「最小の」誤り）を誤りモデルにすることが多い。
+実際にはもっと複雑な誤りも起こりうる。
+</p>
+
+<h3 id="sec-26-2-1">§26.2.1 古典の誤り訂正</h3>
+
+<p>
+古典メモリの情報を守る簡単な方法は、1ビットの情報を複数コピーして保存することである。たとえば3つの<strong>物理ビット</strong>で1つの<strong>論理ビット</strong>を保存する
+（3ビット繰り返し符号）。論理ビット 0 を 000 に、1 を 111 に割り当てる。メモリは常に 000 か 111 のどちらかにあるべきで、この2つの状態の集合を<strong>符号空間 (code space)</strong> と呼ぶ。
+</p>
+<div class="table-wrap"><table>
+<tr><th>論理ビット</th><th>物理ビット</th></tr>
+<tr><td>0</td><td>000</td></tr>
+<tr><td>1</td><td>111</td></tr>
+</table></div>
+<p>
+符号空間の外にいれば誤りが起きたとわかる。物理ビットの1つが反転すると、3ビットが揃わなくなるので反転したビットがすぐ見つかる。
+たとえば 000 の2番目のビットに誤りが入ると 010 になり、多数決で間違ったビットを特定して反転し直せばよい。
+つまり訂正の手順は、3ビットを常に比べ、揃っていなければ揃うように1つを反転することである。
+誤りが十分まれで、1度に1ビットにしか起こらないなら、この方式は有効である。
+2ビットが同時に反転すると訂正できない論理誤りになるので、複数の誤りが重なる前に頻繁に状態を調べて訂正する必要がある。
+5ビットや7ビットのようにもっと冗長にすれば複数の反転にも耐えられる（5ビットなら2つの反転まで多数決で訂正できる）。
+</p>
+<p>
+量子でも「量子ビットを複数コピーして比べる」ことが考えられるが、2つの大きな問題がある。1つは<strong>複製不可能定理 (no-cloning theorem)</strong>、すなわち量子ビットの完全な複製は作れないこと。
+もう1つは、測定が必ず状態を変えてしまうことである。
+</p>
+</section>
+
+<section>
+<h2 id="sec-26-3">量子複製不可能定理<span class="en">Quantum No-Cloning Theorem</span></h2>
+
+<p>
+複製不可能定理は量子誤り訂正の議論の中心にあり、証明も簡単なので確認しておく（Wootters–Zurek 1982、Dieks 1982）。
+量子力学の直截的な帰結で、「定理」と呼ぶべきか議論されたほどである。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（複製不可能定理）</span>
+任意の未知の状態 \(\ket{\phi_1}\) にある量子ビットと、既知または未知の初期状態 \(\ket{\phi_2}\) にあるもう1つの量子ビットがあるとき、
+<div class="equation" id="eq-26-clone">\[
+U\big(\ket{\phi_1}\otimes\ket{\phi_2}\big)=e^{\ii\chi(\phi_1)}\,\ket{\phi_1}\otimes\ket{\phi_1}
+\]</div>
+がすべての入力 \(\ket{\phi_1}\) について成り立つようなユニタリ演算子 \(U\)（すなわち量子力学的時間発展）は存在しない。
+</div>
+
+<p>
+\(U\) がユニタリなのは、量子力学の時間発展がすべてユニタリだからである。測定は射影であってユニタリではないという反論があるが、測定装置も量子系の一部として扱えば、
+全体の時間発展は再びユニタリになる（「より大きなヒルベルト空間の教会」と呼ばれる立場）。
+複製の過程で、複製される状態に依存する任意の位相 \(e^{\ii\chi(\phi_1)}\) が現れてもよい（\(\phi_2\) に依存してもよい）。
+</p>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+そのような \(U\) が存在すると仮定する。直交する2つの状態 \(\ket0,\ket1\) を正しく複製できるので
+\[
+U(\ket0\otimes\ket{\phi_2})=e^{\ii\chi(0)}\ket0\otimes\ket0,\qquad U(\ket1\otimes\ket{\phi_2})=e^{\ii\chi(1)}\ket1\otimes\ket1 .
+\]
+量子力学の演算子は線形なので、重ね合わせ \(\alpha\ket0+\beta\ket1\) に作用させると
+\[
+U\big((\alpha\ket0+\beta\ket1)\otimes\ket{\phi_2}\big)=\alpha\,e^{\ii\chi(0)}\ket{00}+\beta\,e^{\ii\chi(1)}\ket{11}
+\]
+となる。ところが複製装置なら本来
+\[
+e^{\ii\chi}\,(\alpha\ket0+\beta\ket1)\otimes(\alpha\ket0+\beta\ket1)=e^{\ii\chi}\big(\alpha^2\ket{00}+\alpha\beta\ket{01}+\alpha\beta\ket{10}+\beta^2\ket{11}\big)
+\]
+を与えるはずで、一般には両者は一致しない。したがって複製装置は量子力学の線形性と両立しない。
+</div>
+</section>
+
+<section>
+<h2 id="sec-26-4">量子誤り訂正<span class="en">Quantum Error Correction</span></h2>
+
+<p>
+量子誤り訂正で最も驚くのは、それが可能だということかもしれない。1995年に Shor が発見し、まもなく Steane も別の符号を見つけた。
+<a href="chapter27.html">第27章</a>では、エニオンと密接に関係する量子誤り訂正符号であるトーリック符号（Kitaev 2003）を導入する。
+ここでは Shor の原論文にある非常に簡単な符号を取り上げ、こうした符号が一般にどう働くかを説明する。
+</p>
+<p>
+以下ではパウリ行列を使い、\(\ket0\) をスピン上向き、\(\ket1\) を下向きと見る。すなわち \(\sigma_z\ket0=\ket0\)、\(\sigma_z\ket1=-\ket1\)、\(\sigma_x\ket0=\ket1\)、\(\sigma_x\ket1=\ket0\) である。
+</p>
+
+<h3 id="sec-26-4-1">§26.4.1 ビット反転を訂正する符号</h3>
+
+<p>
+物理系に起こりうる誤りが、パウリ演算子 \(\sigma_x\) の作用（<strong>ビット反転誤り</strong>、z 基底での反転）だけだと仮定する。論理量子ビット
+\[
+\ket\psi_L=\alpha\ket0_L+\beta\ket1_L
+\]
+を3つの物理量子ビットに
+<div class="equation" id="eq-26-3q">\[
+\ket{\psi_3}=\alpha\ket{000}+\beta\ket{111}
+\]</div>
+と符号化する。ここで \(\ket{000}=\ket0\otimes\ket0\otimes\ket0\) である。符号空間は、この形の波動関数が張るヒルベルト空間である。
+この状態は、初期の1量子ビットに2つの量子ビットを絡ませる（制御 NOT ゲートで、<a href="chapter11.html">第11章</a>）ことで作れ、元の状態の複製ではないので複製不可能定理には反しない。
+</p>
+<p>
+どの物理量子ビットも直接測ってはならない。測ると波動関数全体が \(\ket{000}\) か \(\ket{111}\) に潰れてしまう。
+その代わりに、2つの量子ビットの積は測ってよい：
+<div class="equation" id="eq-26-stab3">\[
+\hat O_{12}=\sigma_z^{1}\sigma_z^{2},\qquad \hat O_{23}=\sigma_z^{2}\sigma_z^{3}.
+\]</div>
+（\(\hat O_{13}=\hat O_{12}\hat O_{23}\) も定義できるが冗長である。）\(\ket{\psi_3}\) は \(\hat O_{12}\) の固有値 \(+1\) の固有状態なので、波動関数を潰さずに測定できる。
+\(\hat O_{12}\) は量子ビット1と2が z 基底で同じかどうかを調べ、\(\hat O_{23}\) は2と3が同じかどうかを調べる。
+これらを<strong>スタビライザー演算子 (stabilizer operators)</strong>（符号空間を変えない演算子）といい、その固有値を<strong>シンドローム (syndrome)</strong> という（波動関数に「病気」が生じていないかを診断するため）。
+\(\hat O_{12}\) と \(\hat O_{23}\) がともに \(+1\) なら3つの量子ビットが揃っており、符号空間にある。どちらかが（あるいは両方が）\(-1\) なら誤りが起きている。
+</p>
+<p>
+\(\sigma_x\) 誤りが高々1つだと仮定すると、問題の量子ビットが特定でき、もう一度 \(\sigma_x\) をかけて訂正できる。たとえば量子ビット1に \(\sigma_x\) がかかったなら \(\hat O_{12}\) だけが \(-1\) になる。
+規則は次の表のとおり。
+</p>
+<div class="table-wrap"><table>
+<tr><th>誤りを作る演算子</th><th>\(-1\) になるスタビライザー</th><th>訂正の演算子</th></tr>
+<tr><td>\(\sigma_x^{1}\)</td><td>\(\hat O_{12}\)</td><td>\(\sigma_x^{1}\)</td></tr>
+<tr><td>\(\sigma_x^{2}\)</td><td>\(\hat O_{12},\ \hat O_{23}\)</td><td>\(\sigma_x^{2}\)</td></tr>
+<tr><td>\(\sigma_x^{3}\)</td><td>\(\hat O_{23}\)</td><td>\(\sigma_x^{3}\)</td></tr>
+</table></div>
+<p>
+スタビライザーは量子ビットの値自体を測るのではなく、2つが互いに同じかどうかだけを調べるので、式 <a class="eq-ref" href="#eq-26-3q"></a> の重ね合わせを壊さない。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（落とし穴）</span>
+これで量子誤り訂正符号が得られたと思うかもしれないが、そうではない。この符号が訂正できるのは \(\sigma_x\)（ビット反転）誤りだけである。
+量子ビットには \(\sigma_z\) による符号誤りもある（\(\sigma_y\) による誤りは \(\sigma_z\) と \(\sigma_x\) の積と考えられる）。
+\(\sigma_z\) を3つのどの量子ビットに作用させても \(\ket{\psi_3}=\alpha\ket{000}-\beta\ket{111}\) となり、スタビライザー \(\hat O_{12}\)、\(\hat O_{23}\) では検出できない。
+</div>
+
+<h3 id="sec-26-4-2">§26.4.2 9量子ビットの Shor 符号</h3>
+
+<p>
+Shor は、9個の物理量子ビットを使えば \(\sigma_x\) 誤りと \(\sigma_z\) 誤り（したがって \(\sigma_y\) 誤りも）から量子ビットを守れることを見いだした。
+論理量子ビット \(\ket\psi_L=\alpha\ket0_L+\beta\ket1_L\) を次のように9つの物理量子ビットに符号化する：
+</p>
+<div class="equation" id="eq-26-shor">\[
+\ket{\psi_9}=\frac{\alpha}{2\sqrt2}\Big[(\ket{000}+\ket{111})^{\otimes3}\Big]+\frac{\beta}{2\sqrt2}\Big[(\ket{000}-\ket{111})^{\otimes3}\Big].
+\]</div>
+<p>
+この波動関数は、Hadamard ゲート \(H=\frac1{\sqrt2}\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}\) と制御 NOT からなる量子回路で1つの量子ビット \(\ket\psi_L\) から準備できる（原書の演習 26.1）。
+符号空間は、この形の波動関数が張る空間である。スタビライザーは次の6つ：
+<div class="equation" id="eq-26-shorstab">\[
+\begin{aligned}
+&amp;\hat O_{12}=\sigma_z^{1}\sigma_z^{2},\quad \hat O_{23}=\sigma_z^{2}\sigma_z^{3},\quad
+\hat O_{45}=\sigma_z^{4}\sigma_z^{5},\quad \hat O_{56}=\sigma_z^{5}\sigma_z^{6},\quad
+\hat O_{78}=\sigma_z^{7}\sigma_z^{8},\quad \hat O_{89}=\sigma_z^{8}\sigma_z^{9},\\
+&amp;\hat O_{1\text{-}6}=(\sigma_x^{1}\sigma_x^{2}\sigma_x^{3})(\sigma_x^{4}\sigma_x^{5}\sigma_x^{6}),\quad
+\hat O_{4\text{-}9}=(\sigma_x^{4}\sigma_x^{5}\sigma_x^{6})(\sigma_x^{7}\sigma_x^{8}\sigma_x^{9}).
+\end{aligned}
+\]</div>
+</p>
+<p>
+式 <a class="eq-ref" href="#eq-26-shor"></a> の9個は 123、456、789 の3つ組に分かれ、各3つ組は式 <a class="eq-ref" href="#eq-26-3q"></a> の符号と同じように働く。
+最初の6つの \(\sigma_z\sigma_z\) 型のスタビライザーは、式 <a class="eq-ref" href="#eq-26-stab3"></a> と同様に、ビット反転（\(\sigma_x\) 誤り）を検出・訂正するためのものである。
+たとえば \(\hat O_{12}\) だけが固有値 \(-1\) で他の \(\hat O_{ij}\) が \(+1\) なら、最初の量子ビットが反転しているので、\(\sigma_x^{1}\) をもう一度かけて直す。
+</p>
+<p>
+より興味深いのは残りの2つ、\(\hat O_{1\text{-}6}\) と \(\hat O_{4\text{-}9}\) である。これらは符号誤り（\(\sigma_z\) による誤り）を検出・訂正するためのものである。
+一見すると形が違うが、実は式 <a class="eq-ref" href="#eq-26-stab3"></a> の簡単なスタビライザーと、基底を変えただけで同じ構造をもっている。それを見るために
+\[
+\ket+=\frac1{\sqrt2}(\ket{000}+\ket{111}),\qquad \ket-=\frac1{\sqrt2}(\ket{000}-\ket{111})
+\]
+と定義する。すると符号は \(\ket{\psi_9}=\alpha\ket{{+}{+}{+}}+\beta\ket{{-}{-}{-}}\) と書け、式 <a class="eq-ref" href="#eq-26-3q"></a> と同じ形になる。
+さらに、これら「有効な量子ビット」を反転させる演算子 \(X\) と、値を読み出す演算子 \(Z\) を
+\[
+X\ket\pm=\ket\mp,\qquad Z\ket\pm=\pm\ket\pm
+\]
+と定義する。このとき、3つ組の中の \(j=1,2,3\) について
+<div class="equation" id="eq-26-X">\[
+\sigma_z^{j}\ket\pm=\frac1{\sqrt2}\sigma_z^{j}(\ket{000}\pm\ket{111})=\frac1{\sqrt2}(\ket{000}\mp\ket{111})=\ket\mp
+\]</div>
+となるので、\(\sigma_z^{j}\)（\(j=1,2,3\)）は \(\ket\pm\) 量子ビットの反転演算子 \(X\)（最初の3つの量子ビットからなるものを \(X_{123}\) と呼ぶ）の役割を果たす。
+3つのどの \(\sigma_z^{j}\) でも波動関数への効果は同じである。同様に
+<div class="equation" id="eq-26-Z">\[
+(\sigma_x^{1}\sigma_x^{2}\sigma_x^{3})\ket\pm=\frac1{\sqrt2}(\ket{111}\pm\ket{000})=\pm\ket\pm
+\]</div>
+なので、\(\sigma_x^{1}\sigma_x^{2}\sigma_x^{3}\) は \(Z\)（\(Z_{123}\) と呼ぶ）の役割を果たす。この記法で、残りのスタビライザーは3つの有効な量子ビットの演算子として
+\[
+\hat O_{1\text{-}6}=Z_{123}Z_{456},\qquad \hat O_{4\text{-}9}=Z_{456}Z_{789}
+\]
+と書き直せ、式 <a class="eq-ref" href="#eq-26-stab3"></a> と全く同じ形になる。これらは \(X_{123}\)、\(X_{456}\)、\(X_{789}\) が作用したことを検出できる。
+ところが \(X\) は元の量子ビットの \(\sigma_z\) と等価なので、この2つのスタビライザーが \(\sigma_z\) 誤りを検出し、どの演算子で訂正すべきかを教えてくれる。
+</p>
+
+<p>
+こうして符号 <a class="eq-ref" href="#eq-26-shor"></a> の誤りの検出・訂正規則の全体が次の表になる。
+</p>
+<div class="table-wrap"><table>
+<tr><th>誤りを作る演算子</th><th>\(-1\) になるスタビライザー</th><th>訂正の演算子</th></tr>
+<tr><td>\(\sigma_x^{1}\)</td><td>\(\hat O_{12}\)</td><td>\(\sigma_x^{1}\)</td></tr>
+<tr><td>\(\sigma_x^{2}\)</td><td>\(\hat O_{12},\ \hat O_{23}\)</td><td>\(\sigma_x^{2}\)</td></tr>
+<tr><td>\(\sigma_x^{3}\)</td><td>\(\hat O_{23}\)</td><td>\(\sigma_x^{3}\)</td></tr>
+<tr><td>\(\sigma_x^{4}\)</td><td>\(\hat O_{45}\)</td><td>\(\sigma_x^{4}\)</td></tr>
+<tr><td>\(\sigma_x^{5}\)</td><td>\(\hat O_{45},\ \hat O_{56}\)</td><td>\(\sigma_x^{5}\)</td></tr>
+<tr><td>\(\sigma_x^{6}\)</td><td>\(\hat O_{56}\)</td><td>\(\sigma_x^{6}\)</td></tr>
+<tr><td>\(\sigma_x^{7}\)</td><td>\(\hat O_{78}\)</td><td>\(\sigma_x^{7}\)</td></tr>
+<tr><td>\(\sigma_x^{8}\)</td><td>\(\hat O_{78},\ \hat O_{89}\)</td><td>\(\sigma_x^{8}\)</td></tr>
+<tr><td>\(\sigma_x^{9}\)</td><td>\(\hat O_{89}\)</td><td>\(\sigma_x^{9}\)</td></tr>
+<tr><td>\(\sigma_z^{1}\) または \(\sigma_z^{2}\) または \(\sigma_z^{3}\)</td><td>\(\hat O_{1\text{-}6}\)</td><td>\(\sigma_z^{1}\) または \(\sigma_z^{2}\) または \(\sigma_z^{3}\)</td></tr>
+<tr><td>\(\sigma_z^{4}\) または \(\sigma_z^{5}\) または \(\sigma_z^{6}\)</td><td>\(\hat O_{1\text{-}6},\ \hat O_{4\text{-}9}\)</td><td>\(\sigma_z^{4}\) または \(\sigma_z^{5}\) または \(\sigma_z^{6}\)</td></tr>
+<tr><td>\(\sigma_z^{7}\) または \(\sigma_z^{8}\) または \(\sigma_z^{9}\)</td><td>\(\hat O_{4\text{-}9}\)</td><td>\(\sigma_z^{7}\) または \(\sigma_z^{8}\) または \(\sigma_z^{9}\)</td></tr>
+</table></div>
+
+<div class="remark-box">
+<span class="box-title">補足（表の読み方）</span>
+最後の3行は \(\sigma_z\) による符号誤りを扱う。たとえば \(\sigma_z^{1}\) で作られた誤りは、\(\sigma_z^{1}\)、\(\sigma_z^{2}\)、\(\sigma_z^{3}\) のどれでも訂正できる（式 <a class="eq-ref" href="#eq-26-X"></a> のとおり、3つの演算子は符号空間の中では同じ効果をもつ）。
+\(\sigma_y\) による誤りは \(\sigma_z\) と \(\sigma_x\) の積とみなして、それぞれ訂正すればよい。
+1量子ビットに対して行える任意の操作は \(\sigma_x,\sigma_y,\sigma_z\) と恒等演算子の線形結合なので、この符号は<strong>1つの量子ビットに起こる任意の誤り</strong>を訂正できる。
+</div>
+
+<p>
+原書の演習では、Shor 符号の回路の確認（26.1）、論理量子ビットの読み出しと任意の1量子ビット誤りの訂正を行う量子回路（Toffoli ゲートを使う、26.2）、
+古典の繰り返し符号に対応する \(n^2\) 量子ビットへの一般化と、それが訂正できる複数誤りの種類（26.3）を扱う。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第26章のまとめ</span>
+<ul>
+<li>古典のビットは繰り返し符号（3ビットで 000/111）と多数決で守れるが、量子ビットは複製不可能定理（線形性から従う）と、測定が状態を変えることのために、単純な繰り返しでは守れない。</li>
+<li>3量子ビット符号 \(\alpha\ket{000}+\beta\ket{111}\) は、スタビライザー \(\sigma_z^1\sigma_z^2\)、\(\sigma_z^2\sigma_z^3\) のシンドロームでビット反転（\(\sigma_x\)）誤りを検出・訂正できるが、符号誤り（\(\sigma_z\)）は検出できない。</li>
+<li>Shor の9量子ビット符号は、3つ組ごとの \(\sigma_z\sigma_z\) 型スタビライザー6つでビット反転を、\(\sigma_x\) の積の型の2つで符号誤りを検出・訂正し、したがって1量子ビット上の任意の誤りを訂正できる。量子誤り訂正は原理的に可能である。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

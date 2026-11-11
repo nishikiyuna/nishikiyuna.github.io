@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="二重セミオン模型：d=-1 の Z2 ループ気体としての定義、符号付きプラケット項、図式解析で現れる非ユニタリ性とキャップによるゲージ選択、SU(2)_1 の左右コピーとしての粒子内容">
+  <title>第32章 二重セミオン模型 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter32" data-chapter="32">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第32章に対応</span>
+  第32章 二重セミオン模型
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+トーリック符号は、\(d=+1\) の \(\Z_2\) 平面ダイアグラム代数（スケイン関係）を入力にしたループ気体であった（<a href="chapter30.html">第30章</a>）。
+本章は、入力を \(d=-1\) の \(\Z_2\) ダイアグラム代数に替えるだけで得られる最も簡単なツイスト版、<strong>二重セミオン模型 (doubled-semion model)</strong> を扱う。
+ループの数の偶奇に応じて符号が付くので、波動関数は \((-1)^{\text{ループ数}}\) の重みを持つ。
+まずこれを実現する格子ハミルトニアン（プラケット項に符号が入る）を作り、次にトーラス（環）の図式解析で準粒子を調べる。
+すると素朴な計算は<strong>非ユニタリ</strong>な理論を与えてしまうが、これはダイアグラム代数の選び方（ゲージ）の問題で、
+「キャップ」ごとに \(-1\) を付けるユニタリ化で解消し、最終的に右巻きセミオンと左巻きセミオンの直積 \(SU(2)_1\times\overline{SU(2)_1}\) が得られる。
+本章は選択的に読んでよい章で、次の<a href="chapter33.html">第33章</a>の Levin–Wen 模型の最も簡単な例になっている。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<p>
+\(d=+1\) から \(d=-1\) への変更は<a href="chapter31.html">第31章</a>で扱った「ツイスト」の最小例にあたる（\(\Z_2\) の融合則に非自明な 3-コサイクルを入れる）。
+入力に与えるのは平面ダイアグラム代数だけで、組みひもの規則は一切入れない点を覚えておいてほしい。
+</p>
+
+<p>
+トーリック符号のスケイン関係（ループ除去とサージャリー）は、\(d=-1\) 版では次のように符号だけが変わる。
+</p>
+<ul>
+<li>閉じたループ1本の付け外し：値 \(-1\)（\(d=-1\)）。</li>
+<li>サージャリー（2本の青い線の組み替え）：符号 \(-1\)。</li>
+</ul>
+<p>
+2つの符号は整合している。サージャリーは必ずループの本数の偶奇を変えるので、「ループ数の偶奇に \(-1\) を付ける」という1つの規則に帰着するからである。
+これは<a href="chapter18.html">第18章</a>でセミオンのために使った Kauffman のスケイン関係そのものである。
+この規則から、波動関数は
+</p>
+<div class="equation" id="eq-32-psi">\[
+\ket{\psi}=\sum_{\substack{\text{参照ループ配位から到達}\\ \text{できる全ループ配位}}} (-1)^{\#\text{ループ}}\ket{\text{ループ配位}}
+\]</div>
+<p>
+の形になると期待される（規格化は省略）。係数 \((-1)^{\#\text{ループ}}\) はループ図式の非ユニタリな評価値である（<a href="chapter14.html">第14章</a> §14.5 の言い方では、キャップに \(-1\) を付ける規則 0 を使っていない評価）。
+トーラス上には、トーリック符号と同じく、2つの非自明サイクルを巻く青い線の偶奇に対応する4つの基底状態があると期待される。
+</p>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-32-1">微視的模型<span class="en">A Microscopic Model</span></h2>
+
+<p>
+\(d=-1\) 代数を実現するハミルトニアンを、トーリック符号のハミルトニアンと同じ手順で作る。
+蜂の巣格子（実際は3価グラフなら何でもよい）の各辺にスピンを置き、スピンが下向きの辺を青く塗る。
+頂点項は変更しない。
+</p>
+<div class="equation" id="eq-32-V">\[
+V_\alpha=\prod_{i\,\in\,\text{vertex }\alpha}\sigma_z^{(i)} .
+\]</div>
+<p>
+これが青い辺の本数が奇数の頂点にペナルティを課すので、基底状態はループ配位だけからなる。
+変えるのはプラケット項で、プラケットを反転するたびに適切な符号を掛ける必要がある。
+</p>
+
+<h3 id="sec-32-1-0">プラケット反転の符号</h3>
+
+<p>
+プラケット反転の符号は「反転によってループの本数の偶奇が変わるか」で決まる。次の4つの典型例を見ると規則が分かる。
+</p>
+<ul>
+<li>孤立した小ループの生成・消滅（ループ付加）：符号 \(-1\)。</li>
+<li>ループの変形（アイソトピー）：符号 \(+1\)。</li>
+<li>サージャリー（2本のループがつながる、またはその逆）：符号 \(-1\)。</li>
+<li>二重サージャリー：符号 \(+1\)。</li>
+</ul>
+
+<p>
+プラケットの<strong>脚 (leg)</strong> とは、プラケット外に向かって出ている辺、すなわち端点を片方しかプラケットの頂点に持たない辺のことである。
+頂点欠陥がなければ、青い脚の本数 \(L\) は常に偶数になる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（符号の規則）</span>
+プラケットを反転するときの符号は、青い脚の本数を \(L\) として
+\[
+\text{符号}=\begin{cases}-1 & (L/2 \text{ が偶数})\\ +1 & (L/2 \text{ が奇数})\end{cases}
+\;=\;-(-1)^{L/2}
+\]
+である。この規則はプラケットが何角形でも成り立つ。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- hexagon edges -->
+  <path d="M 130 55 L 169 77.5 L 169 122.5 L 130 145 L 91 122.5 L 91 77.5 Z" class="line" stroke-width="2"/>
+  <!-- legs -->
+  <line x1="130" y1="55" x2="130" y2="15" class="line accent" stroke-width="4"/>
+  <line x1="169" y1="77.5" x2="203.6" y2="57.5" class="line accent" stroke-width="4"/>
+  <line x1="169" y1="122.5" x2="203.6" y2="142.5" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="145" x2="130" y2="185" class="line accent" stroke-width="4"/>
+  <line x1="91" y1="122.5" x2="56.4" y2="142.5" class="line" stroke-width="1.5"/>
+  <line x1="91" y1="77.5" x2="56.4" y2="57.5" class="line accent" stroke-width="4"/>
+  <text x="122" y="105" class="label">β</text>
+  <text x="240" y="60" class="label">プラケット β の6本の脚のうち</text>
+  <text x="240" y="82" class="label">青い脚が L = 4 本の例</text>
+  <text x="240" y="112" class="label-muted">L/2 = 2 は偶数なので、</text>
+  <text x="240" y="132" class="label-muted">反転の符号は −1</text>
+</svg>
+<figcaption>図 32.1：プラケットの脚と符号規則（模式図）。青い脚の本数 L から反転の符号が決まる。</figcaption>
+</figure>
+
+<p>
+この符号をスピン演算子で書く。\(1-\sigma_z\) は上向きで \(0\)、下向き（青）で \(2\) だから、\(\tfrac14\sum_{i\in\text{legs}}(1-\sigma_z^{(i)})=L/2\) であり、
+</p>
+<div class="equation" id="eq-32-sign">\[
+\text{符号}=-(-1)^{\frac14\sum_{i\in\text{legs}}(1-\sigma_z^{(i)})}
+=-\prod_{i\in\text{legs}} e^{\ii\frac{\pi}{4}(1-\sigma_z^{(i)})} .
+\]</div>
+<p>
+各青い脚が因子 \(e^{\ii\pi/2}=\ii\) を与え、\(L\) 本で \(\ii^{L}=(-1)^{L/2}\) になる。
+原書は辺を時計回りに数えたもう1つの等価な書き方も挙げているが、上の積の形があれば足りる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（二重セミオン模型のプラケット演算子とハミルトニアン）</span>
+トーリック符号のプラケット項（4辺の \(\sigma_x\) の積）に上の符号を付けて
+<div class="equation" id="eq-32-P">\[
+P'_\beta = -\prod_{i\,\in\,\text{plaquette }\beta}\sigma_x^{(i)}\ \prod_{i\,\in\,\text{legs of }\beta} e^{\ii\frac{\pi}{4}\left(1-\sigma_z^{(i)}\right)} ,
+\]</div>
+ハミルトニアンは
+<div class="equation" id="eq-32-H">\[
+H_{\text{doubled-semion}} = -\frac{\Delta_v}{2}\sum_{\text{vertices }\alpha}V_\alpha-\frac{\Delta_p}{2}\sum_{\text{plaquettes }\beta}P'_\beta .
+\]</div>
+トーリック符号のハミルトニアンと同じ形で、違いはプラケット項の符号だけである。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（脚の \(\sigma_z\) と \(\sigma_x\) は可換）</span>
+\(P'_\beta\) の中で \(\sigma_x\) が作用するのはプラケットの周上の辺、\(\sigma_z\) が現れるのは脚だけで、両者は別の辺である。
+したがって積の順序は気にしなくてよい。符号の因子はプラケットの外側の配位だけに依存する。
+</div>
+
+<h3 id="sec-32-1-1">§32.1.1 磁気的ストリング演算子</h3>
+
+<p>
+トーリック符号では、\(\sigma_x\) のストリングが頂点欠陥（\(e\)）を、双対格子上の \(\sigma_z\) のストリングがプラケット欠陥（\(m\)）を引き離した（<a href="chapter27.html">第27章</a>）。
+このように「ストリングの両端にしか励起を作らず、通る道筋は測定できない」演算子を<strong>ストリング演算子</strong>と呼ぶ。
+</p>
+<p>
+二重セミオン模型でも磁気的ストリング演算子は簡単に作れる。双対格子上に道を引き、その道が横切る辺すべてに \(\sigma_z\) を掛ける。
+ストリングの端を除けば、各プラケットに偶数個の \(\sigma_z\) が掛かるので、この演算子はハミルトニアンと可換であり、端にしか励起を作らない。
+</p>
+<p>
+残る2種類の準粒子（トーラスの基底状態が4つあるので、真空を含めて4種類の準粒子が期待される）に対応するストリング演算子は複雑になる。
+原書はそれを第33章の一般論に回している。原書は、基底状態を変えずに励起を簡素化するようハミルトニアンを少し修正する Dauphinais らの変形がストリング演算子の扱いを楽にすることも挙げている。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-32-2">図式による解析の試み<span class="en">Attempted Graphical Analysis</span></h2>
+
+<p>
+<a href="chapter30.html">第30章</a> §30.2〜30.4 の方法（環上の状態、チューブ代数、ツイスト、\(S\) 行列）に従って準粒子の種類と性質を調べる。
+ただしこの節の計算には落とし穴があり、結果は非ユニタリな理論になる。理由は §32.3 で明らかになる。
+</p>
+
+<p>
+トーリック符号と同じ図式代数だが、ループの付加・除去とサージャリーのたびに符号が出る。環（アニュラス）上の基底状態は4つある。
+表記は \(\ket{0,0},\ket{0,1}\)（境界に青い線が交わらない2つの同値類）と \(\ket{1,0},\ket{1,1}\)（内側と外側の境界にそれぞれ1本の青い線が交わる2つの同値類）で、トーリック符号の対応するものとは符号だけが異なる。
+</p>
+
+<h3 id="sec-32-2-1">環の合成と冪等元</h3>
+
+<p>
+環を別の環の内側に入れる合成 \(\circ\) の乗積表は、トーリック符号の表（<a href="chapter30.html">第30章</a>の表30.1）と1か所を除いて同じである。
+違いは
+</p>
+<div class="equation" id="eq-32-mult">\[
+\ket{1,1}\circ\ket{1,1}=-\ket{1,0}
+\]</div>
+<p>
+で、\(\ket{1,1}\) を2つ重ねると、図の上で \(\ket{1,0}\) に対し \(-1\) が余分に付くことによる。
+この乗積表から、準粒子に対応する冪等元（互いに直交する射影）が次のように得られる。
+</p>
+<div class="equation" id="eq-32-idem">\[
+\begin{aligned}
+O_\alpha&=\tfrac12\bigl(\ket{0,0}-\ket{0,1}\bigr),\\
+O_\beta&=\tfrac12\bigl(\ket{0,0}+\ket{0,1}\bigr),\\
+O_\gamma&=\tfrac12\bigl(\ket{1,0}-\ii\ket{1,1}\bigr),\\
+O_\delta&=\tfrac12\bigl(\ket{1,0}+\ii\ket{1,1}\bigr).
+\end{aligned}
+\]</div>
+<p>
+粒子の名前は \(\alpha,\beta,\gamma,\delta\) とする。基底状態は「反転前」と「反転後」を符号 \(-\) で重ねたもの（ループの付加に符号が付くため）なので、
+\(O_\alpha\) が基底状態に対応し、暫定的に \(\alpha\) を恒等粒子 \(I\) と同定する。
+この重ね合わせは、青いストリングの Kirby 弦 \(\tilde\Omega\) を環の周りに置いたものと見なせる。
+\(O_\beta\) は、境界に青い線が交わらない空間の中で基底状態に直交する冪等元である。青い線が内外の境界に交わる冪等元が \(\gamma,\delta\) である。
+</p>
+
+<h3 id="sec-32-2-2">ツイスト因子と交換位相</h3>
+
+<p>
+ツイスト演算子 \(\hat\theta\)（環の内側の境界を反時計回りに回す）は \(\ket{0,0},\ket{0,1}\) を変えないので \(\theta_I=\theta_m=1\)、これらはボソンである。
+トーリック符号と同様 \(\hat\theta\ket{1,0}=\ket{1,1}\) だが、今回は
+\[
+\hat\theta\ket{1,1}=-\ket{1,0}
+\]
+となる（サージャリーで符号が出る）。これを \(O_\gamma,O_\delta\) に作用させると
+</p>
+<div class="equation" id="eq-32-twist-nu">\[
+\theta_\gamma=\ii,\qquad \theta_\delta=-\ii .
+\]</div>
+<p>
+次に2つの \(\gamma\) を反時計回りに交換する。右の \(\gamma\) を左の \(\gamma\) の周りに回すと青い線が組みひも状に絡む。
+サージャリー（\(-1\) が付く）とループの付加・除去で整理すると、交換後の図は元の図の \(-\ii\) 倍に等しく、交換位相は
+\[
+R^{I}_{\gamma\gamma}=-\ii
+\]
+と読める。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（落とし穴：ここで負の \(d\) が顔を出す）</span>
+<a href="chapter15.html">第15章</a>の関係式（\(R^{I}_{aa}\) とツイスト \(\theta_a\) の関係）に \(\theta_\gamma=\ii\) と \(R^I_{\gamma\gamma}=-\ii\) を代入すると、辻褄が合うのはループ重み \(d_\gamma=-1\)、zig-zag の位相 \(\epsilon_\gamma=+1\) のときだけである。
+同様に \(d_\delta=-1\) だが \(d_\beta=+1\) である。
+つまり得られた理論はアイソトピー不変だが<strong>非ユニタリ</strong>である。
+ユニタリな理論なら \(d_a&gt;0\) でなければならない。
+</div>
+
+<p>
+融合則は、<a href="chapter30.html">第30章</a> §30.5 の方法で得られ（原書の演習 32.1）、この結果は負の \(d\) の影響を受けず正しい。\(\alpha\) を単位元として次の表になる。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>×</th><th>α</th><th>β</th><th>γ</th><th>δ</th></tr></thead>
+<tbody>
+<tr><th>α</th><td>α</td><td>β</td><td>γ</td><td>δ</td></tr>
+<tr><th>β</th><td>β</td><td>α</td><td>δ</td><td>γ</td></tr>
+<tr><th>γ</th><td>γ</td><td>δ</td><td>α</td><td>β</td></tr>
+<tr><th>δ</th><td>δ</td><td>γ</td><td>β</td><td>α</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+\(S\) 行列の計算（<a href="chapter30.html">第30章</a> §30.4 の方法）では、式 (30.12)〜(30.14) は変わらないが、(30.15) でサージャリーからの符号 \(-1\) が加わる。
+結果として \(S_{I,\gamma}\) と \(S_{I,\delta}\) が負になる。これは \(d_\gamma=d_\delta=-1\) と整合し、驚くことではない。
+</p>
+
+<p>
+非ユニタリな理論からユニタリな \((2+1)\) 次元 TQFT を作るには、<a href="chapter14.html">第14章</a> §14.5（§14.2 の選択肢 B）のキャップ数え上げ法を使う。
+ツイスト因子にはツイストの中のキャップが、\(S\) 行列の要素にはループの中のキャップが効いて、符号が変わる。
+</p>
+<div class="equation" id="eq-32-unitarize">\[
+\theta_a^{\text{unitary}}=\operatorname{sign}(d_a)\,\theta_a^{\text{nonunitary}},\qquad
+S_{ab}^{\text{unitary}}=\operatorname{sign}(d_a)\operatorname{sign}(d_b)\,S_{ab}^{\text{nonunitary}} .
+\]</div>
+
+<div class="remark-box">
+<span class="box-title">補足（ハミルトニアンは悪くない）</span>
+非ユニタリな理論が出たからといって、書き下したハミルトニアンに欠陥があるわけではない。
+ハミルトニアン <a class="eq-ref" href="#eq-32-H"></a> は完全に健全で、その基底状態はユニタリな TQFT のものである。
+間違っていたのは、非ユニタリなダイアグラム代数をそのまま使って図式推論をした点である。次節でその修正を行う。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-32-3">ゲージ選択とユニタリなダイアグラム代数<span class="en">Gauge Choice and Unitary Diagram Algebra</span></h2>
+
+<p>
+\(d=-1\) 版の \(\Z_2\) ループ気体は簡単なダイアグラム代数を与えるが、図式計算の結果は非ユニタリな理論に対応してしまう。
+<a href="chapter16.html">第16章</a> §16.1.3（および第14章 §14.5、§14.2）で見たとおり、次の2つの手順で非ユニタリな代数をユニタリな代数に変えられる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（キャップ数え上げによるユニタリ化）</span>
+<ul>
+<li>(0′) 平面の対称性を破って特別な向き（紙面の「上」）を選ぶ。</li>
+<li>(0) 図式を評価する前に、青い線のキャップの数 \(n\) を数える。ここでキャップとは、青い線が選んだ「上」の向きに関して極大になる点である（極小になる点＝カップは数えない）。
+\(d=-1\) の非ユニタリ規則で図式を最後まで評価し、結果に \((-1)^n\) を掛ける。</li>
+</ul>
+</div>
+
+<p>
+波動関数 <a class="eq-ref" href="#eq-32-psi"></a> はこれに伴って
+</p>
+<div class="equation" id="eq-32-psi-u">\[
+\ket{\psi}=\sum_{\substack{\text{参照ループ配位から到達}\\ \text{できる全ループ配位}}} (-1)^{\#\text{ループ}+\#\text{キャップ}}\ket{\text{ループ配位}}
+\]</div>
+<p>
+に変わる。符号は <a href="chapter18.html">第18章</a>のユニタリな評価値に等しい。
+蜂の巣格子では、ある頂点が「上」を向いた極大点（キャップ）になるかどうかは、その頂点につながる辺の青・黒の組合せだけで決まる局所的な規則であり、辺の色に関係なくキャップになりえない頂点もある。
+</p>
+
+<h3 id="sec-32-3-0">なぜこれが許されるのか</h3>
+
+<p>
+この変更は、実はゲージ変換にすぎない。ある種の波動関数成分に局所的な規則で余分な \(-1\) を付けるだけだからである。
+<a href="chapter14.html">第14章</a> §14.2 では、負の \(d\) を持つ非ユニタリな理論の符号はゲージ変換では消せないと結論したのに、ここで許されるのは文脈が違うからである。
+第14章では時空（\((1+1)\) 次元や \((2+1)\) 次元）の図式を考えており、時間が縦方向で、カップはキャップのエルミート共役なので、カップとキャップに別々の符号を付けるゲージ変換はできなかった。
+ここでは波動関数が \((2+0)\) 次元の平面上にあって、どの方向も時間ではない。したがってキャップだけに \(-1\) を付けてカップに付けないことができ、これは波動関数のゲージ変換にあたる。
+表面上は単純な図式代数を使っているが、背後ではユニタリな模型を記述している。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（§32.2 の計算がなぜ誤ったか）</span>
+§32.2 の組みひもやツイストの操作では、格子を連続的に変形して（<a href="chapter31.html">第31章</a>の格子の変異と同様）新しいキャップを導入してしまう。そのため気づかないうちにゲージが変わっていた。
+ユニタリな代数では、「上」の方向を常に追跡し、キャップを導入するたびに \(-1\) を付ける必要がある。
+</div>
+
+<h3 id="sec-32-3-1">§32.3.1 ユニタリな解析のやり直し</h3>
+
+<p>
+\(\ket{\psi}\) <a class="eq-ref" href="#eq-32-psi-u"></a> を見ると、符号は「キャップを1つだけ持つループの符号が \(+1\)、キャップ（ジグザグ）を足すごとに \(-1\)」になるように並んでいる。
+よって基底状態の冪等元、つまり恒等粒子 \(I\) は、先ほどの \(\alpha\) ではなく <a class="eq-ref" href="#eq-32-idem"></a> の \(\beta\) になる。
+\(\alpha\) は境界に青い線が交わらない空間の中で基底状態に直交する冪等元で、しばしば<strong>磁気的</strong>粒子 \(m\) と呼ばれる。
+</p>
+<p>
+ツイストは図 32.5 の操作でキャップの偶奇を変えるので、\(\ket{0,0},\ket{0,1}\) は不変のままだが
+</p>
+<div class="equation" id="eq-32-twist-u">\[
+\hat\theta\ket{1,0}=-\ket{1,1},\qquad \hat\theta\ket{1,1}=\ket{1,0} .
+\]</div>
+<p>
+これからツイスト因子は
+</p>
+<div class="equation" id="eq-32-twist-uu">\[
+\theta_I=\theta_m=1\ (=\theta_\beta=\theta_\alpha),\qquad \theta_\gamma=-\ii,\qquad \theta_\delta=+\ii
+\]</div>
+<p>
+となる。交換の手続き（2つの \(\gamma\) の交換）は新しいキャップを生まないのでそのまま正しく、\(R^{I}_{\gamma\gamma}=-\ii\)（\(R^I_{\delta\delta}=\ii\)）である。
+今度は \(R^{I}_{\gamma\gamma}=\theta_\gamma\) が第15章の関係式と \(d_\gamma&gt;0\) で整合し、ユニタリな理論に期待される通りになる。
+</p>
+
+<p>
+融合表（原書の演習 32.1）は、\(\beta=I\) を単位元として次のようになる。
+</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>×</th><th>β</th><th>α</th><th>γ</th><th>δ</th></tr></thead>
+<tbody>
+<tr><th>β</th><td>β</td><td>α</td><td>γ</td><td>δ</td></tr>
+<tr><th>α</th><td>α</td><td>β</td><td>δ</td><td>γ</td></tr>
+<tr><th>γ</th><td>γ</td><td>δ</td><td>β</td><td>α</td></tr>
+<tr><th>δ</th><td>δ</td><td>γ</td><td>α</td><td>β</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+\(S\) 行列は、第30章 §30.4・§30.6 の方法で直接計算でき、列の順序を \(\beta,\alpha,\gamma,\delta\) として
+</p>
+<div class="equation" id="eq-32-S">\[
+S=\frac12\begin{pmatrix}
+1&amp;1&amp;1&amp;1\\
+1&amp;1&amp;-1&amp;-1\\
+1&amp;-1&amp;-1&amp;1\\
+1&amp;-1&amp;1&amp;-1
+\end{pmatrix}
+\]</div>
+<p>
+となる（第17章の公式 (17.20) にツイスト因子と融合則を入れても導ける）。
+この行列は、次項の直積分解からも再現できる。
+</p>
+
+<h3 id="sec-32-3-2">二重セミオンとしての同定</h3>
+
+<p>
+ユニタリな結果を見れば、これは左巻きセミオン理論と右巻きセミオン理論の直積であることが分かる。<a href="chapter18.html">第18章</a> §18.1.2 より、
+</p>
+<ul>
+<li>右巻きセミオン理論：粒子 \(0_R,1_R\)、融合則 \(1_R\times1_R=0_R\)、\(\theta_{1_R}=\ii\)。Chern–Simons 理論 \(SU(2)_1\) と同等。</li>
+<li>左巻きセミオン理論：粒子 \(0_L,1_L\)、融合則 \(1_L\times1_L=0_L\)、\(\theta_{1_L}=-\ii\)。\(\overline{SU(2)_1}=SU(2)_{-1}\) と同等。</li>
+</ul>
+<p>
+どちらの理論でも非自明な粒子の Frobenius–Schur 指標は \(\tilde\kappa_{1_R}=\tilde\kappa_{1_L}=-1\) である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（二重セミオン理論）</span>
+<div class="equation" id="eq-32-doubled">\[
+\text{二重セミオン理論}=SU(2)_1\times\overline{SU(2)_1},
+\]</div>
+粒子は各因子から1つずつ取った組で
+\[
+I=\beta=(0_R,0_L),\quad \delta=(1_R,0_L),\quad \gamma=(0_R,1_L),\quad m=\alpha=(1_R,1_L).
+\]
+融合則と組みひもは各因子から引き継がれる（<a href="chapter08.html">第8章</a> §8.5、<a href="chapter09.html">第9章</a> §9.5.1、<a href="chapter13.html">第13章</a> §13.4.2）。
+たとえば各因子の \(1\times1=0\) から表の融合則がすぐ出る。
+</div>
+
+<p>
+確認として、\(\theta_\delta=\theta_{1_R}=\ii\)、\(\theta_\gamma=\theta_{1_L}=-\ii\)、\(\theta_m=\theta_{1_R}\theta_{1_L}=1\) となり、先の結果と一致する。
+\(S\) 行列は \(S_{ab}=\tfrac12(-1)^{n_R(a)n_R(b)+n_L(a)n_L(b)}\)（\(n_R,n_L\in\{0,1\}\) は各因子での粒子の添字）と書け、式 <a class="eq-ref" href="#eq-32-S"></a> を再現する。
+左巻きセミオンを右巻きセミオンの周りに一周させても位相は付かない。
+\(m\) は \(\gamma\) や \(\delta\) の周りを回ると \(-1\) を拾い、\(m\) どうしでは位相が付かない（原書の演習 32.2 で扱う）。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-32-4">コメント<span class="en">Comments</span></h2>
+
+<p>
+セミオンのスケイン関係から作ったループ気体から、右巻きと左巻きの両方のセミオンが出てきた。
+入力の規則のどこにも「時間反転を破る」「右巻き」「左巻き」といった情報を入れていないので、これは当然ともいえる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">一般原則（入力理論の「ダブル」が出てくる）</span>
+モジュラーな組みひもを持つ任意のエニオン理論について、その組みひもを捨てて平面ダイアグラム代数としてだけ使い、量子ループ模型（組みひもの関係は入れない）を作ると、出てくる理論は<strong>ダブル</strong>、すなわち元の理論の右巻き版と左巻き版の直積になる。
+</div>
+
+<p>
+詳しくは<a href="chapter33.html">第33章</a>で見る。トーリック符号は \(d=+1\) の入力、二重セミオン模型は \(d=-1\) の入力に対応する Levin–Wen 模型の最も簡単な2例である。
+原書の演習では、融合表の導出（32.1）、準粒子の組みひも（32.2）、ユニタリ代数での \(S\) 行列の計算（32.3）を扱う。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第32章のまとめ</span>
+<ul>
+<li>二重セミオン模型は、トーリック符号の図式代数の \(d=+1\) を \(d=-1\) に替えて作ったループ気体で、波動関数の重みは \((-1)^{\#\text{ループ}}\)。</li>
+<li>頂点項は \(V_\alpha=\prod\sigma_z\) のまま、プラケット項は \(P'_\beta=-\prod_{\text{辺}}\sigma_x\prod_{\text{脚}}e^{\ii\pi(1-\sigma_z)/4}\) に符号が入る。反転の符号は青い脚の本数 \(L\) について \(-(-1)^{L/2}\)。</li>
+<li>磁気的ストリング演算子は、双対格子上の道が横切る辺に \(\sigma_z\) を掛けたものでトーリック符号と同じ。</li>
+<li>\(d=-1\) 代数のまま環の図式解析をすると \(\theta_\gamma=\ii,\ R^I_{\gamma\gamma}=-\ii\) となって負のループ重み \(d_\gamma=-1\) を要求する非ユニタリな理論になる。</li>
+<li>キャップごとに \(-1\) を付けるユニタリ化（局所的なゲージ変換）をすれば、恒等粒子は \(\beta\)、\(\theta_\gamma=-\ii,\ \theta_\delta=\ii\)、\(S\) 行列は式の形になり、理論は \(SU(2)_1\times\overline{SU(2)_1}\) と同定される。</li>
+<li>入力理論の組みひもを使わなくても、出力はその理論の右巻き版と左巻き版の積（ダブル）になる。これは第33章の Levin–Wen 模型で一般化される。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="エニオン凝縮：ボソン的な単純カレントを凝縮して別のエニオン理論を得る手順（同一視と分裂、閉じ込め）、具体例（Z_8、SU(2)_4、Ising×Ising）、コセット構成、一般の凝縮、境界ギャップとの関係">
+  <title>第25章 エニオン凝縮 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter25" data-chapter="25">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第25章に対応</span>
+  第25章 エニオン凝縮
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本書で「Optional」とされる章である。あるエニオン理論から別のエニオン理論を導く標準的な機構が<strong>エニオン凝縮 (anyon condensation)</strong> で、
+通常の Bose–Einstein 凝縮のエニオン版である。ハミルトニアンのパラメータを変えながら（温度ゼロでもよい）起こる量子相転移のうち、
+連続相転移はすべてエニオン凝縮で記述できると信じられている。
+凝縮前の理論 \(\mathcal A\) と凝縮後の理論 \(\mathcal U\) の間に、融合代数 \(\mathcal T\)（端の理論）が挟まり、
+\(\mathcal A\to\mathcal T\) は同一視（と分裂）、\(\mathcal T\to\mathcal U\) は閉じ込めに対応する。
+本章では、ボソン的な単純カレントを凝縮する場合をまず詳しく扱い、\(\Z_8\)、\(SU(2)_4\)、Ising\(\times\overline{\text{Ising}}\) を具体例として、
+コセット構成、一般の凝縮、そしてエッジのギャップ条件との関係を述べる。トーリック符号が Ising\(\times\overline{\text{Ising}}\) の凝縮として得られる点は、<a href="chapter27.html">第27章</a>以降への橋渡しになる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<p>
+凝縮後の理論は、凝縮前の理論が無矛盾なら、やはり無矛盾なエニオン理論になる（<strong>凝縮理論 (condensed theory)</strong>）。
+凝縮後が自明な理論（真空のみで中心電荷が（少なくとも mod 8 で）0 のギャップのある系、つまりただの絶縁体）になることもあるし、
+トポロジカルな相からギャップレス相やフェルミ液体のような非トポロジカルな相への転移も考えられる。
+なお、一次（不連続）相転移はどの2つの相の間でも起こりうるので、ここでの議論の対象外である。
+凝縮の考え方の多くは共形場理論 (CFT) の言葉で先に調べられており（Moore–Seiberg 1989、Schellekens 1999）、
+それが物理的な凝縮に対応するという認識は Bais–Slingerland (2009) による。この論文は CFT の複雑さを避けられる利点もあり、本章はその抄録である。
+</p>
+
+<p>
+まず通常の Bose 凝縮を復習する。凝縮体では、巨視的な数の粒子が1つの最低エネルギー単粒子状態（凝縮体波動関数）にいる。
+一様な系（周期境界条件）では、この波動関数は定数
+\[
+\psi(\mathbf r)=\frac{1}{\sqrt V}
+\]
+（\(V\) は体積）である。ボソンどうしが交換や編みこみで位相や符号を得ると、この実で正の波動関数にとどまれなくなる。したがって次が成り立つ。
+</p>
+
+<div class="thm-box">
+<span class="box-title">原理 1</span>
+ボソンは、動き回って元の配置に戻るとき（凝縮体中の他の粒子と交換・編みこみをするとき）、正味の位相も符号も受け取ってはならない。
+</div>
+
+<p>
+相互作用のあるボソンでは厳密な Bose 凝縮は起こらない（相互作用が粒子を単粒子固有状態から叩き出す）。
+しかし超流動体として凝縮体波動関数（秩序変数）をもち、位相や符号を獲得してはならないという条件は変わらない。
+なお凝縮体波動関数は \(e^{\ii\varphi(\mathbf r)}\) のような空間構造をもってもよい（渦がある場合など）が、
+重要なのは、粒子が凝縮体の中を動き回って元の多粒子配置に戻ったときに位相が出発時と同じであることである。
+</p>
+<p>
+秩序変数は、微視的には \(\phi(\mathbf r)=\langle\hat\psi(\mathbf r)\rangle\)（\(\hat\psi\) は位置 \(\mathbf r\) の粒子を消す第二量子化演算子）と書ける。
+非相互作用ボソンで \(N_0\) 個が式の波動関数にいるなら \(|\phi|^2=N_0/V\) である。
+全粒子数が厳密に固定された系では期待値がゼロになるので、代わりに \(\langle\hat\psi^\dagger(\mathbf r)\hat\psi(\mathbf r')\rangle\) を \(\mathbf r\) と \(\mathbf r'\) が遠い極限で見る（非対角長距離秩序）。
+秩序変数が（少なくとも局所的に）粒子数を保存しない、つまり粒子を消すことから、2番目の原理が出る。
+</p>
+
+<div class="thm-box">
+<span class="box-title">原理 2</span>
+ボソンは凝縮体に自由に吸収されたり、凝縮体から放出されたりできる。
+</div>
+
+<section>
+<h2 id="sec-25-1">単純カレントボソンの凝縮<span class="en">Condensing Simple Current Bosons</span></h2>
+
+<p>
+簡単のため、まず<strong>単純カレント (simple current)</strong> でもあるボソンに限る（一般の場合は §25.7）。
+粒子 \(J\) が単純カレントであるとは、すべての粒子種 \(a\) について \(\sum_c N_{Ja}^c=1\)、つまり \(J\) との融合の結果がただ1つの粒子になることである。
+これは、ある整数 \(N\) で \(J^N=I\)（\(J\) を \(N\) 個融合させると真空）となることと同値であり、
+\(J\times\bar J=I\) や \(d_J=1\) とも同値である。
+</p>
+<p>
+\(J\) が凝縮するにはボソンでなければならない。すなわち自分自身との編みこみが自明、あるいはスピン因子が自明である：
+\[
+R^{JJ}_{J\times J}=1,\qquad\text{あるいは}\qquad\theta_J=1 .
+\]
+これが原理 1 の実装である。凝縮体の中で \(J\) 同士は融合して \(J^p\)（任意の \(p\)）を作れるが、
+これらもすべてボソン \(\theta_{J^p}=1\) であり、互いに自明に編みこまれることが示せる（原書の演習 25.1）。
+</p>
+
+<p>
+凝縮前の理論を \(\mathcal A\)（凝縮する単純カレントを \(J\) とする）、最終的な凝縮後の理論を \(\mathcal U\) と書く（記法は Bais–Slingerland）。
+凝縮は概念的に2段階で進むと考えられ、その中間に、完全な（編みこみ付きの）エニオン理論ではなく融合代数（平面ダイアグラム代数）である理論 \(\mathcal T\) が現れる。
+トポロジカル対称性の破れの類似物として理解することもできる。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg">
+  <rect x="130" y="15" width="200" height="40" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="160" y="40" class="label">凝縮前のエニオン理論 A</text>
+  <line x1="230" y1="55" x2="230" y2="92" class="line accent" stroke-width="1.5"/>
+  <path d="M224 86 L230 96 L236 86" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="244" y="80" class="label-muted">同一視（と分裂）</text>
+  <rect x="130" y="100" width="200" height="40" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="140" y="125" class="label">融合代数 T（端の理論）</text>
+  <line x1="230" y1="140" x2="230" y2="177" class="line accent" stroke-width="1.5"/>
+  <path d="M224 171 L230 181 L236 171" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="244" y="165" class="label-muted">閉じ込め</text>
+  <rect x="130" y="185" width="200" height="40" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="160" y="210" class="label">凝縮後のエニオン理論 U</text>
+</svg>
+<figcaption>図 25.1：凝縮の2段階。A から T への段階で粒子を軌道に同一視し、必要なら分裂させる。T から U への段階で、凝縮体と非自明に編みこまれる粒子を閉じ込めとして落とす。</figcaption>
+</figure>
+</section>
+
+<section>
+<h2 id="sec-25-2">同一視のステップ<span class="en">Identification Step</span></h2>
+
+<p>
+第1段階は、\(\mathcal A\) の粒子種を<strong>軌道</strong>にまとめる同一視である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（軌道）</span>
+\(J\) の作用に関する粒子 \(a\) の軌道とは、ある整数 \(p\) により \(b=J^p\times a\) と書ける \(\mathcal A\) の粒子種 \(b\) 全体の集合で、\([a]_J\)（紛れがなければ \([a]\)）と書く。
+\(J^N=I\) となる最小の整数を \(N\) とすると、1つの軌道に含まれる粒子種は高々 \(N\) 個である（これより少ない場合は §25.4 の分裂が起こる）。
+</div>
+
+<p>
+\(b=J^q\times a\) なら \([a]=[b]\) であることに注意する。軌道ごとに代表元を1つ選び、各軌道を代表元 \([a]\) で表すと記法の混乱を避けられる。
+物理的な根拠は原理 2 である。粒子 \(a\) は凝縮体からボソンを1つ吸収して \(J\times a\) になれるし、2つ吸収して \(J^2\times a\) にもなれる。
+したがって量子数 \(a\) はもはや保存量ではなく、有効な粒子種ではない。保存されるのは軌道 \([a]\) であり、これが \(\mathcal T\) における粒子種の役割を果たす。
+</p>
+
+<h3 id="sec-25-2-1">§25.2.1 最大サイズの軌道</h3>
+
+<p>
+すべての軌道が最大サイズ \(N\)（ちょうど \(N\) 個の粒子種を含む）である場合には、\(\mathcal T\) の融合則は元の理論から自然に引き継がれる：
+\[
+N_{[a][c]}^{[b]}=N_{ac}^{b}.
+\]
+特に \(\mathcal A\) の真空 \(I\) の軌道 \([I]\) が \(\mathcal T\) の真空になる。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(\Z_8^{(3+1/2)}\) 理論 ＝ \(SU(8)_1\)）</span>
+<a href="chapter18.html">第18章</a>の \(\Z_8^{(3+1/2)}\)（\(SU(8)_1\) と同等）を考える。粒子は \(p=0,\dots,7\)、融合則とツイスト因子は
+<div class="equation" id="eq-25-Z8">\[
+p\times p'=(p+p')\bmod 8,\qquad \theta_p=\exp\!\Big(2\pi\ii\,\frac{7}{16}\,p^2\Big)
+\]</div>
+である（\(p=0\) が真空）。\(\theta_4=1\) なので \(p=4\) はボソンであり、これを \(J\) とする。\(J^2=I\) なので軌道の最大サイズは 2。
+軌道は4つ、いずれも最大サイズ：
+\[
+[0]=[4],\qquad [1]=[5],\qquad [2]=[6],\qquad [3]=[7].
+\]
+例えば 1 に \(J=4\) を融合すると 5 になり、5 に融合すると 1 に戻るので、1 と 5 が1つの軌道に同一視される。
+この4つが中間の \(\mathcal T\) の粒子種で、融合則は
+<div class="equation" id="eq-25-Z8T">\[
+[p]\times[p']=[(p+p')\bmod 4]
+\]</div>
+である。例えば \([1]\times[2]=[3]\) は、\([1]\) の2つの代表元 1, 5 と \([2]\) の代表元 2, 6 のどの組み合わせを融合しても 3 または 7 になることから従う。
+</div>
+</section>
+
+<section>
+<h2 id="sec-25-3">閉じ込めのステップ<span class="en">Confinement Step</span></h2>
+
+<p>
+\(\mathcal T\) の粒子種は無矛盾な融合代数（平面ダイアグラム代数）をなすが、一般には無矛盾なエニオン理論ではない。
+編みこみがうまく定義できない（六角形方程式の解がない）からである。
+理由は、\(\mathcal T\) の粒子の一部が凝縮したボソンと非自明に編みこまれ、最終的な理論 \(\mathcal U\) の粒子としては許されないことにある。
+凝縮ボソンと非自明に編みこまれる粒子を系に入れると、凝縮体中のボソンが動き回って戻ってきたときの位相が一定でなくなり、原理 1 に反する。
+したがって \(\mathcal U\) に許される粒子 \(a\)（またはその軌道 \([a]_J\)）は、凝縮体と自明に編みこまれねばならない：
+</p>
+<div class="equation" id="eq-25-trivial">\[
+R^{Ja}_{J\times a}\,R^{aJ}_{J\times a}=\frac{\theta_{J\times a}}{\theta_J\,\theta_a}=\frac{\theta_{J\times a}}{\theta_a}=1 .
+\]</div>
+<p>
+（第15章のリボン恒等式と \(\theta_J=1\) を使った。）\(J\times a\) と \(a\) は同じ軌道に属するので、これは次のように言い換えられる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">規則（閉じ込めの条件）</span>
+軌道（\(\mathcal T\) の粒子種）が最終理論 \(\mathcal U\) に入れるのは、その軌道に属するすべての粒子が同じスピン因子 \(\theta\) をもつときである。
+このような粒子は<strong>非閉じ込め (deconfined)</strong>、すなわち凝縮体があっても系の中を自由に動ける。
+凝縮体と非自明に編みこまれる粒子は系の中に存在できず、<strong>閉じ込め (confined)</strong> という。
+</div>
+
+<p>
+閉じ込められた粒子も物理的な意味をもつ。完全な \(\mathcal T\) は、大きな \(\mathcal A\) の領域に囲まれた \(\mathcal U\) の液滴の端に住む (1+1) 次元理論として実現される。
+1次元では1つの粒子を別の粒子のまわりに回すことができないので、編みこみの制約がなく、閉じ込められた粒子も非閉じ込めの粒子も境界に存在できる。
+\(\mathcal T\) が編みこまれたエニオン理論ではなく融合代数であるのはこのためである。
+閉じ込められた粒子を \(\mathcal U\) の液滴の内部へ引きずり込もうとすると、凝縮体との非自明な編みこみがその経路に沿った「ブランチカット」を作り、経路に沿って凝縮体を壊す。
+壊れる長さに比例したエネルギーがかかるので、粒子を縁へ押し戻す力が働く。これが閉じ込めである。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(\Z_8^{(3+1/2)}\) の続き）</span>
+式 <a class="eq-ref" href="#eq-25-Z8"></a> から
+\[
+\theta_0=\theta_4=1,\quad \theta_1\ne\theta_5,\quad \theta_2=\theta_6=-\ii,\quad \theta_3\ne\theta_7 .
+\]
+軌道 \([1]\)、\([3]\) は、中の粒子のスピン因子が異なるので閉じ込められる。非閉じ込めは \([0]\)（真空）と \([2]\) の2つだけで、\(\theta_{[0]}=1\)、\(\theta_{[2]}=-\ii\)、
+融合則は式 <a class="eq-ref" href="#eq-25-Z8T"></a> より \([2]\times[2]=[0]\) のみが非自明である。
+これは（左巻きの）<strong>セミオン理論</strong>である。すなわち \(\Z_8^{(3+1/2)}\) の背景の中にセミオン液滴を凝縮させると、
+\([1]\) と \([3]\) の2種類が液滴の縁に閉じ込められて残る。
+</div>
+</section>
+
+<section>
+<h2 id="sec-25-4">分裂：最大でない軌道<span class="en">Splitting: Orbits Not of Maximum Size</span></h2>
+
+<p>
+\(J^N=I\) の最小の \(N\) に対して、軌道のサイズが \(N\) 未満のものがあると、<strong>分裂 (splitting)</strong> という新しい現象が起こる。
+\(\mathcal A\) の軌道 \([a]\) をそのまま \(\mathcal T\) の粒子種に割り当てると、融合代数として受け入れられないからである。
+</p>
+<p>
+\(0&lt;p&lt;N\) で \(J^p\times a=a\) となる粒子 \(a\) があるとする（\(p\) は \(N\) の約数でなければならない）。\(a\times\bar a=I+\cdots\) と、他方
+\[
+a\times\bar a=(J^p\times a)\times\bar a=J^p\times(a\times\bar a)=J^p\times(I+\cdots)=J^p+\cdots
+\]
+を合わせて、
+<div class="equation" id="eq-25-aabar">\[
+a\times\bar a=I+J^p+\cdots
+\]</div>
+でなければならない（一般には \(a\times\bar a=I+J^p+J^{2p}+\cdots+J^{N-p}+\cdots\)）。
+\([J^p]=[I]\) なので、軌道の融合則は
+\[
+[a]\times[\bar a]=[I]+[J^p]+\cdots=[I]+[I]+\cdots
+\]
+となり、真空が右辺に2回出てしまう。融合代数の規則 \(N_{a\bar a}^{I}=1\)（<a href="chapter08.html">第8章</a>）に反するので、このままでは \(\mathcal T\) の融合代数として不適当である。
+</p>
+<p>
+この矛盾を解くために、軌道 \([a]\) は \(\mathcal T\) の複数の粒子 \([a]_i\)（\(i=1,\dots,q_a\)）に<strong>分裂</strong>しなければならない。一般に \(\mathcal A\) から \(\mathcal T\) への対応は
+<div class="equation" id="eq-25-split">\[
+a\;\to\;\sum_{i=1}^{q_a} n_a^{\,i}\,[a]_i
+\]</div>
+（\(n_a^{\,i}\) は整数）と書ける。最大サイズの軌道は分裂せず（\(n_a^1=1\)、\(q_a=1\)）、そうでない軌道は分裂した各粒子のツイスト因子がすべて元と一致する：
+\[
+\theta_{[a]_i}=\theta_a .
+\]
+\(\mathcal T\) の融合則は \(\mathcal A\) のものと整合しなければならず、\(a\times b=\sum_c N_{ab}^c\,c\) なら \(\mathcal T\) で
+\[
+\Big(\sum_i n_a^{\,i}[a]_i\Big)\times\Big(\sum_i n_b^{\,i}[b]_i\Big)=\sum_c N_{ab}^{c}\sum_i n_c^{\,i}[c]_i
+\]
+が成り立つ。この整合性から量子次元の関係
+<div class="equation" id="eq-25-dim">\[
+d_a=\sum_{i=1}^{q_a} n_a^{\,i}\,d_{[a]_i}
+\]</div>
+が従う（左辺は \(\mathcal A\)、右辺は \(\mathcal T\) の量子次元）。分裂が済めば \(\mathcal T\) の無矛盾な融合則が得られ、その後に閉じ込めを判定して最終的な \(\mathcal U\) が決まる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（分裂の物理的な意味）</span>
+同一視には「ボソンを自由に出し入れできる」という明快な物理的解釈があるが、分裂の解釈は、無矛盾性のために必要だという以上には明快でない。
+物理的な理解は、凝縮体の存在が、凝縮前には不定であった物理量を<strong>局所的に保存される量</strong>にすることで与えられる。
+この新しい保存量が取りうる \(q_a\) 通りの値が、\([a]_i\) の \(i\) に対応する（Burnell ら 2011, 2012）。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（\(SU(2)_4\)）</span>
+\(SU(2)_4\) の粒子（整数ラベルはスピンの2倍 \(j\)）の量子次元、ツイスト因子は次のとおり（\(d=\sqrt3\) として \(d_j=\sin((j+1)\pi/6)/\sin(\pi/6)\)）。
+<div class="table-wrap"><table>
+<tr><th>粒子</th><th>\(d\)</th><th>\(\theta\)</th></tr>
+<tr><td>0</td><td>\(1\)</td><td>\(1\)</td></tr>
+<tr><td>1</td><td>\(\sqrt3\)</td><td>\(e^{2\pi\ii/8}\)</td></tr>
+<tr><td>2</td><td>\(2\)</td><td>\(e^{2\pi\ii/3}\)</td></tr>
+<tr><td>3</td><td>\(\sqrt3\)</td><td>\(e^{2\pi\ii\,5/8}\)</td></tr>
+<tr><td>4</td><td>\(1\)</td><td>\(1\)</td></tr>
+</table></div>
+融合則は \(SU(2)_k\) の規則（<a href="chapter21.html">第21章</a>、<a href="chapter22.html">第22章</a>）で、例えば \(1\times1=0+2\)、\(1\times2=1+3\)、\(2\times2=0+2+4\)、\(4\times a=4-a\)。
+粒子 4 は \(4\times4=0\) の単純カレントボソン（\(\theta_4=1\)）なので、これを凝縮する。軌道は
+\[
+[0]=[4]\ (\text{最大サイズ、真空}),\qquad [1]=[3]\ (\text{最大サイズ}),\qquad [2]\ (\text{最大サイズでない}).
+\]
+粒子 2 は \(4\times2=2\) と自分自身に移るので、軌道 \([2]\) は分裂せねばならない。軌道の融合則は
+\[
+[1]\times[1]=[0]+[2],\quad [1]\times[2]=[1]+[1],\quad [2]\times[2]=[0]+[2]+[0] .
+\]
+（\([1]\times[1]\) の各因子は 1 または 3 だが、どの組み合わせでも結果は \([0]\) の軌道の粒子と \([2]\) 1つずつを含む。）最後の式で真空が2回現れており、これが問題である。
+\([2]\) を \([2]_1\) と \([2]_2\) に分裂させると
+<div class="equation" id="eq-25-su24">\[
+\begin{aligned}
+[1]\times[1]&amp;=[0]+[2]_1+[2]_2,\\
+{[1]}\times([2]_1+[2]_2)&amp;=[1]+[1],\\
+([2]_1+[2]_2)\times([2]_1+[2]_2)&amp;=[0]+([2]_1+[2]_2)+[0]
+\end{aligned}
+\]</div>
+となり、これらと整合する \(\mathcal T\) の融合則がただ1つ定まる。第2式から \([1]\times[2]_1=[1]\)、\([1]\times[2]_2=[1]\)。
+第3式の左辺を \(([2]_1\times[2]_1)+([2]_2\times[2]_2)+2([2]_1\times[2]_2)\) と展開して右辺と比べると \([2]_1\times[2]_2=[0]\)。
+残りは結合則 \([2]_2=([2]_1\times[2]_2)\times[2]_2=[2]_1\times([2]_2\times[2]_2)\) から \([2]_2\times[2]_2=[2]_1\)、\([2]_1\times[2]_1=[2]_2\) と定まる。結果は次の表である。
+<div class="table-wrap"><table>
+<tr><th>粒子</th><th>\(d\)</th><th>\(\theta\)</th><th>\(\times\)</th><th>\([1]\)</th><th>\([2]_1\)</th><th>\([2]_2\)</th></tr>
+<tr><td>\([0]\)</td><td>\(1\)</td><td>\(1\)</td><td>\([1]\)</td><td>\([0]+[2]_1+[2]_2\)</td><td>\([1]\)</td><td>\([1]\)</td></tr>
+<tr><td>\([1]\)</td><td>\(\sqrt3\)</td><td>\(e^{2\pi\ii/8}\)</td><td>\([2]_1\)</td><td>\([1]\)</td><td>\([2]_2\)</td><td>\([0]\)</td></tr>
+<tr><td>\([2]_1\)</td><td>\(1\)</td><td>\(e^{2\pi\ii/3}\)</td><td>\([2]_2\)</td><td>\([1]\)</td><td>\([0]\)</td><td>\([2]_1\)</td></tr>
+<tr><td>\([2]_2\)</td><td>\(1\)</td><td>\(e^{2\pi\ii/3}\)</td><td colspan="4"></td></tr>
+</table></div>
+量子次元について \(d_{[2]_1}+d_{[2]_2}=2=d_2\) であり式 <a class="eq-ref" href="#eq-25-dim"></a> と整合する。ツイスト因子は分裂しても変わらない。
+最後に閉じ込めを判定する。軌道 \([1]\) は粒子 1 と 3 からなり、スピン因子が異なる（\(e^{2\pi\ii/8}\ne e^{2\pi\ii 5/8}\)）ので閉じ込められる。
+軌道 \([2]\) は1つの粒子種だけからなるので（分裂しても）非閉じ込めである。したがって \(\mathcal U\) は粒子 \([0],[2]_1,[2]_2\) からなり、融合則は \(\Z_3\)、
+ツイスト因子は \(1,e^{2\pi\ii/3},e^{2\pi\ii/3}\)。これは \(SU(3)_1\)、すなわち \(\Z_3^{(1)}\)（<a href="chapter18.html">第18章</a>）である。
+\([2]_1\) と \([2]_2\) の間には明らかな対称性があり、どちらを添字 1 と呼んでもよい（<a href="chapter36.html">第36章</a>）。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（Ising \(\times\) \(\overline{\text{Ising}}\)）</span>
+Ising 理論のデータは \(d_I=1\)、\(d_\sigma=\sqrt2\)、\(d_\psi=1\)、\(\theta_I=1\)、\(\theta_\sigma=e^{\ii\pi/8}\)、\(\theta_\psi=-1\)、融合則 \(\sigma\times\sigma=I+\psi\)、\(\sigma\times\psi=\sigma\)、\(\psi\times\psi=I\)。
+\(\overline{\text{Ising}}\) は Ising のツイスト因子を複素共役にしたもの（鏡像理論）である。
+積理論の粒子 \((a,b)\)（9種）のスピン因子は2成分のスピン因子の積で、例えば \(\theta_{(\psi,\sigma)}=(-1)e^{-\ii\pi/8}\)。
+ボソンは \((\sigma,\sigma)\) と \((\psi,\psi)\) の2つで、ここでは \((\psi,\psi)\) を凝縮する。軌道は
+\[
+[I,I]=[\psi,\psi]\ (\text{真空}),\ \ [I,\sigma]=[\psi,\sigma],\ \ [\sigma,I]=[\sigma,\psi],\ \ [I,\psi]=[\psi,I],\ \ [\sigma,\sigma]\ (\text{最大でない}).
+\]
+近道として先に閉じ込めを調べる。\((\sigma,I)\) のスピン因子は \(e^{\ii\pi/8}\)、\((\sigma,\psi)\) は \(-e^{\ii\pi/8}\) で異なり、\((I,\sigma)\) と \((\psi,\sigma)\) も符号だけ異なるので、この2つの軌道は閉じ込められる。
+残る粒子の融合則は
+<div class="equation" id="eq-25-isingising">\[
+[I,\psi]\times[I,\psi]=[I,I],\quad [I,\psi]\times[\sigma,\sigma]=[\sigma,\sigma],\quad [\sigma,\sigma]\times[\sigma,\sigma]=2[I,I]+2[I,\psi]
+\]</div>
+（最後の式は左右の \(\sigma\times\sigma=I+\psi\) から \((I,I)+(I,\psi)+(\psi,I)+(\psi,\psi)\) を得て軌道に分類したもの）で、
+ここでも \([\sigma,\sigma]\) は \([\sigma,\sigma]_1\)、\([\sigma,\sigma]_2\) に分裂する必要がある。
+式から \(([\sigma,\sigma]_1+[\sigma,\sigma]_2)^2=2[I,I]+2[I,\psi]\) なので、可能な分裂は2通り：
+(a) \([\sigma,\sigma]_i\times[\sigma,\sigma]_i=[I,I]\)（\(i=1,2\)）かつ \([\sigma,\sigma]_1\times[\sigma,\sigma]_2=[I,\psi]\)、
+(b) \([\sigma,\sigma]_i\times[\sigma,\sigma]_i=[I,\psi]\) かつ \([\sigma,\sigma]_1\times[\sigma,\sigma]_2=[I,I]\)。
+(b) はリボン恒等式で \(R\) 行列の値が \(\pm\ii\) になり、スピン因子 \(\theta_{[\sigma,\sigma]_1}=1\) と矛盾して不整合である。(a) が正しく、これが次の表の融合則を与える。
+<div class="table-wrap"><table>
+<tr><th>粒子</th><th>\(d\)</th><th>\(\theta\)</th><th>\(\times\)</th><th>\([\sigma,\sigma]_1\)</th><th>\([\sigma,\sigma]_2\)</th><th>\([\psi,I]\)</th></tr>
+<tr><td>\([I,I]\)</td><td>1</td><td>1</td><td>\([\sigma,\sigma]_1\)</td><td>\([I,I]\)</td><td>\([\psi,I]\)</td><td>\([\sigma,\sigma]_2\)</td></tr>
+<tr><td>\([\sigma,\sigma]_1\)</td><td>1</td><td>1</td><td>\([\sigma,\sigma]_2\)</td><td>\([\psi,I]\)</td><td>\([I,I]\)</td><td>\([\sigma,\sigma]_1\)</td></tr>
+<tr><td>\([\sigma,\sigma]_2\)</td><td>1</td><td>1</td><td>\([\psi,I]\)</td><td>\([\sigma,\sigma]_2\)</td><td>\([\sigma,\sigma]_1\)</td><td>\([I,I]\)</td></tr>
+<tr><td>\([\psi,I]\)</td><td>1</td><td>\(-1\)</td><td colspan="4"></td></tr>
+</table></div>
+この \(\mathcal U\) は<strong>トーリック符号</strong>の TQFT（<a href="chapter18.html">第18章</a>、<a href="chapter27.html">第27章</a>以降）である。
+対応は \([I,I]\) が真空、\([\psi,I]\) がフェルミオン \(f\)、\([\sigma,\sigma]_1\) と \([\sigma,\sigma]_2\) が \(e\) と \(m\)（どちらをどちらにしてもよい）。
+ここでも2つの分裂片の間に対称性がある（<a href="chapter36.html">第36章</a>）。
+</div>
+</section>
+
+<section>
+<h2 id="sec-25-5">凝縮のその他の特徴<span class="en">Other Features of Condensation</span></h2>
+
+<p>
+凝縮前の理論 \(\mathcal A\) がモジュラーなら、凝縮後の \(\mathcal U\) もモジュラーである。さらにモジュラーな理論では中心電荷は mod 8 で変わらない：
+</p>
+<div class="equation" id="eq-25-c">\[
+c_{\mathcal A}=c_{\mathcal U}\pmod 8 .
+\]</div>
+<p>
+また、\(\mathcal A\)、\(\mathcal T\)、\(\mathcal U\) の全量子次元 \(\calD=\sqrt{\sum_a d_a^2}\) の間に次の関係がある：
+</p>
+<div class="equation" id="eq-25-D">\[
+\frac{\calD_{\mathcal A}}{\calD_{\mathcal T}}=\frac{\calD_{\mathcal T}}{\calD_{\mathcal U}} .
+\]</div>
+<p>
+\(SU(2)_4\) の例で確かめる。\(\calD_{\mathcal A}=\sqrt{12}\)（\(1+3+4+3+1=12\)）、\(\calD_{\mathcal T}=\sqrt6\)（\(1+3+1+1=6\)）、\(\calD_{\mathcal U}=\sqrt3\) で、
+\(\sqrt{12}/\sqrt6=\sqrt6/\sqrt3=\sqrt2\) と合う。中心電荷も \(c_{SU(2)_4}=c_{SU(3)_1}=2\pmod 8\) で一致する。
+</p>
+</section>
+
+<section>
+<h2 id="sec-25-6">コセット<span class="en">Cosets</span></h2>
+
+<p>
+Chern–Simons 理論で新しい TQFT を作る最も一般的な方法の1つが、CFT で先に考えられた<strong>コセット理論</strong>である。
+Lie 群 \(G\) とその部分群 \(H\) に対して、\(G_k\)（レベル \(k\) の Chern–Simons 理論）と \(H_{k'}\) からコセット \(G_k/H_{k'}\) を作る。
+大まかな物理的解釈は、部分群 \(H\) をゲージ化して、その自由度を冗長にすることである。
+\(H\) を積群 \(G\times G'\) に埋め込むより複雑なコセット \((G_k\times G'_{k'})/H_{k''}\) もある。
+</p>
+<p>
+こうしたコセットは複雑に見えるが、ボソン凝縮として極めて簡単に解釈できる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（コセット ＝ 凝縮）</span>
+\(G_k/H_{k'}\) を作るには、まず \(G_k\times\overline{H_{k'}}\)（上線はカイラリティの反転、\(G_{-k}=\overline{G_k}\)）を作り、積理論に含まれる<strong>すべての単純カレントボソン</strong>を凝縮させる。
+\((G_k\times G'_{k'})/H_{k''}\) なら \(G_k\times G'_{k'}\times\overline{H_{k''}}\) を作って同様に凝縮させる。
+</div>
+
+<p>
+式 <a class="eq-ref" href="#eq-25-c"></a> と中心電荷の加法性（<a href="chapter17.html">第17章</a>）から、コセットの中心電荷は分子の中心電荷の和から分母の中心電荷の和を引いたものである。
+カイラリティの反転は、ダイアグラム代数では鏡像のダイアグラムを評価することにあたる。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(SU(2)_2/U(1)_4\)）</span>
+\(SU(2)_2\times\overline{U(1)_4}\) を作って単純カレントボソンを凝縮する。\(U(1)_4=\Z_4^{(1/2)}=(D_9)_1\) のことで、文献によっては \(U(1)_2\) とも書かれる。
+データ（上線は、ツイスト因子を元の定義から複素共役にした鏡像理論を表す）：
+<div class="table-wrap"><table>
+<tr><th>理論</th><th>粒子</th><th>\(d\)</th><th>\(\theta\)</th></tr>
+<tr><td rowspan="3">\(SU(2)_2\)</td><td>\(I\)</td><td>1</td><td>1</td></tr>
+<tr><td>\(\sigma\)</td><td>\(\sqrt2\)</td><td>\(e^{2\pi\ii\,3/16}\)</td></tr>
+<tr><td>\(\psi\)</td><td>1</td><td>\(-1\)</td></tr>
+<tr><td rowspan="4">\(\overline{U(1)_4}\)</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>\(e^{2\pi\ii\,7/8}\)</td></tr>
+<tr><td>2</td><td>1</td><td>\(-1\)</td></tr>
+<tr><td>3</td><td>1</td><td>\(e^{2\pi\ii\,7/8}\)</td></tr>
+</table></div>
+\(U(1)_4\) の融合則は \(i\times j=(i+j)\bmod 4\)、\(SU(2)_2\) は Ising と同じ。積理論の粒子 \((a,b)\) は \(\theta_{(a,b)}=\theta_a\theta_b\) をもち、
+\((\psi,2)\) が \(\theta=(-1)(-1)=1\) のボソン単純カレントである（真空 \((I,0)\) 以外ではこれが唯一）。
+積理論の12粒子は、サイズ最大（分裂なし）の6つの軌道に分かれる：
+\[
+[I,0]=[\psi,2],\ \ [\sigma,0]=[\sigma,2],\ \ [\psi,0]=[I,2],\ \ [I,1]=[\psi,3],\ \ [\sigma,1]=[\sigma,3],\ \ [\psi,1]=[I,3].
+\]
+これが \(\mathcal T\) の6つの粒子種である。スピン因子を調べると、非閉じ込めは \([I,0]\)、\([\sigma,1]\)、\([\psi,0]\) の3つだけである
+（例えば \([\sigma,1]\) は \(e^{2\pi\ii(3/16+7/8)}=e^{2\pi\ii/16}\) と \((\sigma,3)\) で一致、\([\sigma,0]\) は \((\sigma,0)\) と \((\sigma,2)\) で符号が異なり閉じ込め）。
+最終理論の粒子は \([I,0]\)、\([\sigma,1]\)（\(d=\sqrt2\)、\(\theta=e^{2\pi\ii/16}\)）、\([\psi,0]\)（\(d=1\)、\(\theta=-1\)）で、融合則は
+\[
+[\sigma,1]\times[\sigma,1]=[I,0]+[\psi,0],\qquad [\sigma,1]\times[\psi,0]=[\sigma,1],\qquad [\psi,0]\times[\psi,0]=[I,0]
+\]
+である。これは \(\theta_\sigma=e^{2\pi\ii/16}\) の Ising TQFT にほかならない（中心電荷は \(3/2-1=1/2\)）。
+</div>
+
+<h3 id="sec-25-6-1">§25.6.1 双対性と別名</h3>
+
+<p>
+Ising TQFT を \(SU(2)_2/U(1)_4\) と書き直せるというのは珍しいことではない。同じ TQFT を表す方法は通常複数ある。例えば、ユニタリな Virasoro 最小模型の系列は
+\[
+\mathcal M_k=\big(SU(2)_k\times SU(2)_1\big)/SU(2)_{k+1}
+\]
+と表され、Ising TQFT はこの系列の \(k=1\)（Ising を表す更にもう1つの書き方）、\(k=2\) は 3 状態 Potts の TQFT である。
+超共形最小模型など他の系列にも同様のコセットがある。
+</p>
+<p>
+もう1つの興味深い関係が<strong>レベル–ランク双対性</strong>である。最も有名なものは
+<div class="equation" id="eq-25-levelrank">\[
+SU(N)_k = SU(Nk)_1\,/\,SU(k)_N
+\]</div>
+で、他にも \(Sp(2r)_s=SO(4rs)_1/Sp(2s)_r\)、\(SO(2r+1)_{2s+1}=SO((2r+1)(2s+1))_1/SO(2s+1)_{2r+1}\) などがある。
+どの系列にも当てはまらない関係もある。コセットの中心電荷が分子から分母を引いたものになることは、こうした関係に対する簡単だが非自明な制約で、
+中心電荷を知るだけでコセットの結果を推測できることも多い。
+</p>
+</section>
+
+<section>
+<h2 id="sec-25-7">より一般の凝縮<span class="en">More General Condensations</span></h2>
+
+<p>
+単純カレントでない対象の凝縮も考えられる。モジュラーなエニオン理論に対するすべての可能な凝縮を構成するアルゴリズムが Neupert ら (2016) によって得られている。
+\(N\) 個の粒子種をもつモジュラー理論（モジュラーテンソル圏）では、各凝縮は非負整数成分の行列 \(M\) で記述され、
+</p>
+<div class="equation" id="eq-25-M">\[
+[M,S]=[M,T]=0,\qquad M_{I,I}=1
+\]</div>
+<p>
+を満たす（\(S\)、\(T\) はモジュラー \(S\) 行列と \(T\) 行列、<a href="chapter17.html">第17章</a>）。さらに \(M\) は
+<div class="equation" id="eq-25-Mn">\[
+M=n\,n^{T}
+\]</div>
+の形をしている。\(n\) は非負整数成分の長方行列で、式 <a class="eq-ref" href="#eq-25-split"></a> と同じ係数をもつが、結果として現れる粒子のうち非閉じ込めのもの（\(\mathcal T\) の全粒子ではなく \(\mathcal U\) の粒子）だけを含める。
+\(n\) から凝縮後の \(S\)、\(T\) 行列が
+<div class="equation" id="eq-25-Sn">\[
+S\,n=n\,S_{\mathrm{condensed}},\qquad T\,n=n\,T_{\mathrm{condensed}}
+\]</div>
+で作られる。得られた \(S_{\mathrm{condensed}}\) が妥当であること、すなわち対称でユニタリで、Verlinde の公式から非負の融合係数を与えることを確認する必要がある。
+\(M\) が置換行列の場合も解だが、これは元の理論の粒子を並べ替えるだけで凝縮とは考えない（置換対称性については<a href="chapter36.html">第36章</a>）。
+原書の演習 25.6 では \(SU(2)_4\) からの凝縮でこの手続きを確認する。
+</p>
+</section>
+
+<section>
+<h2 id="sec-25-8">凝縮と境界モード<span class="en">Condensation and Boundary Modes</span></h2>
+
+<p>
+トポロジカル秩序相（長い長さスケール・低エネルギーで TQFT で記述される物理系、§29.2.3）の多くは、有限領域（液滴や円板）の境界にギャップレスなモードをもつ。
+TQFT の中心電荷がゼロでないなら、端は熱を運ぶので必ずギャップレスである（§17.3.3）。
+中心電荷がゼロで熱伝導度がゼロでも、端がギャップレスでなければならない場合があり、その条件は凝縮と深く関係している。
+詳しい証明は省いて、結果だけを述べる（Burnell 2018、Kong 2014、Levin 2013）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（ギャップのある端）</span>
+トポロジカル秩序系の端がギャップをもてるのは、この系のボソンの集合を凝縮させて、トポロジカルに自明な系（エニオンがない系）が得られるときに限る。
+</div>
+
+<p>
+逆は一般には成り立たない。端付近のハミルトニアンを少し変えてギャップレスな励起を許せば、ギャップのある系もギャップレスにできるからである。
+真空へと凝縮できるボソンの集合を <strong>Lagrangian 部分代数</strong>という。それが存在してギャップのある端をもてるのは、ちょうど TQFT がある圏の Drinfel'd（量子）二重になっているときである。
+そのような TQFT はすでに Turaev–Viro 構成の出力として出会っており（§23.2.2）、<a href="chapter33.html">第33章</a>の弦ネット模型の出力としても得られる。
+要点は、TQFT の端がギャップをもてるのは、その TQFT が弦ネットで構成できる場合に限るということである。
+</p>
+<p>
+2つの TQFT \(\mathcal C\)、\(\mathcal D\) の間の界面がギャップをもてるかどうかも同様に問える。系を折りたたんで積理論 \(\mathcal C\times\overline{\mathcal D}\)（\(\overline{\mathcal D}\) は鏡像、時間反転）を考えると、条件は次のようになる（Bais ら 2009、Kong 2014）。
+</p>
+<div class="thm-box">
+<span class="box-title">結果（界面のギャップ）</span>
+2つのトポロジカル秩序系 \(\mathcal C\)、\(\mathcal D\) の境界がギャップをもてるのは、\(\mathcal C\times\overline{\mathcal D}\) が自明な理論へのギャップのある端をもてるとき、
+すなわち \(\mathcal C\times\overline{\mathcal D}\) のボソンの集合を凝縮して、トポロジカルに自明な系が得られるときに限る。
+</div>
+<p>
+この条件が満たされる簡単な場合は、\(\mathcal C\) が \(\mathcal D\)（あるいはその逆）からボソン凝縮で得られる場合である。
+ただし、どちらも他方から凝縮では得られないのに条件が成り立つ、より一般の場合もある。折りたたんだ理論を考えるのは、境界付近の \(\mathcal C\) の粒子と \(\mathcal D\) の粒子が結合して、境界に沿って凝縮する物体を作る物理過程を許すことに相当する。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（参考文献と演習）</span>
+凝縮理論の詳しい \(F\) 行列などのデータは Eliëns ら (2014) の方法で凝縮前のデータから取り出せる。数学的な議論は Kong (2014)、Neupert ら (2016)、物理的な総説は Burnell (2018) にある。
+計算機プログラム Kac を使った具体例は<a href="chapter39.html">第39章</a>で扱う。
+原書の演習では、ボソン単純カレントの融合（25.1）、トーリック符号から真空への凝縮（25.2）、\(SU(2)_2\times SU(2)_2\) からのトーリック符号（25.3）、
+同じ巻きの Ising\(\times\)Ising の凝縮（25.4）、コセット（25.5）、16 重の道（25.7）などを扱う。
+</div>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第25章のまとめ</span>
+<ul>
+<li>エニオン凝縮は、ボソンを凝縮させて1つのエニオン理論から別のエニオン理論を導く。ボソンは編みこみで位相を得ない（原理 1）、凝縮体に自由に出入りできる（原理 2）。</li>
+<li>単純カレントボソン \(J\)（\(\theta_J=1\)）の凝縮は2段階で進む。同一視（\(J\) の作用による軌道への同一視。最大でない軌道は分裂し、\(d_a=\sum_i n_a^{\,i}d_{[a]_i}\)）で融合代数 \(\mathcal T\) を作り、
+閉じ込め（軌道内のスピン因子が揃わない粒子を落とす）で \(\mathcal U\) を得る。</li>
+<li>例：\(\Z_8^{(3+1/2)}\to\)セミオン、\(SU(2)_4\to SU(3)_1\)（\([2]\) が分裂）、Ising\(\times\overline{\text{Ising}}\to\)トーリック符号、\(SU(2)_2\times\overline{U(1)_4}\to\)Ising。</li>
+<li>モジュラー理論では \(\mathcal U\) もモジュラーで、\(c_{\mathcal A}=c_{\mathcal U}\pmod 8\)、\(\calD_{\mathcal A}/\calD_{\mathcal T}=\calD_{\mathcal T}/\calD_{\mathcal U}\)。</li>
+<li>コセット \(G_k/H_{k'}\) は \(G_k\times\overline{H_{k'}}\) の単純カレントボソンをすべて凝縮したもの。一般の凝縮は \(M=nn^T\)、\([M,S]=[M,T]=0\) で分類される。</li>
+<li>端（界面）がギャップをもてるのは、ボソンを凝縮して自明な理論にできるとき（Lagrangian 部分代数。TQFT が量子二重で弦ネットで構成できる場合）。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

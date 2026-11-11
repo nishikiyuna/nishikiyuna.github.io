@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="トポロジカル・エンタングルメント・エントロピー：トーリック符号での S=(M-1)log2、一般公式 S=αL-γ（γ=log D）、Kitaev–Preskill の組合せ、3通りの導出">
+  <title>第34章 トポロジカル・エンタングルメント — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter34" data-chapter="34">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第34章に対応</span>
+  第34章 トポロジカル・エンタングルメント
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+トーリック符号などの基底状態は、なぜ「トポロジカル」なのか、スピン1/2 という単純な自由度からどうしてエニオンが現れるのか。
+1つの答えは、これらの状態が特別な<strong>長距離量子エンタングルメント</strong>を持つことである。
+本章は領域 A と B に系を分けたときのエンタングルメント・エントロピーを調べ、境界の長さに比例する短距離の寄与とは別に、定数の補正 \(-\gamma\) が現れることを示す。
+トーリック符号では \(S=(M-1)\log2\)（\(M\) は切断される辺の数）となり、一般のトポロジカル相では \(\gamma=\log\calD\)（\(\calD\) は全量子次元）である。
+波動関数を与えられ、系を分割してエンタングルメントを測るだけで、トポロジカルな性質が読み取れる。
+後半では、この量がハミルトニアンの摂動や境界の形に依らず頑健であること（Kitaev–Preskill の組合せ）と、一般公式の3通りの導出（Kitaev–Preskill、エンタングルメント・ハミルトニアン、サージャリー）を述べる。
+選択的に読んでよい章である。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h3 id="sec-34-0">準備：エンタングルメントの復習</h3>
+
+<p>
+量子系の Hilbert 空間 \(\Hilb\) を2つの部分に分ける。
+</p>
+<div class="equation" id="eq-34-split">\[
+\Hilb=\Hilb_A\otimes\Hilb_B .
+\]</div>
+<p>
+系が規格化された純粋状態 \(\ket\psi\) にあるとき、波動関数はつねに<strong>Schmidt 分解 (Schmidt decomposition)</strong>
+</p>
+<div class="equation" id="eq-34-schmidt">\[
+\ket\psi=\sum_n\lambda_n\,\ket{\psi_n^A}\otimes\ket{\psi_n^B}
+\]</div>
+<p>
+の形に書ける。\(\{\ket{\psi_n^A}\}\) は \(\Hilb_A\) の、\(\{\ket{\psi_n^B}\}\) は \(\Hilb_B\) の正規直交系で、Schmidt 重み \(\lambda_n\) は非負の実数、規格化のとき \(\sum_n|\lambda_n|^2=1\) である。
+\(\lambda_n=e^{-\xi_n/2}\) と書いたときの \(\xi_n\) を<strong>エンタングルメント・エネルギー</strong>と呼ぶ。
+\(D\) 次元の系を空間的に2つに分けると、一般的な条件のもとで、エンタングルメント・エネルギーは切断面（\((D-1)\) 次元）に住む有効ハミルトニアンのスペクトルのように見える。
+</p>
+<p>
+2つ以上の Schmidt 重みが非零なら、\(\ket\psi\) は A と B の間で<strong>エンタングル</strong>しているという。典型例は2つのスピン1/2のシングレット
+\[
+\ket\psi=\tfrac1{\sqrt2}\ket{\uparrow_L}\otimes\ket{\downarrow_R}-\tfrac1{\sqrt2}\ket{\downarrow_L}\otimes\ket{\uparrow_R}
+\]
+で、符号 \(-\) は \(\ket{\downarrow_L}\) の符号の再定義（ゲージ選択）で吸収でき、すべての Schmidt 重みを正にできる。
+左右のスピンの状態を独立には記述できず、2つが遠く離れても残るこの性質は EPR パラドックスとして有名である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（エンタングルメント・エントロピー）</span>
+量的な尺度として、von Neumann エンタングルメント・エントロピー
+<div class="equation" id="eq-34-vN">\[
+S_{A,B}=S_{B,A}=-\sum_n|\lambda_n|^2\log|\lambda_n|^2
+\]</div>
+を使う。全系の密度行列 \(\rho=\ket\psi\bra\psi\) と、相手を trace out した縮約密度行列 \(\rho_A=\Tr_B\rho=\sum_n|\lambda_n|^2\ket{\psi_n^A}\bra{\psi_n^A}\)、\(\rho_B=\Tr_A\rho\) を使えば同じ量は
+\[
+S_{A,B}=-\Tr[\rho_A\log\rho_A]=-\Tr[\rho_B\log\rho_B]
+\]
+と書ける。この定義は系全体が純粋でなくても使える。
+</div>
+
+<p>
+他のエンタングルメント測度として <strong>Renyi エンタングルメント・エントロピー</strong>
+</p>
+<div class="equation" id="eq-34-Renyi">\[
+S^{\alpha}_{A,B}=\frac1{1-\alpha}\log\Bigl(\sum_n|\lambda_n|^{2\alpha}\Bigr)=\frac1{1-\alpha}\log\Tr[\rho_A^{\alpha}]
+\]</div>
+<p>
+があり、\(\alpha\to1\) で von Neumann エントロピーに一致する。トポロジカルな性質に関しては Renyi エントロピーも von Neumann エントロピーと同様にふるまう。
+</p>
+<p>
+以下では A と B が空間的に局所な領域である場合を考える（<a href="chapter08.html">第8章</a> §8.6）。
+A と B の間にはその境界の長さに比例する短距離のエンタングルメント、つまり境界近くの自由度どうしの相互作用による寄与が当然ある。
+しかしトポロジカルに秩序した相には、それとは別に、特別なトポロジカルな性質だけから生じる長距離のエンタングルメントがある。
+これが<strong>トポロジカル・エンタングルメント・エントロピー</strong>で、Levin–Wen と Kitaev–Preskill が発見した。
+トーリック符号を例にして見る（結果は任意のトポロジカル秩序に一般化される）。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-34-1">トーリック符号のエンタングルメント<span class="en">Entanglement in the Toric Code</span></h2>
+
+<p>
+トーリック符号の基底状態は、ループ気体の重ね合わせである（第27〜30章）。ループ気体の相関、したがってエンタングルメントは非局所的である。
+実際、単連結な領域の境界を横切る青い線の本数は必ず偶数になる。青い線が領域に入ったなら出なければならないからで、入口と出口は遠く離れていてもよい。
+この非局所な拘束が、トポロジカル・エンタングルメント・エントロピーの起源である。
+</p>
+
+<p>
+格子上で計算しよう。基底状態は全ループ配位の和
+</p>
+<div class="equation" id="eq-34-psi">\[
+\ket\psi=\sum_{\text{全ループ配位}}\mathcal N^{-1/2}\ket{\text{ループ配位}}
+\]</div>
+<p>
+である（<a href="chapter27.html">第27章</a>の式 (27.10)）。簡単のため球面を考えて基底状態の縮退をなくす（一部のプラケットが正方形でなくなるが、第27章 §27.5 の通り物理は変わらない）。
+項数は \(\mathcal N=2^{P-1}\)（\(P\) はプラケットの総数）である。どのプラケットを反転しても別のループ配位になるので \(2^P\) 通りあるが、閉多様体で全プラケットを反転すると元に戻るため \(P-1\) となる。
+</p>
+
+<p>
+式 <a class="eq-ref" href="#eq-34-psi"></a> を Schmidt 形に直す。まず少しずるをして系を3つに分ける。
+単連結な2領域を分ける橙色の線（頂点を横切らない）を引き、線の内側にだけ完全に収まる辺の集合を領域 A、外側にだけ完全に収まる辺の集合を領域 B とし、橙色の線が横切る辺を<strong>境界領域</strong>とする。
+球面では内と外に区別はないので、どちらを A と呼んでもよい。境界の辺のスピン配位を<strong>境界状態</strong> \(\ket{a}\) と呼ぶ（以下では \(a\) と書く。\(M\) 本の境界辺があるので \(2^M\) 通り）。
+</p>
+<p>
+境界状態が \(a\) のときの領域 A の基底状態の波動関数を \(\ket{\psi^A_a}\)、領域 B のものを \(\ket{\psi^B_a}\) とする。
+\[
+\ket{\psi^A_a}=\mathcal N_A^{-1/2}\sum_{\substack{\text{領域 A のループ配位で}\\ \text{境界状態が }a}}\ket{\text{ループ配位}_{A,a}},\qquad \mathcal N_A=2^{P_A}
+\]
+（\(P_A\) は A に完全に含まれるプラケットの数。和の中の青い線は領域の境界以外に端点を持たない。）B も同様に \(\mathcal N_B=2^{P_B}\)。すると
+</p>
+<div class="equation" id="eq-34-three">\[
+\ket\psi=\mathcal N_{\text{allowed}}^{-1/2}\sum_{\text{許される境界状態 }a}\ket{\psi^A_a}\otimes\ket{a}\otimes\ket{\psi^B_a}
+\]</div>
+<p>
+と書ける。\(\mathcal N_{\text{allowed}}\) は項数、すなわち異なる境界状態の数である。
+これはほとんど Schmidt 形だが、自由度を A、B、境界辺の3つに分けてしまっている。
+境界辺を B に含めて \(\tilde B\) とし、\(\ket{\psi^{\tilde B}_a}=\ket{a}\otimes\ket{\psi^B_a}\) と置けば、A と \(\tilde B\) が系を正しく2分する。
+\(\{\ket{\psi^A_a}\}\) は正規直交系で \(\{\ket{\psi^{\tilde B}_a}\}\) も同じなので、
+</p>
+<div class="equation" id="eq-34-schmidt-toric">\[
+\ket\psi=\mathcal N_{\text{allowed}}^{-1/2}\sum_{\text{許される境界状態 }a}\ket{\psi^A_a}\otimes\ket{\psi^{\tilde B}_a}
+\]</div>
+<p>
+が Schmidt 分解になる。Schmidt 重みはすべて等しく \(\mathcal N_{\text{allowed}}^{-1/2}\) である。
+</p>
+
+<p>
+エントロピーを求めるには許される境界状態の数が要る。\(M\) 本の境界辺には \(2^M\) 通りの配位があるが、基底状態では閉ループだけなので境界領域の青い辺の数は偶数でなければならず、許されるのはそのうち半分、
+\[
+\mathcal N_{\text{allowed}}=2^{M-1}
+\]
+である。重みが一様なので、von Neumann エントロピーは \(\log\mathcal N_{\text{allowed}}\) になる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（トーリック符号のエンタングルメント・エントロピー）</span>
+<div class="equation" id="eq-34-toric">\[
+S_{A,B}=(M-1)\log2 .
+\]</div>
+エンタングルメントは切断の長さ（境界の辺の数 \(M\)）に比例する。しかし係数は \(M\) ではなく \(M-1\) であり、この<strong>副次的な項 \(-1\)</strong> が状態のトポロジカルな性質を反映する。
+状態がループ気体からなるので、境界の状態に長距離の拘束が掛かることの表れである。
+</div>
+
+<p>
+領域 A が図34.4のように2つの境界（内側と外側）を持つなら、全境界辺の数を \(M\) として
+\[
+S_{A,B}=(M-2)\log2
+\]
+となる。外側と内側にそれぞれ1つの拘束があるからである。
+</p>
+
+<h3 id="sec-34-1-1">§34.1.1 任意の TQFT への一般化</h3>
+
+<p>
+境界状態の数を数えるこの方法は、Kitaev 量子二重模型（<a href="chapter31.html">第31章</a>）や Levin–Wen 模型（<a href="chapter33.html">第33章</a>）などの一般の格子模型にも使える。
+これらはすべて一種の一般化ループ気体なので、境界状態に同様の長距離相関があり、類似のトポロジカル・エンタングルメント・エントロピーが現れる。
+Levin–Wen 模型の状態数の数え上げによる von Neumann 版の計算は Levin–Wen 自身が、Renyi 版は Flammia らが行った。
+</p>
+<p>
+一般には、トポロジカル物質で領域 A と B の間に滑らかな長さ \(L\) の境界があれば、von Neumann エントロピーは
+</p>
+<div class="equation" id="eq-34-area">\[
+S_{A,B}=\alpha L-\gamma+\cdots
+\]</div>
+<p>
+の形になる（\(\alpha\) は定数、\(\gamma\) がトポロジカルな寄与、\(\cdots\) は領域が大きく境界が滑らかな極限で消える小さな寄与）。
+トーリック符号では式 <a class="eq-ref" href="#eq-34-toric"></a> から \(\gamma=\log2\) である。より一般に
+</p>
+<div class="thm-box">
+<span class="box-title">公式（トポロジカル・エンタングルメント・エントロピー）</span>
+<div class="equation" id="eq-34-gamma">\[
+\gamma=\log\calD,\qquad \calD^2=\sum_i d_i^2 ,
+\]</div>
+和は全粒子種を走り、\(\calD\) は全量子次元（<a href="chapter17.html">第17章</a>の式 (17.11)）である。
+</div>
+<p>
+トーリック符号では \(\calD^2=4\)（\(I,e,m,\psi\) の量子次元はすべて 1）なので \(\calD=2\)、\(\gamma=\log2\) となり、式 <a class="eq-ref" href="#eq-34-toric"></a> と一致する。
+これは驚くべき結果で、系の波動関数が与えられたとき、系を分割して2つの部分のエンタングルメントを計算するだけで、トポロジカルな性質が分かる。
+一般公式 <a class="eq-ref" href="#eq-34-gamma"></a> の3通りの導出は §34.3 で与える。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-34-2">トポロジカル・エンタングルメント・エントロピーの頑健性<span class="en">Topological Entanglement Entropy Is Robust</span></h2>
+
+<p>
+トーリック符号で得た結果が、使った特殊なハミルトニアンだけの性質ではないかと心配になるかもしれない。
+たしかにスピン間の局所相関を変える項をハミルトニアンに加えれば式 <a class="eq-ref" href="#eq-34-toric"></a> は変わる。具体的には式 <a class="eq-ref" href="#eq-34-area"></a> の \(\alpha\) が変わる。
+境界の形（長方形か角の多い形か）が、切断する辺の数以外にも効いてくるのではという心配もある。
+しかし第29章で強調したように、励起ギャップが閉じない限り、ハミルトニアンを少し摂動しても基底状態のトポロジカルな性質は変わらず、トポロジカル・エンタングルメント・エントロピーについてもこれが成り立つ。
+見つけた長距離相関は頑健に基底状態に埋め込まれているが、見えにくくなる。
+Kitaev と Preskill に従って、トポロジカルな項だけを取り出す方法を述べる（以下は von Neumann エントロピーで述べるが、Renyi でも同じ議論が成り立つ）。
+</p>
+
+<p>
+球面を図34.5のように4つの領域 A, B, C, D に分ける（D は球面の残り、つまり立体射影での無限遠の点を含む領域）。
+\(AB\) は領域 A と B の和集合などを表す。次の量を定義する。
+</p>
+<div class="equation" id="eq-34-Stop">\[
+S_{\text{top}}=\bigl(S_{A,BCD}+S_{B,ACD}+S_{C,ABD}+S_{D,ABC}\bigr)-\bigl(S_{AB,CD}+S_{AC,BD}+S_{AD,BC}\bigr).
+\]</div>
+<p>
+覚え方は簡単である。第1の括弧は4領域それぞれと残りの球面とのエンタングルメント、第2の括弧（負の符号）は2領域の和と残り2領域との3通りの組合せのエンタングルメントである。
+この組合せはトポロジカルな項だけを取り出すように作られていて、
+</p>
+<div class="equation" id="eq-34-Stop-gamma">\[
+S_{\text{top}}=-\gamma
+\]</div>
+<p>
+となる。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="230" cy="100" r="70" fill="none" class="line" stroke-width="1.5"/>
+  <line x1="230" y1="100" x2="230" y2="30" class="line accent" stroke-width="2"/>
+  <line x1="230" y1="100" x2="169.4" y2="135" class="line accent" stroke-width="2"/>
+  <line x1="230" y1="100" x2="290.6" y2="135" class="line accent" stroke-width="2"/>
+  <text x="188" y="78" class="label">A</text>
+  <text x="264" y="78" class="label">B</text>
+  <text x="226" y="142" class="label">C</text>
+  <text x="352" y="48" class="label">D（円の外側すべて）</text>
+  <text x="25" y="190" class="label-muted">3本の線分（長さ L_straight）と、D を囲む3本の円弧（長さ L_curved）</text>
+</svg>
+<figcaption>図 34.1：Kitaev–Preskill の分割（模式図）。球面を4領域に分け、領域 D は残りの球面（無限遠を含む）。</figcaption>
+</figure>
+
+<p>
+まず式 <a class="eq-ref" href="#eq-34-area"></a> を素朴に使って確かめる。\(S_{P,Q}\) を計算するたびに P と Q の境界の長さが要る。
+図には6つの線分があり、中心から放射状に伸びる3本の直線（長さ \(L_{\text{straight}}\)）と、D を囲む3本の円弧（長さ \(L_{\text{curved}}\)）である。すると
+\[
+\begin{aligned}
+S_{A,BCD}&amp;=S_{B,ACD}=S_{C,ABD}=\alpha(L_{\text{curved}}+2L_{\text{straight}})-\gamma+\cdots,\\
+S_{D,ABC}&amp;=\alpha(3L_{\text{curved}})-\gamma+\cdots,\\
+S_{AB,CD}&amp;=S_{AC,BD}=S_{AD,BC}=\alpha(2L_{\text{curved}}+2L_{\text{straight}})-\gamma+\cdots .
+\end{aligned}
+\]
+これを式 <a class="eq-ref" href="#eq-34-Stop"></a> に代入すると、境界の長さに比例する主要項は完全に相殺し、第1括弧の \(-4\gamma\)、第2括弧の \(-3\gamma\) が残って \(S_{\text{top}}=-\gamma\) になる。
+この相殺は非常に頑健である。
+</p>
+
+<p>
+幾何を変えたらどうなるか。A と B の境界の真ん中にくねくねした変形を加えたとする。
+C、D、3つの三重交点は変わらない。\(S_{\text{top}}\) の変化は
+</p>
+<div class="equation" id="eq-34-dStop">\[
+\Delta S_{\text{top}}=\bigl(\Delta S_{A,BCD}-\Delta S_{AD,BC}\bigr)+\bigl(\Delta S_{B,ACD}-\Delta S_{AC,BD}\bigr)
+\]</div>
+<p>
+と書ける。\(S_{D,ABC}\)、\(S_{C,ABD}\)、\(S_{AB,CD}\) はそもそも AB の境界を横切るエンタングルメントではないので変わらない。
+括弧の中はどちらも0になる。たとえば第1の括弧で \(\Delta S_{A,BCD}\) と \(\Delta S_{AD,BC}\) を比べると、D が BC につながるか A につながるかだけが違うが、
+D は変形した境界部分から遠いので、エンタングルメントの変化は両者で同じである。よって \(\Delta S_{\text{top}}=0\)。
+</p>
+<p>
+3領域が交わる点での変形も同様に議論できる。たとえば A, B, C の三重交点付近の形を変えるとき、D との境界と他の3つの三重交点は変わらないとすると、
+\[
+\Delta S_{\text{top}}=\bigl(\Delta S_{A,BCD}-\Delta S_{AD,BC}\bigr)+\bigl(\Delta S_{B,ACD}-\Delta S_{AC,BD}\bigr)+\bigl(\Delta S_{C,ABD}-\Delta S_{AB,CD}\bigr)
+\]
+で、各括弧の2項は D のつながり方だけが違い、これは A, B, C の間の境界の変形では全く変わらない。
+</p>
+<p>
+\(S_{\text{top}}\) がハミルトニアンの詳細にも依らないことも言える。ハミルトニアンを局所的に変えても、境界の近くでなければ影響しないが、境界は自由に動かせると今示した。
+そこで境界を動かし、ハミルトニアンを局所的に変え、境界を元の位置に戻せば \(S_{\text{top}}\) は変わらない。
+こうしてトポロジカル・エンタングルメント・エントロピーは、トポロジカルに秩序した相の頑健な性質であり、そのトポロジカルな性質を反映していることが分かる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-34-3">付録：トポロジカル・エンタングルメント・エントロピーの3通りの導出<span class="en">Appendix: Three Derivations of Topological Entanglement Entropy</span></h2>
+
+<p>
+重要な結果 <a class="eq-ref" href="#eq-34-gamma"></a> にはいくつかの導出法があり、それぞれ違う面を学べる。
+以下の3つ以外に、ストリングネット模型での陽な計算（Levin–Wen）もある。
+</p>
+
+<h3 id="sec-34-3-1">§34.3.1 Kitaev–Preskill の議論</h3>
+
+<p>
+Kitaev–Preskill は、von Neumann エントロピーのトポロジカルな部分を陽に取り出す議論を使った。
+対象の TQFT \(T\) からまずその二重 \(T\times\overline T\)（\(\overline T\) は逆のカイラリティを持つ鏡像）を作る。
+同じ理論の2枚の平面が、法線を逆向きにして平行に並んでいると思えばよい。二重系のトポロジカル・エンタングルメント・エントロピーは
+\[
+S^{\text{double}}_{\text{top}}=2S_{\text{top}}
+\]
+である。
+</p>
+<p>
+二重系を図34.5のように4つの領域に分け、各領域は層 \(T\) の領域と層 \(\overline T\) の鏡像の領域からなる。
+3本の分割線が交わる4つの三重交点（領域の角）の位置で、平面に小さな穴を開ける。穴は両方の層を貫く。
+TQFT に穴を開けると一般にその境界に低エネルギーの端モードができるが、ここでは \(T\) の穴と \(\overline T\) の穴で鏡像の端モードができるので、2つの端を結合させて低エネルギーモードを消せる（\(T\times\overline T\) の端にはギャップを開けられる、第25章 §25.8）。
+その結果、4つの「ワームホール」で結ばれた2層構造が得られ、低エネルギーモードはない。
+</p>
+<p>
+穴を開けて繋ぎ直すのは局所的な変更なので、トポロジカル・エンタングルメント・エントロピーは変わらないと考える。
+式 <a class="eq-ref" href="#eq-34-Stop"></a> の右辺の各エントロピーを計算する。\(S_{A,BCD}\) では領域 A だけを切り出す。すると A は3つの大きな穴を持つ球面である（A の上下の層の2つの三角形を、ワームホール管の一部をなす3本の帯でつないだもの）。
+\(S_{B,ACD},S_{C,ABD},S_{D,ABC}\) も同様（D は無限遠の点を含む）。\(S_{AB,CD}\) では AB を切り出すと4つの穴を持つ球面になり、\(S_{AC,BD}\)、\(S_{AD,BC}\) も同様である。
+</p>
+<div class="equation" id="eq-34-holes">\[
+S^{\text{double}}_{\text{top}}=4\,S_{3\text{-hole sphere}}-3\,S_{4\text{-hole sphere}} .
+\]</div>
+<p>
+穴つき球面のエントロピーは、穴にさまざまな量子数と、その間の融合チャネルを割り当てる自由度から来る。
+これは球面上に多数の準粒子をランダムに選び、3つまたは4つのグループに分けて、グループの量子数の確率を問う問題と同等である（粒子・反粒子対を作って、すべての可能な仕方で穴にランダムに動かすと考える）。
+この確率は<a href="chapter17.html">第17章</a>の演習 17.9 で計算されており、
+\[
+\text{2穴}:\ p_2(a,\bar a)=\frac{d_a^2}{\calD^2},\qquad
+\text{3穴}:\ p_3(a,b,c,\mu)=\frac{d_ad_bd_c}{\calD^4},\qquad
+\text{4穴}:\ p_4(a,b,c,d,\mu)=\frac{d_ad_bd_cd_d}{\calD^6}
+\]
+（\(\mu\) は融合チャネル）。これから直接、\(\log p_3=-4\log\calD+\log(d_ad_bd_c)\) を使って
+\[
+\begin{aligned}
+S_{3\text{-hole sphere}}&amp;=-\sum p_3\log p_3=4\log\calD-3\sum_a p_2(a,\bar a)\log d_a,\\
+S_{4\text{-hole sphere}}&amp;=6\log\calD-4\sum_a p_2(a,\bar a)\log d_a
+\end{aligned}
+\]
+が得られる。これを式 <a class="eq-ref" href="#eq-34-holes"></a> に代入すると \(\sum_a p_2\log d_a\) の項が相殺して
+\[
+S^{\text{double}}_{\text{top}}=16\log\calD-18\log\calD=-2\log\calD,\qquad S_{\text{top}}=-\log\calD
+\]
+となり、期待どおりである。
+</p>
+
+<h3 id="sec-34-3-2">§34.3.2 エンタングルメント・ハミルトニアンの議論</h3>
+
+<p>
+Kitaev–Preskill の論文には、それほど厳密ではないが短い議論もある。
+領域 A と B に系を分け、A の内部（境界から遠く）に量子数 \(a\) の準粒子電荷があるとする（複数の粒子で全量子数が \(a\) でもよい）。
+冒頭で述べたように、エンタングルメント・スペクトル（\(\log\lambda_n\) の集合）は、2領域の境界（長さ \(L\)）に住む1次元ハミルトニアン \(H\) で記述される。
+この1次元ハミルトニアンの低温 \(T\) での統計力学を考え、長さ \(L\)・長さ \(\beta=1/T\) の2次元トーラスと見る（\(L\) 方向のサイクルがトポロジカル電荷 \(a\) を囲んでいる）。
+トーラスにモジュラー \(S\) 変換（<a href="chapter07.html">第7章</a> §7.3.1、第17章 §17.3.2）を施して2つの方向を入れ替える。
+</p>
+<div class="equation" id="eq-34-Z">\[
+Z_a=\sum_b S_{ab}\tilde Z_b ,
+\]</div>
+<p>
+\(Z_a\) は元の系のセクター \(a\) の分配関数、\(\tilde Z_b\) は2方向を入れ替えた系のものである。入れ替えた系は実空間の円周が \(\tilde L=\beta\)（トポロジカル電荷 \(b\) を囲む）、逆温度が \(\tilde\beta=L\) である。
+低温極限（\(L\) が長い極限）では真空セクターのエネルギーが最低なので、\(\tilde Z_I\) だけが効く。1次元共形場理論の最低エネルギーモードを使えば（右向き・左向きの中心電荷 \(c,\bar c\)、第17章 §17.3.3）
+\[
+Z_a=S_{aI}\tilde Z_I=S_{aI}\exp\Bigl[\tilde\beta\,\frac{\pi(c+\bar c)}{12\tilde L}\Bigr]=S_{aI}\exp\Bigl[\frac{LT\,\pi(c+\bar c)}{12}\Bigr].
+\]
+熱力学の関係 \(S=\partial(T\log Z)/\partial T\) からエントロピーを取り出すと
+</p>
+<div class="equation" id="eq-34-Sa">\[
+S_a=\alpha L+\log S_{aI}
+\]</div>
+<p>
+となる。元の円板に準粒子電荷がない場合は \(a=I\) で、\(S_{II}=1/\calD\) だから \(\log S_{II}=-\log\calD\)、すなわち \(\gamma=\log\calD\) が得られる。
+</p>
+<div class="remark-box">
+<span class="box-title">補足（電荷のある場合）</span>
+式 <a class="eq-ref" href="#eq-34-Sa"></a> は準粒子 \(a\) が領域に入っているときの結果で、\(S_{aI}=d_a/\calD\) だから \(\log S_{aI}=\log d_a-\log\calD\) となり、トポロジカル項が \(\log d_a\) だけ増える。
+これは §34.3.3 の末尾の結果とも整合する。
+</div>
+
+<h3 id="sec-34-3-3">§34.3.3 サージャリーの議論</h3>
+
+<p>
+もう1つの導出はさらに位相幾何的で、境界の長さに比例する項は得られず、トポロジカルな部分だけが出る（Dong らにも類似の議論がある）。
+球面を2つの部分 A と B に分ける（簡単のため北半球と南半球）。全系の密度行列は、球面の基底状態が一意なので、多様体の分配関数として
+\[
+\rho_{A\cup B}=\ket{\psi_{S^2}}\bra{\psi_{S^2}}=Z(S^2\times I)
+\]
+（\(I\) は区間）と書ける。トレースを取ると区間が円周に閉じて \(\Tr\rho_{A\cup B}=Z(S^2\times S^1)=1\)（第7章の式 (7.14)）。
+</p>
+<p>
+次に B を trace out して \(\rho_A\) を求める。球面を2つの円板 \(D^2_A\cup D^2_B\) の和として \(S^2\times I=(D_A^2\times I)\cup(D_B^2\times I)\) と書き、B 領域の区間 \(I\) を円周 \(S^1\) に閉じる。
+</p>
+<div class="equation" id="eq-34-rhoA">\[
+\rho_A=\Tr_B\rho_{A\cup B}=Z\bigl[(D_A^2\times I)\cup(D_B^2\times S^1)\bigr]=Z\bigl[(S^2\times S^1)\backslash B^3\bigr]
+\]</div>
+<p>
+最後の等号は、さらに A の区間も閉じれば \(S^2\times S^1\) になり、\(\rho_A\) はそこから球 \(B^3\) を取り除いた多様体の分配関数だからである。
+取り除いた球の表面の2つの半球が、\(\ket{\psi_A}\) と \(\bra{\psi_A}\)（\(D_A^2\times I\) の区間の両端）にあたる。
+</p>
+<p>
+Renyi エントロピー \(S^\alpha_{A,B}=\frac{1}{1-\alpha}\log\Tr[\rho_A^\alpha]\) を考える。整数 \(\alpha\) について \(\rho_A^\alpha\) を得るには \((S^2\times S^1)\backslash B^3\) を \(\alpha\) 個貼り合わせる。
+\(\alpha=2\) では、2つを球面に沿って貼り合わせた連結和なので
+\[
+\Tr[\rho_A^2]=Z\bigl[(S^2\times S^1)\#(S^2\times S^1)\bigr]=\frac{Z(S^2\times S^1)\,Z(S^2\times S^1)}{Z(S^3)}=S_{00}=\frac1{\calD}
+\]
+（連結和の規則、第7章 §7.3.3）。
+より一般に \(\Tr[\rho_A^\alpha]\) は \(S^2\times S^1\) の \(\alpha\) 個の連結和の分配関数である。これは次のように示せる。
+第24章 §24.3.1 より \(S^2\times S^1\) は \(S^3\) の中の結び目のない輪（アンノット）でのサージャリーで得られ、Reshetikhin–Turaev 流には \(S^3\) に Kirby 色（\(\Omega\) 弦）のアンノットを入れることに等しい。
+そこから球 \(B^3\) を取り除くことは、アンノットに触れない球を除くことに等しい。\(S^3\) は2つの球の和なので、\((S^2\times S^1)\backslash B^3\) は \(\Omega\) のアンノット（サージャリーの指示）を含む球に等しく、球面上の2つの半球が \(\rho_A\) のブラとケットになる。
+これを \(\alpha\) 個貼り合わせてトレースを取れば球面が閉じて
+\[
+\Tr[\rho_A^\alpha]=Z\bigl(S^3\text{ に }\alpha\text{ 個の }\Omega\text{ アンノットを入れたもの}\bigr)
+\]
+となり、第24章の式 (24.2) により、これは \(S^2\times S^1\) の \(\alpha\) 個の連結和である。
+\(Z(S^3)=1/\calD\) と、\(\Omega\) ループの評価値が \(\calD\) になること（第7章の式 (7.21) を繰り返し使うか、式 (24.6)）から
+</p>
+<div class="equation" id="eq-34-trace">\[
+\Tr[\rho_A^\alpha]=\calD^{\,\alpha-1}.
+\]</div>
+<p>
+よって Renyi トポロジカル・エンタングルメント・エントロピーは \(\alpha&gt;1\) のすべての整数について
+\[
+S^\alpha_{A,B}=\frac1{1-\alpha}\log\calD^{\alpha-1}=-\log\calD
+\]
+である。ここで得たのは境界長に比例する項を含まないトポロジカルな部分だけである。
+また、これは von Neumann エントロピーではない。\(\alpha&gt;1\) の全整数で \(-\log\calD\) なら \(\alpha\to1\) の極限でも同じだ、という仮定を追加して初めて von Neumann 版が得られる。
+</p>
+<p>
+領域 A に準粒子 \(a\)、領域 B に \(\bar a\) を入れても計算はほとんど変わらず、Renyi トポロジカル・エンタングルメント・エントロピーは \(\alpha&gt;1\) のすべての整数に対して
+\[
+S^\alpha_{A,B}=\log S_{Ia}=\log d_a-\log\calD
+\]
+となり、式 <a class="eq-ref" href="#eq-34-Sa"></a> と一致する（原書の演習 34.4）。
+原書の演習では他に、Renyi エントロピーの式の確認（34.1）、トーリック符号の Renyi エントロピー（34.2）、\(\Z_n\) トーリック符号での \(\gamma\) の確認（34.3）を扱う。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第34章のまとめ</span>
+<ul>
+<li>エンタングルメント・エントロピーは Schmidt 分解 \(\ket\psi=\sum\lambda_n\ket{\psi_n^A}\otimes\ket{\psi_n^B}\) から \(S=-\sum|\lambda_n|^2\log|\lambda_n|^2\)。Renyi 版は \(S^\alpha=\frac1{1-\alpha}\log\Tr\rho_A^\alpha\)。</li>
+<li>トーリック符号（ループ気体）では、切断で許される境界状態が \(2^{M-1}\) 個だけなので \(S=(M-1)\log2\)。副次項 \(-\log2\) は境界を横切る線の本数が偶数という非局所な拘束による。</li>
+<li>一般のトポロジカル相では \(S=\alpha L-\gamma\)、\(\gamma=\log\calD\)（\(\calD^2=\sum d_i^2\)）。</li>
+<li>Kitaev–Preskill の組合せ \(S_{\text{top}}=(S_{A,BCD}+S_{B,ACD}+S_{C,ABD}+S_{D,ABC})-(S_{AB,CD}+S_{AC,BD}+S_{AD,BC})=-\gamma\) は、境界長の項を相殺し、境界の変形やハミルトニアンの局所変更にも依らない。</li>
+<li>導出は3通り：二重系の穴つき球面の確率計算、エンタングルメント・ハミルトニアン（1次元 CFT）のモジュラー変換 \(S_a=\alpha L+\log S_{aI}\)、そしてサージャリー（\(\Tr\rho_A^\alpha=\calD^{\alpha-1}\)）。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

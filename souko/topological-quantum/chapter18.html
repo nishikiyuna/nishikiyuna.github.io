@@ -109,7 +109,7 @@ Frobenius–Schur 指標が負の粒子は、\(\epsilon_a\) を \(+1\) に保っ
 <ul>
 <li><strong>ボソン理論</strong>：\(R^{11}_0=+1\)。\(F\) にも組みひもにも符号や位相が現れない。ツイストは \(\theta_1=+1\)（\(\Z_2^{(0)}\) とも書く、§18.5.3）。
 ボソンは真空と全く同じように組みひもされるので、定義によっては「もう1つの真空」にすぎない。別の粒子とみなすかどうかは明示しておくべきである。</li>
-<li><strong>フェルミオン理論</strong>：\(R^{11}_0=-1\)。同種粒子の交換で \(-1\) が出て、\(\theta_1=-1\)。<a href="chapter17.html">第17章</a>で見た sVec そのもので、\(\Z_2^{(1/2)}\) と書かれる（§18.5.4）。</li>
+<li><strong>フェルミオン理論</strong>：\(R^{11}_0=-1\)。同種粒子の交換で \(-1\) が出て、\(\theta_1=-1\)。<a href="chapter17.html">第17章</a>で見た sVec そのもので、\(\Z_2^{(1)}\) と書かれる（§18.5.3）。</li>
 </ul>
 <p>
 どちらも \(S\) 行列は
@@ -204,7 +204,7 @@ Fibonacci 融合則（<a href="chapter08.html">第8章</a>、<a href="chapter09.
 \]</div>
 <p>
 が得られる。これは融合則から決まる量子次元（<a href="chapter08.html">第8章</a>）と一致する（<a href="chapter17.html">第17章</a>の議論どおり）。
-式 <a class="eq-ref" href="#eq-18-dtau"></a> には \(d_\tau<0\) の解もあるが、\(\operatorname{sign}[d_\tau]\operatorname{sign}[d_\tau]=\operatorname{sign}[d_\tau]\)（\(\tau\times\tau\ni\tau\) より、<a href="chapter14.html">第14章</a>）に反するので採れない。
+式 <a class="eq-ref" href="#eq-18-dtau"></a> には \(d_\tau&lt;0\) の解もあるが、\(\operatorname{sign}[d_\tau]\operatorname{sign}[d_\tau]=\operatorname{sign}[d_\tau]\)（\(\tau\times\tau\ni\tau\) より、<a href="chapter14.html">第14章</a>）に反するので採れない。
 五角形方程式を満たすことは各自で確認するべきである（原書の演習 9.4）。
 </p>
 
@@ -268,7 +268,7 @@ Ising 融合則（\(SU(2)_2\) 融合則とも、<a href="chapter08.html">第8章
 
 <p>
 第1式 \(\psi\times\psi=I\) だけを見れば \(\Z_2\) 融合則なので、§18.1 の結論がそのまま使える。すなわち \(1/d_I=1/d_\psi=1\) に相当する成分が 1 になる。
-\(d_\psi=-1\) を考えない理由は Fibonacci と同じで、\(\operatorname{sign}[d_\sigma]\operatorname{sign}[d_\sigma]=\operatorname{sign}[d_\psi]\) より \(d_\psi>0\) だからである。
+\(d_\psi=-1\) を考えない理由は Fibonacci と同じで、\(\operatorname{sign}[d_\sigma]\operatorname{sign}[d_\sigma]=\operatorname{sign}[d_\psi]\) より \(d_\psi&gt;0\) だからである。
 \(\sigma\) を含む成分は、Fibonacci と同様に次のように決まる。
 </p>
 <ul>
@@ -286,7 +286,7 @@ Ising 融合則（\(SU(2)_2\) 融合則とも、<a href="chapter08.html">第8章
 <p>
 ユニタリ性から \(d_\sigma=\pm\sqrt2\) が出る（融合則から期待される \(|d_\sigma|=\sqrt2\) と一致）。
 負の \(d_\sigma\) を選んだ場合は、非ユニタリな評価になるので規則 0 を課してユニタリな理論に戻す（第14・16章）。両方の符号が五角形方程式の解である。
-残りの成分は四面体対称性で埋まり、\(\sigma\sigma\psi\) 型の手術移動のうち2つだけが \(-1\) になる。
+残りの成分は四面体対称性で埋まる。
 </p>
 
 <h3 id="sec-18-4-1">§18.4.1 Ising 融合則の組みひも</h3>
@@ -334,7 +334,7 @@ S=\frac12\begin{pmatrix}1&amp;\sqrt2&amp;1\\ \sqrt2&amp;0&amp;-\sqrt2\\ 1&amp;-\
 <p>
 原書の表 18.1（Kitaev 2006 が同様の方法で得た表に対応する）は、\(\operatorname{sign}(d_\sigma)\)、\(\operatorname{sign}(-iR^{\sigma\psi}_\sigma)\)、平方根の符号の3つの \(\pm\) の組ごとに \(R^{\sigma\sigma}_I\)、理論の名前（Ising、\(SU(2)_2\)、\((B_3)_1\)、\((C_2)_1\) など）、
 中心電荷 \(c\) を並べたものである。
-上の対応表はその要約で、\(\theta_\sigma\) は \(d_\sigma<0\)（\(\epsilon_a=+1\) の記述）ではなく \(d_\sigma>0,\ \epsilon_a=-1\) の流儀で読んだ値である。
+上の対応表はその要約で、\(\theta_\sigma\) は \(d_\sigma&lt;0\)（\(\epsilon_a=+1\) の記述）ではなく \(d_\sigma&gt;0,\ \epsilon_a=-1\) の流儀で読んだ値である。
 中心電荷は \(c=\tfrac12\) から \(\tfrac{15}{2}\) まで半整数がちょうど1回ずつ現れる。
 </p>
 </section>
@@ -400,9 +400,136 @@ S=\frac12\begin{pmatrix}1&amp;1&amp;1&amp;1\\1&amp;1&amp;-1&amp;-1\\1&amp;-1&amp
 <h3 id="sec-18-5-2">§18.5.2 一般の \(\Z_N\) 融合則</h3>
 
 <p>
-粒子を \(a\in\{0,1,\dots,N-1\}\) とし、\(a\times b=(a+b)\bmod N\) とする。\(N\) 個の 1 が真空に融合するので、式 <a class="eq-ref" href="#eq-18-thetan"></a> から \((\theta_1)^{N^2}=1$ ...</p>
-</section>
-</main>
+粒子を \(a\in\{0,1,\dots,N-1\}\) とし、\(a\times b=(a+b)\bmod N\) とする。\(N\) 個の 1 が真空に融合するので、式 <a class="eq-ref" href="#eq-18-thetan"></a> から \((\theta_1)^{N^2}=1\)、すなわち整数 \(\alpha\) を用いて \(\theta_1=e^{2\pi i\alpha/N^2}\) と書ける。
+再び式 <a class="eq-ref" href="#eq-18-thetan"></a> から \(\theta_a=e^{2\pi i a^2\alpha/N^2}\)。
+粒子 1 の反粒子は \(N-1\) なので \(\theta_1=\theta_{N-1}\) が必要で、これから2種類の解が出る：
+</p>
+<ul>
+<li>\(\alpha=Nn\)（任意の \(N\)）、</li>
+<li>\(\alpha=N(n+\tfrac12)\)（\(N\) が偶数のときだけ）。</li>
+</ul>
+<p>
+どちらでも \(n\) は \(0\le n&lt;N\) の整数である。順に見る。
+</p>
+
+<h3 id="sec-18-5-3">§18.5.3 \(\Z_N^{(n)}\) アニオン</h3>
+
+<p>
+\(\alpha=Nn\)、\(n\in\{0,\dots,N-1\}\) とおくと、
+</p>
+<div class="equation" id="eq-18-ZNtheta">\[
+\theta_a=e^{2\pi i n a^2/N},\qquad
+S_{a,b}=\frac1{\sqrt N}\exp\!\Big(-\frac{4\pi i n}{N}\,ab\Big)
+\]</div>
+<p>
+である（\(S\) は式 <a class="eq-ref" href="#eq-18-Sfromtheta"></a> から。指数の \(ab\) は群演算の \(\bmod N\) の和ではなく、普通の掛け算）。
+鏡像（逆の手性）の理論は \(n\to N-n\) で得られる。
+</p>
+<p>
+この理論がモジュラーになるのは、\(n\) と \(N\) が互いに素で、かつ \(N\) が奇数のときに限る。
+\(N\) が偶数でも、\(N/2\) が奇数、\(n\) が奇数、\(N/2\) と \(n\) が互いに素ならば、\(\Z_{N/2}\) 型の理論とフェルミオンの積の形をした（分解できる）超モジュラー理論になる（<a href="chapter17.html">第17章</a>）。
+</p>
+<p>
+\(F\) 行列については <a href="chapter19.html">第19章</a>で詳しく見るが、適切なゲージでは \(F\) は自明（許される図では 1、禁止された融合を含む図では 0）である。
+これと上の \(S\) が整合するかを、\(F=1\) を六角形方程式に入れて確かめる。\([a]_N\) を \(a\bmod N\) として
+</p>
+<div class="equation" id="eq-18-ZNhex">\[
+R^{c,a}_{[c+a]_N}R^{c,b}_{[c+b]_N}=R^{c,[a+b]_N}_{[c+a+b]_N},\qquad
+R^{a,c}_{[a+c]_N}R^{b,c}_{[b+c]_N}=R^{[a+b]_N,c}_{[a+b+c]_N}.
+\]</div>
+<p>
+解はちょうど \(N\) 個ある。第1式は \(a\mapsto R^{c,a}_{[c+a]}\) が \(\Z_N\) の1次元表現であることを意味し、\(e^{2\pi i p(c)a/N}\) の形に限られる。第2式が \(p(c)\) の形を固定する。
+適切なゲージで、\(n\in\{0,\dots,N-1\}\) として
+</p>
+<div class="equation" id="eq-18-ZNR">\[
+R^{a,b}_{[a+b]_N}=\exp\!\Big(\frac{2\pi i n}{N}\,ab\Big)
+\]</div>
+<p>
+となる。\(R^{a,a}\) から決まるツイスト（<a href="chapter15.html">第15章</a>）は式 <a class="eq-ref" href="#eq-18-ZNtheta"></a> と整合し、したがって \(S\) とも整合する。
+これらは \(\Z_N^{(n)}\) アニオン（Bonderson 2007）と呼ばれる。\(N\) が奇数で \(n=(N-1)/2\) のとき、モジュラー理論は Chern–Simons 理論 \(SU(N)_1\) に一致する。
+</p>
+
+<h3 id="sec-18-5-4">§18.5.4 \(N\) 偶数の \(\Z_N^{(n+1/2)}\)</h3>
+
+<p>
+\(\alpha=N(n+\tfrac12)\) の場合である。ツイストと \(S\) 行列は
+</p>
+<div class="equation" id="eq-18-ZNhalf">\[
+\theta_a=e^{2\pi i (n+\frac12)a^2/N},\qquad
+S_{a,b}=\frac1{\sqrt N}\exp\!\Big(-\frac{4\pi i (n+\frac12)}{N}\,ab\Big)
+\]</div>
+<p>
+で、鏡像は \(n\to N-1-n\) で得られる。この節では \(d_a&gt;0\) の規約をとる（負の \(d\) があると式が煩雑になる）。
+\(2n+1\) と \(N\) が互いに素ならモジュラーで、\(\Z_N^{(n+1/2)}\) アニオン理論と呼ぶ。
+\(n=N/2-1\) のときは \(N\) 偶数の \(SU(N)_1\)、\(n=0\) のときは \(U(1)_N\) に一致する（\(U(1)\) のレベルは \(U(1)_{N/2}\) と書く流儀もあり、文献ごとに食い違うので注意）。
+</p>
+<p>
+粒子 \(a=N/2\) は自己双対である。モジュラーな場合は <a href="chapter17.html">第17章</a>の式から、その Frobenius–Schur 指標は \(\kappa_{N/2}=(-1)^{N/2}\) になる（原書の演習 18.5）。
+</p>
+<div class="example-box">
+<span class="box-title">例（\(\Z_4\) 融合則のモジュラー理論）</span>
+\(\Z_4\) 融合則で可能なモジュラー理論は次のとおりである。
+\(\Z_4^{(1/2)}\) はアーベル Chern–Simons 理論 \(U(1)_4\)（\((D_9)_1\) とも）で、鏡像が \(\Z_4^{(3+1/2)}\)。
+\(\Z_4^{(1+1/2)}\) は \(SU(4)_1\)、\(\Z_4^{(2+1/2)}\) がその鏡像である。
 </div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-18-6">すべての組みひもアーベル理論<span class="en">All Braided Abelian Theories</span></h2>
+
+<p>
+モジュラーなアーベル理論をすべて記述する美しい方法が Galindo と Jaramillo（2016）によって与えられている（Wang–Wang 2020、Cano ほか 2014 も参照）。
+<a href="chapter17.html">第17章</a>と同様に、ここでの記述はモジュラーデータのレベルである（中心電荷は mod 8 でしか指定されない）。
+まず「素 (prime)」なアーベル理論を決めておけば、任意のモジュラーなアーベル理論はその積に書ける。ただし素因子への分解は一般に一意ではない。
+たとえばトーリック符号もフェルミオン的トーリック符号もそれぞれ素な理論だが、(トーリック符号)×(トーリック符号) = (フェルミオン的トーリック符号)×(フェルミオン的トーリック符号) である（原書の演習 18.10）。
+</p>
+<p>
+素な理論は次の4種類である。
+</p>
+<ul>
+<li><strong>\(\Z_{N}^{(n)}\)（\(N=p^m\)、\(p&gt;2\) は素数、\(m\ge1\)）。</strong>
+各 \(N\) に対して、\(n\) をどう選んでも異なる理論はちょうど2つだけである。2つが互いの鏡像になる場合と、それぞれが自分自身の鏡像になる場合がある。
+一方を \(n=2\) にとり、もう一方は \(x^2\equiv2n \pmod p\) となる整数 \(x\in\{0,\dots,p-1\}\) が存在しない \(n\) を選べばよい（\(n\) の約半分がこれを満たす）。</li>
+<li><strong>\(\Z_{N}^{(n+1/2)}\)（\(N=2^m\)）。</strong>
+\(m=1\) では右巻き・左巻きのセミオン理論の2つ。すべての素なアーベル理論のうち、自明でない Frobenius–Schur 指標をもつのはこの2つだけである。
+\(m\ge2\) では各 \(m\) に4つあり、\(n=0\)、その複素共役 \(n=N-1\)、\(n=2\)、その複素共役 \(n=N-3\) にとれる。</li>
+<li><strong>\(\Z_{2^m}\) トーリック符号。</strong>
+\(\Z_N\times\Z_N\) 融合則をもち（<a href="chapter27.html">第27章</a>・<a href="chapter28.html">第28章</a>で詳述）、粒子は2つの整数で \([n,k]\)（\(n,k\in\{0,\dots,N-1\}\)）と書ける。融合は
+\[
+[n_1,k_1]\times[n_2,k_2]=[(n_1+n_2)\bmod N,\ (k_1+k_2)\bmod N],
+\]
+ツイストは \(\theta_{[n,k]}=e^{-2\pi i nk/N}\)。適切なゲージで \(F\) はすべて 1、\(R\) は
+\(R^{[n_1,k_1],[n_2,k_2]}_{[n_1+n_2,k_1+k_2]}=e^{-2\pi i n_1k_2/N}\)、\(S\) 行列は
+\(S_{[n',k'],[n,k]}=\frac1N e^{2\pi i(nk'+n'k)/N}\) となり、任意の \(N\) でモジュラー。\(N=2^m\) のとき素である。</li>
+<li><strong>\(\Z_{2^m}\) トーリック符号の変種。</strong>
+フェルミオン的トーリック符号を \(\Z_N\) に一般化したもので、融合則は \(\Z_N\) トーリック符号と同じ。ツイストは \(\theta_{[n,k]}=e^{-2\pi i(n^2+k^2-nk)/N}\)、
+\(R=e^{-2\pi i(n_1n_2+k_1k_2-n_1k_2)/N}\)、\(S_{[n',k'],[n,k]}=\frac1N e^{2\pi i(2nn'+2kk'-nk'-n'k)/N}\)。
+\(N\) が3の倍数のときモジュラーでない。\(N=2^m\) のとき素である。</li>
+</ul>
+
+<h3 id="sec-18-6-1">§18.6.1 素な非モジュラー理論</h3>
+
+<p>
+Cano ほか（2014）の結果として、任意の非モジュラーなアーベル理論は、モジュラーなアーベル理論に自明なフェルミオン（sVec）の因子を何個か掛けたものに書ける。
+したがって素な理論の一覧に透明なフェルミオンをもう1つ加えれば、すべてのアーベル理論が尽くされる。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第18章のまとめ</span>
+<ul>
+<li>手順は、融合則 → \(F\)（五角形方程式とユニタリ性）→ \(R\)（六角形方程式）。平面代数は \(\Z_2\) 融合則で \(d=\pm1\) の2通り、Fibonacci は \(d_\tau=(1+\sqrt5)/2\)、Ising は \(d_\sigma=\pm\sqrt2\)。</li>
+<li>\(\Z_2\)：\(d=+1\) からボソン（\(R=1\)）とフェルミオン（\(R=-1\)）、\(d=-1\) からセミオン（\(R=\pm i\)）。\(d=-1\) の図の値は \((-1)^{\text{ループ数}+\text{キャップ数}}\)。</li>
+<li>Fibonacci の \(F\) は \(\begin{pmatrix}1/d_\tau&amp;1/\sqrt{d_\tau}\\1/\sqrt{d_\tau}&amp;-1/d_\tau\end{pmatrix}\)、組みひもは右巻きと左巻きの2つ。</li>
+<li>\(\Z_3\)：\(F=1\)、\(R=e^{2\pi i ac\,n/3}\)（\(n=0,1,2\)）。\(n=0\) は対称テンソル圏、\(n=1,2\) がモジュラーで互いに鏡像。</li>
+<li>Ising：\(F\) は \(\frac1{d_\sigma}\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}\)、\(\psi\) は必ずフェルミオン。\(d_\sigma\) の符号、\(R^{\sigma\psi}_\sigma=\pm i\)、平方根の符号で8通りの組みひもがあり、\(S\) は共通でモジュラー。</li>
+<li>\(\Z_N^{(n)}\)（\(\theta_a=e^{2\pi i na^2/N}\)、\(N\) 奇数・\(\gcd(n,N)=1\) でモジュラー）と \(\Z_N^{(n+1/2)}\)（\(N\) 偶数、\(\gcd(2n+1,N)=1\) でモジュラー）。\(\Z_2\times\Z_2\) には積理論の他にトーリック符号とフェルミオン的トーリック符号がある。</li>
+<li>すべてのモジュラーなアーベル理論は素な理論（\(\Z_{p^m}^{(n)}\)、\(\Z_{2^m}^{(n+1/2)}\)、\(\Z_{2^m}\) トーリック符号とその変種）の積であり、非モジュラーなものは透明なフェルミオンを掛け加えれば得られる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
 </body>
 </html>

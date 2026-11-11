@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="有限群の元を粒子とし群の積を融合則とする平面ダイアグラム代数：3-コサイクルが F 行列、アイソトピー不変性と組みひもの条件、Z_N の例、非可換群と S_3 のコサイクル">
+  <title>第19章 離散群の元から作るエニオン — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter19" data-chapter="19">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第19章に対応</span>
+  第19章 離散群の元から作るエニオン
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+有限群 \(G\) の各元を粒子の種類とみなし、群の積を融合則とする、というのが本章の構成である。
+群の積では結果が常に1つに決まるので、すべての粒子の量子次元は \(d_g=1\)（アーベル的な粒子）になる。
+問題は \(F\) 行列をどう選ぶかだが、それは五角形方程式そのもの——群コホモロジーの言葉でいえば <strong>3-コサイクル</strong>の条件——に一致する。
+アイソトピー不変性や組みひもが可能なコサイクルは限られ、\(\Z_N\) では \(p=0\)（と偶数 \(N\) の \(p=N/2\)）だけが組みひもをもつ。
+非可換群でも平面ダイアグラム代数は作れるが、組みひもは作れない。
+原書では「Optional / Not hard」とされた章で、<a href="chapter18.html">第18章</a>の \(\Z_N\) 理論の \(F\) 行列の由来を説明する。
+同じ離散群から別の仕方でアニオン理論を作る量子ダブル構成は<a href="chapter31.html">第31章</a>・<a href="chapter23.html">第23章</a>で扱う。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<p>
+群の基本事項は<a href="chapter40.html">第40章</a>にまとめられている。ここでは有限個の元をもつ離散群 \(G\) だけを考える。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（群の元でラベル付けされたダイアグラム）</span>
+線を群の元 \(g\in G\) でラベルし、群の単位元 \(I\) を真空とする。線の向きを逆にすると元は逆元になる（\(\bar g=g^{-1}\)、粒子 → 反粒子）。融合則は群の積で定める：
+\[
+g\times h=gh,\qquad N_{gh}^{a}=\delta_{a,gh}.
+\]
+アーベル群なら \(gh=hg\) で、<a href="chapter08.html">第8章</a>で要請した \(g\times h=h\times g\) が満たされる。
+非可換群の場合は §19.3 で扱う。当面は群はアーベル群とする。
+</div>
+
+<p>
+\(g\times h\) の結果は常に1つの元なので、\(g\times h=a+b\) のような和は現れない。したがってすべての粒子で \(d_g=1\) であり、
+粒子をたくさん集めてもヒルベルト空間の次元は増えない。
+頂点の向きの約束は次のとおり：3本の線をすべて頂点から出る向きに描いたとき、頂点のまわりを時計回りに元を掛けると単位元になる（\(gh\,(h^{-1}g^{-1})=I\) など）。
+</p>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-19-1">群コホモロジー<span class="en">Group Cohomology</span></h2>
+
+<p>
+この融合則の上で無矛盾な \(F\) 行列を作る問題は、群コホモロジーとして非常によく研究されている（群コホモロジーは多くのトポロジカルな理論に顔を出す一般的な枠組みだが、本書では必要な分しか使わない）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（3-コサイクル）</span>
+群 \(G\) の <strong>3-コサイクル (3-cocycle)</strong> とは、3変数関数 \(\omega(a,b,c)\)（\(a,b,c\in G\)、通常は \(U(1)\) の位相）で
+<div class="equation" id="eq-19-cocycle">\[
+\omega(a,b,c)\,\omega(a,bc,d)\,\omega(b,c,d)=\omega(ab,c,d)\,\omega(a,b,cd)
+\]</div>
+を満たすものである。\(\omega\in H^3(G,U(1))\) と書く。
+</div>
+
+<p>
+一見わかりにくい式だが、実は五角形方程式の翻訳である。<a href="chapter09.html">第9章</a>の記法で
+</p>
+<div class="equation" id="eq-19-F">\[
+\big[F^{abc}_{abc}\big]_{(ab),(bc)}=\omega(a,b,c)
+\]</div>
+<p>
+とおく（融合 \((a,b)\to ab\) を通る木と \((b,c)\to bc\) を通る木の間の \(F\) 移動の係数、図 19.1）。
+五角形方程式（<a href="chapter09.html">第9章</a>）の \(F\) の積の和（内線 \(h\) についての和）は、2つの元の積が常に1つの元になるため和が1項に潰れ、式 <a class="eq-ref" href="#eq-19-cocycle"></a> と同じ式になる。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- left tree: (ab) then c -->
+  <line x1="40" y1="25" x2="75" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="25" x2="75" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="75" y1="75" x2="105" y2="95" class="line accent" stroke-width="1.5"/>
+  <line x1="170" y1="25" x2="105" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="105" y1="95" x2="105" y2="135" class="line" stroke-width="1.5"/>
+  <text x="30" y="20" class="label">a</text>
+  <text x="108" y="20" class="label">b</text>
+  <text x="172" y="20" class="label">c</text>
+  <text x="38" y="92" class="label-muted">ab</text>
+  <text x="112" y="148" class="label-muted">abc</text>
+  <text x="200" y="80" class="label">= ω(a,b,c)</text>
+  <!-- right tree: a then (bc) -->
+  <line x1="320" y1="25" x2="385" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="390" y1="25" x2="425" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="450" y1="25" x2="425" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="425" y1="75" x2="385" y2="95" class="line accent" stroke-width="1.5"/>
+  <line x1="385" y1="95" x2="385" y2="135" class="line" stroke-width="1.5"/>
+  <text x="310" y="20" class="label">a</text>
+  <text x="388" y="20" class="label">b</text>
+  <text x="446" y="20" class="label">c</text>
+  <text x="430" y="92" class="label-muted">bc</text>
+  <text x="392" y="148" class="label-muted">abc</text>
+</svg>
+<figcaption>図 19.1：3-コサイクルは \(F\) 移動の係数そのものである。融合 \((ab)\) を先に行う木を、\((bc)\) を先に行う木に書き換えると位相 \(\omega(a,b,c)\) が掛かる。</figcaption>
+</figure>
+
+<h3>ゲージ変換と正規化</h3>
+<p>
+\(F\) 行列と同じくゲージの自由がある（<a href="chapter09.html">第9章</a>）。各頂点 \((a,b\to ab)\) に位相 \(u(a,b)\) を掛けて定義し直すと、コサイクルは
+</p>
+<div class="equation" id="eq-19-gauge">\[
+\omega(a,b,c)\ \to\ \frac{u(a,bc)\,u(b,c)}{u(a,b)\,u(ab,c)}\;\omega(a,b,c)
+\]</div>
+<p>
+と変換する。ゲージ変換で移り合う解は物理的に同値とみなし、各同値類から代表を1つ選んで使う。
+便利なのは<strong>正規化されたゲージ</strong>で、\(a=I\)、\(b=I\)、\(c=I\) のいずれかのとき \(\omega(a,b,c)=1\)（真空との融合は位相を出さない）とする。
+このゲージを保つために \(u(I,g)=u(g,I)=u(I,I)=1\) だけを許す。それでも残る自由度は大きい。
+</p>
+<p>
+2つのコサイクル \(\omega,\omega'\) の積 \(\omega\omega'\) や逆 \(\omega^{-1}\) もコサイクルなので、同値類全体は群をなす。これが \(G\) の \(U(1)\) 係数の<strong>第3コホモロジー群</strong> \(H^3(G,U(1))\) である。
+自明なコサイクル \(\omega=1\)（すべてのダイアグラムの値が 1）は常に存在し、単位元以外の元をもつ群ではそれ以外のコサイクルも必ず存在する。
+具体的なコサイクルは文献に表がある（章末の参考文献）。
+</p>
+
+<h3>アイソトピー不変性の条件</h3>
+<p>
+五角形方程式の解であっても、<a href="chapter16.html">第16章</a>の意味のアイソトピー不変性をもつとは限らない。
+たとえば頂点の足を自由に上げ下げできる必要がある（<a href="chapter14.html">第14章</a>）。\(d_a=\pm1\) を許すとき、その条件は
+</p>
+<div class="equation" id="eq-19-isotopy">\[
+s(a,b)\,\omega(a,a^{-1},b)=1,\qquad s(a,b)\,\omega(a,b^{-1},b)=1,
+\qquad
+s(a,b)=\begin{cases}-1 & d_a=d_b=-1\\ +1 & \text{それ以外}\end{cases}
+\]</div>
+<p>
+（すべての \(a,b\in G\) について）である。符号因子 \(s\) は、<a href="chapter14.html">第14章</a>の足の上げ下げの式に出る \(\sqrt{d}\) の符号を正しく解釈するためのもの（<a href="chapter14.html">第14章</a>の規則 0）。
+きつい条件に見えるが、ゲージ変換 <a class="eq-ref" href="#eq-19-gauge"></a> でたいてい満たせる。
+</p>
+<p>
+さらに
+</p>
+<div class="equation" id="eq-19-dFS">\[
+d_a=\omega(a,a^{-1},a)
+\]</div>
+<p>
+が成り立ち、\(a\) が自己双対（\(a=a^{-1}\)）ならこれはゲージ不変な Frobenius–Schur 指標である。
+指標が \(-1\) のときは、可能なら \(\epsilon_a=+1\) を保ったまま \(d_a&lt;0\) として扱い、アイソトピー不変性を保つ（<a href="chapter14.html">第14章</a>。いつでもできるとは限らない）。
+</p>
+
+<h3 id="sec-19-1-1">§19.1.1 アーベル群の組みひも</h3>
+
+<p>
+平面代数が決まったら、六角形方程式の解を探す。六角形方程式は \(a\times b=b\times a\) を暗黙に仮定するので、群はアーベル群でなければならない。
+このとき（原書の演習 19.2）
+</p>
+<div class="equation" id="eq-19-hexagon">\[
+\begin{aligned}
+R^{c,a}_{ca}\,\omega(a,c,b)\,R^{c,b}_{cb} &amp;= \omega(c,a,b)\,R^{c,ab}_{cab}\,\omega(a,b,c),\\
+[R^{a,c}_{ac}]^{-1}\omega(a,c,b)\,[R^{b,c}_{bc}]^{-1} &amp;= \omega(c,a,b)\,[R^{ab,c}_{abc}]^{-1}\omega(a,b,c)
+\end{aligned}
+\]</div>
+<p>
+となる（\(R^{x,y}_{xy}\) の下添字は群の積）。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-19-2">\(G=\Z_N\) の簡単な例<span class="en">Simple Examples with G = Z_N</span></h2>
+
+<p>
+群 \(\Z_N\)（足し算 mod \(N\)）はアーベル群なので \(gh=hg\) であり、ここでの \(gh\) は \(g\times h\)、すなわち mod \(N\) の和を意味する。
+\(\Z_N\) の粒子はすでに<a href="chapter18.html">第18章</a>で扱ったが、ここでは別の観点から見直す。
+\(\Z_N\) の互いに同値でない3-コサイクルは、\(a,b,c\in\{0,\dots,N-1\}\)、\([b+c]_N\) を \(b+c\) の mod \(N\)（\(0,\dots,N-1\) の範囲）として
+</p>
+<div class="equation" id="eq-19-ZNcocycle">\[
+\omega(a,b,c)=\exp\!\Big[\frac{2\pi i\,p}{N^2}\,a\big(b+c-[b+c]_N\big)\Big]
+\]</div>
+<p>
+と書ける。\(p\in\{0,\dots,N-1\}\) が \(N\) 個の同値類を区別する。\(p=0\) が自明なコサイクル（常に \(\omega=1\)）である。
+</p>
+
+<h3>\(\Z_2\)</h3>
+<p>
+\(p=0\) は \(\omega=1\)、すなわち \(F\) の成分がすべて 1 で、<a href="chapter18.html">第18章</a>の \(d=+1\) のループガスにほかならない。
+\(\Z_2\) の唯一の非自明な3-コサイクルは \(p=1\) で、
+</p>
+<div class="equation" id="eq-19-Z2cocycle">\[
+\omega(a,b,c)=\begin{cases}-1 & a=b=c=1\\ +1 & \text{それ以外}\end{cases}
+\]</div>
+<p>
+となる。これは <a href="chapter18.html">第18章</a>の \(d=-1\) のループガスと同じである。
+\(F\) が \(-1\) になるのは、図 19.1 の4本の外線 \(a,b,c,abc\) がすべて 1 のとき、すなわち手術移動（ループのつなぎ替え）のときだけで、そこで符号が出る
+（ここで \(abc\) は群演算の積、つまり \(a+b+c\bmod2\)）。
+アイソトピー不変性の条件 <a class="eq-ref" href="#eq-19-isotopy"></a> も満たされる。
+</p>
+
+<h3>\(\Z_3\) 以上</h3>
+<p>
+\(\Z_3\) では3つのコサイクルがある。自明な \(p=0\)（\(F\) がすべて 1、<a href="chapter18.html">第18章</a>で見たように3つの組みひも理論をもち、うち2つがモジュラー）と、非自明な \(p=1,2\) である。
+非自明な2つも五角形方程式の解だが、アイソトピー不変な形にできず、組みひもも入れられない。
+ゲージ変換 <a class="eq-ref" href="#eq-19-gauge"></a> で形を変えても、式 <a class="eq-ref" href="#eq-19-isotopy"></a> の2つの条件を同時に満たすゲージは存在しない。
+これは<a href="chapter14.html">第14章</a>で議論した \(\kappa^{(3)}\) の障害にほかならない（原書の演習 19.3）。
+それでも整合的な平面ダイアグラム代数にはなるが、アイソトピー不変ではない。したがって \(\Z_3\) でアイソトピー不変なのは \(p=0\) だけである。
+</p>
+<p>
+一般には、アイソトピー不変な代数を阻む要因が2つある。
+</p>
+<ol>
+<li>\(N\) が3の倍数のとき：\(\Z_3\) と同様に、3の倍数でない \(p\) はアイソトピー不変にできない。</li>
+<li>\(N\) が4の倍数のとき：偶数の \(p\) だけがアイソトピー不変にできる（原書の演習 19.3）。</li>
+</ol>
+<p>
+これらの障害がなければ、アイソトピー不変なゲージを選べるはずである。
+さらに、組みひもを入れられるのは \(p=0\)（すべての \(N\)）と \(p=N/2\)（偶数 \(N\)）だけである（原書の演習 19.2）。詳細は §19.4 と<a href="chapter18.html">第18章</a>で述べる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-19-3">非可換群を使うと？<span class="en">Using Non-Commutative Groups?</span></h2>
+
+<p>
+ここでの「非可換 (non-commutative)」は \(g\times h\neq h\times g\) を指す。<a href="chapter08.html">第8章</a>では \(g\times h=a+b+\cdots\) のように多重チャネルがある融合則を「非アーベル (nonabelian)」と呼んだので、用語が違うことに注意する。
+</p>
+<p>
+<a href="chapter08.html">第8章</a>で粒子の融合に \(g\times h=h\times g\) を要請した理由は、3次元に住む粒子を近づけると、見る角度によって \(g\) が右にあるようにも \(h\) が右にあるようにも見え、
+\(gh\) と \(hg\) のどちらに融合するか決められないからである。
+しかし平面（または球面）上のダイアグラム代数だけを考えるなら、向きのついた面があるので、頂点のまわりでどの粒子がどの粒子の時計回り側にあるかを一意に決められる。
+そこで、頂点が許される融合になる条件を一般に「頂点から出る3粒子の元を時計回りに掛けると単位元になる」と定めれば、非可換群も使える。
+本章の図はすべてこの規則と整合するように描かれている。
+</p>
+<p>
+ただし六角形方程式は可換な融合を暗黙に仮定するので、非可換群からは平面ダイアグラム代数は作れても、<strong>適切な組みひもは与えられない</strong>。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-19-4">付録：\(G=\Z_N\) コホモロジーからのアイソトピー不変な平面代数とアニオン理論<span class="en">Appendix: Isotopy-Invariant Planar Algebras and Anyon Theories from G = Z_N Cohomology</span></h2>
+
+<p>
+式 <a class="eq-ref" href="#eq-19-ZNcocycle"></a> のコサイクルのうち、組みひもを許すアイソトピー不変な場合は2種類ある。すべての \(N\) で存在する \(p=0\) と、偶数 \(N\) だけの \(p=N/2\) である。
+</p>
+
+<h3 id="sec-19-4-1">§19.4.1 自明なコサイクル：\(\Z_N^{(n)}\) アニオン</h3>
+
+<p>
+\(p=0\) は \(\omega=1\)、すべての \(a\) で \(d_a=1\) である。六角形方程式の解は<a href="chapter18.html">第18章</a>（§18.5.3）で議論済みの \(\Z_N^{(n)}\) アニオン（\(R^{a,b}_{a+b}=e^{2\pi i nab/N}\)）である。
+</p>
+
+<h3 id="sec-19-4-2">§19.4.2 非自明なコサイクル：\(N=2m\) の \(\Z_N^{(n+1/2)}\)</h3>
+
+<p>
+\(N=2m\) とし、\(p=m\) の式 <a class="eq-ref" href="#eq-19-ZNcocycle"></a> を使う。ここでも六角形方程式には \(N\) 個の解があり（\(n=0,\dots,N-1\)）、すべての \(d_a=+1\) として
+</p>
+<div class="equation" id="eq-19-RZN">\[
+R^{a,b}_{[a+b]_N}=\exp\!\Big[\frac{2\pi i\,(n+\frac12)}{N}\,ab\Big]
+\]</div>
+<p>
+で与えられる。これから<a href="chapter18.html">第18章</a>（§18.5.4）のツイストと \(S\) 行列が得られる。
+式 <a class="eq-ref" href="#eq-19-ZNcocycle"></a> のゲージでは、これらの理論は一般にはアイソトピー不変でない。ゲージ変換で簡単な形にできることがあり、\(m\) の偶奇で様子が違う。
+</p>
+
+<h4>場合 I：\(m\) が奇数</h4>
+<p>
+\(m\) 番目の粒子（\(a=m\)）は自己双対で、Frobenius–Schur 指標が \(-1\) になる。これはゲージ不変な量である（<a href="chapter18.html">第18章</a>の演習 18.5）。
+したがってアイソトピー不変にするには、この符号を \(d\) に押しつける必要がある（<a href="chapter14.html">第14章</a>）。\(\epsilon_a=+1\) のまま、ゲージを
+</p>
+<div class="equation" id="eq-19-dodd">\[
+d_a=(-1)^a
+\]</div>
+<p>
+となるようにとる（<a href="chapter14.html">第14章</a>の合成則 \(\operatorname{sign}d_a\operatorname{sign}d_b=\operatorname{sign}d_c\) は満たされる）。このゲージでコサイクルは
+</p>
+<div class="equation" id="eq-19-omegaodd">\[
+\omega(a,b,c)=\begin{cases}-1 & a,b,c\ \text{がすべて奇数}\\ +1 & \text{それ以外}\end{cases}
+\]</div>
+<p>
+と書ける。同じ \(R\)（式 <a class="eq-ref" href="#eq-19-RZN"></a>）が六角形方程式を解き、正しい \(S\)（<a href="chapter18.html">第18章</a>の式）を得るには、負の \(d_a\) があるので規則 0（<a href="chapter14.html">第14章</a>）を課す。
+この記述の利点はアイソトピー不変性である。\(N=2m\)（\(m\) 奇数）の \(\Z_N^{(n+1/2)}\) は、セミオン理論と \(\Z_m^{(n')}\) 理論の積に分解する（<a href="chapter18.html">第18章</a>の素な理論の議論、§18.6）ので、コサイクルがこの簡単な形になる。
+</p>
+<p>
+\(m\) が偶数の場合に同じ \(d_a=(-1)^a\) をとると、実は上の自明なコサイクルを不便なゲージで書いたものになる。\(m\) が偶数のとき自己双対粒子の \(d\) は \(+1\) で、符号を \(d\) に押しつける必要がない。
+</p>
+
+<h4>場合 II：\(m\) が偶数</h4>
+<p>
+自己双対粒子の Frobenius–Schur 指標は \(+1\) なので、すべての \(d_a=+1\) のゲージで考えられる。
+アイソトピー不変な形にゲージ変換することは可能だが、変換は見通しのよいものではない。そのため、式 <a class="eq-ref" href="#eq-19-ZNcocycle"></a> のゲージのまま使うことが多い。
+</p>
+<div class="example-box">
+<span class="box-title">例（\(\Z_4\) の非自明なコサイクル）</span>
+\(\Z_4\) の非自明なコサイクルは、ゲージ変換（原書の演習 19.3）で
+<div class="equation" id="eq-19-Z4">\[
+\omega(a,b,c)=\begin{cases}-1 & (a,b,c)=(1,1,1),(1,2,3),(2,1,2),(2,3,2),(3,2,1),(3,3,3)\\ +1 & \text{それ以外}\end{cases}
+\]</div>
+の形にでき、すべての粒子 \(0,1,2,3\) で \(d=1\) の完全にアイソトピー不変な理論になる。
+六角形方程式の解は \(n=0,1,2,3\) の4つで（この \(n\) は<a href="chapter18.html">第18章</a>の \(\Z_N^{(n+1/2)}\) の \(n\) と同じ）
+\[
+R^{a,b}_{[a+b]_4}=\exp\!\Big[\frac{2\pi i\,(n+\frac12)}{4}\,ab\Big](-1)^{r(a,b)},
+\]
+ただし \(r(a,b)=1\) となるのは \((a,b)=(1,2),(1,3),(2,1),(3,1)\) のときだけで、それ以外は \(r=0\)。
+\(n=0\) はアーベル Chern–Simons 理論 \(U(1)_4\)（\((D_9)_1\) とも）、\(n=3\) がその鏡像、\(n=1\) が \(SU(4)_1\)、\(n=2\) がその鏡像である。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-19-5">付録：\(S_3\) のコサイクル<span class="en">Appendix: Cocycles for S3</span></h2>
+
+<p>
+非可換群の例として \(S_3\) を見る。6元の群で、生成元 \(x\)（反転）と \(r\)（回転）が \(x^2=r^3=e\)、\(xr=r^{-1}x\) を満たし、元は \(e,r,r^{-1},x,xr,xr^{-1}\) である。
+これを \((A,a)=x^Ar^a\)（\(A=0,1\)、\(a=-1,0,1\)）と書く。独立な3-コサイクルは \(p=0,\dots,5\) で
+</p>
+<div class="equation" id="eq-19-S3">\[
+\omega\big((A,a),(B,b),(C,c)\big)=e^{i\pi pABC}\exp\!\Big[\frac{2\pi i\,p}{9}(-1)^{B+C}a\big((-1)^Cb+c-[(-1)^Cb+c]_3\big)\Big]
+\]</div>
+<p>
+と与えられる（\([\ ]_3\) は mod 3 で \(-1,0,1\) の範囲にとる）。
+\(S_3\) には \(e\) と \(x\) からなる \(\Z_2\) 部分群（\(a=0\)、\(A=0,1\)）がある。第1因子 \(e^{i\pi pABC}\) は \(\Z_2\) の2つのコサイクルに対応し、
+\(p\) が偶数なら自明、奇数なら \(A=B=C=1\) のときだけ \(-1\)（式 <a class="eq-ref" href="#eq-19-Z2cocycle"></a> と同じ）である。
+第2因子は \(\Z_3\) のコサイクルに似ていて、\(C=0\) とおくと \(\Z_3\) のときと同じ議論により、\(p=0\) または \(p=3\)（このとき第2因子が自明になる）でなければ完全なアイソトピー不変性は得られない。
+\(p=3\) は \((A,a)\) の \(a\) を無視し、\(A\) については式 <a class="eq-ref" href="#eq-19-Z2cocycle"></a> と同等で、\(d_{(A,a)}=(-1)^A\) とするとアイソトピー不変なコサイクルになる。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第19章のまとめ</span>
+<ul>
+<li>離散群 \(G\) の元を粒子とし、群の積を融合則とすれば平面ダイアグラム代数が定まる。すべての \(d_g=1\)（符号は別として大きさ）である。</li>
+<li>3-コサイクル \(\omega(a,b,c)\) が \(F\) 行列で、コサイクル条件が五角形方程式に等しい。ゲージ変換は頂点の位相 \(u(a,b)\)。</li>
+<li>アイソトピー不変性は \(s(a,b)\omega(a,a^{-1},b)=1\) などの条件になる。\(\Z_N\) では、\(N\) が3の倍数のとき \(p\) は3の倍数、\(N\) が4の倍数のとき \(p\) は偶数でなければならない。</li>
+<li>\(\Z_2\) の \(p=0,1\) は \(d=\pm1\) のループガス。組みひもを許すのは \(\Z_N\) の \(p=0\)（\(\Z_N^{(n)}\)）と \(p=N/2\)（\(\Z_N^{(n+1/2)}\)）だけである。</li>
+<li>アーベル群なら組みひもを調べられるが、非可換群は平面代数まで。例として \(S_3\) のコサイクル（\(p=0,3\) だけがアイソトピー不変）がある。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

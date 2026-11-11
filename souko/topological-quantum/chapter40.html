@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="本書の読解に必要な数学の基礎：多様体（境界・積・向き付け）、群と表現（共役類・指標・直交性）、基本群">
+  <title>第40章 付録：数学の基礎 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter40" data-chapter="40">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第40章に対応</span>
+  第40章 付録：数学の基礎
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本書を読むために必要な数学（多様体、群とその表現、基本群）の短い復習で、原書では Easy とされる。
+多様体の節では、境界・積・和・除去の記法と、境界の境界が空であること（\(\partial^2=0\)）を使えるようにする。
+群の節では、本書に頻出する \(\Z_N\)、\(S_N\)（特に \(S_3\)）、\(SU(2)\) などの例、部分群・中心化群・共役類、既約表現の次元の和則と指標を整理する。
+基本群の節では、\(S^1\)、トーラス、\(SO(3)\) の例を挙げる。いずれも、数学の予備知識があればほとんど既知の内容である。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-40-1">多様体<span class="en">Manifolds</span></h2>
+
+<p>
+実数直線を \(\R\)、点が \(n\) 個の実数 \((x_1,\dots,x_n)\) で指定される \(n\) 次元空間を \(\R^n\)（Euclid 空間）と書く。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（多様体）</span>
+<strong>多様体 (manifold)</strong> とは、局所的に Euclid 空間のように見える空間である。多様体が極限点をすべて含み（コンパクト）、境界がないとき、<strong>閉じている (closed)</strong> という。
+</div>
+
+<h3 id="sec-40-1-1">§40.1.1 例：Euclid 空間と球面</h3>
+<ul>
+<li>\(\R^n\) は多様体である。</li>
+<li><strong>円 \(S^1\)</strong>（1次元球面）：平面内で中心から等距離にある点の集合。局所的には1変数で位置が決まるので直線に見える（曲率は局所的には重要でない）。大域的には位置が周期的で（十分遠くまで歩くと元に戻る）、実直線とは異なる。0 から \(2\pi\) の実数（角度）で指定することが多い。</li>
+<li><strong>2次元球面 \(S^2\)</strong>：普通に「球面（の表面）」と呼ぶもの。\(\R^3\) で中心から等距離の点の集合。</li>
+<li>一般に \(n\) 次元球面 \(S^n\) は \(\R^{n+1}\) で中心から等距離の点の集合である。</li>
+</ul>
+
+<p>
+多様体はしばしばトポロジカルな性質だけが問題になる。円が凹んでいても \(S^1\) のままである。滑らかに互いに変形できる2つの対象を数学者は<strong>同相 (homeomorphic)</strong> という（本書ではこの言葉はあまり使わない）。
+円 \(S^1\) は、実直線 \(\R^1\) に「無限遠の点」を1つ加えたもの（\(+\infty\) と \(-\infty\) をつなぐ）とみなせる。同様に \(S^2\) は \(\R^2\) に無限遠の1点を加えたもの（大きな平らな布の縁を1点に絞って袋にして閉じる）、\(S^3\) は \(\R^3\) をコンパクト化したもの、等々である。
+</p>
+
+<h3>向き付け可能性</h3>
+<p>
+多様体上のすべての点で、法線ベクトルを一貫して定義できるとき、その多様体は<strong>向き付け可能 (orientable)</strong> という。高次元に埋め込まずに言えば、すべての点で座標軸の向きを一貫して定められるということである。本書ではほとんどの場合、多様体はすべて向き付け可能と仮定する。
+向き付け不可能な例は Möbius の帯で、座標軸を帯に沿って滑らかに1周させると、上向きだった法線が下向きになって戻ってくる（境界のある多様体）。
+</p>
+<p>
+向き付け可能な閉じた2次元多様体は、「穴」の数、すなわち<strong>種数 (genus)</strong> \(g\) で単純に分類される。球面は \(g=0\)、トーラスは \(g=1\)、2つの取っ手をもつトーラスは \(g=2\)、等々。
+</p>
+
+<h3 id="sec-40-1-2">§40.1.2 多様体の和 \(M_1\cup M_2\)</h3>
+<p>
+多様体の<strong>非連結和</strong>を記号 \(\cup\) で書く。たとえば \(S^1\cup S^1\) は互いに全くつながっていない2つの円で、2つの部分からなる1つの多様体（非連結多様体）とみなせる。局所的には依然として Euclid 空間に見える。
+</p>
+
+<h3 id="sec-40-1-3">§40.1.3 多様体の積 \(M_3=M_1\times M_2\)</h3>
+<p>
+2つの多様体の積（直積、Cartesian 積）\(M_3=M_1\times M_2\) の点は、\(M_1\) の1点と \(M_2\) の1点の組で指定される。
+</p>
+<ul>
+<li>\(\R^2=\R^1\times\R^1\)。</li>
+<li>\(T^2=S^1\times S^1\)：2次元トーラス（ドーナツの表面）は2つの円の積である。トーラス上の点は2つの角度で決まり、両方向に周期的だからである。\(S^1\) を何度も掛けて高次元のトーラスが作れる。</li>
+</ul>
+
+<h3 id="sec-40-1-4">§40.1.4 境界のある多様体</h3>
+<p>
+境界のある多様体では、内部は Euclid 空間に見え、境界の近くでは半空間に見える（例：半平面は境界のある2次元多様体）。
+</p>
+<ul>
+<li><strong>\(n\) 次元球体</strong> \(B^n\)（円盤 \(D^n\) とも書く。\(D^n=B^n\)）は、\(n\) 次元空間で中心との距離がある半径以下の点の集合。2次元の \(D^2\) は普通の円盤。1次元の球体は区間（線分）で \(I=D^1=B^1\) と書く。</li>
+<li>境界は非連結の部分からなりうる。たとえば区間 \(I\) の境界は両端の2点で、\(\partial I=\mathrm{pt}\cup\mathrm{pt}\)。</li>
+<li>境界のある多様体の直積も考えられる。\(I\times I\)（\(|x|\le1,|y|\le1\) の内部を含む正方形）は、連続的に円盤 \(B^2\) に変形できる。同様に \(B^n\times B^m=B^{n+m}\)。</li>
+<li>円筒（中空の管）は \(S^1\times I\)（周期的な座標1つと両端のある座標1つ）。</li>
+<li>中身の詰まったドーナツは \(D^2\times S^1\)。</li>
+</ul>
+
+<h3 id="sec-40-1-5">§40.1.5 多様体の境界 \(M_1=\partial M_2\)</h3>
+<p>
+境界を \(\partial\) で書く。\(M_1\) が \(M_2\) の境界のとき \(M_1=\partial M_2\) と書き、\(\partial M\) の次元は \(M\) より1つ小さい。
+</p>
+<ul>
+<li>\(\partial D^2=S^1\)。一般に \(\partial B^n=S^{n-1}\)（特に \(\partial B^3=S^2\)）。</li>
+</ul>
+
+<div class="thm-box">
+<span class="box-title">原理（境界の境界は空）</span>
+多様体の境界は常に境界のない多様体である。同じことだが、境界の境界は空集合である：
+\[
+\partial^2=0,\qquad \partial(\partial M)=\emptyset .
+\]
+境界をとる操作は、微分と同様の Leibniz 則に従う：
+<div class="equation" id="eq-40-Leibniz">\[
+\partial(M_1\times M_2)=(\partial M_1)\times M_2\ \cup\ M_1\times(\partial M_2).
+\]</div>
+</div>
+
+<div class="example-box">
+<span class="box-title">例（Leibniz 則の使用）</span>
+<ul>
+<li><strong>円筒</strong> \(S^1\times I\)：
+\(\partial(S^1\times I)=(\partial S^1)\times I\cup S^1\times\partial I=S^1\cup S^1\)。
+第1項は \(\partial S^1=\emptyset\) なので空集合、第2項は \(\partial I=\mathrm{pt}\cup\mathrm{pt}\) から2つの円の和になる。</li>
+<li><strong>円盤</strong> \(B^2=I\times I\)（塗りつぶした正方形）：
+\[
+\partial B^2=(\mathrm{pt}\cup\mathrm{pt})\times I\cup I\times(\mathrm{pt}\cup\mathrm{pt})=(I\cup I)\cup(I\cup I)=\text{上}\cup\text{下}\cup\text{左}\cup\text{右}=S^1 .
+\]
+4つの線分（正方形の縁）の和になり、トポロジカルには円である。</li>
+</ul>
+</div>
+
+<h3 id="sec-40-1-6">§40.1.6 一部を取り除く</h3>
+<p>
+多様体の一部を取り除く記法は \(\backslash\) である。たとえば \(\R^3\) から球体 \(B^3\) を取り除いた多様体は \(\R^3\backslash B^3\) と書き、その境界は \(B^3\) の表面の球面だけで、\(\partial(\R^3\backslash B^3)=S^2\) である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-40-2">群<span class="en">Groups</span></h2>
+
+<div class="def-box">
+<span class="box-title">定義（群）</span>
+群 \(G\) は、要素 \(g\in G\) の集合と、乗法とみなす演算の組で、次を満たす。
+<ul>
+<li><strong>閉じている：</strong> \(g_1,g_2\in G\) なら \(g_1g_2\in G\)。一般に \(g_1g_2\neq g_2g_1\)。</li>
+<li><strong>結合律：</strong> \(g_1(g_2g_3)=(g_1g_2)g_3\)。</li>
+<li><strong>単位元：</strong> すべての \(g\) について \(ge=eg=g\) となる元 \(e\)（\(I,0,1\) とも書かれる）がある。</li>
+<li><strong>逆元：</strong> 各元に \(gg^{-1}=g^{-1}g=e\) となる \(g^{-1}\) がある。</li>
+</ul>
+\(G\) の元の個数 \(|G|\) を群の<strong>位数 (order)</strong> という。常に可換（すべての \(g_1,g_2\) で \(g_1g_2=g_2g_1\)）な群を<strong>アーベル群 (abelian group)</strong>、そうでない群を非アーベル群という。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（単位元の名前）</span>
+単位元に複数の名前があるのは便利だからである。整数の加法群では 0、群 \(\{1,-1\}\) の通常の乗法では 1、より抽象的な群では \(e\) や \(I\) が自然である。
+</div>
+
+<h3 id="sec-40-2-1">§40.2.1 群の例</h3>
+<ul>
+<li>整数 \(\Z\)（加法）。単位元は 0、アーベル群。</li>
+<li>\(\{1,-1\}\)（通常の乗法）：これが群 \(\Z_2\)。\(\{0,1\}\) の mod 2 の加法として書くこともできる（単位元は 0）。アーベル群。</li>
+<li>\(\Z_N\)：複素数 \(e^{2\pi ip/N}\)（\(p\) は整数、0 から \(N-1\) にとれる）の乗法、あるいは整数の mod \(N\) の加法と同じ。アーベル群。</li>
+<li>\(N\) 個の文字の置換全体 \(S_N\)：<strong>置換群</strong>（数学者は対称群と呼ぶ）。非アーベル群で、元の個数は \(N!\)。元は最初の \(N\) 個の整数からそれ自身への1対1写像と考える。</li>
+</ul>
+
+<div class="example-box">
+<span class="box-title">例（最も単純な非アーベル群 \(S_3\)）</span>
+\(S_3\) の元として、1と2を交換する \(x\)（\(1\to2,\,2\to1,\,3\to3\)）と、回転 \(r\)（\(1\to2,\,2\to3,\,3\to1\)）をとる。
+積 \(xr\) は「\(r\) を先に、次に \(x\)」の意味（右端の操作を先に行う規約。どちらの順序規約でもよいが、一貫して使う必要があり、文献には両方ある）。\(1\) は \(r\) で 2 に動き、\(x\) で 1 に戻るので
+\[
+xr:\ 1\to1,\ 2\to3,\ 3\to2 .
+\]
+逆順では \(rx:\ 1\to3,\ 2\to2,\ 3\to1\) となり \(xr\) と異なる（非アーベル）。次の関係が成り立つ：
+<div class="equation" id="eq-40-S3">\[
+x^2=r^3=e,\qquad xr=r^2x .
+\]</div>
+群は \(6=3!\) 個の元 \(e,r,r^2,x,xr,xr^2\) からなり、他の積はすべてこの関係でこの6個に帰着する。
+</div>
+
+<h4>群の積</h4>
+<p>
+群 \(G\) と \(H\) の積 \(G\times H\) の元は組 \((g,h)\)（\(g\in G,h\in H\)）で、積は \((g_1,h_1)(g_2,h_2)=(g_1g_2,\,h_1h_2)\) である。
+\(n\) と \(m\) が互いに素なら \(\Z_n\times\Z_m=\Z_{nm}\)。
+</p>
+
+<h4>すべての有限アーベル群</h4>
+<p>
+有限アーベル群の基本定理により、任意の有限アーベル群は
+\[
+\Z_{N_1}\times\Z_{N_2}\times\cdots\times\Z_{N_p}
+\]
+と書ける（各 \(N_i\) は素数のべき）。たとえば位数 \(100=5\times5\times2\times2\) のアーベル群は \(\Z_{25}\times\Z_4\)、\(\Z_{25}\times\Z_2\times\Z_2\)、\(\Z_5\times\Z_5\times\Z_4\)、\(\Z_5\times\Z_5\times\Z_2\times\Z_2\) の4通りしかない。
+</p>
+
+<h3 id="sec-40-2-2">§40.2.2 群のさらなる性質</h3>
+
+<div class="def-box">
+<span class="box-title">定義（部分群・中心化群・中心・共役類）</span>
+<ul>
+<li><strong>部分群 (subgroup)</strong>：群の部分集合で、それ自身が群をなすもの。たとえば加法のもとでの偶数は整数の部分群。</li>
+<li><strong>中心化群 (centralizer)</strong> \(Z(g)\)：\(g\) と可換な \(G\) の元 \(h\)（\(hg=gh\)）全体。部分群になる。アーベル群ではどの元の中心化群も \(G\) 全体。</li>
+<li><strong>中心 (center)</strong> \(Z(G)\)：\(G\) 全体と可換な元（中心化群が \(G\) 全体になる元）全体のなす部分群。</li>
+<li><strong>共役類 (conjugacy class)</strong> \(C_g\)：ある \(h\in G\) について \(g'=hgh^{-1}\) と書ける \(g'\) 全体。要素数を \(|C_g|\) と書く。</li>
+</ul>
+</div>
+
+<div class="thm-box">
+<span class="box-title">結果（軌道・固定部分群の関係）</span>
+共役類の元の個数と中心化群の元の個数の積は、群の元の総数に等しい：
+<div class="equation" id="eq-40-orbit">\[
+|Z(g)|\,|C_g|=|G| .
+\]</div>
+</div>
+<p>
+（これは軌道・固定部分群の定理の簡単な帰結で、Burnside の補題（§31.5）にも近い。直接の証明も容易で、各 \(y\in C_g\) について \(p(y)\,g\,p(y)^{-1}=y\) となる元 \(p(y)\) を1つ選ぶと、任意の \(h\in G\) は \(h=p(y)z\)（\(y=hgh^{-1}\in C_g\)、\(z\in Z(g)\)）と一意に書ける。）
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(S_3\) の部分群と共役類）</span>
+部分群は \(\{e\}\)、\(\{e,x\}\)、\(\{e,r,r^2\}\)、\(S_3\) 自身（真部分群ではない）。共役類は3つ：
+<ul>
+<li>単位元 \(\{e\}\)、</li>
+<li>回転 \(\{r,r^2\}\)、</li>
+<li>鏡映 \(\{x,xr,xr^2\}\)。</li>
+</ul>
+任意の元を任意の元で共役にとっても同じ類の元になる。たとえば \(x\) を \(r\) で共役にすると \(rxr^{-1}=(xr^2)r^{-1}=xr\) で、\(x\) と同じ類に入る。
+</div>
+
+<h3 id="sec-40-2-3">§40.2.3 Lie 群と Lie 代数</h3>
+<p>
+<strong>Lie 群</strong>とは、多様体でもある群、おおまかには要素が離散ではなく連続的な群である。例：
+</p>
+<ul>
+<li>可逆な \(n\times n\) 複素行列の群 \(GL(n,\C)\)（一般線形群。単位元は単位行列）。</li>
+<li>可逆な \(n\times n\) 実行列の群 \(GL(n,\R)\)。</li>
+<li>\(SU(2)\)：行列式 1 の \(2\times2\) ユニタリ行列全体。多様体でもあることは特にわかりやすい。任意の \(SU(2)\) 行列は
+\[
+\begin{pmatrix}x_1+ix_2 &amp; -x_3+ix_4\\ x_3+ix_4 &amp; x_1-ix_2\end{pmatrix},\qquad x_1^2+x_2^2+x_3^2+x_4^2=1
+\]
+と書け（\(x_j\) は実数）、単位ノルム拘束つきの4つの座標の集合は多様体 \(S^3\) を表す。</li>
+<li>\(SU(N)\)（行列式 1 の \(N\times N\) ユニタリ行列）、\(SO(N)\)（\(N\) 次元の実回転行列）。</li>
+<li>ベクトルの加法のもとでのベクトル空間 \(\R^n\)。</li>
+</ul>
+<p>
+ある Lie 群は「単純」と呼ばれ、多様体として境界も非自明な極限点ももたない（たとえば \(GL(n)\) は、行列式が 0 の非可逆行列に連続的に近づけるので単純でない）。\(SU(N)\)、\(SO(N)\) とごく少数の他のものからなる単純 Lie 群は極めてよく研究されている。
+</p>
+<p>
+<strong>Lie 代数</strong>は、Lie 群の単位元に無限小に近い元から生成される代数である。行列値の Lie 群 \(G\) では、単位元に十分近い任意の元を
+\[
+g=e^{X}=1+X+\frac{X^2}{2}+\cdots
+\]
+と書ける（\(X\) は対応する Lie 代数の元で、小さな振幅をとる）。Lie 群が \(G\) なら対応する Lie 代数を \(\mathfrak g\) と書く。
+</p>
+<ul>
+<li>\(SU(2)\) の一般の元は \(g=\exp(i\mathbf n\cdot\boldsymbol\sigma)\)（\(\mathbf n\) は実3次元ベクトル、\(\boldsymbol\sigma\) は Pauli 行列）で、\(i\sigma_x,i\sigma_y,i\sigma_z\) が Lie 代数 \(\mathfrak{su}(2)\) の（基本表現での）3つの生成元である。</li>
+<li>\(GL(n,\R)\) に対応する \(\mathfrak{gl}(n,\R)\) は \(n\times n\) 実行列の代数。</li>
+</ul>
+
+<h3 id="sec-40-2-4">§40.2.4 群の表現</h3>
+
+<div class="def-box">
+<span class="box-title">定義（表現）</span>
+<strong>表現 (representation)</strong> は群準同型、すなわち乗法を保つ、ある群から別の群への写像である。最も普通のものは、一般線形群（行列の群）への準同型、特に（ほとんど常に）複素行列を使うもので、\(n\) 次元表現は \(\rho:G\to GL(n,\C)\) で
+\[
+\rho(g_1)\rho(g_2)=\rho(g_1g_2)\qquad(\text{すべての }g_1,g_2\in G)
+\]
+を満たす。量子力学では、\(\rho(g)\) がユニタリ行列（\(UU^\dagger=U^\dagger U=1\)）であるユニタリ表現が普通である。
+基底変換でブロック対角形 \(\rho=\rho_1\oplus\rho_2\) に分解できる表現を<strong>可約</strong>、できないものを<strong>既約表現 (irrep)</strong> という。
+（厳密にはここで述べたのは「分解可能」の定義だが、複素行列では Maschke の定理により可約と分解可能は同値である。）
+</div>
+
+<div class="thm-box">
+<span class="box-title">結果（既約表現の基本的性質）</span>
+<ul>
+<li><strong>次元の和則：</strong> 既約表現 \(R\) についての和で
+<div class="equation" id="eq-40-dim">\[
+\sum_R \dim(R)^2=|G| .
+\]</div></li>
+<li>離散群の既約表現の個数は、異なる共役類の個数に等しい。</li>
+<li><strong>Schur の第2補題：</strong> 行列 \(A\) が既約表現 \(R\) のすべての \(\rho_R(g)\) と可換なら、\(A\) は単位行列に比例する。特に、群のすべての元と可換な元 \(h\) では \(\rho_R(h)\) は位相因子に単位行列を掛けたものになる。系として、<strong>アーベル群の既約表現はすべて1次元</strong>である。</li>
+</ul>
+</div>
+
+<div class="example-box">
+<span class="box-title">例（\(\Z_N\) の既約表現）</span>
+\(\Z_N\) を \(g=0,\dots,N-1\)（mod \(N\) の加法）と書き、\(\omega=e^{2\pi i/N}\) とする。既約表現はちょうど \(N\) 個あり、\(p=0,\dots,N-1\) でラベルされて
+<div class="equation" id="eq-40-ZN">\[
+\rho_p:\ g\mapsto(\omega^p)^g
+\]</div>
+で与えられる。
+</div>
+
+<h4>直交性と指標</h4>
+<p>
+既約ユニタリ表現の行列は、<strong>大直交性定理（Schur 直交性）</strong>と呼ばれる美しい関係を満たす：
+</p>
+<div class="equation" id="eq-40-orth">\[
+\sum_{g\in G}[\rho_R(g)]^*_{nm}\,[\rho_{R'}(g)]_{pq}=\delta_{np}\,\delta_{mq}\,\delta_{RR'}\,\frac{|G|}{\dim(R)} .
+\]</div>
+<p>
+（左辺は \(\sum_g[\rho_R(g^{-1})]_{mn}[\rho_{R'}(g)]_{pq}\) とも書ける。）\(R\) は特定の既約表現、添字は \(\rho\) の行列要素、\(\dim(R)\) は表現の次元、\(|G|\) は群の元の総数である。
+<strong>指標 (character)</strong> は表現行列のトレース
+</p>
+<div class="equation" id="eq-40-char">\[
+\chi_R(g)=\Tr[\rho_R(g)]
+\]</div>
+<p>
+で、トレースの巡回性 \(\Tr[ab]=\Tr[ba]\) から、同じ共役類の元で同じ値になる。様々な群の指標表は群論の本やウェブで見つかる。表現論は巨大な主題で、ここではこれ以上扱わない。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-40-3">基本群 \(\Pi_1(M)\)<span class="en">Fundamental Group</span></h2>
+
+<p>
+トポロジーの強力な道具である<strong>基本群 (fundamental group)</strong>（第1ホモトピー群）\(\Pi_1(M)\) は、多様体 \(M\) の、同じ点で始まり同じ点で終わる、トポロジカルに異なる道のなす群である。
+</p>
+<ol>
+<li>多様体上の点を1つ選び、その点から出てその点に戻る道を考える。</li>
+<li>始点と終点を変えずに連続変形で移り合える道は、トポロジカルに同値（同じ同値類）とみなし、同値類ごとに代表を1つだけ残す。</li>
+<li>これらの道が群をなす。逆元は同じ道を逆向きにたどる道、積は一方の道をたどった後でもう一方をたどって長い道を作ること。</li>
+</ol>
+
+<h3 id="sec-40-3-1">§40.3.1 基本群の例</h3>
+<ul>
+<li><strong>円 \(S^1\)</strong>：始点に戻るまでに円を時計回りに \(n\) 回回る道（\(n\) は 0 や負でもよい）で、元は1つの整数で指標づけられる：\(\Pi_1(S^1)=\Z\)。</li>
+<li><strong>トーラス \(S^1\times S^1\)</strong>：2つのサイクルに沿った巻き数を表す2つの整数で指定される：\(\Pi_1(S^1\times S^1)=\Z\times\Z\)。一般に \(\Pi_1(M_1\times M_2)=\Pi_1(M_1)\times\Pi_1(M_2)\) が容易に示せる。</li>
+<li><strong>3次元空間の回転群 \(SO(3)\)</strong>：単連結でない。\(2\pi\) の回転（自明に見える）は自明な回転に連続変形できないが、\(4\pi\) の回転はできる（半整数の角運動量の起源）。対応して \(\Pi_1(SO(3))=\Z_2\)。</li>
+</ul>
+</section>
+
+<div class="remark-box">
+<span class="box-title">補足（文献案内）</span>
+物理で使われるより進んだ数学（トポロジーの考え方を含む）は Stone–Goldbart [2009] と Nakahara [2003]、群論の良い資料は Hamermesh [1989] と Zee [2016] が挙げられている。
+</div>
+
+<div class="summary-box">
+<span class="box-title">第40章のまとめ</span>
+<ul>
+<li>多様体は局所的に Euclid 空間のようなもの。例は \(S^2\)、\(S^1\)、トーラス \(T^2=S^1\times S^1\) など。境界をもつものもあり（2次元円盤 \(B^2\)＝\(D^2\) は円で囲まれる）、境界は \(\partial^2=0\) と Leibniz 則 \(\partial(M_1\times M_2)=\partial M_1\times M_2\cup M_1\times\partial M_2\) に従う。</li>
+<li>群は演算・単位元・逆元をもつ集合。重要な例は \(\Z\)、\(\Z_N\)、置換群 \(S_N\)（最小の非アーベル群は \(S_3\)）、および多様体でもある Lie 群 \(SU(2)\) など。</li>
+<li>共役類・中心化群について \(|Z(g)||C_g|=|G|\)、既約表現について \(\sum_R\dim(R)^2=|G|\)、既約表現の個数は共役類の個数、アーベル群の既約表現は1次元（Schur の補題）。指標は共役類上の定数。</li>
+<li>基本群は同じ点から出て戻るトポロジカルに異なる道のなす群で、\(\Pi_1(S^1)=\Z\)、\(\Pi_1(T^2)=\Z\times\Z\)、\(\Pi_1(SO(3))=\Z_2\)。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

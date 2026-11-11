@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Kauffman ブラケットのループ則だけから Jones–Wenzl 射影演算子で粒子種・融合則・F 行列・組みひもを構築する Temperley–Lieb／Jones–Kauffman エニオンの理論">
+  <title>第22章 Temperley–Lieb 代数と Jones–Kauffman エニオン — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter22" data-chapter="22">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第22章に対応</span>
+  第22章 Temperley–Lieb 代数と Jones–Kauffman エニオン
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter02.html">第2章</a>の Kauffman ブラケット不変量は、「ループは値 \(d\) をもつ」という規則と、交差を解消する規則だけで定義されていた。
+本章は、この規則だけを出発点に、<a href="chapter08.html">第8章</a>以降で整備してきた言葉（粒子種・融合則・\(F\) 行列・ツイスト・\(R\) 行列）を再構成する。
+鍵は<strong>Jones–Wenzl 射影演算子</strong>で、\(n\) 本の弦の束を「\(n\) 番目の粒子種」として切り出す。
+\(d\) が特別な値 \(d=\pm2\cos\frac{\pi}{k+2}\) のときだけ粒子種が有限個で閉じ、融合則は \(SU(2)_k\) のものになる。
+交差のない平面版を Temperley–Lieb 代数、組みひもを戻したものを Jones–Kauffman（Temperley–Lieb–Jones–Kauffman）理論という。
+原書は選択的な章としており、量子群による構成（<a href="chapter21.html">第21章</a>）と同じ理論を、図式だけから再発見する章と読める。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<p>
+まず交差のない平面ダイアグラムだけを考える。ダイアグラムは平面内のアイソトピーで不変で、追加の規則は「閉じたループに値 \(d\) を与える」ことだけである。
+これまでの章と違い、粒子の種類や融合則は最初から与えられていない。そこで、最も単純な弦を粒子 \(1\) と呼び（恒等ではなくスピン \(1/2\) に似た記法である）、真空を \(0\) と呼んで、そこから作れる粒子を調べる。
+</p>
+<p>
+2本の \(1\) 弦は、一方が上へ行って折り返す形で真空に融合できる。したがって \(1=\bar 1\)、すなわち \(1\) は自分自身の反粒子であり、矢印を描かない。
+ラベルのない弦は \(1\) 弦とみなす。\(1\) 弦のループの値 \(d\) を \(d_1\) と同一視する（原書は「量子次元」の語を \(|d_1|\) のために取っておく）。
+</p>
+<p>
+2本の \(1\) 弦が真空以外のものに融合する可能性もあるが、それが真空と「直交」していないと、2本の弦が折り返して真空になってしまう（局所性、<a href="chapter08.html">第8章</a>）。この「転換」を防ぐために射影演算子を使う。
+</p>
+
+<section>
+<h2 id="sec-22-1">Jones–Wenzl 射影演算子<span class="en">Jones–Wenzl Projectors</span></h2>
+
+<p>
+射影演算子は \(P^2=P\) を満たす演算子で、固有値は0か1である。ダイアグラムを、紙面の下から入る弦を上へ出す演算子とみなす（<a href="chapter12.html">第12章</a>）。
+同じ向きに走る \(n\) 本の弦の束（cable）に対する<strong>Jones–Wenzl 射影演算子</strong> \(P_n\) を、\(P_n^2=P_n\) を満たし、上端か下端にキャップ（山型）またはカップ（谷型）を付けると結果が0になる演算子として定義する。
+\(P_n\) を挿入した \(n\) 本の束が、\(n\) 番目の粒子種である。1本の弦に対しては \(P_1\) は恒等演算子である。
+</p>
+
+<h3 id="sec-22-1-0">2本の弦</h3>
+<p>
+まず2本の弦を真空へ射影する演算子を作る。2本が下端で結ばれ（カップ）上端で結ばれた（キャップ）形の図式に \(1/d\) を掛けたものを \(\bar P_2\) とする。
+\(\bar P_2^{\,2}\) では中にループが1つできて値 \(d\) が出るので、\(\bar P_2^{\,2}=\frac{1}{d^2}\cdot d\,(\cdots)=\bar P_2\) となり、確かに射影演算子である。
+2弦の Jones–Wenzl 射影演算子は、その補演算子
+</p>
+<div class="equation" id="eq-22-P2">\[
+P_2=\id-\bar P_2=\;(\text{平行2本}) - \frac1d\,(\text{カップとキャップ})
+\]</div>
+<p>である。代数的にも \(P_2^2=\id-2\bar P_2+\bar P_2^2=P_2\)、\(\bar P_2P_2=\bar P_2-\bar P_2^2=0\)（\(P_2\bar P_2=0\) も同様）となり、\(P_2\) は \(\bar P_2\) と直交する。</p>
+
+<figure>
+<svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
+  <text x="14" y="70" class="label">P2  =</text>
+  <line x1="80" y1="25" x2="80" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="25" x2="110" y2="105" class="line" stroke-width="1.5"/>
+  <text x="135" y="70" class="label">−  (1/d)</text>
+  <path d="M215 105 V85 A15 15 0 0 1 245 85 V105" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M215 25 V45 A15 15 0 0 0 245 45 V25" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="290" y="70" class="label-muted">下から上へ読む</text>
+</svg>
+<figcaption>図 22.1：2弦の Jones–Wenzl 射影演算子 \(P_2\)。恒等（平行な2本）から、真空への射影（カップとキャップ、係数 \(1/d\)）を引く。</figcaption>
+</figure>
+
+<p>
+2弦の束に \(P_2\) を挿入して作った粒子を「2」と呼ぶ。2弦の束を閉じたループの値は
+</p>
+<div class="equation" id="eq-22-d2">\[
+d_2=\;(P_2\text{ を閉じたループ})=d^2-1
+\]</div>
+<p>
+である（恒等の項は2つのループで \(d^2\)、カップ・キャップの項は \(-\frac1d\cdot d=-1\)）。
+\(P_2\) などの射影演算子は、箱で描くか、1本の線にラベル \(0\)（\(\bar P_2\)）や \(2\)（\(P_2\)）を付けて表すこともある。
+</p>
+
+<h3 id="sec-22-1-1">§22.1.1 \(\Z_2\) ループガス</h3>
+<p>
+\(d=\pm1\) のときは（<a href="chapter02.html">第2章</a>の演習で示されるように）「横向きの2本の弦は縦向きの2本の弦の \(d\) 倍に等しい」ことが示せる。
+すると \(P_2\) の2つの項が符号だけ違って等しいので \(P_2=0\)、実際 \(d=\pm1\)（そしてこの値のときだけ）\(d_2=d^2-1=0\) で、2粒子は存在しない。
+2本の \(1\) 弦の融合は真空にしかならず、融合則全体は
+</p>
+\[
+1\times1=0
+\]
+<p>
+の可換なものになる。これは<a href="chapter18.html">第18章</a>で調べた \(d=\pm1\) のループガスに当たる。組みひもを戻すと、\(d=1\) ではボソンかフェルミオン、\(d=-1\) では右巻きか左巻きのセミオン（\(SU(2)_{\pm1}\)）が得られる（詳しくは §22.6.1）。
+</p>
+
+<h3 id="sec-22-1-2">§22.1.2 一般の \(d\) での2本の弦</h3>
+<p>
+\(d\ne\pm1\) では \(P_2\ne0\) で、2本の \(1\) 弦は \(0\) か \(2\) に融合できる：
+</p>
+<div class="equation" id="eq-22-fus12">\[
+1\times1=0+2 .
+\]</div>
+<p>
+\(\bar P_2+P_2=\id\) なので、この2つで完全系をなし、第3の粒子種は2弦からは作れない。
+</p>
+
+<h3 id="sec-22-1-3">§22.1.3 一般の \(d\) での3本の弦</h3>
+<p>
+3本の弦を出入りさせる最も一般な演算子は、5つの図式（平行3本、および隣り合う2本にカップとキャップを付けた4通り）の線形結合で、係数を \(\alpha,\beta,\gamma,\delta,\epsilon\) とする。
+\(P_3^2=P_3\) に加え、\(0\times1=1\) の要請から「\(\bar P_2\) と1弦を融合しても \(P_3\) は出てこない」、すなわち \(P_3\) の4つの端のどれにカップかキャップを付けても0になることを課す。
+一方 \(1\times2=3\) の融合は許す。これで係数が決まる（原書の演習）：
+</p>
+<div class="equation" id="eq-22-P3coef">\[
+\alpha=1,\qquad \beta=\gamma=-\frac{d}{d^2-1},\qquad \delta=\epsilon=\frac{1}{d^2-1}.
+\]</div>
+<p>
+3弦のループの値は
+</p>
+<div class="equation" id="eq-22-d3">\[
+d_3=d\,(d^2-2)
+\]</div>
+<p>となる。</p>
+
+<h3 id="sec-22-1-4">§22.1.4 Ising エニオン</h3>
+<p>
+\(d=\pm\sqrt2\)（この値のときだけ）\(d_3=0\) となり、3弦の粒子は存在しない。同値な言い方として、\(P_3\) はどんなダイアグラムの中でも0に評価される。
+同様に \(P_4=0\) 以降もすべて0になる。したがって粒子種は \(0,1,2\) の3つだけである。これまでの \(1\times1=0+2\) に加え、
+\(2\times2=0\)（\(2\times2\) に \(2\) が含まれないことの確認には別の明示的な計算が必要で、原書の演習）、
+\(1\times2=1\)（\(1\times1=2\) の図を横に倒したもの）が成り立つ。全体として
+</p>
+<div class="equation" id="eq-22-ising">\[
+1\times1=0+2,\qquad 2\times2=0,\qquad 1\times2=1
+\]</div>
+<p>
+は Ising の融合則（<a href="chapter08.html">第8章</a>、<a href="chapter18.html">第18章</a>）で、\(1=\sigma\)、\(2=\psi\)、\(0=I\) と対応する。
+実際 \(d_\sigma=d_1=\pm\sqrt2\)、また \(d_\psi=d_2=d^2-1=1\) で、Ising の値と一致する。
+</p>
+</section>
+
+<section>
+<h2 id="sec-22-2">一般の \(d\) の値<span class="en">General Values of d</span></h2>
+
+<p>
+\(d=\pm1,\pm\sqrt2\) の議論は一般化できる（Kauffman–Lins、原書の演習）。まず、\(n+1\) 弦の射影演算子は \(n\) 弦の射影演算子から再帰的に作れる。
+\(P_{n+1}=P_n\otimes\id_1-\frac{d_{n-1}}{d_n}\,(P_n\) に1本の弦をつなぎ、カップとキャップを付けた図式\()\) の形である（係数の詳細は原書の図に従う）。
+特に \(P_n=0\) なら任意の \(m&gt;n\) について \(P_m=0\) である。\(n\) 弦の粒子のループの値 \(d_n\)（原書の脚注では \(\Delta_n\) とも書かれる）は、\(P_n\) の上端と下端の \(n\) 本をそれぞれつないで得られる。
+この再帰関係から
+</p>
+<div class="equation" id="eq-22-rec">\[
+d_{n+1}=d\,d_n-d_{n-1},\qquad d_{-1}\equiv0,\ d_0=1\ (\text{したがって } d_1=d)
+\]</div>
+<p>
+が得られ、一般解は第2種 Chebyshev 多項式 \(U_n\)（\(U_n(\cos\theta)\sin\theta=\sin[(n+1)\theta]\)）を用いて
+</p>
+<div class="equation" id="eq-22-dn">\[
+d_n=U_n(d/2)
+\]</div>
+<p>と書ける。</p>
+
+<div class="thm-box">
+<span class="box-title">結果（有限個の粒子種を与える \(d\)）</span>
+粒子種が有限個で閉じるのは、ある \(n=k+1\) で \(d_n=0\)（したがって \(n\ge k+1\) で \(P_n=0\)）となるときで、
+\[
+d=d_1=2\cos\frac{p\pi}{k+2},\qquad p=1,\dots,k+1
+\]
+の場合である。これ以外の \(d\) では、異なる \(n\) の \(n\) 弦射影演算子が無限個の直交な粒子種を与え、代数が閉じない（理論として振る舞いが悪い）。
+</div>
+
+<p>
+この \(d\) を式 <a class="eq-ref" href="#eq-22-dn"></a> に戻すと、理論の \(d_n\)（\(n=0,\dots,k\)）が得られる。\(p=1\) ではすべて正で
+</p>
+<div class="equation" id="eq-22-dn-p1">\[
+d_n^{(p=1)}=\frac{\sin\frac{(n+1)\pi}{k+2}}{\sin\frac{\pi}{k+2}}=[n+1]_q,\qquad q=e^{\pm2\pi i/(k+2)}
+\]</div>
+<p>
+（\([\ ]_q\) は<a href="chapter21.html">第21章</a>の \(q\) 整数）で、これは \(SU(2)_k\) の粒子 \(j=n/2\) の量子次元に等しい（<a href="chapter21.html">第21章</a>の式 \(d_j=[2j+1]_q\)）。
+\(p=k+1\) では符号が交互になるだけで、
+</p>
+\[
+d_n^{(p=k+1)}=(-1)^n\,d_n^{(p=1)}
+\]
+<p>
+である。\(d\) が負の理論は、<a href="chapter14.html">第14章</a>と<a href="chapter16.html">第16章</a>の規則 0（負 \(d\) キャップを数えて \((-1)^n\) を掛ける）を使えばユニタリな理論として解釈できる。
+規則 0 がなければ、負のループ重みをもつ図式代数も自己無撞着ではあるが、量子力学系は表せない。
+</p>
+<p>
+\(p\) と \(k+2\) が公約数 \(x\) をもつ場合は、\(p'=p/x\)、\(k'+2=(k+2)/x\) の理論を記述しているだけなので考えなくてよい。
+\(p\ne1,k+1\) で \(p\) と \(k+2\) が互いに素なときは、正と負の \(d_n\) が混在し、規則 0 でユニタリ化するために必要な条件（<a href="chapter14.html">第14章</a>の条件）を破ることがわかり、採用できない。
+こうして本章は
+</p>
+<div class="equation" id="eq-22-dchoice">\[
+d=d_1=\pm2\cos\frac{\pi}{k+2}
+\]</div>
+<p>だけを考える。</p>
+
+<h4>一般の頂点と融合則</h4>
+<p>
+\(n\) 弦の射影演算子が作れれば、3つの異なる粒子種 \((a,b,c)\)（\(a,b,c\ge0\)）の間の頂点も作れる。\(a\) と \(b\) の間に通す弦の本数を \(m\)、\(a\) と \(c\) の間を \(n\)、\(b\) と \(c\) の間を \(p\) とすると
+</p>
+<div class="equation" id="eq-22-mnp">\[
+m=\frac{a+b-c}{2},\qquad n=\frac{a+c-b}{2},\qquad p=\frac{b+c-a}{2}.
+\]</div>
+<p>
+これらがすべて非負の整数であることが必要で、整数性は \(a+b+c\) が偶数であることで保証される。\(a,b,c\) のいずれかが0なら、その辺には弦が出ず、1なら1本の弦が出る（射影演算子は不要）。
+さらに、頂点が0でないための条件として
+</p>
+<div class="equation" id="eq-22-nonzero">\[
+P_{(a+b+c)/2}\neq0
+\]</div>
+<p>
+が成り立つことが知られている（一般の証明は Kauffman–Lins を参照）。たとえば \(d=\pm\sqrt2\) では \(P_3=0\) なので頂点 \((2,2,2)\) は0であり、これは上の \(2\times2\not\ni2\) の例である。
+</p>
+<p>
+これらの条件から融合則が決まる。\(P_k\ne0\) となる最大の整数を \(k\) として
+</p>
+<div class="equation" id="eq-22-fusion">\[
+a\times b=|a-b|,\ |a-b|+2,\ \dots,\ \min(a+b,\,2k-a-b).
+\]</div>
+<p>
+粒子 \(a=2j\) と読めば、これは \(SU(2)_k\) の融合則（<a href="chapter21.html">第21章</a>の式 \(j_1\otimes j_2=\cdots\min(j_1+j_2,k-j_1-j_2)\)）と同じである。\(k\to\infty\) では通常の \(SU(2)\) の角運動量合成則に戻る。
+最大の粒子 \(a=k\) は<strong>simple current</strong> で、任意の \(b\) と \(k\times b=k-b\) と一意に融合する。
+</p>
+
+<h4>Theta 図</h4>
+<p>
+この頂点の定義で、任意の平面ダイアグラムが評価できる。特に有用な Theta 図（2つの頂点を3本の線 \(a,b,c\) でつないだもの）の値は
+</p>
+<div class="equation" id="eq-22-theta">\[
+\Delta(a,b,c)=\frac{(d_{(a+b+c)/2})!\,(d_{m-1})!\,(d_{n-1})!\,(d_{p-1})!}{(d_{a-1})!\,(d_{b-1})!\,(d_{c-1})!},
+\qquad (d_n)!\equiv d_nd_{n-1}\cdots d_2d_1
+\]</div>
+<p>
+で、\(d_1=d\)、\(d_0=1\) である（一般の導出は Kauffman–Lins や Lickorish を参照。いくつかの例なら容易に確かめられる）。
+\(\Delta(a,b,c)\) は引数の入れ替えに対して対称で、\(d_{(a+b+c)/2}=0\) のとき0になるので、条件 <a class="eq-ref" href="#eq-22-nonzero"></a> と整合する。
+</p>
+<div class="caution-box">
+<span class="box-title">注意（このままでは正しい規格化でない）</span>
+<a href="chapter16.html">第16章</a>の規則によれば Theta 図は \(\sqrt{d_ad_bd_c}\) になるはずだが、式 <a class="eq-ref" href="#eq-22-theta"></a> は一般にそうならない。つまり理論の規格化を誤っており、次節で直す。
+</div>
+</section>
+
+<section>
+<h2 id="sec-22-3">ユニタリ化<span class="en">Unitarization</span></h2>
+
+<p>
+ここまでの図式代数は自己無撞着だが、これまでの章の規則には合わない。Theta 図の値が合わないほか、\(F\) 行列も非ユニタリになってしまう。
+Kauffman–Lomonaco の提案に従い、頂点を定数倍して再定義すればよい。新しい頂点（原書の図では青い点で区別）を、元の頂点の定数倍
+</p>
+<div class="equation" id="eq-22-v">\[
+(\text{新頂点})=v(a,b,c)\,(\text{旧頂点}),\qquad v(a,b,c)=\frac{\sqrt[4]{d_ad_bd_c}}{\sqrt{\Delta(a,b,c)}}
+\]</div>
+<p>
+と定める。Theta 図は新しい頂点を2つ使うので \(v^2\Delta=\sqrt{d_ad_bd_c}\) となり、第16章の期待どおりの値になる。
+この簡単な修正だけで理論は第16章の枠組みに収まる。いずれの符号の \(d\)（式 <a class="eq-ref" href="#eq-22-dchoice"></a>）でも、根号の中身は正になる。
+</p>
+</section>
+
+<section>
+<h2 id="sec-22-4">\(F\) 行列<span class="en">F-Matrices</span></h2>
+
+<p>
+\(F\) 行列は図式の代数から直接決まる。最も簡単な例として、4本の \(1\) 弦についての \(F^{1111}_1\)（\(F^{1111}_{\beta\alpha}\) を \(F_{\beta\alpha}\) と略す、添字は \(0,2\)）を考える。
+\(1\times1=0+2\) と融合チャネルが2つあるので（\(d\ne\pm1\)）\(F\) は自明でない。
+再び再定義した頂点を使って、第16章の式と同じ形
+</p>
+<div class="equation" id="eq-22-Feq">\[
+(\text{チャネル }\alpha\text{ の木})=\sum_\beta F_{\beta\alpha}\,(\text{チャネル }\beta\text{ の木})
+\]</div>
+<p>
+を、\(P_2\) などの射影演算子（\(P_2=\id-\frac1d(\cdots)\)）を含む弦の図式として書き下す。頂点の規格化因子 \(v(1,1,2)^2\) と \(v(1,1,0)=1\) が係数に入る。
+両辺に現れる図式のうち位相的に同じものどうしを突き合わせる。たとえば \(F_{00}=1/d\)、\(F_{22}=-1/d\) が直接読み取れ、
+残りの項の比較と \(d_2=d^2-1\)（式 <a class="eq-ref" href="#eq-22-d2"></a>）から \(F_{20}=F_{02}=\sqrt{d^2-1}/d\) が決まる。こうして次の形が得られる。</p>
+<div class="equation" id="eq-22-F1111">\[
+[F^{1111}_1]=\begin{pmatrix}\dfrac1d&amp;\dfrac{\sqrt{d^2-1}}{d}\\[2mm]\dfrac{\sqrt{d^2-1}}{d}&amp;-\dfrac1d\end{pmatrix}
+\]</div>
+<p>
+これは任意の \(d\) でユニタリである。\(d=\pm\sqrt2\) では Ising の \(F^{\sigma\sigma\sigma}_\sigma\)（<a href="chapter18.html">第18章</a>）に一致する。
+同様の図式計算で、任意の \(n\) 弦粒子の出入りに対する \(F\) 行列が求められる（Kauffman–Lins に詳しいが、そこでの結果は頂点を再定義していないので非ユニタリな形になっている）。原書の演習では \(F^{1221}\) と \(F^{2211}\) を求める。
+</p>
+</section>
+
+<section>
+<h2 id="sec-22-5">ツイストと組みひも<span class="en">Twisting and Braiding</span></h2>
+
+<p>
+ここまではループ則と平面ダイアグラムだけを使った。ここで Kauffman ブラケットの交差の規則（<a href="chapter02.html">第2章</a>）を戻し、完全なエニオン理論にする。
+式 <a class="eq-ref" href="#eq-22-dchoice"></a> の \(d\) に対し、\(d=-A^2-A^{-2}\) から
+</p>
+<div class="equation" id="eq-22-A">\[
+A=i^\alpha\exp\!\Big[\pm\frac{i\pi}{2(k+2)}\Big],\qquad \alpha=0,1,2,3,\quad k\ge1
+\]</div>
+<p>
+となる。\(\alpha=0,2\) が \(d&lt;0\)、\(\alpha=1,3\) が \(d&gt;0\) に対応する（文献では \(k+2\) を \(r\) と書くことが多い）。
+</p>
+<p>
+\(1\) 弦のツイスト因子は、<a href="chapter02.html">第2章</a>と<a href="chapter15.html">第15章</a>の比較から \(R^{11}_0=\theta_1^*=-A^{-3}\) である。Kauffman 代数から一般の粒子 \(a\) について
+</p>
+<div class="equation" id="eq-22-theta-a">\[
+\theta_a=(-1)^aA^{a(a+2)}
+\]</div>
+<p>
+が示せる（原書の演習。\(d&lt;0\) のときユニタリな理論の \(\theta\) とは符号が違い、符号の混乱を避けるには \(\theta_1\) ではなく \(R^{11}_0\) を比較するとよい、<a href="chapter15.html">第15章</a>）。
+\(R\) 行列も図式から求められる。例として \(R^{11}_2\) は、組みひもの交差を Kauffman の規則で2項に展開し、\(P_2\) がカップ（折り返し）と直交するので \(A^{-1}\) の項（折り返しの項）が消えて
+</p>
+<div class="equation" id="eq-22-R112">\[
+R^{11}_2=A
+\]</div>
+<p>となる。より一般には（Kauffman–Lins）</p>
+<div class="equation" id="eq-22-R">\[
+R^{ab}_c=(-1)^{\frac12(a+b-c)}A^{\frac12\{c(c+2)-a(a+2)-b(b+2)\}}.
+\]</div>
+<div class="remark-box">
+<span class="box-title">補足（第21章との対応）</span>
+式 <a class="eq-ref" href="#eq-22-theta-a"></a> と <a class="eq-ref" href="#eq-22-R"></a> は、<a href="chapter21.html">第21章</a>の \(\theta_j=q^{j(j+1)}\)、\(R^{ab}_c=(-1)^{a+b-c}q^{\frac12\{c(c+1)-a(a+1)-b(b+1)\}}\) とよく似ているが、同一ではない。
+本章では粒子を整数 \(a\) で表し、第21章では整数か半整数の \(j\) を使うので \(a=2j\) の関係にある。同じ \(SU(2)_k\) を記述している場合、\(R^{ab}_c\) は両者で一致する。
+\(\theta_a\) の違いは符号の取り方（上の \(d&lt;0\) の注意）だけである。
+</div>
+<p>
+さらに簡単な計算（原書の演習）で、\(\alpha\) と \(k\) がともに奇数のとき、最大の粒子 \(a=k\)（simple current）は他のすべての粒子と自明に組みひもされる、つまり透明であり、理論は非モジュラーになる。
+</p>
+</section>
+
+<section>
+<h2 id="sec-22-6">例<span class="en">Examples</span></h2>
+
+<p>
+各 \(k\) について式 <a class="eq-ref" href="#eq-22-A"></a> から \(A\) の値が8通り得られる。それらを、すでに議論した理論と対応づける（符号の混乱を避けるため、\(\theta_1\) でなく \(R^{11}_0\) で比べる）。
+</p>
+
+<h3 id="sec-22-6-1">§22.6.1 \(\Z_2\) ループガスの再訪（\(k=1\)）</h3>
+<p>
+\(k=1\) では \(d=(-1)^{\alpha+1}\) で、<a href="chapter18.html">第18章</a>と §22.1.1 の \(\Z_2\) ループガスに当たる。\(d&lt;0\) の場合は規則 0 でユニタリ化する。
+\(k=1\) は特殊で、鏡像（\(A\) の複素共役）をとると表の中の別の理論に移るため、異なる理論は4つしかない。ボソンとフェルミオンは複素共役で不変、2つのセミオン理論は互いに入れ替わる。
+</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>\(A\)</th><th>\(\operatorname{sgn}(d)\)</th><th>理論</th></tr></thead>
+<tbody>
+<tr><td>\(e^{i\pi/6}\)</td><td>\(-\)</td><td>\(SU(2)_1\)</td></tr>
+<tr><td>\(-e^{i\pi/6}\)</td><td>\(-\)</td><td>\(SU(2)_1\) の鏡像</td></tr>
+<tr><td>\(ie^{i\pi/6}\)</td><td>\(+\)</td><td>フェルミオン（sVec、超モジュラー）</td></tr>
+<tr><td>\(-ie^{i\pi/6}\)</td><td>\(+\)</td><td>ボソン（非モジュラー）</td></tr>
+</tbody>
+</table>
+</div>
+<p>表 22.1：\(k=1\) の Kauffman エニオン理論。後ろの2つはモジュラーでない。</p>
+
+<h3 id="sec-22-6-2">§22.6.2 Ising の融合則（\(k=2\)）</h3>
+<p>
+\(k=2\) では \(d=(-1)^{\alpha+1}\sqrt2\) で、融合則は式 <a class="eq-ref" href="#eq-22-ising"></a> の Ising のものになる。\(A\) の取りうる値は式 <a class="eq-ref" href="#eq-22-A"></a> で与えられる。
+鏡像（\(A\) の複素共役）も含めると、これらは<a href="chapter18.html">第18章</a>の表 18.1 にある8つの Ising 型エニオン理論に対応し、すべてモジュラーである。
+\(A=e^{i\pi/8}\) は \(d&lt;0\) の \(SU(2)_2\) に当たり、ほかに \((C_2)_1\)、\((B_3)_1\)、通常の Ising が現れる。
+</p>
+
+<h3 id="sec-22-6-3">§22.6.3 \(SU(2)_3\) の融合則（\(k=3\)）</h3>
+<p>
+\(k=3\) では \(d=(-1)^{\alpha+1}\varphi\)、\(\varphi=(1+\sqrt5)/2\) である。この \(k\) では（そして1より大きい任意の奇数 \(k\) で）理論は2つのより簡単な理論の積に分解する（原書の演習）。
+粒子 \(3=k\) が一方の因子を生成する simple current で、粒子 \(2\) がもう一方の因子を生成する。2つの因子は \(R^{aa}_0\)（\(a=2,3\)）を計算すれば識別できる。
+</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>\(A\)</th><th>\(\operatorname{sgn}(d)\)</th><th>理論</th><th>モジュラー性</th></tr></thead>
+<tbody>
+<tr><td>\(e^{i\pi/10}\)</td><td>\(-\)</td><td>\((G_2)_1\times SU(2)_1=SU(2)_3\)</td><td>モジュラー</td></tr>
+<tr><td>\(-e^{i\pi/10}\)</td><td>\(-\)</td><td>\((G_2)_1\times SU(2)_1\) の鏡像側</td><td>モジュラー</td></tr>
+<tr><td>\(-ie^{i\pi/10}\)</td><td>\(+\)</td><td>\((G_2)_1\times\)フェルミオン</td><td>超モジュラー</td></tr>
+<tr><td>\(ie^{i\pi/10}\)</td><td>\(+\)</td><td>\((G_2)_1\times\)ボソン</td><td>非モジュラー</td></tr>
+</tbody>
+</table>
+</div>
+<p>
+表 22.3：\(k=3\) の Kauffman エニオン理論（\(A\) の複素共役は鏡像理論）。\((G_2)_1\) は（右巻きの）Fibonacci エニオン理論である。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第22章のまとめ</span>
+<ul>
+<li>Kauffman ブラケットのループ則（ループ \(=d\)）だけから、Jones–Wenzl 射影演算子 \(P_n\)（上下どちらの端にキャップ・カップを付けても0）で \(n\) 弦の束を \(n\) 番目の粒子種として定義できる。平面版が Temperley–Lieb 代数、組みひもを戻したものが Jones–Kauffman 理論である。</li>
+<li>\(P_2=\id-\frac1d(\text{カップ・キャップ})\)、\(d_2=d^2-1\)、\(d_3=d(d^2-2)\)。\(d=\pm1\) は \(\Z_2\) ループガス、\(d=\pm\sqrt2\) は Ising の融合則を与える。</li>
+<li>再帰関係 \(d_{n+1}=dd_n-d_{n-1}\) の解は \(d_n=U_n(d/2)\)。粒子種が有限個で閉じるのは \(d=2\cos\frac{p\pi}{k+2}\) のときで、物理的に採用できるのは \(d=\pm2\cos\frac{\pi}{k+2}\)（\(p=1,k+1\)）。\(p=1\) の \(d_n=[n+1]_q\) は \(SU(2)_k\) の量子次元に等しい。</li>
+<li>融合則は \(a\times b=|a-b|,\dots,\min(a+b,2k-a-b)\)（\(a=2j\) として \(SU(2)_k\)）。頂点の規格化 \(v(a,b,c)=\sqrt[4]{d_ad_bd_c}/\sqrt{\Delta(a,b,c)}\) により Theta 図が \(\sqrt{d_ad_bd_c}\) になり、\(F\) 行列もユニタリになる。\([F^{1111}_1]\) は式 <a class="eq-ref" href="#eq-22-F1111"></a>。</li>
+<li>\(d=-A^2-A^{-2}\) から \(A=i^\alpha e^{\pm i\pi/[2(k+2)]}\)、\(\theta_a=(-1)^aA^{a(a+2)}\)、\(R^{ab}_c=(-1)^{(a+b-c)/2}A^{\frac12\{c(c+2)-a(a+2)-b(b+2)\}}\)。\(k=1,2,3\) の \(A\) の値は、\(\Z_2\) ループガス、Ising 型、\(SU(2)_3\)（\((G_2)_1\times SU(2)_1\)）などに対応する。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>
