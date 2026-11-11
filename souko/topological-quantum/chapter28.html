@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="トーリック符号をハミルトニアンの基底状態として実現し、励起 e, m, f の融合則・組みひも統計・S, T 行列・電荷-磁束模型・Z_N への一般化を導く">
+  <title>第28章 物質の相および TQFT としてのトーリック符号 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter28" data-chapter="28">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第28章に対応</span>
+  第28章 物質の相および TQFT としてのトーリック符号
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter27.html">第27章</a>ではトーリック符号を量子情報の記憶装置として導入した。
+本章では同じ構造を<strong>ハミルトニアンの基底状態</strong>として実現し、物質の相として読み直す。
+頂点演算子とプラケット演算子の和をハミルトニアンに取ると、基底状態空間は符号空間そのものになり、
+誤り（頂点欠陥・プラケット欠陥）は準粒子励起になる。
+この励起が \(I, e, m, f\) の4種のエニオンであること、\(e\) と \(m\) がボソンでありながら互いに \(-1\) の組みひも位相を持つこと、
+束縛状態 \(f=e\times m\) がフェルミオンであることを、格子上の演算子の交換関係だけから導く。
+結果は \(S\) 行列と \(T\) 行列にまとまり、電荷-磁束模型（Chern–Simons 理論の \(K\) 行列形式）でも再現される。
+最後に \(\Z_N\) 版を扱う。トーリック符号は<strong>トポロジカル秩序相 (topologically ordered matter)</strong>、
+すなわち低エネルギー・長距離で TQFT によって記述される物質の典型例であり、
+次の<a href="chapter29.html">第29章</a>でその頑健性を論じる土台になる。
+頂点欠陥を電荷、プラケット欠陥を磁束と呼ぶ本章の言葉づかいは \(\Z_2\) ゲージ理論の言葉そのものであり、対応の本格的な議論は原書 §31.7（<a href="chapter31.html">第31章</a>）に置かれている。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-28-1">励起<span class="en">Excitations</span></h2>
+
+<h3 id="sec-28-1-0">導入：トーリック符号ハミルトニアン</h3>
+
+<p>
+原書は節に入る前に、符号を物質相に読み替えるためのハミルトニアンを与える。
+<a href="chapter27.html">第27章</a> §27.2 の頂点演算子 \(V_\alpha=\prod\sigma_z\) とプラケット演算子 \(P_\beta=\prod\sigma_x\) をすべて足し上げる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（トーリック符号ハミルトニアン）</span>
+<div class="equation" id="eq-28-H">\[
+H_{\text{toric code}} = -\frac{\Delta_v}{2}\sum_{\text{頂点 }\alpha} V_\alpha \;-\; \frac{\Delta_p}{2}\sum_{\text{プラケット }\beta} P_\beta ,
+\qquad \Delta_v &gt; 0,\ \ \Delta_p &gt; 0 .
+\]</div>
+\(\Delta_v,\Delta_p\) はエネルギーの次元を持つ。\(V_\alpha\), \(P_\beta\) の固有値は \(\pm1\) なので、因子 \(1/2\) を付けておくと、
+固有値 \(+1\) と \(-1\) のエネルギー差がちょうど \(\Delta_v\)、\(\Delta_p\) になる。
+簡単のため \(\Delta_v=\Delta_p=\Delta\)、さらには \(\Delta=1\) と置くことも多い。
+</div>
+
+<p>
+すべての項が互いに可換（§27.2.1）なので、各項を同時に最小化できる。最低エネルギーは
+すべての \(V_\alpha=1\)、\(P_\beta=1\) で実現され、<strong>基底状態空間は符号空間に一致する</strong>。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（基底状態の縮退）</span>
+トーラス上では基底状態は4重に縮退する（符号空間の \(\ket{\psi_{ee}},\ket{\psi_{eo}},\ket{\psi_{oe}},\ket{\psi_{oo}}\)）。
+種数 \(g\) の面上では \(2^{2g}\) 重に縮退する（\(2g\) 個の論理量子ビット、§27.5）。
+縮退度が面のトポロジーだけで決まることは、この系が TQFT で記述されることを強く示唆する。
+原書の演習によれば、この縮退度 \(4^g\) だけから、理論が4種類の粒子を持つ可換な TQFT であることまで結論できる。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（ゲージ理論の言葉で見たハミルトニアン）</span>
+§27.2 の辞書（\(\sigma_z\) が \(\Z_2\) 電場、\(\sigma_x\) がリンク変数）で読むと、\(P_\beta\) の項はプラケット（磁場）項であり、
+\(V_\alpha\) の項は Gauss 則 \(V_\alpha=1\) を拘束として課す代わりに、破った頂点にエネルギー \(\Delta_v\) を課す項である。
+Gauss 則を破る状態もヒルベルト空間に残し、静的でない電荷として扱うところが、ゲージ不変な部分空間だけを見る通常の定式化との違いになる。
+原書も章末で、トーリック符号と本質的に等価な模型（\(\Z_2\) ゲージ理論）が Fradkin と Shenker (1979) によって詳しく調べられていたこと、
+ただし励起が非自明な組みひも統計を持つという決定的な点はそこでは認識されていなかったことを述べている。
+</div>
+
+<h3 id="sec-28-1-1">粒子の種類</h3>
+
+<p>
+\(V_\alpha=-1\) の頂点や \(P_\beta=-1\) のプラケットがあれば、系は基底状態空間の外にある。
+第27章で「誤り」と呼んだものを、物質相の言葉では<strong>粒子（準粒子 quasiparticle）励起</strong>と呼ぶ。
+準粒子とは、低エネルギー理論で相互作用の弱い個々の粒子として振る舞うが、もとは別の自由度から創発したものを指す。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（トーリック符号の粒子種）</span>
+<ul>
+<li>\(I\)：真空（粒子がないこと）。</li>
+<li>\(e\)：<strong>頂点欠陥</strong> \(V_\alpha=-1\)。エネルギー \(\Delta_v\)。<strong>電気的 (electric)</strong> 粒子と呼ぶ。</li>
+<li>\(m\)：<strong>プラケット欠陥</strong> \(P_\beta=-1\)。エネルギー \(\Delta_p\)。<strong>磁気的 (magnetic)</strong> 粒子と呼ぶ。</li>
+<li>\(f=e\times m\)：頂点欠陥とプラケット欠陥の束縛状態。エネルギー \(\Delta_v+\Delta_p\)。</li>
+</ul>
+</div>
+
+<p>
+名前の直観は、頂点欠陥が頂点にある一種の「電荷」、プラケット欠陥がプラケットを貫く一種の「磁束」だというものである。
+電気的粒子と磁気的粒子が結合した粒子は、特にゲージ理論の文献で<strong>ダイオン (dyon)</strong> と呼ばれる。\(f\) はその例である。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（e と m の割り当ては規約）</span>
+文献によっては頂点欠陥を磁気的、プラケット欠陥を電気的と呼ぶ。この逆の呼び方にも理由があることは原書 §31.7（<a href="chapter31.html">第31章</a>）で説明される。
+第27章の規約の注意で見たとおり、\(\sigma_x\leftrightarrow\sigma_z\) の入れ替え、あるいは格子の双対変換で頂点とプラケットは入れ替わるので、どちらを電荷と呼ぶかは基底の選び方に連動する。
+系を記述する TQFT は \(e\) と \(m\) のラベルを入れ替えても同じである（この対称性は<a href="chapter36.html">第36章</a>で詳しく扱われる）。
+このノートは原書と第27章に合わせ、<strong>頂点欠陥 \(=e\)、プラケット欠陥 \(=m\)</strong> とする。混乱を避けたい箇所では「頂点欠陥」「プラケット欠陥」と書く。
+</div>
+
+<h3 id="sec-28-1-2">融合則</h3>
+
+<p>
+頂点欠陥は対で生成され、近づければ対消滅する。プラケット欠陥も同じである。したがって
+\[
+e\times e = I,\qquad m\times m = I .
+\]
+頂点欠陥とプラケット欠陥を近づけても消えないので、これを新しい粒子種 \(f=e\times m\) とする。融合の結合性と可換性から
+\[
+f\times f = (e\times m)\times(e\times m) = (e\times e)\times(m\times m) = I .
+\]
+</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>\(\times\)</th><th>\(I\)</th><th>\(e\)</th><th>\(m\)</th><th>\(f\)</th></tr></thead>
+<tbody>
+<tr><th>\(I\)</th><td>\(I\)</td><td>\(e\)</td><td>\(m\)</td><td>\(f\)</td></tr>
+<tr><th>\(e\)</th><td>\(e\)</td><td>\(I\)</td><td>\(f\)</td><td>\(m\)</td></tr>
+<tr><th>\(m\)</th><td>\(m\)</td><td>\(f\)</td><td>\(I\)</td><td>\(e\)</td></tr>
+<tr><th>\(f\)</th><td>\(f\)</td><td>\(m\)</td><td>\(e\)</td><td>\(I\)</td></tr>
+</tbody>
+</table></div>
+
+<p>
+粒子種がこの4つで尽きる理由は2つある。第一に、4つは融合について閉じている。
+第二に、§27.4 で見たとおり基底状態からのどんな励起も \(\sigma_x\) と \(\sigma_z\) の積で作れるので、励起はすべて \(e\) と \(m\) から生成される。
+どの融合も結果が一意なので、これは<strong>可換（アーベル）</strong>な理論である。融合則は群 \(\Z_2\times\Z_2\) の積表になっており、\(e\leftrightarrow m\) の入れ替えで表は変わらない。
+</p>
+
+<p>
+粒子種の数 4 はトーラス上の基底状態の数 4 と一致する。これは「粒子種の数 ＝ トーラス上の基底状態の縮退度」という一般原理（<a href="chapter07.html">第7章</a>）の実例である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-28-2">励起の統計的性質<span class="en">Statistical Properties of Excitations</span></h2>
+
+<h3 id="sec-28-2-0">同種の欠陥どうし：ボソン</h3>
+
+<p>
+頂点欠陥は \(\sigma_x\) を掛けることで生成され、動かされ、消される。\(\sigma_x\) どうしはすべて可換だから、
+頂点欠陥だけが関わる過程の結果は、演算子を掛ける順序によらない。
+そこで次の「実験」を考える。頂点欠陥の対を作り、一方をループに沿って一周させて対消滅させる。
+これを、ループの内側にあらかじめ別の頂点欠陥を置いた場合と比べる。
+どちらも \(\sigma_x\) だけでできた過程なので、内側の頂点欠陥の有無は位相に影響しない。
+すなわち \(e\) を \(e\) のまわりに一周させても位相は付かない。
+\(\sigma_z\) どうしの可換性から、\(m\) を \(m\) のまわりに一周させても位相は付かない。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（一周の位相だけではボソンかフェルミオンか決まらない）</span>
+一周は交換2回に当たる。フェルミオンどうしの交換は \(-1\) を与えるが、一周では \((-1)^2=+1\) になり、ボソンと区別がつかない。
+統計を確定するには<strong>ツイスト因子</strong> \(\theta\)（<a href="chapter15.html">第15章</a>）を調べる必要がある。
+</div>
+
+<p>
+ツイスト因子は、世界線に「ひねり（カール）」を入れたときの位相である。原書は頂点 \(A,B,C,D,E,F,G\) と辺 \(1,\dots,7\) を使い、次の2つの過程を比べる
+（\(B,C,D,E,F,G\) が閉路をなし、辺 1 が \(A\)–\(B\)、辺 2 が \(B\)–\(C\)、辺 3 が \(C\)–\(D\)、以下 \(D\)–\(E\)、\(E\)–\(F\)、\(F\)–\(G\)、辺 7 が \(G\)–\(B\)）。演算子は右から左へ読む。
+</p>
+<div class="equation" id="eq-28-loop">\[
+\sigma_x^{1}\,\sigma_x^{7}\sigma_x^{6}\sigma_x^{5}\sigma_x^{4}\sigma_x^{3}\sigma_x^{2}\,\sigma_x^{1} ,
+\]</div>
+<div class="equation" id="eq-28-curl">\[
+\sigma_x^{1}\sigma_x^{2}\,\sigma_x^{1}\sigma_x^{7}\sigma_x^{6}\sigma_x^{5}\sigma_x^{4}\,\sigma_x^{3} .
+\]</div>
+<ul>
+<li><a class="eq-ref" href="#eq-28-loop"></a>：\(A\) と \(B\) に欠陥対を作り、\(B\) の欠陥を閉路に沿って一周させて \(B\) に戻し、相手と対消滅させる。時空図は単純なループ。</li>
+<li><a class="eq-ref" href="#eq-28-curl"></a>：\(C\) と \(D\) に欠陥対を作り、\(D\) の欠陥を \(E,F,G,B\) と回して \(C\) の欠陥の後ろを通し \(A\) まで運ぶ。その後 \(C\) の欠陥を \(B\) に動かし、\(A\) の欠陥と対消滅させる。時空図はひねりを1つ含むループ。</li>
+</ul>
+
+<div class="thm-box">
+<span class="box-title">結果（\(e\) と \(m\) はボソン）</span>
+<a class="eq-ref" href="#eq-28-loop"></a> と <a class="eq-ref" href="#eq-28-curl"></a> は同じ \(\sigma_x\) の並べ替えにすぎないので演算子として等しい。
+したがってひねりを加えても位相は変わらず、
+\[
+\theta_e = 1 .
+\]
+頂点欠陥はボソンである。\(\sigma_z\) を使った同じ議論で \(\theta_m=1\)、プラケット欠陥もボソンである（原書の演習）。
+</div>
+
+<h3 id="sec-28-2-1">§28.2.1 頂点欠陥とプラケット欠陥の組みひも</h3>
+
+<p>
+\(e\) を \(m\) のまわりに一周させるとどうなるか。これは §27.4.3 の復習である。
+頂点欠陥をループに沿って一周させる演算子は \(\sigma_x\) の閉じたストリングで、内側の \(P_\beta\) の積に等しい（§27.4.1）。
+内側にプラケット欠陥がなければ値は \(+1\)、1個あれば \(P_\beta=-1\) が1つ入るので値は \(-1\) である。
+</p>
+
+<p>
+逆に、プラケット欠陥を一周させる演算子は双対格子上の \(\sigma_z\) の閉じたストリングで、内側の \(V_\alpha\) の積に等しい（§27.4.2）。
+内側に頂点欠陥が1個あれば値は \(-1\) になる。どちらをどちらのまわりに回しても同じ位相が出る。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- grid -->
+  <line x1="25" y1="30" x2="355" y2="30" class="line" stroke-width="1"/>
+  <line x1="25" y1="80" x2="355" y2="80" class="line" stroke-width="1"/>
+  <line x1="25" y1="130" x2="355" y2="130" class="line" stroke-width="1"/>
+  <line x1="25" y1="180" x2="355" y2="180" class="line" stroke-width="1"/>
+  <line x1="40" y1="15" x2="40" y2="195" class="line" stroke-width="1"/>
+  <line x1="90" y1="15" x2="90" y2="195" class="line" stroke-width="1"/>
+  <line x1="140" y1="15" x2="140" y2="195" class="line" stroke-width="1"/>
+  <line x1="190" y1="15" x2="190" y2="195" class="line" stroke-width="1"/>
+  <line x1="240" y1="15" x2="240" y2="195" class="line" stroke-width="1"/>
+  <line x1="290" y1="15" x2="290" y2="195" class="line" stroke-width="1"/>
+  <line x1="340" y1="15" x2="340" y2="195" class="line" stroke-width="1"/>
+  <!-- sigma_x loop -->
+  <rect x="90" y="30" width="150" height="150" class="line accent" stroke-width="4"/>
+  <text x="97" y="50" class="label">σx のループ</text>
+  <!-- dual string of sigma_z -->
+  <path d="M 165 105 L 315 105" class="line accent" stroke-width="2" stroke-dasharray="5 4"/>
+  <rect x="159" y="99" width="12" height="12" class="accent-fill"/>
+  <rect x="309" y="99" width="12" height="12" class="accent-fill"/>
+  <text x="160" y="94" class="label">m</text>
+  <text x="310" y="94" class="label">m</text>
+  <text x="246" y="124" class="label">交点</text>
+  <circle cx="240" cy="105" r="5" class="accent-fill"/>
+  <!-- legends -->
+  <text x="25" y="218" class="label-muted">太い実線：頂点欠陥 e を一周させる σx の閉じたストリング</text>
+  <text x="25" y="238" class="label-muted">破線：プラケット欠陥 m（■）の対を引き離す σz の双対ストリング。両者は辺1本（●）で交わる</text>
+</svg>
+<figcaption>図 28.1：\(e\) のループと \(m\) の双対ストリング。交わる辺の上で \(\sigma_x\) と \(\sigma_z\) が反可換になる。</figcaption>
+</figure>
+
+<p>
+演算子の交換関係から見ることもできる。\(e\) を一周させるループ演算子（\(\sigma_x\) の積）と、\(m\) の対を作って引き離す双対ストリング演算子（\(\sigma_z\) の積）は、
+ループが \(m\) の一方だけを囲むとき、ちょうど<strong>1本の辺</strong>を共有する。その辺の上で \(\sigma_x\) と \(\sigma_z\) が反可換なので、2つの演算子は反可換である。
+「先に \(e\) を一周させてから \(m\) の対を作って引き離す」過程と「先に \(m\) を引き離してから、その一方を囲むように \(e\) を一周させる」過程は \(-1\) だけ異なる。
+前者ではループの内側に何もないので位相は \(+1\)、したがって後者の位相が \(-1\) である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（\(e\) と \(m\) の相互統計）</span>
+電気的粒子を磁気的粒子のまわりに一周させると（逆でも）位相 \(-1\) が付く。<a href="chapter13.html">第13章</a>の \(R\) 行列で書けば
+<div class="equation" id="eq-28-RR">\[
+R^{em}_f\, R^{me}_f = -1 .
+\]</div>
+この結論は、どちらの欠陥を電気的、どちらを磁気的と呼ぶかによらない。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（Wilson ループと 't Hooft ループ、「相対セミオン」という呼び名）</span>
+ゲージ理論の言葉では、\(\sigma_x\) の閉じたストリングは Wilson ループ（内側の \(\Z_2\) 磁束を測る）、\(\sigma_z\) の双対ストリングは 't Hooft 型の演算子（内側の \(\Z_2\) 電荷を測る Gauss 面）であり、
+位相 \(-1\) は \(\Z_2\) 電荷が \(\Z_2\) 磁束（\(\pi\) 磁束）を一周するときの Aharonov–Bohm 位相である。§28.4 の電荷-磁束模型はこの読み方を明示したものになっている。
+なお、一周で \(-1\) が付くことから \(e\) と \(m\) を「相対セミオン (relative semions)」と呼ぶ習慣がある（セミオンは交換で \(\pm\ii\)、一周で \(-1\) を得る粒子）。
+原書の著者は、トーリック符号はセミオン理論とほぼ無関係なのでこの用語を好まないと述べているが、文献ではよく使われる。
+</div>
+
+<h3 id="sec-28-2-2">§28.2.2 \(f\) の性質：フェルミオン</h3>
+
+<p>
+\(f\) は \(e\) と \(m\) の束縛状態なので、その性質は \(e\) と \(m\) の性質から導ける。
+</p>
+<ul>
+<li>\(e\) を \(f\) のまわりに一周：\(e\) を \(e\) と \(m\) の両方のまわりに回すことに当たる。位相は \((+1)(-1)=-1\)。</li>
+<li>\(m\) を \(f\) のまわりに一周：同様に \(-1\)。</li>
+<li>\(f\) を \(f\) のまわりに一周：\(e\) と \(m\) の両方を \(f\) のまわりに回すことに当たる。位相は \((-1)(-1)=+1\)。</li>
+</ul>
+<p>
+最後の結果から \(f\) はボソンかフェルミオンのどちらかである。決め手はやはりツイスト因子である。
+\(f\) の世界線のひねりを、\(e\) と \(m\) の2本の世界線を束ねたリボンのひねりとして描くと、
+各々のひねり（\(\theta_e=\theta_m=1\)）に加えて、\(e\) の線が \(m\) の線のまわりを一周する配位が現れ、そこから \(-1\) が出る。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（\(f\) はフェルミオン）</span>
+<div class="equation" id="eq-28-thetaf">\[
+\theta_f = \theta_e\,\theta_m\, R^{em}_f R^{me}_f = -1 .
+\]</div>
+\(f\) という名前はフェルミオン (fermion) に由来する。この計算は<a href="chapter15.html">第15章</a>のリボン恒等式
+\(R^{ab}_c R^{ba}_c = \theta_c/(\theta_a\theta_b)\) を \(a=e,\ b=m,\ c=f\) に適用したものにほかならない。
+</div>
+
+<p>
+ボソン的なスピンだけからなる格子模型に、相互統計を通じてフェルミオンが創発することになる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-28-3">\(S\) 行列と \(T\) 行列<span class="en">\(S\)- and \(T\)-Matrices</span></h2>
+
+<p>
+以上の結果は、モジュラー \(S\) 行列と \(T\) 行列にまとめられる。
+\(S_{ij}\) は粒子 \(i\) を粒子 \(j\) のまわりに回したときの組みひもの結果を並べたもの（<a href="chapter07.html">第7章</a>）、
+\(T\) はツイスト因子を対角に並べたもの（<a href="chapter17.html">第17章</a>）である。粒子を \(I,e,m,f\) の順に並べると
+</p>
+<div class="equation" id="eq-28-ST">\[
+S = \frac{1}{\calD}
+\begin{pmatrix}
+1 &amp; 1 &amp; 1 &amp; 1\\
+1 &amp; 1 &amp; -1 &amp; -1\\
+1 &amp; -1 &amp; 1 &amp; -1\\
+1 &amp; -1 &amp; -1 &amp; 1
+\end{pmatrix},
+\qquad
+T = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 1 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; -1
+\end{pmatrix}.
+\]</div>
+
+<p>
+\(S\) の成分の読み方：\(e\)–\(m\)、\(e\)–\(f\)、\(m\)–\(f\) の組が \(-1\)、それ以外（同種どうしと真空を含む組）が \(+1\) である。
+\(S\) のユニタリ性から全量子次元は \(\calD=2\) と決まる。これは定義 \(\calD^2=\sum_i d_i^2\) で、可換理論の4粒子がすべて \(d_i=1\) であることと一致する。
+第17章の関係式から中心電荷は 8 を法として 0 であることも確かめられる。
+この理論は<a href="chapter18.html">第18章</a> §18.5.1 ですでに登場したものである。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-28-4">電荷-磁束模型<span class="en">Charge–Flux Model</span></h2>
+
+<p>
+トーリック符号の粒子の統計は、Chern–Simons 理論に似た電荷-磁束模型で記述できる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（トーリック符号の電荷-磁束模型）</span>
+<ul>
+<li>\(e\)：電荷 1 単位を持つ粒子。</li>
+<li>\(m\)：磁束 \(\pi\) を持つ粒子。</li>
+<li>\(f\)：電荷 1 単位と磁束 \(\pi\) の両方を持つ粒子。</li>
+</ul>
+</div>
+
+<p>
+電荷 \(q\) が磁束 \(\Phi\) を一周すると Aharonov–Bohm 位相 \(e^{\ii q\Phi}\) が付く。
+\(e\) が \(m\) を一周すれば \(e^{\ii\pi}=-1\)、\(e\) が \(e\) を、\(m\) が \(m\) を一周しても相手に対応する磁束・電荷がないので \(+1\)。
+\(f\) が \(f\) を一周するときは、一方の電荷が他方の磁束を、他方の電荷が一方の磁束を見るので \(e^{\ii\pi}e^{\ii\pi}=+1\)。
+\(f\) の交換（半周）では \(e^{\ii\pi}=-1\) となり、フェルミ統計が再現される。組みひもの \(\pm1\) はこうしてすべて出る。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（\(K\) 行列 Chern–Simons 理論）</span>
+正確には、トーリック符号は2つの Chern–Simons 場 \(a^I_\mu\)（\(I=1,2\)）を持つ理論で記述される。作用は（添字の重複は和）
+\[
+S = \frac{1}{4\pi}\int \dd^3x\; K_{IJ}\,\epsilon^{\alpha\beta\gamma}\, a^I_\alpha\,\partial_\beta a^J_\gamma ,
+\qquad
+K = \begin{pmatrix} 0 &amp; 2\\ 2 &amp; 0\end{pmatrix}
+\]
+で、結合行列 \(K\) は純粋に非対角である（\(K\) 行列形式は<a href="chapter05.html">第5章</a> §5.3.2）。
+2種類のカレントをそれぞれ \(a^1\), \(a^2\) に結合させると上の電荷-磁束模型が出ることは、原書の演習で扱われる。
+これは \(\Z_2\) ゲージ理論の連続極限として知られる BF 型の理論であり、一方のゲージ場の電荷が他方のゲージ場の磁束を伴うという相互 Chern–Simons 構造が、\(e\) と \(m\) の相互統計を表している。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-28-5">\(\Z_N\) トーリック符号（簡潔に）<span class="en">\(\Z_N\) Toric Code (Briefly)</span></h2>
+
+<p>
+§27.6 の \(\Z_N\) トーリック符号にもハミルトニアンを与える。基底状態で頂点に \(Q_\alpha=0\)、プラケットに \(A_\beta=1\) を選ぶ項が要る。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（\(\Z_N\) トーリック符号ハミルトニアン）</span>
+<div class="equation" id="eq-28-HZN">\[
+H_{\Z_N\text{ toric code}} = -\Delta_v \sum_{\text{頂点 }\alpha} \delta_{Q_\alpha,0} \;-\; \Delta_p \sum_{\text{プラケット }\beta} \hat P_\beta ,
+\]</div>
+<div class="equation" id="eq-28-proj">\[
+\hat P_\beta = \frac{1}{N}\sum_{p=0}^{N-1} (A_\beta)^p .
+\]</div>
+\(\delta\) は Kronecker のデルタで、\(Q_\alpha=0\) の頂点で 1、それ以外で 0 を与える。
+\(\hat P_\beta\) は \(A_\beta\) の固有値が 1 のプラケットで 1、それ以外で 0 を与える射影演算子である。
+</div>
+
+<p>
+\(\hat P_\beta\) が射影であることは、\((A_\beta)^N=1\) から固有値が \(e^{2\pi\ii k/N}\) に限られ、
+\(\frac1N\sum_{p=0}^{N-1} e^{2\pi\ii kp/N}=\delta_{k,0}\) となることから分かる。この形は<a href="chapter31.html">第31章</a>で使う一般形と整合している。
+</p>
+
+<p>
+\(N=2\) では <a class="eq-ref" href="#eq-28-H"></a> と形が少し違う。\(V_\alpha\), \(P_\beta\) の固有値は \(\pm1\)、\(\delta_{Q_\alpha,0}\), \(\hat P_\beta\) の固有値は \(0,1\) だからである。
+両者は \(N=2\) で
+\[
+\tfrac12 V_\alpha = \delta_{Q_\alpha,0} - \tfrac12 ,\qquad \tfrac12 P_\beta = \hat P_\beta - \tfrac12
+\]
+の関係にあり、<a class="eq-ref" href="#eq-28-H"></a> にはもともと因子 \(1/2\) が付いているので、2つのハミルトニアンは定数だけ異なる。
+基底状態はすべての \(Q_\alpha=0\)、\(A_\beta=1\) を満たす状態、すなわち \(\Z_N\) トーリック符号の符号空間であり、
+欠陥のエネルギーは頂点欠陥が \(\Delta_v\)、プラケット欠陥が \(\Delta_p\) である（欠陥の値によらない）。
+</p>
+
+<h3 id="sec-28-5-1">粒子種と融合則</h3>
+
+<p>
+頂点欠陥を重ねると \(Q_\alpha\) が \(N\) を法として加算され、プラケット欠陥を重ねると \(A_\beta=e^{2\pi\ii k/N}\) の固有値が掛け合わされる。どちらも \(\Z_N\) の融合則である。
+両方の量子数を持つ粒子も作れるので、一般の粒子種を
+</p>
+<div class="equation" id="eq-28-nk">\[
+[n,k]:\quad Q_\alpha = n,\quad A_\beta = e^{2\pi\ii k/N},\qquad n,k\in\{0,\dots,N-1\}
+\]</div>
+<p>
+と書く。粒子種は全部で \(N^2\) 個ある。\(n\) も \(k\) も非自明な粒子がダイオンである。融合則は
+\[
+[n_1,k_1]\times[n_2,k_2] = [\,n_1+n_2,\ k_1+k_2\,] \qquad(\text{和は } N \text{ を法とする})
+\]
+で、群 \(\Z_N\times\Z_N\) の構造を持つ可換エニオン理論になる。\(N=2\) では \([1,0]=e\)、\([0,1]=m\)、\([1,1]=f\) である。
+</p>
+
+<h3 id="sec-28-5-2">組みひも・ツイスト・\(S\) 行列</h3>
+
+<p>
+§28.2 と同じ議論で、頂点欠陥はすべてボソンで互いに自明に組みひもし、プラケット欠陥も同様である。
+一方、§27.6.2 の2つの結果（頂点欠陥の一周 ＝ 内側の \(A_\beta\) の積、プラケット欠陥の一周 ＝ 内側の \(e^{2\pi\ii Q_\alpha/N}\) の積）から、
+頂点欠陥とプラケット欠陥は非自明に組みひもする。
+\(Q_\alpha=+1\) の電荷を \(A_\beta=e^{2\pi\ii/N}\) のプラケット欠陥のまわりに<strong>時計回り</strong>に一周させると位相 \(e^{2\pi\ii/N}\) が付く。
+\(R\) 行列は反時計回りの交換に対する位相として定義されているので、指数に負号が付いて
+\[
+R^{[1,0],[0,1]}_{[1,1]}\, R^{[0,1],[1,0]}_{[1,1]} = e^{-2\pi\ii/N}
+\]
+となる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（\(\Z_N\) トーリック符号のエニオンデータ）</span>
+\([n_1,k_1]\) を \([n_2,k_2]\) のまわりに反時計回りに一周させたときの位相は
+<div class="equation" id="eq-28-RRZN">\[
+R^{[n_1,k_1],[n_2,k_2]}_{[n_1+n_2,\,k_1+k_2]}\; R^{[n_2,k_2],[n_1,k_1]}_{[n_1+n_2,\,k_1+k_2]} = e^{-2\pi\ii (n_1k_2+n_2k_1)/N} .
+\]</div>
+リボン恒等式を使うとツイスト因子は
+<div class="equation" id="eq-28-thetaZN">\[
+\theta_{[n,k]} = e^{-2\pi\ii\, nk/N} ,
+\]</div>
+\(S\) 行列は
+<div class="equation" id="eq-28-SZN">\[
+S_{[n',k'],[n,k]} = \frac{1}{N}\, e^{2\pi\ii (nk'+n'k)/N}
+\]</div>
+である（全量子次元 \(\calD=N\)）。
+</div>
+
+<p>
+\(N=2\) と置くと \(\theta_{[1,1]}=e^{-\ii\pi}=-1\)、\(S\) は <a class="eq-ref" href="#eq-28-ST"></a> に戻る。
+\(N&gt;2\) ではダイオン \([n,k]\) は一般に \(e^{-2\pi\ii nk/N}\) という分数的なツイストを持つエニオンである。
+電荷-磁束模型では、\([n,k]\) を<strong>電荷 \(n\) 単位と磁束 \(2\pi k/N\) の束縛状態</strong>と見なせばよい。
+\(\Z_N\) トーリック符号は<a href="chapter18.html">第18章</a> §18.6 で「素」な可換エニオン理論のひとつとして導入されていたものである。
+原書の演習では、この理論について Verlinde 公式、モジュラー群の関係式、中心電荷が 0 であることなどを確かめる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第28章のまとめ</span>
+<ul>
+<li>トポロジカル秩序相とは、低エネルギー・長距離で TQFT によって記述される物質である。</li>
+<li>\(H=-\frac{\Delta_v}{2}\sum V_\alpha-\frac{\Delta_p}{2}\sum P_\beta\) の基底状態空間はトーリック符号の符号空間に一致し、種数 \(g\) の面で \(4^g\) 重に縮退する。</li>
+<li>誤りは準粒子励起になる。頂点欠陥 \(e\)（エネルギー \(\Delta_v\)）、プラケット欠陥 \(m\)（\(\Delta_p\)）、束縛状態 \(f=e\times m\)、真空 \(I\) の4種。融合則は \(\Z_2\times\Z_2\)。</li>
+<li>\(\sigma_x\) どうし、\(\sigma_z\) どうしの可換性から \(\theta_e=\theta_m=1\)。\(e\) と \(m\) はボソン。</li>
+<li>\(\sigma_x\) のループと \(\sigma_z\) の双対ストリングが辺1本で交わって反可換になるので、\(e\) が \(m\) を一周すると \(-1\)：\(R^{em}_fR^{me}_f=-1\)。</li>
+<li>リボン恒等式から \(\theta_f=-1\)。\(f\) はフェルミオン。</li>
+<li>\(S\) 行列は \(\pm1/2\) を成分とする \(4\times4\) 行列、\(T=\diag(1,1,1,-1)\)、\(\calD=2\)。</li>
+<li>電荷-磁束模型：\(e\) は電荷 1、\(m\) は磁束 \(\pi\)。\(K=\begin{pmatrix}0&amp;2\\2&amp;0\end{pmatrix}\) の Chern–Simons 理論に対応する。</li>
+<li>\(\Z_N\) 版：粒子種 \([n,k]\) は \(N^2\) 個、\(\theta_{[n,k]}=e^{-2\pi\ii nk/N}\)、\(S_{[n',k'],[n,k]}=\frac1N e^{2\pi\ii(nk'+n'k)/N}\)。</li>
+<li>\(e\) と \(m\) の割り当ては規約であり、ゲージ理論との対応の詳細は原書 §31.7 にある。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

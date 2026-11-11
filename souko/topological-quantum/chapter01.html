@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Kelvin の渦原子仮説と Tait の結び目表——物理におけるトポロジーの歴史的な出発点">
+  <title>第1章 序論：トポロジー・結び目・Tait と Kelvin 卿の歴史 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter01" data-chapter="1">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第1章に対応</span>
+  第1章 序論：トポロジー・結び目・Tait と Kelvin 卿の歴史
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+原書で2ページだけの歴史的な導入である。式は一つも出てこない。
+量子トポロジーという分野が数学・計算機科学・物理の交点にあることを確認したうえで、
+物理におけるトポロジーの起源を 1867 年の Kelvin と Tait の「渦原子」仮説まで遡る。
+この仮説そのものは誤りだったが、そこから<strong>結び目理論</strong>が生まれ、
+「二つの結び目が同じかどうかをどう判定するか」という問いが立てられた。
+この問いに答える道具である<strong>結び目不変量</strong>が<a href="chapter02.html">第2章</a>の主題であり、
+それが量子物理と直結することが本書全体の出発点になる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-1-1">量子トポロジーの位置づけ<span class="en">Where quantum topology sits</span></h2>
+
+<p>
+トポロジーは現代物理のいくつもの分野で基礎的な役割を担っている。原書が挙げるのは次の三つである。
+</p>
+<ul>
+<li><strong>物性物理</strong>：トポロジカル物質は現代の凝縮系物理の中心概念である
+（2016 年のノーベル賞は Kosterlitz・Thouless・Haldane によるトポロジーの導入に与えられた）。</li>
+<li><strong>量子情報・量子計算</strong>：トポロジーに基づく誤り訂正と量子計算
+（本書では<a href="chapter26.html">第26章</a>以降で扱う）。</li>
+<li><strong>高エネルギー・量子重力・弦理論</strong>：1980 年代以降に発展した
+トポロジカル場の量子論 (topological quantum field theory, TQFT) が、
+現在のトポロジカル物質の理解の土台になっている（量子重力との関係は<a href="chapter06.html">第6章</a>）。</li>
+</ul>
+<p>
+これらの源流をさらに辿ると 19 世紀に行き着く、というのがこの章の話である。
+</p>
+</section>
+
+<section>
+<h2 id="sec-1-2">Kelvin の渦原子仮説<span class="en">Vortex atoms</span></h2>
+
+<p>
+1867 年、Kelvin 卿（当時はまだ William Thomson）は友人 Peter Tait が作った煙の輪の発生装置を見て、
+二つのことに気づいた。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（Kelvin の循環定理）</span>
+散逸のまったくない完全流体では渦線は保存量であり、
+<strong>渦輪 (vortex loop)</strong>——渦線が閉じた輪になった流れの配位——はいつまでも壊れずに残る。
+</div>
+
+<p>
+煙の輪は、目に見えない輪のまわりを流体が巻くように流れ、輪全体が並進していく配位である。
+当時は宇宙全体が散逸のない完全流体「エーテル」で満たされていると信じられていたので、
+Kelvin はエーテルの中の渦輪を考えた。そして当時の大きな謎であった
+「化学元素はなぜ離散的で、なぜ不変なのか」に対して次の仮説を出した。
+</p>
+
+<div class="remark-box">
+<span class="box-title">渦原子仮説の論理</span>
+<ul>
+<li>原子の種類は、エーテル中の渦線の<strong>結ばれ方</strong>（結び目の種類）に対応する。</li>
+<li>作れる結び目の種類は数え上げられる。したがって原子は<strong>離散的</strong>である。</li>
+<li>循環定理により渦の結ばれ方は時間が経っても変わらない。したがって原子は<strong>不変</strong>である。</li>
+</ul>
+最も単純な結び目は、ただの輪である<strong>自明な結び目 (unknot)</strong> で、これが単純な煙の輪に当たる。
+次に単純なのが<strong>三葉結び目 (trefoil)</strong> で、これは鏡像と同じ結び目にならない
+（Kauffman ブラケットを使うとすぐ示せる。<a href="chapter02.html">第2章</a>）。
+</div>
+
+<p>
+この説は一時期 Maxwell、Kirchhoff、J. J. Thomson らの関心を集めたが、
+具体的な予言を引き出す試みがうまくいかず、やがて廃れた。
+なお、散逸のない流体が実在すること（極低温の超流動ヘリウムなど）が分かるのは 20 世紀になってからである。
+</p>
+</section>
+
+<section>
+<h2 id="sec-1-3">Tait の結び目表と結び目理論の誕生<span class="en">Tait's table of knots</span></h2>
+
+<p>
+Tait は当初この説に懐疑的だったが、やがて
+「可能な結び目をすべて表にすれば元素の周期表について何か分かるはずだ」と考えるようになり、
+交点数 7 までの結び目の一覧を一連の論文で作り上げた。
+ここでいう結び目とは、端が余っていない、閉じたひもの絡まり方のことである。
+この仕事によって Tait は数学としての結び目理論の創始者とみなされている。
+</p>
+
+<div class="def-box">
+<span class="box-title">結び目理論の基本問題</span>
+二つの結び目の絵が与えられたとき、それらが<strong>トポロジカルに同じ</strong>か——
+つまり、ひもを切らずに滑らかに変形して一方を他方に移せるか——をどう判定するか。
+</div>
+
+<p>
+これは現在でも難しい数学の問題である。強力な手がかりになるのが
+<strong>結び目不変量 (knot invariant)</strong> という考え方で、<a href="chapter02.html">第2章</a>で具体例（Kauffman ブラケット）を学ぶ。
+</p>
+
+<p>
+Tait は結び目の数学を大きく前進させたが（彼の予想のいくつかは 1980 年代以降にようやく証明された）、
+原子の周期表の理解には一歩も近づけず、晩年には結び目と原子は無関係だろうと考えるに至った。
+彼は 1901 年に亡くなったが、自分の結び目の研究がまったく別の理由で物理にとって重要になるとは知らなかった。
+その「別の理由」——(2+1) 次元の粒子の世界線が時空の中で作る結び目——が本書の主題である。
+<a href="chapter02.html">第2章</a>の終わりで、分数量子 Hall 流体の点渦という形で Kelvin の発想が半ば正しかったことを見る。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第1章のまとめ</span>
+<ul>
+<li>物理におけるトポロジーの起源は、1867 年の Kelvin の渦原子仮説（原子 = エーテル中の結ばれた渦輪）にある。</li>
+<li>仮説の根拠は Kelvin の循環定理（完全流体では渦線が保存される）と、結び目の種類が離散的であること。</li>
+<li>仮説は誤りだったが、Tait の結び目表から結び目理論が生まれ、「二つの結び目は同じか」という基本問題が立てられた。</li>
+<li>この問題に対する道具が結び目不変量であり、次章でそれが量子物理の振幅と結びつく。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

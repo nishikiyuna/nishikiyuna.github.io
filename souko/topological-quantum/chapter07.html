@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Atiyah の公理による TQFT の定義、貼り合わせとコボルディズム、粒子の世界線の導入、S^3 とモジュラー S 行列、連結和の公式">
+  <title>第7章 トポロジカル場の量子論の定義 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter07" data-chapter="7">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第7章に対応</span>
+  第7章 トポロジカル場の量子論の定義
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+これまでの章では、トポロジカル場の量子論 (TQFT) を「幾何（距離）ではなくトポロジーだけに依存する量子論」という大まかな像で捉えてきた。
+本章はそれを<strong>Atiyah の公理</strong>の形で定式化する。
+要点は、空間（\(D\) 次元多様体 \(\Sigma\)）に Hilbert 空間 \(V(\Sigma)\) を、時空（\((D+1)\) 次元多様体 \(\calM\)）にその境界上の状態 \(Z(\calM)\in V(\partial\calM)\) を対応させ、
+多様体の<strong>貼り合わせ</strong>を<strong>内積</strong>に対応させることである。
+この枠組みに粒子の世界線を加えると、組みひも操作が Hilbert 空間上のユニタリ変換として現れる。
+さらに、ソリッドトーラス2個の貼り合わせから \(S^3\) と \(S^2\times S^1\) を作り、<strong>モジュラー \(S\) 行列</strong>と<strong>連結和の公式</strong>を得る。
+原書自身が「抽象的で難しいと感じる読者が多い。難しければ大部分を飛ばしてよい」と断っている章だが、TQFT とは何かの最もよい定義を与える章であり、
+<a href="chapter08.html">第8章</a>以降で作る図式的な規則が「何を計算しているのか」の土台になる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h3>TQFT の3通りの捉え方</h3>
+
+<p>
+「粒子1が粒子2の周りを回ったかどうかは意味を持つが、両者の距離は意味を持たない」という性質を定式化する方法はいくつかある。
+</p>
+<ul>
+<li><strong>計量への非依存性</strong>：時空の計量 \(g_{\mu\nu}\) の微小変形に対して、あらゆる相関関数が不変である。
+\[
+\frac{\delta}{\delta g_{\mu\nu}}\,\langle\,\text{任意の相関関数}\,\rangle=0 .
+\]
+定義としては正しいが、実際の計算にはあまり役立たない。</li>
+<li><strong>ラベル付き絡み目の不変量</strong>：\((2+1)\) 次元 TQFT とは、閉じた3次元多様体 \(\calM\) に埋め込まれた<strong>ラベル付きの絡み目</strong>を入力とし、
+滑らかな変形で変わらない複素数 \(Z(\calM;a,b,\dots)\) を出力する規則の集まりである。
+結び目不変量の定義と似ているが、(i) 各成分に「粒子の種類」のラベルが付くこと、(ii) 絡み目が \(S^3\) に限らず任意の3次元多様体に埋め込まれること、の2点が異なる
+（世界線が融合して別の種類に変わることも許す）。
+これは <a href="chapter05.html">第5章</a>の Chern–Simons 理論の出力 \(Z(\calM,\text{links})\) そのものである。</li>
+<li><strong>Atiyah の公理</strong>：本章の主題。上の2つより情報量が多い。</li>
+</ul>
+
+<div class="remark-box">
+<span class="box-title">補足（なぜ場の理論を経由しないのか／なぜ変な多様体を考えるのか）</span>
+Chern–Simons 理論の汎関数積分は数学的に well-defined とは限らない。そこで場の理論を迂回し、
+「絡み目付き多様体 → 数」という対応そのものを TQFT の定義にしてしまう、というのがこの立場である。
+また、物性の立場からは任意の3次元多様体など現実の系と無関係に見えるが、
+この一般性を課すことでトポロジカルな模型に強い拘束がかかり、その数学的構造が単純な物理系の解析にも効いてくる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-7-1">Atiyah の公理の言い換え<span class="en">Paraphrasing of Atiyah's Axioms</span></h2>
+
+<p>
+まず粒子のない時空を考える（TQFT は粒子がなくても非自明である）。
+\((D+1)\) 次元の時空多様体を \(\calM\)、その中の \(D\) 次元多様体を \(\Sigma\) と書く。\(\Sigma\) は「ある時刻での空間の切り口」と思えばよい。
+公理は任意の \(D\) で通用するが、ほとんどの場合 \(D=2\) を念頭に置く。
+多様体はすべて滑らかでコンパクト（境界はあってよい）、かつ向き付け可能とする（Möbius の帯や Klein の壺は除く）。
+</p>
+
+<div class="def-box">
+<span class="box-title">公理 1（空間に Hilbert 空間を対応させる）</span>
+各 \(D\) 次元多様体 \(\Sigma\) に Hilbert 空間 \(V(\Sigma)\) が対応し、\(V(\Sigma)\) は \(\Sigma\) のトポロジーだけに依存する。
+</div>
+
+<p>
+「トポロジーだけに依存する」とは、\(\Sigma\) を連続変形しても \(V(\Sigma)\) が変わらない、という意味である。
+例えば \(\Sigma\) がトーラスのとき、基底状態の縮退が作る非自明な空間が \(V(\Sigma)\) である。
+\(V(\Sigma)\) は考えているエニオン理論ごとに異なり、<a href="chapter04.html">第4章</a>の可換エニオン（統計角 \(\theta=\pi p/m\)）ではトーラス上の縮退度は \(m\) であった。
+粒子を置いたとき（§7.2）には、非可換粒子に伴う縮退もこの空間に含まれる。
+</p>
+
+<div class="def-box">
+<span class="box-title">公理 2（非交和はテンソル積）</span>
+2つの \(D\) 次元多様体の非交和に対応する Hilbert 空間は、それぞれの Hilbert 空間のテンソル積である：
+\[
+V(\Sigma_1\cup\Sigma_2)=V(\Sigma_1)\otimes V(\Sigma_2) .
+\]
+その帰結として、空の多様体には複素数全体が対応する：
+<div class="equation" id="eq-7-empty">\[
+V(\emptyset)=\C .
+\]</div>
+</div>
+
+<p>
+公理 2 は、独立な2つの系（例えば2つのスピン）の Hilbert 空間がテンソル積で合成されるという、量子力学の通常の規則である。
+<a class="eq-ref" href="#eq-7-empty"></a> は \(\emptyset\cup\Sigma=\Sigma\) と \(\C\otimes V(\Sigma)=V(\Sigma)\) から従う
+（長さ \(n\) のベクトルと長さ 1 のベクトルのテンソル積は長さ \(n\) のベクトルである）。
+</p>
+
+<div class="def-box">
+<span class="box-title">公理 3（時空は境界上の状態を1つ選ぶ）</span>
+\((D+1)\) 次元多様体 \(\calM\) が \(D\) 次元の境界 \(\Sigma=\partial\calM\) を持つとき、\(\calM\) に \(V(\Sigma)\) の特定の元が対応する：
+\[
+Z(\calM)\in V(\partial\calM) .
+\]
+どの元が選ばれるかは \(\calM\) のトポロジーだけで決まる。
+</div>
+
+<p>
+物理的には、\(\partial\calM\) が現在時刻の空間、\(V(\partial\calM)\) が基底状態の空間、\(\calM\) の内部がそこに至るまでの<strong>時空の履歴</strong>であり、
+\(Z(\calM)\) はその履歴によって選び出された波動関数である。
+「粒子・反粒子対を非自明なサイクルに沿って一周させると、縮退した基底状態の中での状態が変わる」というこれまでに見た現象は、まさにこの原理の例である。
+Chern–Simons 理論になぞらえて、\(Z(\calM)\) を<strong>分配関数</strong>と呼ぶこともある。
+</p>
+
+<div class="thm-box">
+<span class="box-title">公理 3 の帰結（閉多様体には数が対応する）</span>
+\(\calM\) が閉じていれば \(\partial\calM=\emptyset\) なので、<a class="eq-ref" href="#eq-7-empty"></a> より
+<div class="equation" id="eq-7-closed">\[
+Z(\calM)\in\C .
+\]</div>
+すなわち TQFT は閉多様体に複素数値のトポロジカル不変量を対応させる。これは Chern–Simons 理論で得たものと同じである。
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（\(Z\) の正体と、図の読み方）</span>
+\(Z(\calM)\) は入力に応じて性格が変わる。境界がなければスカラー、境界があればベクトル（状態）、
+複数の境界に入出力の向きを割り当てれば演算子 <a class="eq-ref" href="#eq-7-cob"></a> の役割を果たす。数学ではこれを「\(Z\) は関手である」と表現する（§7.5）。
+また、3次元多様体の大半は紙に描けない（\(\R^3\) に埋め込めないものもある）。
+この章で多様体として描かれる絵はどれも雰囲気を伝える模式図であり、輪郭線は境界を意味するとは限らない。
+なお、境界は境界を持たない（\(\Sigma=\partial\calM\) なら \(\partial\Sigma=\emptyset\)）。
+</div>
+
+<div class="def-box">
+<span class="box-title">公理 4（向きの反転は双対）</span>
+\[
+V(\Sigma^*)=V^*(\Sigma) .
+\]
+\(\Sigma^*\) は \(\Sigma\) の向きを反転した曲面、\(V^*\) は双対空間（ケットをブラに替えたもの）である。
+境界 \(\partial\calM\) の法線は \(\calM\) の外向きにとる、という規約を覚えておくとよい。
+</div>
+
+<h3>貼り合わせ</h3>
+
+<p>
+2つの多様体 \(\calM,\calM'\) が、向きが逆の共通の境界 \(\Sigma=\partial\calM=(\partial\calM')^*\) を持つとする。
+このとき \(Z(\calM)=\ket{\psi}\in V(\Sigma)\) と \(Z(\calM')=\bra{\psi'}\in V(\Sigma^*)\) は互いに双対な空間に住むので、内積をとることができる。
+これが多様体の<strong>貼り合わせ</strong>（gluing、sewing とも言う）である。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <!-- upper cap M' -->
+  <path d="M 40 70 A 50 50 0 0 1 140 70" class="line" stroke-width="1.5" fill="none"/>
+  <line x1="40" y1="70" x2="140" y2="70" class="line accent" stroke-width="1.5"/>
+  <text x="80" y="52" class="label">M'</text>
+  <text x="150" y="74" class="label">Σ*</text>
+  <!-- lower cap M -->
+  <path d="M 40 100 A 50 50 0 0 0 140 100" class="line" stroke-width="1.5" fill="none"/>
+  <line x1="40" y1="100" x2="140" y2="100" class="line accent" stroke-width="1.5"/>
+  <text x="84" y="128" class="label">M</text>
+  <text x="150" y="104" class="label">Σ</text>
+  <!-- arrow -->
+  <line x1="205" y1="85" x2="255" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="255" y1="85" x2="246" y2="79" class="line" stroke-width="1.5"/>
+  <line x1="255" y1="85" x2="246" y2="91" class="line" stroke-width="1.5"/>
+  <text x="208" y="72" class="label-muted">貼る</text>
+  <!-- glued -->
+  <circle cx="350" cy="85" r="50" class="line" stroke-width="1.5" fill="none"/>
+  <line x1="300" y1="85" x2="400" y2="85" class="line accent" stroke-width="1.5"/>
+  <text x="340" y="64" class="label">M'</text>
+  <text x="344" y="116" class="label">M</text>
+</svg>
+<figcaption>図 7.1：貼り合わせの模式図。\(\calM\) の境界 \(\Sigma\) と \(\calM'\) の境界 \(\Sigma^*\)（色付きの線）を貼ると閉じた多様体になり、その分配関数は内積 \(\braket{Z(\calM')}{Z(\calM)}\) で与えられる。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">公式（貼り合わせ＝内積）</span>
+<div class="equation" id="eq-7-glue">\[
+Z(\calM\cup_\Sigma\calM')=\braket{Z(\calM')}{Z(\calM)}=\braket{\psi'}{\psi} .
+\]</div>
+\(\calM\cup_\Sigma\calM'\) は、共通の境界 \(\Sigma\) に沿って貼り合わせた和集合を表す。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（順序と向き）</span>
+\(\calM'\cup_\Sigma\calM\) と \(\calM\cup_\Sigma\calM'\) は同じ多様体の向きを反転したものである。
+<a class="eq-ref" href="#eq-7-glue"></a> が \(\calM\) と \(\calM'\) について対称に見えないのは、\(\Sigma=\partial\calM\) と（\(\partial\calM'\) ではなく \(\calM\) の側で）定義したからである。
+ここから、向きを反転した多様体について \(Z(\calM^*)=Z(\calM)^\dagger\) が結論できる。
+</div>
+
+<h3>コボルディズム</h3>
+
+<div class="def-box">
+<span class="box-title">定義（コボルディズム）</span>
+2つの多様体 \(\Sigma_1,\Sigma_2\) は、一方の向きを反転した上での非交和がある多様体 \(\calM\) の境界になるとき、すなわち
+\[
+\partial\calM=\Sigma_1^*\cup\Sigma_2
+\]
+のとき<strong>コボルダント</strong> (cobordant) であるといい、\(\calM\) を \(\Sigma_1\) と \(\Sigma_2\) の間の<strong>コボルディズム</strong> (cobordism) と呼ぶ。
+\(\Sigma_1\) 自体が複数の連結成分の和（\(\Sigma_1=\Sigma_{1a}\cup\Sigma_{1b}\) など）であってもよい。
+</div>
+
+<p>
+\(\Sigma_1^*\) は \(\partial\calM\) の一部なので法線は \(\calM\) の外向き、したがって \(\Sigma_1\) の法線は \(\calM\) の内向きである。
+\(\Sigma_1\) から入って \(\Sigma_2\) から出る、という「時間発展」の絵になる。
+実際、公理 2・4 より \(Z(\calM)\in V(\Sigma_1^*)\otimes V(\Sigma_2)\) なので、
+</p>
+<div class="equation" id="eq-7-cob">\[
+Z(\calM)=\sum_{\alpha\beta}U^{\alpha\beta}\,\ket{\psi_{\Sigma_2,\alpha}}\otimes\bra{\psi_{\Sigma_1,\beta}}
+\]</div>
+<p>
+と書ける（\(\ket{\psi_{\Sigma_2,\alpha}}\) は \(V(\Sigma_2)\) の基底、\(\bra{\psi_{\Sigma_1,\beta}}\) は \(V(\Sigma_1^*)\) の基底）。
+つまりコボルディズムは \(V(\Sigma_1)\) から \(V(\Sigma_2)\) への線形写像（発展）である。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（ユニタリとは限らない）</span>
+この「発展」は一般にはユニタリでない。\(\Sigma_1\ne\Sigma_2\) なら \(V(\Sigma_1)\) と \(V(\Sigma_2)\) の次元すら一致しないことがある。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（境界が3つある多様体：入力と出力の選び方は自由）</span>
+\(\partial\calM=\Sigma_1\cup\Sigma_2\cup\Sigma_3\) のとき、境界のどの部分集合を「入力」、残りを「出力」と見るかに応じて、同じ \(Z(\calM)\) をいろいろに書ける。
+<ul>
+<li>入力 \(\Sigma_1\cup\Sigma_2\)、出力 \(\Sigma_3\)：
+\(Z(\calM)=\sum_{\alpha\beta\gamma}U^{\alpha\beta\gamma}\ket{\psi_{\Sigma_3,\gamma}}\otimes\bra{\psi_{\Sigma_1^*,\beta}}\otimes\bra{\psi_{\Sigma_2^*,\alpha}}\)</li>
+<li>入力 \(\Sigma_1\)、出力 \(\Sigma_2\cup\Sigma_3\)：
+\(Z(\calM)=\sum_{\alpha\beta\gamma}U^{\alpha\beta\gamma}\ket{\psi_{\Sigma_2,\alpha}}\otimes\ket{\psi_{\Sigma_3,\gamma}}\otimes\bra{\psi_{\Sigma_1^*,\beta}}\)</li>
+<li>入力 \(\emptyset\)、出力 \(\Sigma_1\cup\Sigma_2\cup\Sigma_3\)：
+\(Z(\calM)=\sum_{\alpha\beta\gamma}U^{\alpha\beta\gamma}\ket{\psi_{\Sigma_1,\beta}}\otimes\ket{\psi_{\Sigma_2,\alpha}}\otimes\ket{\psi_{\Sigma_3,\gamma}}\)</li>
+</ul>
+どれも正しい。ケットの基底 \(\ket{\psi_{\Sigma,\alpha}}\) とブラの基底 \(\bra{\psi_{\Sigma^*,\alpha}}\) の間には同型があるからである。
+大事なのは、貼り合わせるときにブラとケットを組にして内積をとることだけで、
+\(Z(\calM)\) 側をブラで書くかケットで書くかは、相手の \(Z(\calM')\) が対応するケットかブラで書かれていれば自由である。
+</div>
+
+<h3>恒等コボルディズムと \(\Sigma\times S^1\)</h3>
+
+<p>
+\(I\) を1次元の区間として \(\calM=\Sigma\times I\) を考える。境界は \(\Sigma\) と \(\Sigma^*\) で、これは \(V(\Sigma)\) から \(V(\Sigma)\) への写像を与える。
+区間は1点（厚さ無限小）にまで連続的に縮められるので、この写像は恒等写像にとれる：
+</p>
+<div class="equation" id="eq-7-id">\[
+Z(\Sigma\times I)=\sum_\alpha\ket{\psi_{\Sigma,\alpha}}\otimes\bra{\psi_{\Sigma,\alpha}}=\id .
+\]</div>
+<p>
+和は \(V(\Sigma)\) の基底全体にわたる。次に、区間の上端と下端を貼り合わせると閉多様体 \(\Sigma\times S^1\) ができる。
+貼り合わせは内積、すなわちここではトレースなので次を得る。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（\(Z(\Sigma\times S^1)\) は基底状態の縮退度）</span>
+<div class="equation" id="eq-7-dim">\[
+Z(\Sigma\times S^1)=\Tr\bigl[Z(\Sigma\times I)\bigr]=\dim V(\Sigma) .
+\]</div>
+代表的な値：
+<div class="equation" id="eq-7-torus">\[
+\dim V(T^2)=\text{（粒子の種類の数）},
+\]</div>
+<div class="equation" id="eq-7-sphere">\[
+\dim V(S^2)=1 .
+\]</div>
+</div>
+
+<p>
+<a class="eq-ref" href="#eq-7-torus"></a> は<a href="chapter04.html">第4章</a>で、エニオンをトーラスの2つの非自明なサイクルに沿って回す操作が非可換であることから
+（モジュラーな可換エニオン模型について）導いたもので、非可換エニオンについても §7.2.1 の議論が根拠を与える。
+<a class="eq-ref" href="#eq-7-sphere"></a> は球面に縮められないループがないことによるもので、可換・非可換を問わず成り立つ。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-7-2">粒子を加える<span class="en">Adding Particles</span></h2>
+
+<p>
+次に、時空の中に粒子の世界線がある場合へ拡張する（\((2+1)\) 次元より高い次元では、弦の世界面など高次元の対象も現れうる）。
+エニオンの種類を \(a,b,c,\dots\)、反粒子を \(\bar a,\bar b,\dots\) と書く。
+</p>
+<ul>
+<li><strong>空間側</strong>：2次元多様体に、ラベル付きの<strong>印付きの点</strong>（粒子の位置）を置く。多様体と印付きの点をまとめて改めて \(\Sigma\) と呼ぶ。
+公理 1 と同様に \(\Sigma\) には Hilbert 空間 \(V(\Sigma)\) が対応し、その次元は粒子の個数と種類に依存する
+（非可換粒子なら粒子数について指数関数的に増える）。
+\(V(\Sigma)\) の基底 \(\ket{\psi_\alpha}\) は、印付きの点を多様体内で動かす（粒子を組む）と互いに混ざり合う。</li>
+<li><strong>時空側</strong>：3次元多様体 \(\calM\) に、粒子の世界線を表すラベル付きの絡み目を加える。
+世界線には向きを付ける（自分自身が反粒子である粒子では向きは不要）。世界線は境界 \(\partial\calM\) で終わってもよく、その端点が境界上の印付きの点になる。
+多様体と世界線をまとめて \(\calM\) と呼ぶか、絡み目 \(L\) を明示して \(\calM;L\) と書く。</li>
+</ul>
+
+<p>
+公理 3 と同じく、時空の履歴は境界 \(\Sigma=\partial\calM\) 上の波動関数を1つ指定する：
+\[
+\ket{\psi}=Z(\calM)\in V(\partial\calM),\qquad \ket{\psi}=\sum_\alpha c_\alpha\ket{\psi_\alpha} .
+\]
+</p>
+
+<h3>組みひも操作はコボルディズムである</h3>
+
+<p>
+粒子を互いの周りで動かすには、\(\partial\calM\) にもう1つの多様体 \(\calM'\)（世界線込み）を貼って時間発展を続ければよい。
+\(\partial\calM'=\Sigma^*\cup\Sigma'\) で、最終状態は \(\ket{\psi'}=Z(\calM\cup\calM')\in V(\Sigma')\) である。
+\(\Sigma'\) での粒子の位置を \(\Sigma\) と同じにとれば \(V(\Sigma')=V(\Sigma)\) なので、同じ基底で \(\ket{\psi'}=\sum_\alpha c'_\alpha\ket{\psi_\alpha}\) と展開できる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（非可換統計＝貼り合わせ）</span>
+\(Z(\calM')\) は Hilbert 空間上のユニタリ変換
+\[
+Z(\calM')=\sum_{\alpha\beta}U^{\alpha\beta}\,\ket{\psi_{\Sigma',\alpha}}\otimes\bra{\psi_{\Sigma,\beta}}
+\]
+を与え、貼り合わせは
+<div class="equation" id="eq-7-braid">\[
+\ket{\psi'}=\ket{Z(\calM\cup\calM')}=Z(\calM')\ket{Z(\calM)}=Z(\calM')\ket{\psi},
+\qquad c'_\alpha=\sum_\beta U^{\alpha\beta}c_\beta
+\]</div>
+と表される。これが非可換統計の内容そのものである。
+</div>
+
+<p>
+粒子が動かない（あるいはトポロジカルに自明な動きしかしない）なら、\(\calM'\) は厚さ無限小に縮められ、変換は恒等変換になる。
+§7.1 の恒等コボルディズムと同様に上端と下端を貼り合わせると、
+</p>
+<div class="equation" id="eq-7-dim2">\[
+Z(\Sigma\times S^1)=\dim V(\Sigma)
+\]</div>
+<p>
+が、\(\Sigma\) に粒子（印付きの点）がある場合にもそのまま成り立つ。
+</p>
+
+<h3 id="sec-7-2-1">§7.2.1 粒子があってもなくても同じ情報</h3>
+
+<p>
+トポロジカルな系の基底状態は、その系に存在しうるエニオンの種類を「知っている」。
+同じように、粒子のない TQFT は、粒子がある場合と同じ情報を持っている（ここからは \(D=2\)、すなわち \((2+1)\) 次元に限る）。
+</p>
+
+<div class="proof-box">
+<span class="box-title">議論の筋道（世界線を管ごとくり抜く）</span>
+<ol>
+<li>世界線のループ \(L_i\) を含む多様体 \(\calM\) から、各世界線をその周りの細い管状近傍ごと取り除く（虫が世界線に沿って食い進んだ跡を想像する）。
+取り除かれる部分は、世界線がどんなに結ばれていても、トポロジカルにはソリッドトーラス \(D^2\times S^1\) である（結び目であるかどうかは、\(S^1\) の埋め込み方の情報である）。
+残った多様体の境界には、世界線1本につきトーラス面 \(T^2\) が1枚現れる。</li>
+<li>トーラス面の Hilbert 空間 \(V(T^2)\) の状態は、粒子の種類と一対一に対応する。
+状態 \(\ket{\psi_a}\) は「種類 \(a\) の粒子の世界線がハンドルを一周しているソリッドトーラス」の分配関数として実現できる：
+\[
+Z(\text{ソリッドトーラス};\ a\ \text{がハンドルを一周})=\ket{\psi_a} .
+\]
+ソリッドトーラスを時空の履歴と見るなら、中心の芯の円が \(t=-\infty\)、表面が現在で、その間に粒子 \(a\) がハンドルに沿って一周させられたことになる。</li>
+<li>この「世界線入りソリッドトーラス」を、くり抜いた管に貼り戻せば、元の世界線入りの多様体が復元される。</li>
+</ol>
+</div>
+
+<p>
+したがって、くり抜いた後の（粒子のない）多様体の分配関数が、世界線にどんなラベルを付けた場合の情報もすべて含んでいる。
+世界線が2本（\(L_1,L_2\)）なら境界のトーラスは2枚あり、
+</p>
+<div class="equation" id="eq-7-excise">\[
+Z(\calM)=\sum_{i,j}Z(\calM;i,j)\,\bra{\psi_{L_1,i}}\otimes\bra{\psi_{L_2,j}}
+\]</div>
+<p>
+と書ける。\(Z(\calM;i,j)\) は、2本の世界線に種類 \(i,j\) の粒子を走らせたときの分配関数である。
+特定のラベル \(a,b\) の値 \(Z(\calM;a,b)\) が欲しければ、境界条件 \(\ket{\psi_{L_1,a}}\otimes\ket{\psi_{L_2,b}}\) を貼り込めばよい。
+これが <a class="eq-ref" href="#eq-7-torus"></a>（トーラスの縮退度＝粒子の種類の数）の、非可換の場合も含めた根拠である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-7-3">単純な3次元多様体を組み立てる<span class="en">Building Simple 3-Manifolds</span></h2>
+
+<p>
+貼り合わせの公式 <a class="eq-ref" href="#eq-7-glue"></a> を使って、3次元多様体を部品から組み立てる。
+基本の部品はソリッドトーラス \(D^2\times S^1\)（円板 \(D^2\) と円 \(S^1\) の直積）である（初等的なトポロジーの復習は<a href="chapter40.html">第40章</a>）。
+用語として、ソリッドトーラスの表面のループのうち、内部で縮められる向き（\(D^2\) の境界）を<strong>メリディアン</strong>、
+縮められない向き（ハンドルを一周する向き）を<strong>ロンジチュード</strong>と呼ぶ。
+</p>
+
+<h3 id="sec-7-3-1">§7.3.1 \(S^3\) とモジュラー \(S\) 行列</h3>
+
+<p>
+3次元球面 \(S^3\) は、\(\R^3\) に無限遠点を1点加えて閉じたものである（\(S^2\) が平面に無限遠点を加えたものであるのと同じ）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">事実（\(S^3\) はソリッドトーラス2個に分解できる）</span>
+<div class="equation" id="eq-7-s3">\[
+S^3=(S^1\times D^2)\cup_{T^2}(D^2\times S^1) .
+\]</div>
+2つのソリッドトーラスは共通の境界 \(T^2\) で、<strong>メリディアンをロンジチュードに、ロンジチュードをメリディアンに</strong>貼り合わされる
+（一方の縮められる向きが他方の縮められない向きに貼られる）。
+</div>
+
+<div class="proof-box">
+<span class="box-title">証明（4次元球体の境界をとる）</span>
+\(n\) 次元球体 \(B^n\) はトポロジカルには区間 \(I\) の \(n\) 個の直積である（\(D^2=B^2=I\times I\)、\(B^3\) は立方体）。
+したがって \(B^4=I^4=D^2\times D^2\)。境界作用素 \(\partial\) は微分と同じく Leibniz 則に従うので、
+\[
+S^3=\partial B^4=\partial(D^2\times D^2)=(\partial D^2\times D^2)\cup(D^2\times\partial D^2)=(S^1\times D^2)\cup_{T^2}(D^2\times S^1) .
+\]
+ここで \(\partial D^2=S^1\) を使った。2つの部品の境界はどちらも \(\partial(S^1\times D^2)=S^1\times S^1=\partial(D^2\times S^1)\) で一致し、
+\(S^1\times S^1\) の2つの \(S^1\) のうち、互いに逆のほうが \(D^2\) に埋められている。
+</div>
+
+<div class="remark-box">
+<span class="box-title">直観（\(\R^3\) で見る）</span>
+普通に描いたドーナツ（中身入り）が一方のソリッドトーラス \(D^2\times S^1\) である。
+その<strong>外側全部</strong>（無限遠点を含む）がもう一方のソリッドトーラス \(S^1\times D^2\) になる。
+外側の \(S^1\) は、ドーナツの穴を貫く縦の直線が無限遠点でつながって閉じたものと考えればよい。
+ドーナツの穴に張った円板は外側のソリッドトーラスの中で縮められる \(D^2\) であり、その境界はドーナツ表面ではハンドルを回る向き（ロンジチュード）である。
+</div>
+
+<p>
+分配関数は、外側と内側のソリッドトーラスが境界のトーラス面上に作る波動関数の重なりである：
+\[
+Z(S^3)=\braket{Z(S^1\times D^2)}{Z(D^2\times S^1)}=\braket{\psi_{\text{outside}}}{\psi_{\text{inside}}} .
+\]
+さらに、§7.2.1 のように各ソリッドトーラスのハンドルに沿って粒子の世界線を走らせる。
+内側に \(a\)、外側に \(b\) を走らせて貼り合わせると、\(S^3\) の中で \(a\) のループと \(b\) のループが1回絡んだ配置（Hopf 絡み目）ができる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（モジュラー \(S\) 行列）</span>
+<div class="equation" id="eq-7-S">\[
+Z(S^3;\ a\ \text{のループと}\ b\ \text{のループが絡む})=\braket{Z(S^1\times D^2;b)}{Z(D^2\times S^1;a)}\equiv S_{ab} .
+\]</div>
+</div>
+
+<p>\(S\) 行列の性質をまとめる（詳しくは<a href="chapter17.html">第17章</a>）。</p>
+<ul>
+<li><strong>基底変換としての意味</strong>：\(\{Z(D^2\times S^1;a)\}\) と \(\{Z(S^1\times D^2;b)\}\) はどちらもトーラス面の空間 \(V(T^2)\) を張る基底であり、
+\(S\) はその間の基底変換である。したがって \(S\) は<strong>ユニタリ</strong>である。
+ただしこれは理論が<strong>モジュラー</strong>（他のすべての粒子に対して「透明」な粒子がない）であることを仮定している。</li>
+<li><strong>対称性</strong>：\(a\) が \(b\) に絡むことと \(b\) が \(a\) に絡むことはトポロジカルに同じなので \(S_{ab}=S_{ba}\)。</li>
+<li><strong>反粒子</strong>：\(S_{\bar ab}=[S_{ab}]^*\)（この段階では自明でないが成り立つ）。</li>
+<li><strong>\(S^3\) の分配関数</strong>：両方のハンドルに真空（粒子なし。ここでは 0 と書く）を置いた成分が \(Z(S^3)\) である：
+<div class="equation" id="eq-7-S00">\[
+Z(S^3)=S_{00}\le1 .
+\]</div>
+\(S\) がユニタリ行列の1成分だから 1 以下であり、非自明な粒子が存在する限り（\(S\) が \(1\times1\) でない限り）真に 1 より小さい。</li>
+</ul>
+
+<div class="caution-box">
+<span class="box-title">注意（\(S_{ab}\) の向きの規約）</span>
+\(S_{ab}\) の定義で \(a,b\) の矢印をどちら向きにとるかは文献によって異なり、
+ある文献の \(S_{ab}\) が本書の \(S_{\bar ab}\) に当たることがある。本書の規約は Kitaev (2006) と一致し、Bonderson (2007) とは異なる。
+</div>
+
+<p>
+<a class="eq-ref" href="#eq-7-S"></a> は「2本のひもが1回絡んだ図」に値を与える式とも読める。
+Kauffman 括弧が結び目に値を与えたのと同様に、ラベル付きの世界線の図を「評価」する図式的な規則を作ることができ、
+それが<a href="chapter08.html">第8章</a>から第16章までの主題である。
+</p>
+
+<h3 id="sec-7-3-2">§7.3.2 \(S^2\times S^1\)</h3>
+
+<p>
+ソリッドトーラス2個を閉多様体に貼り合わせる方法は他にもある（実は無限通りある。§7.4）。
+最も素直なのは、<strong>メリディアンをメリディアンに、ロンジチュードをロンジチュードに</strong>貼る方法である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">事実と結果（\(S^2\times S^1\)）</span>
+\[
+S^2\times S^1=(D^2\times S^1)\cup_{T^2}(D^2\times S^1) .
+\]
+ハンドルに世界線 \(a,b\) を走らせた場合、
+<div class="equation" id="eq-7-delta">\[
+\braket{Z(D^2\times S^1;b)}{Z(D^2\times S^1;a)}=\delta_{ab},
+\]</div>
+特に真空どうし（\(a=b=I\)）では
+<div class="equation" id="eq-7-s2s1">\[
+Z(S^2\times S^1)=1 .
+\]</div>
+</div>
+
+<p>
+2つのソリッドトーラスの \(S^1\) 因子は共通で、2枚の \(D^2\) が同じ \(S^1\) を境界として貼り合わされる。
+円板2枚を縁で縫い合わせると球面 \(S^2\) になる（球面を赤道で切ると北半球と南半球の2枚の円板になることの逆）ので、全体は \(S^2\times S^1\) である。
+なお \(S^2\times S^1\) は \(\R^3\) に埋め込めないので、思い描くのは難しい。
+</p>
+<p>
+<a class="eq-ref" href="#eq-7-delta"></a> がデルタ関数になるのは、今度はメリディアンとロンジチュードを入れ替えていないので、
+ブラとケットが（共役を除いて）同じ基底の波動関数だからである。
+<a class="eq-ref" href="#eq-7-s2s1"></a> は、\(Z(\Sigma\times S^1)=\dim V(\Sigma)\) <a class="eq-ref" href="#eq-7-dim"></a> と \(\dim V(S^2)=1\) <a class="eq-ref" href="#eq-7-sphere"></a> の2つと整合している。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（\(a=b\) のときの世界線の配置）</span>
+各 \(S^2\) は2枚の \(D^2\) を縫い合わせたもので、ハンドルを回る世界線はそれぞれの \(D^2\) をちょうど1回貫く。
+2枚の \(D^2\) は逆向きに縫われるので、2本の世界線は球面を互いに逆向きに貫く。
+これは「球面上に2粒子がある状態の振幅が 0 でないのは、粒子・反粒子対の場合に限る」という原理（<a href="chapter08.html">第8章</a>）に合っている。
+世界線が \(S^2\) をちょうど1回だけ貫けるのは、この \(S^2\) がどの3次元領域の境界にもなっていないからである。
+</div>
+
+<h3 id="sec-7-3-3">§7.3.3 連結和</h3>
+
+<div class="def-box">
+<span class="box-title">定義（連結和）</span>
+2つの多様体 \(\calM,\calM'\) のそれぞれから小さな球体を取り除き、現れた球面どうしを貼り合わせて得られる多様体を
+<strong>連結和</strong> (connected sum) といい \(\calM\#\calM'\)（\(=\calM'\#\calM\)）と書く。
+</div>
+
+<p>
+例えば2次元では、トーラス面2枚の連結和 \(T^2\#T^2\) はハンドルが2つある曲面である。
+\(D\) 次元多様体の連結和では、球面 \(S^D\) が単位元になる：
+</p>
+<div class="equation" id="eq-7-unit">\[
+\calM^D\#S^D=\calM^D .
+\]</div>
+<p>
+\(S^D\) は2つの球体 \(B^D\) を表面 \(S^{D-1}\) で貼ったものなので、\(S^D\) から \(B^D\) を除くと \(B^D\) が残る。
+したがって \(S^D\) との連結和は、\(\calM^D\) から球体を取り除いて同じ球体を埋め戻す操作にすぎない。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（3次元多様体の連結和の公式）</span>
+<div class="equation" id="eq-7-csum">\[
+Z(\calM\#\calM')=\frac{Z(\calM)\,Z(\calM')}{Z(S^3)} .
+\]</div>
+</div>
+
+<div class="proof-box">
+<span class="box-title">導出</span>
+\(\calM\backslash B\) を \(\calM\) から小球体 \(B\) を除いたもの、\(\calM'\backslash B'\) も同様とする。
+\(\calM\#\calM'=(\calM\backslash B)\cup(\calM'\backslash B')\) なので、貼り合わせの公式 <a class="eq-ref" href="#eq-7-glue"></a> より
+\[
+Z(\calM\#\calM')=\braket{Z(\calM\backslash B)}{Z(\calM'\backslash B')} .
+\]
+一方、球体を埋め戻せば元の多様体に戻るので
+\[
+Z(\calM)=\braket{Z(\calM\backslash B)}{Z(B)},\qquad Z(\calM')=\braket{Z(B')}{Z(\calM'\backslash B')} .
+\]
+ここで決定的なのは、貼り合わせ面が球面 \(S^2\) で、その Hilbert 空間が <a class="eq-ref" href="#eq-7-sphere"></a> により<strong>1次元</strong>であることである。
+1次元空間の状態 \(\ket a,\ket b,\ket c,\ket d\) については \(\braket ab\braket cd=\braket ad\braket cb\) が成り立つ（どのベクトルも互いに比例するから）。これを使うと
+\[
+\braket{Z(\calM\backslash B)}{Z(\calM'\backslash B')}\,\braket{Z(B')}{Z(B)}
+=\braket{Z(\calM\backslash B)}{Z(B)}\,\braket{Z(B')}{Z(\calM'\backslash B')} .
+\]
+最後に、2つの3次元球体を表面の \(S^2\) で貼ると \(S^3\) になるので \(\braket{Z(B')}{Z(B)}=Z(S^3)\)。以上を代入すれば公式を得る。
+</div>
+
+<p>
+\(\calM'=S^3\) と置けば \(Z(\calM\#S^3)=Z(\calM)\) となり、<a class="eq-ref" href="#eq-7-unit"></a> と整合する。
+原書の演習では、この議論を結び目入りの多様体に拡張し、結び目どうしもつなぐ場合には分母が \(Z(S^3)\) から
+「ラベル \(a\) の自明なループが入った \(S^3\) の分配関数」\(S_{0a}\) に替わることを示す。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（素な多様体への分解）</span>
+3次元多様体 \(\calM\) は、\(\calM=N\#P\) ならば必ず \(N=S^3\) または \(P=S^3\) となるとき<strong>素</strong> (prime) であるという。
+向き付け可能でコンパクトな3次元多様体は素な多様体の連結和 \(\calM=P_1\#P_2\#\cdots\#P_N\) に分解でき、
+分解は順序の入れ替えと \(S^3\) との連結和を除いて一意である（Milnor）。
+連結和の公式と合わせると、\(Z\) の計算は素な多様体の場合に帰着する。
+4次元ではこの種の分解は一意でない。2次元では向き付け可能な曲面の分解は一意で、素な多様体はトーラスだけである。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-7-4">付録：ソリッドトーラスの貼り合わせ<span class="en">Appendix: Gluing Solid Tori Together</span></h2>
+
+<p>
+本筋からは少し外れるが、2つのソリッドトーラスを貼り合わせて閉多様体を作る方法の全体像を見ておく。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（メリディアン、ロンジチュード、Dehn ツイスト）</span>
+ソリッドトーラス \(D^2\times S^1\) について、
+<ul>
+<li><strong>メリディアン</strong> \(m\)：どれかの \(D^2\) の境界の \(S^1\)。表面上で、内部で縮められる向きを回るループ。</li>
+<li><strong>ロンジチュード</strong> \(l\)：表面上のループで、メリディアンと1点で交わるもの。</li>
+</ul>
+ロンジチュードの定義には避けられない任意性がある。縮められない向きに一周する間にメリディアンの向きにも \(n\) 回巻くループ \(l+nm\) も、同じ資格でロンジチュードである。
+ロンジチュードをこのように取り直すことを <strong>Dehn ツイスト</strong>という。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（レンズ空間 \(L(q,p)\)）</span>
+一方のソリッドトーラスのメリディアン \(m_1\) を、他方の表面上のループ \(-q\,m_2+p\,l_2\)
+（ロンジチュードの向きに \(p\) 回、メリディアンの向きに \(-q\) 回巻くループ）に貼る。
+この1本のループの対応を決めれば、表面全体の貼り方が一意に決まる。得られる閉多様体を<strong>レンズ空間</strong> \(L(q,p)\) と呼ぶ。
+符号を \(-q\) とするのは、貼り合わせる2つのトーラス面の向きを逆にするためである。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（これまでの2つの貼り方）</span>
+<ul>
+<li>\(L(0,1)=S^3\)：メリディアンをロンジチュードに貼る（§7.3.1）。</li>
+<li>\(L(1,0)=S^2\times S^1\)：メリディアンをメリディアンに貼る（§7.3.2）。</li>
+<li>ロンジチュードを \(l_2\to l_2+n\,m_2\) と取り直すと、ループ \(-q\,m_2+p\,l_2\) は \((-q-np)\,m_2+p\,l_2\) と書き直される。
+したがって \(L(q+np,p)=L(q,p)\) であり、特に \(L(1,1)=L(0,1)=S^3\) である。</li>
+</ul>
+</div>
+
+<p>
+この種の貼り合わせ（手術）は<a href="chapter24.html">第24章</a>でさらに扱われる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-7-5">付録：コボルディズムと圏論<span class="en">Appendix: Cobordisms and Category Theory</span></h2>
+
+<p>
+本書は圏論を使わない方針だが、多くの数学者が TQFT をどう見ているかを知るために、最小限の言葉だけ紹介されている。
+</p>
+<ul>
+<li><strong>圏</strong> (category)：<strong>対象</strong> (object) と、対象の間の矢印である<strong>射</strong> (morphism) からなる数学的構造。</li>
+<li><strong>\(\mathbf{Vect}\)</strong>：対象がベクトル空間、射が線形写像である圏。</li>
+<li><strong>\(\mathbf{Cob}(D+1)\)</strong>：対象が閉じた \(D\) 次元多様体（本章の \(\Sigma\)）、射がそれらの間の \((D+1)\) 次元コボルディズムである圏。</li>
+<li><strong>関手</strong> (functor)：圏から圏への、構造を保つ対応。対象を対象に、射を射に写す。</li>
+</ul>
+
+<div class="def-box">
+<span class="box-title">定義（関手としての TQFT）</span>
+TQFT とは関手
+\[
+Z:\ \mathbf{Cob}(D+1)\to\mathbf{Vect}
+\]
+のことである。多様体はベクトル空間に、多様体の非交和はテンソル積に、コボルディズムは線形写像に写される。
+</div>
+
+<p>
+本章の内容との対応は次の表のとおりである。「構造を保つ」ことの中身には、コボルディズムの合成（貼り合わせ）が線形写像の合成（添字の縮約・内積）に写ることが含まれ、
+これが貼り合わせの公式 <a class="eq-ref" href="#eq-7-glue"></a> に当たる。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>トポロジー（\(\mathbf{Cob}\)）</th><th>量子論（\(\mathbf{Vect}\)）</th><th>本章での対応箇所</th></tr>
+</thead>
+<tbody>
+<tr><td>閉じた \(D\) 次元多様体 \(\Sigma\)</td><td>Hilbert 空間 \(V(\Sigma)\)</td><td>公理 1</td></tr>
+<tr><td>非交和 \(\Sigma_1\cup\Sigma_2\)</td><td>テンソル積 \(V(\Sigma_1)\otimes V(\Sigma_2)\)</td><td>公理 2</td></tr>
+<tr><td>空の多様体 \(\emptyset\)</td><td>\(\C\)</td><td>公理 2 の帰結</td></tr>
+<tr><td>向きの反転 \(\Sigma^*\)</td><td>双対空間 \(V^*(\Sigma)\)</td><td>公理 4</td></tr>
+<tr><td>コボルディズム \(\calM\)（\(\partial\calM=\Sigma_1^*\cup\Sigma_2\)）</td><td>線形写像 \(V(\Sigma_1)\to V(\Sigma_2)\)</td><td>公理 3、<a class="eq-ref" href="#eq-7-cob"></a></td></tr>
+<tr><td>\(\Sigma\times I\)</td><td>恒等写像</td><td><a class="eq-ref" href="#eq-7-id"></a></td></tr>
+<tr><td>閉多様体 \(\calM\)（\(\emptyset\) から \(\emptyset\) へのコボルディズム）</td><td>複素数 \(Z(\calM)\)</td><td><a class="eq-ref" href="#eq-7-closed"></a></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第7章のまとめ</span>
+<ul>
+<li>Atiyah の公理：\(D\) 次元多様体 \(\Sigma\) に Hilbert 空間 \(V(\Sigma)\)、非交和にテンソル積、\(V(\emptyset)=\C\)、向きの反転に双対空間、
+境界付きの \((D+1)\) 次元多様体 \(\calM\) に状態 \(Z(\calM)\in V(\partial\calM)\) が対応する。すべてトポロジーだけで決まる。</li>
+<li>\(Z(\calM)\) は、境界がなければ数（トポロジカル不変量）、境界があれば境界上の波動関数、入出力の境界を持つコボルディズムなら線形写像である。</li>
+<li>多様体の貼り合わせは内積：\(Z(\calM\cup_\Sigma\calM')=\braket{Z(\calM')}{Z(\calM)}\)。</li>
+<li>\(Z(\Sigma\times I)=\id\)、\(Z(\Sigma\times S^1)=\dim V(\Sigma)\)。\(\dim V(T^2)\) は粒子の種類の数、\(\dim V(S^2)=1\)。</li>
+<li>粒子は空間では印付きの点、時空ではラベル付きの世界線として入る。組みひも操作はコボルディズムであり、\(V(\Sigma)\) 上のユニタリ変換 \(c'_\alpha=\sum_\beta U^{\alpha\beta}c_\beta\) を与える。</li>
+<li>世界線を管ごとくり抜くと境界にトーラスが現れ、その状態 \(\ket{\psi_a}\) が粒子の種類に対応する。粒子のない理論が粒子のある理論の情報をすべて持つ。</li>
+<li>\(S^3\) はソリッドトーラス2個をメリディアンとロンジチュードを入れ替えて貼ったもの。世界線 \(a,b\) を入れると絡み目の値として \(S\) 行列 \(S_{ab}\) が得られ、\(Z(S^3)=S_{00}\le1\)。</li>
+<li>入れ替えずに貼ると \(S^2\times S^1\) で、重なりは \(\delta_{ab}\)、\(Z(S^2\times S^1)=1\)。一般の貼り方はレンズ空間 \(L(q,p)\) を与える。</li>
+<li>連結和の公式：\(Z(\calM\#\calM')=Z(\calM)Z(\calM')/Z(S^3)\)。\(V(S^2)\) が1次元であることが鍵。</li>
+<li>数学的には、TQFT は関手 \(Z:\mathbf{Cob}(D+1)\to\mathbf{Vect}\) である。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="同種エニオンの交換を表す R 行列、F 行列と組み合わせた組みひも行列の計算、局所性の原理、Fibonacci と Ising の具体例">
+  <title>第10章 同種粒子の交換 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter10" data-chapter="10">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第10章に対応</span>
+  第10章 同種粒子の交換
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+エニオンを交換すると位相が付く。ただしその位相は、交換する2粒子の<strong>融合チャネル</strong>に依存する。
+本章はこの位相を表す <strong>\(R\) 行列</strong> \(R^{aa}_c\) を導入し、<a href="chapter09.html">第9章</a>の \(F\) 行列と組み合わせることで、
+同種粒子を任意の順序で交換したときの Hilbert 空間への作用（組みひも群の表現行列）を計算する手順を与える。
+手順は「\(F\) で、交換する2粒子の融合チャネルが確定した基底へ移る → \(R\) を掛ける → \(F^{-1}\) で戻る」の3段である。
+Fibonacci エニオンと Ising エニオンについて、3粒子の交換行列 \(\hat\sigma_1,\hat\sigma_2\) を具体的に求める。
+\(R\) の値そのものを決める整合性条件（六角形方程式）と、異種粒子の交換は<a href="chapter13.html">第13章</a>で扱われる。
+原書が「重要」と印を付けている章である。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-10-1">R 行列の導入<span class="en">Introducing the R-Matrix</span></h2>
+
+<p>
+種類 \(a\) の同種粒子2個が、全体として \(c\) に融合する状態（正確には \(c\) から2個の \(a\) に分裂した状態）を \(\ket{\text{state}}\) とする。
+この2粒子を、上から見て<strong>反時計回り</strong>に半周だけ回して位置を入れ替える（組みひも群の生成元 \(\sigma\) に当たる。<a href="chapter03.html">第3章</a>）。
+交換は2粒子だけに関わる局所的な操作なので、<a href="chapter08.html">第8章</a>の局所性の原理により、交換後も融合チャネルは \(c\) のままである。
+変わりうるのは位相だけである。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（\(R\) 行列）</span>
+融合チャネルが \(c\) の2個の \(a\) を反時計回りに交換したときに付く位相を \(R^{aa}_c\) と書く：
+<div class="equation" id="eq-10-R">\[
+\hat\sigma\,\ket{\text{state}}=R^{aa}_c\,\ket{\text{state}} .
+\]</div>
+<ul>
+<li>逆向き（時計回り）の交換では逆の位相 \((R^{aa}_c)^{-1}\) が付く。</li>
+<li>\(a\times a\) に \(c\) が含まれないとき（\(N_{aa}^c=0\)）は \(R^{aa}_c=0\) と定める。</li>
+</ul>
+\(F\) の場合と同様に、\(R\) 記号とも呼ばれる。
+</div>
+
+<div class="remark-box">
+<span class="box-title">直観（ボソン・フェルミオンとの違い）</span>
+ボソンやフェルミオンでは交換の位相は \(\pm1\) の1つの数で、粒子の種類だけで決まる。
+エニオンでは、同じ2粒子でも「合わせて何に見えるか」（融合チャネル \(c\)）ごとに位相が異なる。
+融合チャネルの重ね合わせ状態に交換を施すと、成分ごとに違う位相が付いて状態そのものが変わる。これが非可換統計の源である。
+</div>
+
+<h3>3粒子：左の2個の交換</h3>
+
+<p>
+種類 \(a\) のエニオン3個が全体として \(f\) に融合する空間を考える。
+<a href="chapter09.html">第9章</a>と同じく、左の2個を先に融合する木を基底にとり、そのチャネルを \(c\) として \(\ket{c;f}\) と書く
+（第9章の記法では \(\ket{(a,a);c}\otimes\ket{c,a;f}\)）。
+</p>
+<p>
+左の2個を交換する演算子を \(\hat\sigma_1\) と呼ぶ。この基底では左の2個の融合チャネルが \(c\) と確定しているので、定義 <a class="eq-ref" href="#eq-10-R"></a> がそのまま使える：
+\[
+\hat\sigma_1\ket{c;f}=R^{aa}_c\ket{c;f} .
+\]
+時間発展として実現できる演算子はすべて線形なので、重ね合わせには項ごとに作用する：
+\[
+\hat\sigma_1\sum_c\alpha_c\ket{c;f}=\sum_c\alpha_c\,R^{aa}_c\ket{c;f} .
+\]
+</p>
+
+<h3>3粒子：右の2個の交換</h3>
+
+<p>
+右の2個を交換する演算子を \(\hat\sigma_2\) と呼ぶ。基底 \(\ket{c;f}\) では右の2個の融合チャネルは確定していないので、\(R\) を直接は使えない。
+そこで \(F\) 行列で「右の2個を先に融合する木」の基底に移る。そのチャネルを \(g\) とすると、第9章の定義より
+\[
+\ket{c;f}=\sum_g\,[F^{aaa}_f]_{cg}\;\ket{a,g;f}\otimes\ket{(a,a);g} .
+\]
+右辺の各項では右の2個のチャネルが \(g\) と確定しているので、交換は位相 \(R^{aa}_g\) を掛けるだけである。
+最後に \(F^{-1}\) で元の基底に戻す。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 120" xmlns="http://www.w3.org/2000/svg">
+  <rect x="5" y="30" width="90" height="50" class="gate" stroke-width="1.5"/>
+  <text x="18" y="52" class="label">左2個が</text>
+  <text x="18" y="70" class="label">チャネル c</text>
+  <rect x="125" y="30" width="90" height="50" class="gate" stroke-width="1.5"/>
+  <text x="138" y="52" class="label">右2個が</text>
+  <text x="138" y="70" class="label">チャネル g</text>
+  <rect x="245" y="30" width="90" height="50" class="gate" stroke-width="1.5"/>
+  <text x="258" y="52" class="label">交換後</text>
+  <text x="258" y="70" class="label">（位相付き）</text>
+  <rect x="365" y="30" width="90" height="50" class="gate" stroke-width="1.5"/>
+  <text x="378" y="52" class="label">左2個が</text>
+  <text x="378" y="70" class="label">チャネル z</text>
+  <line x1="95" y1="55" x2="125" y2="55" class="line accent" stroke-width="1.5"/>
+  <line x1="215" y1="55" x2="245" y2="55" class="line accent" stroke-width="1.5"/>
+  <line x1="335" y1="55" x2="365" y2="55" class="line accent" stroke-width="1.5"/>
+  <text x="105" y="22" class="label">F</text>
+  <text x="225" y="22" class="label">R</text>
+  <text x="338" y="22" class="label">F 逆</text>
+  <text x="5" y="104" class="label-muted">基底を替える</text>
+  <text x="188" y="104" class="label-muted">g ごとに位相を掛ける</text>
+  <text x="372" y="104" class="label-muted">基底を戻す</text>
+</svg>
+<figcaption>図 10.1：右の2個を交換する手順。\(F\) 移動で右の2個の融合チャネルが確定した基底に移り、\(R\) を掛け、\(F^{-1}\) で元の基底に戻る。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">公式（右の2個の交換）</span>
+<div class="equation" id="eq-10-s2">\[
+\hat\sigma_2\ket{c;f}=\sum_{g,z}\,[F^{aaa}_f]_{cg}\;R^{aa}_g\;[(F^{aaa}_f)^{-1}]_{gz}\;\ket{z;f} .
+\]</div>
+\(g\) は右の2個の融合チャネル、\(z\) は元の基底での左の2個の融合チャネルである。
+\(R^{aa}\) を \(g\) について対角な行列と見れば、右辺の係数は行列の積 \(F\,R\,F^{-1}\) の \((c,z)\) 成分である。
+</div>
+
+<div class="thm-box">
+<span class="box-title">一般原理</span>
+同種粒子のどんな交換も、次の手順で評価できる。
+(1) \(F\) 行列を使って、交換したい2粒子の融合チャネルが確定している基底に移る。
+(2) その基底で \(R\) 行列を直接掛ける。
+(3) 必要なら \(F^{-1}\) で元の基底に戻る。
+適切な \(F\) と \(R\) が与えられていれば、同種粒子が何個あってもこの方法で任意の組みひもの作用が計算できる。
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（基底ベクトルの変換と行列の向き）</span>
+<a class="eq-ref" href="#eq-10-s2"></a> は「基底ベクトル \(\ket{c;f}\) がどう写るか」を書いた式である。
+状態を成分の縦ベクトルで表して \(\hat\sigma_2\) を行列として掛ける場合、その行列は係数行列 \(F\,R\,F^{-1}\) の転置になる。
+本章の例（Fibonacci、Ising）では \(F\) が対称行列で \(F^{-1}=F\) なので \(F\,R\,F\) は対称行列になり、この区別は結果に影響しない。
+</div>
+
+<h3 id="sec-10-1-1">§10.1.1 局所性</h3>
+
+<div class="thm-box">
+<span class="box-title">原理（局所性）</span>
+全体の量子数が \(c\) である粒子の集団を組みひもで動かした結果は、その集団を量子数 \(c\) の1個の粒子に置き換えた場合と同じである。
+</div>
+
+<p>
+例えば、全体の量子数が \(c\) の集団 \(\{a,b\}\) を、全体の量子数が \(w\) の集団 \(\{x,y,z\}\) の周りに一周させる（全体の融合チャネルは \(f\)）とき、
+付く位相は1個の \(c\) を1個の \(w\) の周りに一周させた場合と同じで、\(c,w,f\) だけで決まる。
+この位相は<a href="chapter13.html">第13章</a>の記法では \(R^{wc}_f\,R^{cw}_f\) である（一周は交換2回分）。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（集団の内部は組まない）</span>
+この原理が述べているのは、集団が<strong>一体として</strong>動く場合である。
+集団の内部で \(a\) と \(b\) が互いの周りを回る（あるいは \(x,y,z\) どうしが回る）なら、その分の位相が別に付く。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（局所性は \(R\) を強く拘束する：六角形方程式への入口）</span>
+同種粒子3個で、右端の粒子を左の2個（融合チャネル \(c\)）の周りに一周させる組みひもは \(\hat b_3=\hat\sigma_2\hat\sigma_1^2\hat\sigma_2\) と書ける。
+局所性の原理によれば、\(\hat b_3\) は基底 \(\ket{c;f}\) で対角で、その固有値は「1個の \(a\) が1個の \(c\) の周りを一周する位相」に等しくなければならない。
+\(\hat\sigma_1,\hat\sigma_2\) は \(F\) と \(R\) で書けるので、これは \(F\) を与えたときの \(R\) に対する方程式になる。
+原書の演習では、Fibonacci の \(F\) 行列からこの条件を使って \(R\) の候補を求める。例えば \(f=I,\ c=\tau\) の場合からは
+\[
+[R^{\tau\tau}_\tau]^4=[R^{\tau\tau}_I]^2
+\]
+が出る。こうして見つかる解は全部で8組あり、そのうち6組は物理的でない余分な解である。
+この計算は<strong>六角形条件</strong> (hexagon condition) を課すことと等価で、六角形方程式そのものと余分な解の排除は<a href="chapter13.html">第13章</a>で扱われる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-10-2">いくつかの例<span class="en">Some Examples</span></h2>
+
+<h3 id="sec-10-2-1">§10.2.1 Fibonacci エニオン</h3>
+
+<p>
+Fibonacci エニオンは非自明な粒子が \(\tau\) だけで、融合則は \(\tau\times\tau=I+\tau\) である（<a href="chapter08.html">第8章</a>）。
+\(\tau\) は自分自身が反粒子なので、世界線に矢印は要らない。
+2個の \(\tau\) の状態は、\(I\) に融合する \(\ket I\) と \(\tau\) に融合する \(\ket\tau\) の2つである。
+反時計回りの交換 \(\hat\sigma\) は
+\[
+\hat\sigma\ket I=R^{\tau\tau}_I\ket I,\qquad \hat\sigma\ket\tau=R^{\tau\tau}_\tau\ket\tau
+\]
+と作用する。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（Fibonacci の \(R\) 行列：右手型）</span>
+<div class="equation" id="eq-10-fibR">\[
+R^{\tau\tau}_\tau=e^{+3\pi\ii/5},\qquad R^{\tau\tau}_I=e^{-4\pi\ii/5} .
+\]</div>
+<strong>左手型</strong>の Fibonacci エニオンでは、これらの複素共役をとる。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（2つの Fibonacci 理論）</span>
+同じ融合則と \(F\) 行列に対して、\(R\) の組は2通りあり、互いに鏡映（複素共役）で結ばれる別々の理論を与える。
+どちらを「右手型」と呼ぶかは規約にすぎない。ここで右手型と呼んだものは Chern–Simons 理論 \((G_2)_1\) に対応する。
+これらの値の導出は<a href="chapter13.html">第13章</a>（六角形方程式）による。
+</div>
+
+<p>
+重ね合わせには項ごとに作用するので
+\[
+\hat\sigma\bigl(\alpha\ket I+\beta\ket\tau\bigr)=\alpha\,R^{\tau\tau}_I\ket I+\beta\,R^{\tau\tau}_\tau\ket\tau .
+\]
+\(\ket I,\ket\tau\) を量子ビットの2状態と見れば、\(\hat\sigma\) は量子ビットの状態に応じた位相を付ける位相ゲートである。
+</p>
+
+<h4>3個の \(\tau\)</h4>
+
+<p>
+3個の \(\tau\) の空間は3次元で、基底は第8・9章と同じく次の3つにとる（\(\ket{c;f}\) の記法を併記）。
+</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>状態</th><th>左2個のチャネル \(c\)</th><th>全体 \(f\)</th><th>\(\hat\sigma_1\) の固有値</th></tr>
+</thead>
+<tbody>
+<tr><td>\(\ket N=\ket{\tau;I}\)</td><td>\(\tau\)</td><td>\(I\)</td><td>\(R^{\tau\tau}_\tau\)</td></tr>
+<tr><td>\(\ket0=\ket{I;\tau}\)</td><td>\(I\)</td><td>\(\tau\)</td><td>\(R^{\tau\tau}_I\)</td></tr>
+<tr><td>\(\ket1=\ket{\tau;\tau}\)</td><td>\(\tau\)</td><td>\(\tau\)</td><td>\(R^{\tau\tau}_\tau\)</td></tr>
+</tbody>
+</table>
+</div>
+<p>
+左の2個の交換 \(\hat\sigma_1\) は、左の2個のチャネルだけで位相が決まるので、この基底で対角である（表の右端の列）。
+</p>
+
+<p>
+右の2個の交換 \(\hat\sigma_2\) を \(\ket0\) に施す。\(\ket0\) では右の2個のチャネルが確定していないので、
+<a href="chapter09.html">第9章</a>の基底変換で、右の2個を先に融合した基底 \(\ket{0'}\)（チャネル \(I\)）、\(\ket{1'}\)（チャネル \(\tau\)）に移る：
+\[
+\ket0=F_{00'}\ket{0'}+F_{01'}\ket{1'} .
+\]
+ここで \(F_{ab}\) は \([F^{\tau\tau\tau}_\tau]_{ab}\) の略記で、添字 \(0,1\) は \(I,\tau\) を表す。
+</p>
+
+<div class="proof-box">
+<span class="box-title">導出（\(\hat\sigma_2\ket0\)）</span>
+プライム付きの基底では右の2個のチャネルが確定しているので \(R\) を掛け、その後 \(F^{-1}\) で元の基底に戻す：
+\[
+\begin{aligned}
+\hat\sigma_2\ket0
+&amp;=F_{00'}\,R^{\tau\tau}_I\ket{0'}+F_{01'}\,R^{\tau\tau}_\tau\ket{1'}\\
+&amp;=F_{00'}\,R^{\tau\tau}_I\bigl([F^{-1}]_{0'0}\ket0+[F^{-1}]_{0'1}\ket1\bigr)
++F_{01'}\,R^{\tau\tau}_\tau\bigl([F^{-1}]_{1'0}\ket0+[F^{-1}]_{1'1}\ket1\bigr)\\
+&amp;=\bigl(F_{00'}R^{\tau\tau}_I[F^{-1}]_{0'0}+F_{01'}R^{\tau\tau}_\tau[F^{-1}]_{1'0}\bigr)\ket0
++\bigl(F_{00'}R^{\tau\tau}_I[F^{-1}]_{0'1}+F_{01'}R^{\tau\tau}_\tau[F^{-1}]_{1'1}\bigr)\ket1 .
+\end{aligned}
+\]
+これは一般公式 <a class="eq-ref" href="#eq-10-s2"></a> を Fibonacci の場合に書き下したものである（\(\ket0\to\ket{I;\tau}\)、\(\ket1\to\ket{\tau;\tau}\) と読み替える）。
+Fibonacci の \(F\) 行列はたまたま \(F^{-1}=F\) を満たすが、手順を明確にするため逆行列として書いてある。
+</div>
+
+<p>
+\(\ket N\) については、全体が \(I\) なので右の2個のチャネルは \(\tau\) に確定しており（\([F^{\tau\tau\tau}_I]_{\tau\tau}=1\)）、
+\(\hat\sigma_2\ket N=R^{\tau\tau}_\tau\ket N\) である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（3個の Fibonacci エニオンの交換行列）</span>
+右手型、基底 \(\ket N,\ket0,\ket1\)（\(=\ket{\tau;I},\ket{I;\tau},\ket{\tau;\tau}\)）の順で、
+<div class="equation" id="eq-10-fibs1">\[
+\hat\sigma_1=\begin{pmatrix}
+e^{3\pi\ii/5}&amp;0&amp;0\\
+0&amp;e^{-4\pi\ii/5}&amp;0\\
+0&amp;0&amp;e^{3\pi\ii/5}
+\end{pmatrix},
+\]</div>
+<div class="equation" id="eq-10-fibs2">\[
+\hat\sigma_2=\begin{pmatrix}
+e^{3\pi\ii/5}&amp;0&amp;0\\
+0&amp;\phi^{-1}e^{4\pi\ii/5}&amp;\phi^{-1/2}e^{-3\pi\ii/5}\\
+0&amp;\phi^{-1/2}e^{-3\pi\ii/5}&amp;-\phi^{-1}
+\end{pmatrix},
+\qquad \phi=\frac{1+\sqrt5}{2}.
+\]</div>
+</div>
+
+<div class="proof-box">
+<span class="box-title">確認（\(2\times2\) ブロックの計算）</span>
+\(F=\begin{pmatrix}\phi^{-1}&amp;\phi^{-1/2}\\ \phi^{-1/2}&amp;-\phi^{-1}\end{pmatrix}\)、\(R=\diag(e^{-4\pi\ii/5},e^{3\pi\ii/5})\) として \(FRF\) を計算する。
+<ul>
+<li>\((0,0)\) 成分：\(\phi^{-2}e^{-4\pi\ii/5}+\phi^{-1}e^{3\pi\ii/5}\)。数値では \(-0.5+0.3633\,\ii\) で、\(\phi^{-1}e^{4\pi\ii/5}\) に一致する。</li>
+<li>\((0,1)\) 成分：\(\phi^{-3/2}\bigl(e^{-4\pi\ii/5}-e^{3\pi\ii/5}\bigr)\)。括弧内は絶対値 \(\phi\)、偏角 \(-3\pi/5\) の複素数なので \(\phi^{-1/2}e^{-3\pi\ii/5}\)。</li>
+<li>\((1,1)\) 成分：\(\phi^{-1}e^{-4\pi\ii/5}+\phi^{-2}e^{3\pi\ii/5}\)。虚部は打ち消し、実部は \(-\phi^{-1}\)。</li>
+</ul>
+\(\hat\sigma_1\) と \(\hat\sigma_2\) は同じ固有値の組 \(\{e^{3\pi\ii/5},e^{-4\pi\ii/5},e^{3\pi\ii/5}\}\) を持つ（どちらも「隣り合う2個の交換」で、基底が違うだけだから）。
+また、これらは組みひも関係式 \(\hat\sigma_1\hat\sigma_2\hat\sigma_1=\hat\sigma_2\hat\sigma_1\hat\sigma_2\) を満たす（原書の演習。数値的にも確かめられる）。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（局所性の確認）</span>
+\(f=\tau\) のブロックで \(\hat b_3=\hat\sigma_2\hat\sigma_1^2\hat\sigma_2\) を計算すると \(\diag(1,\,e^{6\pi\ii/5})\) になる。
+\(c=I\) の成分は「\(\tau\) が真空の周りを回る」ので 1、
+\(c=\tau\) の成分は「\(\tau\) が \(\tau\) の周りを一周し、全体が \(\tau\)」なので \((R^{\tau\tau}_\tau)^2=e^{6\pi\ii/5}\) であり、局所性の原理どおりである。
+\(f=I\) の状態 \(\ket N\) では \(\hat b_3=(R^{\tau\tau}_\tau)^4=e^{2\pi\ii/5}\) で、これは \((R^{\tau\tau}_I)^2=e^{-8\pi\ii/5}=e^{2\pi\ii/5}\) に等しい。
+</div>
+
+<h3 id="sec-10-2-2">§10.2.2 Ising エニオン</h3>
+
+<p>
+Ising エニオンでは事情はさらに単純である。3個の \(\sigma\) は全体として必ず \(\sigma\) に融合し、空間は2次元である。
+基底は、左の2個のチャネルが \(I\) の \(\ket0\) と、\(\psi\) の \(\ket1\) にとる。
+\(F\) 行列は<a href="chapter09.html">第9章</a>の \(F^{\sigma\sigma\sigma}_\sigma=\frac{1}{\sqrt2}\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}\) である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（Ising の \(R\) 行列：右手型）</span>
+<div class="equation" id="eq-10-isingR">\[
+R^{\sigma\sigma}_I=e^{-\ii\pi/8},\qquad R^{\sigma\sigma}_\psi=e^{3\ii\pi/8}=\ii\,R^{\sigma\sigma}_I .
+\]</div>
+左手型の理論ではこれらの複素共役をとる。
+</div>
+
+<div class="thm-box">
+<span class="box-title">結果（3個の Ising エニオンの交換行列）</span>
+基底 \(\ket0,\ket1\) の順で、左の2個の反時計回りの交換は
+<div class="equation" id="eq-10-isings1">\[
+\hat\sigma_1=e^{-\ii\pi/8}\begin{pmatrix}1&amp;0\\0&amp;\ii\end{pmatrix},
+\]</div>
+右の2個の反時計回りの交換は、<a class="eq-ref" href="#eq-10-s2"></a> より
+<div class="equation" id="eq-10-isings2">\[
+\hat\sigma_2=\frac{e^{\ii\pi/8}}{\sqrt2}\begin{pmatrix}1&amp;-\ii\\-\ii&amp;1\end{pmatrix}.
+\]</div>
+</div>
+
+<div class="proof-box">
+<span class="box-title">導出（\(\hat\sigma_2\)）</span>
+\(F\) は Hadamard 行列で \(F^{-1}=F\)。\(R=e^{-\ii\pi/8}\diag(1,\ii)\) として
+\[
+FRF=\frac{e^{-\ii\pi/8}}{2}\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}\begin{pmatrix}1&amp;0\\0&amp;\ii\end{pmatrix}\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}
+=\frac{e^{-\ii\pi/8}}{2}\begin{pmatrix}1+\ii&amp;1-\ii\\1-\ii&amp;1+\ii\end{pmatrix}.
+\]
+\(1+\ii=\sqrt2\,e^{\ii\pi/4}\) をくくり出すと \(\dfrac{1-\ii}{1+\ii}=-\ii\) なので、
+\[
+FRF=\frac{e^{-\ii\pi/8}e^{\ii\pi/4}}{\sqrt2}\begin{pmatrix}1&amp;-\ii\\-\ii&amp;1\end{pmatrix}
+=\frac{e^{\ii\pi/8}}{\sqrt2}\begin{pmatrix}1&amp;-\ii\\-\ii&amp;1\end{pmatrix}.
+\]
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（読み取れること）</span>
+<ul>
+<li>\(\hat\sigma_1\) は対角だが \(\hat\sigma_2\) は \(\ket0\) と \(\ket1\) を等しい重みで混ぜる。両者は交換せず、統計は非可換である。</li>
+<li>\(\hat\sigma_1^2=e^{-\ii\pi/4}\diag(1,-1)\) で、全体の位相を除けば Pauli の \(Z\) である。同様に \(\hat\sigma_2^2\) は全体の位相を除いて Pauli の \(X\) になる。</li>
+<li>組みひも関係式 \(\hat\sigma_1\hat\sigma_2\hat\sigma_1=\hat\sigma_2\hat\sigma_1\hat\sigma_2\) が成り立つ。</li>
+<li>これらの行列は、Majorana 演算子（\(\{\gamma_i,\gamma_j\}=2\delta_{ij}\)、\(\gamma_i=\gamma_i^\dagger\)）を使った表現
+\(\hat\sigma_1=\frac{e^{\ii\alpha}}{\sqrt2}(1+\gamma_1\gamma_2)\)、\(\hat\sigma_2=\frac{e^{\ii\alpha}}{\sqrt2}(1+\gamma_2\gamma_3)\)（<a href="chapter03.html">第3章</a>・第9章の演習で導入されたもの）と等価である。
+原書の演習でこの対応を確かめる。</li>
+</ul>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第10章のまとめ</span>
+<ul>
+<li>\(R\) 行列 \(R^{aa}_c\) は、融合チャネル \(c\) にある同種粒子 \(a\) 2個を反時計回りに交換したときの位相。逆向きの交換は逆の位相。\(N_{aa}^c=0\) なら \(R^{aa}_c=0\)。</li>
+<li>交換する2粒子の融合チャネルが確定していない基底では、\(F\) で基底を替えてから \(R\) を掛け、\(F^{-1}\) で戻す：
+\(\hat\sigma_2\ket{c;f}=\sum_{g,z}[F^{aaa}_f]_{cg}R^{aa}_g[(F^{aaa}_f)^{-1}]_{gz}\ket{z;f}\)。\(F\) と \(R\) があれば任意の組みひもの作用が計算できる。</li>
+<li>局所性：全体の量子数が \(c\) の集団を一体として動かす組みひもは、1個の \(c\) を動かすのと同じ。これは \(R\) を強く拘束し、六角形条件（<a href="chapter13.html">第13章</a>）と等価である。</li>
+<li>Fibonacci（右手型）：\(R^{\tau\tau}_\tau=e^{3\pi\ii/5}\)、\(R^{\tau\tau}_I=e^{-4\pi\ii/5}\)。3粒子の \(\hat\sigma_1\) は対角、\(\hat\sigma_2\) は \(f=\tau\) のブロックで \(FRF\)。</li>
+<li>Ising（右手型）：\(R^{\sigma\sigma}_I=e^{-\ii\pi/8}\)、\(R^{\sigma\sigma}_\psi=e^{3\ii\pi/8}\)。
+\(\hat\sigma_1=e^{-\ii\pi/8}\diag(1,\ii)\)、\(\hat\sigma_2=\frac{e^{\ii\pi/8}}{\sqrt2}\begin{pmatrix}1&amp;-\ii\\-\ii&amp;1\end{pmatrix}\)。</li>
+<li>左手型の理論は \(R\) を複素共役にしたもので、右手型の鏡像である。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="可換 Chern–Simons 理論による電荷・磁束束縛と分数統計、非可換 Chern–Simons 理論と Wilson ループ・結び目不変量、K 行列形式">
+  <title>第5章 Chern–Simons 理論の基礎 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter05" data-chapter="5">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第5章に対応</span>
+  第5章 Chern–Simons 理論の基礎
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter04.html">第4章</a>では、エニオンを「電荷と磁束の複合粒子」とみなす模型で分数統計を説明した。
+本章はその電荷・磁束束縛を、場の理論の運動方程式として実現する。
+それが <strong>Chern–Simons 理論</strong>であり、\((2+1)\) 次元のトポロジカル場の量子論 (TQFT) の代表例である。
+前半（§5.1）は可換（\(U(1)\)）の場合を扱い、ゲージ場を積分すると粒子の世界線の組みひもの巻き数に比例した位相だけが残ること、
+つまり分数統計が出ることを見る。
+中盤（§5.2）ではゲージ場を行列値にした非可換 Chern–Simons 理論を導入し、
+分配関数 \(Z(\calM)\) が多様体の不変量、Wilson ループの期待値が結び目不変量（\(SU(2)_k\) なら Kauffman 括弧）になることを述べる。
+後半（§5.3）は補遺で、正準量子化、複数ゲージ場の \(K\) 行列形式、非可換ゲージ変換、計量非依存性、Pontryagin 指数、枠付けとアノマリー、4次元理論の境界としての見方をまとめる。
+ここで登場する \(Z(\calM)\) は<a href="chapter07.html">第7章</a>の TQFT の公理的定義の中心になり、\(SU(2)_k\) は後の章で何度も現れる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-5-1">可換 Chern–Simons 理論<span class="en">Abelian Chern–Simons Theory</span></h2>
+
+<p>
+出発点はゲージ場 \(a_\alpha\)（<strong>Chern–Simons ベクトルポテンシャル</strong>）である。
+電磁気学のベクトルポテンシャル \(A_\alpha\) に似ているが、本物の電磁場とは別物で、
+考えている2次元系の中だけに住む<strong>創発的な有効場</strong>と考える。
+添字 \(\alpha,\beta,\gamma\) は \(0,1,2\) を走り、\(0\) が時間、\(1,2\) が空間方向である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（可換 Chern–Simons ラグランジアン）</span>
+系のラグランジアンを \(L = L_0 + \int \dd^2x\,\mathcal{L}\) と書く。
+\(L_0\) はゲージ場と結合する前の粒子のラグランジアン（自由粒子でも、相互作用入りでもよい）で、
+ラグランジアン密度は
+<div class="equation" id="eq-5-lag">\[
+\mathcal{L} = \mathcal{L}_{CS} + \mathcal{L}_{\text{coupling}}
+= \frac{k}{4\pi}\,\epsilon^{\alpha\beta\gamma}\,a_\alpha \partial_\beta a_\gamma \;-\; j^\alpha a_\alpha
+\]</div>
+である。\(j^\alpha\) は粒子の電荷カレント、\(\epsilon^{\alpha\beta\gamma}\) は完全反対称テンソル（\(\epsilon^{012}=1\)）、
+結合定数 \(k\) は<strong>レベル (level)</strong> と呼ばれる。繰り返された添字は和をとる。
+</div>
+
+<p>
+第1項が <strong>Chern–Simons 項</strong>、第2項が粒子とゲージ場の結合である。
+\(N\) 個の粒子（位置 \(\mathbf{x}_n\)、電荷 \(q_n\)）に対するカレントは
+\[
+j^0(\mathbf{x}) = \sum_{n=1}^N q_n\,\delta(\mathbf{x}-\mathbf{x}_n),\qquad
+\mathbf{j}(\mathbf{x}) = \sum_{n=1}^N q_n\,\dot{\mathbf{x}}_n\,\delta(\mathbf{x}-\mathbf{x}_n)
+\]
+で、これを使って \(-j^\alpha a_\alpha\) を空間積分すると
+<div class="equation" id="eq-5-coupling">\[
+-\int \dd^2x\; j^\alpha a_\alpha = \sum_{n=1}^N q_n\bigl[\mathbf{a}(\mathbf{x}_n)\cdot\dot{\mathbf{x}}_n - a_0(\mathbf{x}_n)\bigr]
+\]</div>
+となる（Lorentz 計量の符号 \(j^\alpha a_\alpha = j^0a_0 - j^1a_1 - j^2a_2\) を使った）。
+これは第4章で Aharonov–Bohm 効果を論じたときの「荷電粒子とベクトルポテンシャルの結合」そのものである。
+ここでの電荷 \(q\) も本物の電荷ではなく、\(a_\alpha\) に結合する電荷である。
+</p>
+
+<h3>ゲージ不変性</h3>
+
+<p>
+結合項は、粒子の経路を閉じれば囲んだ磁束だけで決まるので、通常どおりゲージ不変である。
+Chern–Simons 項については、ゲージ変換
+<div class="equation" id="eq-5-gauge">\[
+a_\mu \to a_\mu + \partial_\mu \chi
+\]</div>
+を施し部分積分すると、変化分はすべて \(\epsilon^{\alpha\beta\gamma}\chi\,\partial_\alpha\partial_\beta a_\gamma\) の形にまとまり、反対称性から消える。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（境界があるとき）</span>
+この議論は部分積分の表面項を捨てているので、<strong>境界のない閉じた時空多様体</strong>でだけ成り立つ。
+境界があると物理的に意味のある境界項が残り、縁を一方向に伝わるカイラルな励起モードの存在を示す（原書 §17.3.3）。
+本章では閉多様体を仮定する。
+</div>
+
+<h3>運動方程式と磁束の束縛</h3>
+
+<p>
+\(a_\alpha\) についての Euler–Lagrange 方程式 \(\partial\mathcal{L}/\partial a_\alpha = \partial_\beta\bigl[\partial\mathcal{L}/\partial(\partial_\beta a_\alpha)\bigr]\) から
+<div class="equation" id="eq-5-eom">\[
+j^\alpha = \frac{k}{2\pi}\,\epsilon^{\alpha\beta\gamma}\,\partial_\beta a_\gamma
+\]</div>
+を得る。係数が \(k/4\pi\) でなく \(k/2\pi\) になるのは、\(a\) が Chern–Simons 項に2回現れ、左辺と右辺から同じ寄与が出て足し合わさるためである。
+第0成分を見ると
+<div class="equation" id="eq-5-flux">\[
+j^0 = \sum_{n} q_n\,\delta(\mathbf{x}-\mathbf{x}_n) = \frac{k}{2\pi}\bigl(\partial_1 a_2 - \partial_2 a_1\bigr) = \frac{k}{2\pi}\,b
+\]</div>
+となる。\(b\) は Chern–Simons ベクトルポテンシャルの2次元の回転、すなわち「Chern–Simons 磁場」である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（電荷・磁束束縛）</span>
+運動方程式 <a class="eq-ref" href="#eq-5-flux"></a> は、電荷 \(q_n\) の各粒子の位置に、磁束 \(2\pi q_n/k\) をもつ無限に細い磁束管を貼り付ける。
+Chern–Simons 項は、第4章で手で仮定した「電荷と磁束の複合粒子」を力学的に実現する。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（\(U(1)_k\) という名前）</span>
+\(a_\mu\) を実数値の場でなく円周値（群 \(U(1)\) 値）の場とみなすことが多い。
+このとき磁束は \(2\pi\) を法としてだけ意味をもつ（磁束 \(2\pi\) は電荷を一周させても位相を与えない）。
+レベル \(k\) の可換 Chern–Simons 理論を \(U(1)_k\) と書くのはこのためで、§5.2 の一般の Lie 群値のゲージ場ともつながりがよい。
+\(k\) は現時点では実数でよいが、整数のとき理論が特に良い振る舞いをする。
+</div>
+
+<h3>統計位相は \(\pi/k\)</h3>
+
+<p>
+以下すべての粒子が同じ電荷 \(q=1\) をもつとし、\(\hbar=1\) とおく。
+第4章の電荷・磁束模型をそのまま当てはめると、交換の位相は「電荷 × 磁束」で \(\vartheta = 2\pi q^2/k = 2\pi/k\) と予想したくなる。
+しかしこれは正しくない。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（可換 Chern–Simons 理論の統計角）</span>
+\[
+\vartheta = \frac{\pi}{k}.
+\]
+</div>
+
+<div class="proof-box">
+<span class="box-title">導出</span>
+運動方程式 <a class="eq-ref" href="#eq-5-eom"></a> に \(a_\alpha\) を掛けると
+\(j^\alpha a_\alpha = \tfrac{k}{2\pi}\epsilon^{\alpha\beta\gamma}a_\alpha\partial_\beta a_\gamma = 2\mathcal{L}_{CS}\)。
+これを <a class="eq-ref" href="#eq-5-lag"></a> に戻すと
+<div class="equation" id="eq-5-half">\[
+\mathcal{L} = -\frac{1}{2}\,j^\alpha a_\alpha .
+\]</div>
+つまり Chern–Simons 項自身が結合項のちょうど半分を打ち消す。
+交換で溜まる Aharonov–Bohm 位相も半分になり、\(2\pi/k\) の半分の \(\pi/k\) が残る。
+</div>
+
+<p>
+\(q=1\) の単位で \(k\) を整数にとれば、交換位相は \(\pi\) の有理数倍になる。これは第4章でトーラス上の理論が矛盾なく定まるために必要だった条件である。
+特に \(k=1\) は交換位相 \(\pi\) のフェルミオンの理論で、トーラス上の基底状態は縮退しない。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（運動方程式をラグランジアンに代入してよいのか）</span>
+経路積分では運動方程式を満たさない配位も足し上げるので、一般には運動方程式をラグランジアンに戻す操作は許されない。
+しかしこの理論では、場の配位すべてについて積分した結果と一致することが確かめられる。
+\(a\) について2次の作用（Gauss 積分）であることがその背景にある。
+</div>
+
+<h3>経路積分：ゲージ場を積分すると組みひもの位相が残る</h3>
+
+<p>
+粒子の経路の組を \(\{\mathbf{r}_n(t)\}\) と書く。伝播関数は、粒子の経路についての和と、時空の各点での場 \(a_\mu(\mathbf{x},t)\) の配位についての和の二重の和
+<div class="equation" id="eq-5-prop">\[
+\sum_{\text{paths }\{\mathbf{r}_n(t)\}}\ \sum_{\text{all } a_\mu(\mathbf{x},t)} \ee^{\ii(S_0+S_{CS}+S_{\text{coupling}})/\hbar}
+\]</div>
+で与えられる。場の配位についての和は、時空を小さな箱に分けて各箱で \(a_\mu\) のあらゆる値を積分するという意味で、
+汎関数積分 \(\int \mathcal{D}a_\mu(x)\) と書く（数学的に厳密な意味づけは容易でないが、ここでは実行する必要がない）。
+結合項 <a class="eq-ref" href="#eq-5-coupling"></a> を経路に沿って積分すると Aharonov–Bohm 位相と同じ線積分になるので
+<div class="equation" id="eq-5-prop2">\[
+\sum_{\text{paths }\{\mathbf{r}_n(t)\}} \ee^{\ii S_0/\hbar}\int\mathcal{D}a_\mu(x)\; \ee^{\ii S_{CS}/\hbar}\;\ee^{\ii (q/\hbar)\int \dd l^\alpha a_\alpha}
+\]</div>
+と書ける。最後の因子、ベクトルポテンシャルの線積分の指数関数は <strong>Wilson 線演算子</strong>の例である。
+</p>
+
+<p>
+運動方程式で磁束を電荷に束縛したあとは、\(\mathcal{L}_{CS}+\mathcal{L}_{\text{coupling}}\) を \(\tfrac12\mathcal{L}_{\text{coupling}}\) に置き換えてよい。
+すると場 \(a\) は「各粒子が磁束 \(2\pi/k\) を伴う」配位に固定され、残る線積分は電荷が他の粒子の磁束のまわりを回る Aharonov–Bohm 位相を数える。
+これは粒子の世界線が作る組みひもの<strong>巻き数</strong> \(W\) を測ることに等しい。規格化定数を除いて
+<div class="equation" id="eq-5-winding">\[
+\sum_{\text{paths }\{\mathbf{r}_n(t)\}} \ee^{\ii S_0/\hbar \,+\, \ii\vartheta\, W(\text{paths})}
+\]</div>
+となる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（Chern–Simons 場の積分 ＝ 分数統計）</span>
+Chern–Simons ゲージ場を「積分して消す」と、粒子の経路積分に交換1回ごとの位相 \(\ee^{\pm\ii\vartheta}\) が挿入される。
+すなわち、もとの粒子は統計角 \(\vartheta=\pi/k\) の可換エニオンになる。
+これは<a href="chapter03.html">第3章</a>で見た「経路積分に組みひも群の表現を重みとして入れる」処方の、場の理論による実現である。
+</div>
+
+<h3>粒子のない真空の可換 Chern–Simons 理論</h3>
+
+<p>
+第4章で見たように、エニオン理論の真空は粒子がいなくても統計の情報を知っている。トーラス上の基底状態の縮退度が粒子の種類の数に等しいのがその現れである。
+そこで粒子を入れない量
+<div class="equation" id="eq-5-Zabelian">\[
+Z(\calM) = \int_{\calM}\mathcal{D}a_\mu(x)\; \ee^{\ii S_{CS}/\hbar}
+\]</div>
+を考える。\(\calM\) は時空多様体で、\(Z(\calM)\) を多様体 \(\calM\) に対する理論の<strong>分配関数 (partition function)</strong> と呼ぶ。
+</p>
+
+<ul>
+<li>\(\calM = \Sigma\times S^1\)（2次元多様体 \(\Sigma\) と、円周に丸めた時間）のとき、\(Z(\calM)\) は \(\Sigma\) 上の<strong>基底状態の縮退度</strong>を与える。
+時間を \(S^1\) に丸める操作は、統計力学で有限温度を表すときと同じである。</li>
+<li>\(Z(\calM)\) は時空多様体の<strong>トポロジカル不変量</strong>であり、\(\calM\) を滑らかに変形しても値が変わらない（§5.3.4）。</li>
+<li>\(\Sigma\times\R\) のような形は自然に見えるが、<a href="chapter07.html">第7章</a>では、時間とともに空間の切り口のトポロジーが変わるような一般の3次元多様体まで許す（<a href="chapter06.html">第6章</a>も参照）。</li>
+</ul>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-5-2">非可換 Chern–Simons 理論：TQFT の典型<span class="en">Nonabelian Chern–Simons Theory: The Paradigm of TQFT</span></h2>
+
+<p>
+\((2+1)\) 次元のトポロジカルな量子系で興味のあるものは、ほぼすべて何らかの形で Chern–Simons 理論と関係している。
+ただし一般には可換理論では足りない。
+そこでゲージ場 \(a_\alpha\) を数のベクトルから<strong>行列のベクトル</strong>に格上げする。Yang–Mills 理論の非可換ベクトルポテンシャルと同じ考え方である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Lie 代数値のゲージ場）</span>
+ゲージ場は Lie 代数に値をとる。一般には反エルミートな生成子 \(T_a\)（\(T_a = -T_a^\dagger\)）を使って \(a_\mu = a_\mu^a T_a\) と書き、
+\([T_a,T_b] = f^{abc}T_c\)（\(f\) は構造定数）、\(\Tr[T_aT_b] = -\tfrac12\delta_{ab}\) と規格化する。
+\(SU(2)\) の基本表現では \(T_a = -\ii\sigma_a/2\)、\(f^{abc}=\epsilon^{abc}\) で、
+<div class="equation" id="eq-5-su2field">\[
+a_\mu(x) = a_\mu^a(x)\,\frac{\sigma_a}{2\ii}
+\]</div>
+となる（\(\sigma_a\) は Pauli 行列）。
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（規約）</span>
+この規約では虚数単位 \(\ii\) がゲージ場に吸収されている。そのため以下の Wilson ループやゲージ変換の式には、
+可換の場合に現れた \(\ii\) が見えない。\(q\) と \(\hbar\) も 1 とおいている。
+文献によって規格化は異なり、規約を変えると 2 や \(\ii\) の因子が方々に現れる。
+</div>
+
+<h3>Wilson ループ演算子</h3>
+
+<div class="def-box">
+<span class="box-title">定義（Wilson ループ演算子）</span>
+閉じた経路 \(L\) に対して
+<div class="equation" id="eq-5-wilson">\[
+W_L = \Tr\Bigl[\,P\exp\Bigl(\oint_L \dd l^\mu a_\mu\Bigr)\Bigr].
+\]</div>
+\(P\) は<strong>経路順序 (path ordering)</strong> を表す。
+</div>
+
+<p>
+これは Aharonov–Bohm 位相の非可換版である。
+\(a_\mu(x)\) が行列なので、異なる点の \(a_\mu(x)\) と \(a_\mu(x')\) は交換せず、ただの積分の指数関数では意味が定まらない。
+そこで経路を微小な区間に分け、経路に沿った順に行列を掛けていく：
+<div class="equation" id="eq-5-pathorder">\[
+P\exp\Bigl(\int_L \dd l^\mu a_\mu\Bigr) = \cdots\bigl[1+a_\mu(x_3)\dd l^\mu(x_3)\bigr]\bigl[1+a_\mu(x_2)\dd l^\mu(x_2)\bigr]\bigl[1+a_\mu(x_1)\dd l^\mu(x_1)\bigr]\cdots
+\]</div>
+\(x_1,x_2,x_3,\dots\) は経路上の刻みの点である（等間隔でなくてよい）。量子力学の時間順序積と同じ構造をもつ。
+閉じた経路では、トレースの巡回性のおかげで、どの点から掛け始めても同じ値になる。
+</p>
+
+<p>
+非可換ゲージ場のゲージ変換は、時空の各点で定義された行列 \(U(x)\) を使って
+<div class="equation" id="eq-5-nagauge">\[
+a_\mu \to U^{-1}a_\mu U + U^{-1}\partial_\mu U
+\]</div>
+で与えられる。\(U=\ee^{\ii\chi}\) とおけば可換の <a class="eq-ref" href="#eq-5-gauge"></a> に戻る。
+この変換で Wilson ループが不変であること（それがこの変換則の正当化でもある）は §5.3.3 で確かめる。
+</p>
+
+<h3>非可換 Chern–Simons 作用</h3>
+
+<div class="def-box">
+<span class="box-title">定義（非可換 Chern–Simons 作用）</span>
+<div class="equation" id="eq-5-nacs">\[
+S_{CS} = \frac{k}{4\pi}\int_{\calM}\dd^3x\;\epsilon^{\alpha\beta\gamma}\,\Tr\Bigl[a_\alpha\partial_\beta a_\gamma + \frac{2}{3}\,a_\alpha a_\beta a_\gamma\Bigr].
+\]</div>
+</div>
+
+<p>
+括弧内の第2項は \(a_\alpha\) が可換なら反対称性で消えるので、可換理論 <a class="eq-ref" href="#eq-5-lag"></a> には現れなかった。
+この作用には2つの重要な性質がある。
+</p>
+
+<ul>
+<li><strong>計量非依存性</strong>：時空を連続的に変形しても作用の値が変わらない。作用が時空の計量 \(g_{\mu\nu}\) をどこにも含まないことがその手がかりで、きちんとした議論は §5.3.4 で行う。</li>
+<li><strong>（ほぼ）ゲージ不変性</strong>：下で述べるように、完全にではないが十分にゲージ不変である。</li>
+</ul>
+
+<div class="thm-box">
+<span class="box-title">主張（Chern–Simons 作用の一意性）</span>
+\((2+1)\) 次元で、ゲージ場を1つだけ含み、計量に依存せず、かつ（ほぼ）ゲージ不変な作用は Chern–Simons 作用だけである。
+これが、Chern–Simons 理論が \((2+1)\) 次元のトポロジカルな理論の典型とされる理由である。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（Schwarz 型と Witten 型）</span>
+Chern–Simons 理論のように、作用を計量なしで書ける TQFT を Schwarz 型という。
+作用を書くには計量が必要だが、物理的な結果が計量の選び方に依存しない TQFT もあり、こちらは Witten 型と呼ばれる。
+</div>
+
+<h3>「ほぼ」ゲージ不変：レベルの量子化</h3>
+
+<p>
+ゲージ不変性が破れる場面は2つある。1つは多様体に境界がある場合で、可換のときと同じく境界項が残る。ここでは境界はないとする。
+もう1つはより本質的で、閉多様体上でもゲージ変換 <a class="eq-ref" href="#eq-5-nagauge"></a> のもとで作用が
+<div class="equation" id="eq-5-shift">\[
+S_{CS}\to S_{CS} + 2\pi\nu k
+\]</div>
+とずれる。ここで
+<div class="equation" id="eq-5-pont">\[
+\nu = \frac{1}{24\pi^2}\int_{\calM}\dd^3x\;\epsilon^{\alpha\beta\gamma}\,\Tr\bigl[(U^{-1}\partial_\alpha U)(U^{-1}\partial_\beta U)(U^{-1}\partial_\gamma U)\bigr]
+\]</div>
+は <strong>Pontryagin 指数</strong>と呼ばれ、複雑な見かけに反して<strong>常に整数</strong>である（§5.3.5）。
+\(\nu\) は、多様体からゲージ群への写像 \(U(x)\) の<strong>巻き数</strong>を表す。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(SU(2)\) と \(S^3\)）</span>
+群 \(SU(2)\) は多様体として \(S^3\) と同じである。時空が \(S^3\) なら、\(U(x)\) は \(S^3\)（時空）から \(S^3\)（群）への写像で、
+\(\pi_3(S^3)=\Z\) により、\(S^3\) を \(S^3\) に何回巻き付けるかという整数で分類される。
+いたるところ \(U=1\) に連続変形できる写像が巻き数 0、各点を自分自身に写す恒等写像が巻き数 1 で、2 対 1 の写像を作れば巻き数 2 になる。
+</div>
+
+<div class="thm-box">
+<span class="box-title">結果（レベル \(k\) は整数）</span>
+汎関数積分に入るのは作用そのものではなく \(\ee^{\ii S_{CS}}\) である。
+\(\nu\) が整数なので、<strong>\(k\) を整数に選べば</strong> \(\ee^{\ii S_{CS}}\) はゲージ不変になり、
+<div class="equation" id="eq-5-Z">\[
+Z(\calM) = \int_{\calM}\mathcal{D}a_\mu(x)\;\ee^{\ii S_{CS}}
+\]</div>
+がきちんと定義される。\(Z(\calM)\) は多様体の不変量で、時空を滑らかに変形しても値が変わらない。
+</div>
+
+<h3>Wilson ループと結び目不変量</h3>
+
+<p>
+経路積分に Wilson ループ演算子を挿入すると、ループがたどる絡み目 \(L\) の<strong>結び目不変量</strong>が得られる。
+作用が計量に依存しないのだから、結果が時空の変形で変わらないのは自然である。
+絡み目は \(S^3\) のような単純な多様体に埋め込まれていると考えることが多い。
+2本の輪 \(L_1, L_2\) からなる絡み目なら
+<div class="equation" id="eq-5-knot">\[
+\frac{Z(S^3,L_1,L_2)}{Z(S^3)} = \frac{\displaystyle\int_{S^3}\mathcal{D}a_\mu(x)\;W_{L_1}W_{L_2}\,\ee^{\ii S_{CS}}}{\displaystyle\int_{S^3}\mathcal{D}a_\mu(x)\;\ee^{\ii S_{CS}}}
+\]</div>
+がその不変量である。これは Witten (1989) による結び目不変量と Chern–Simons 理論の対応で、<a href="chapter02.html">第2章</a>の Kauffman 括弧に場の理論の起源を与える。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>ゲージ群とレベル</th><th>得られる結び目不変量</th></tr></thead>
+<tbody>
+<tr><td>\(SU(2)_k\)（スピン 1/2 表現）</td><td>Kauffman 括弧。\(A = \exp\bigl(\ii\pi/(2(k+2))\bigr)\)</td></tr>
+<tr><td>\(SU(N)_k\)</td><td>2 パラメータ（\(N\) と \(k\)）の HOMFLY 多項式</td></tr>
+<tr><td>\(SO(N)_k\)</td><td>2 パラメータの Kauffman 多項式（Kauffman 括弧とは別物）</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>ゲージ群 \(G\)、レベル \(k\) の Chern–Simons 理論を \(G_k\) と書く（例：\(SU(2)_2\)）。</li>
+<li>同じゲージ群でも、Wilson ループのトレースをとる表現を変える（スピン 1/2 の代わりにスピン 1 など）と、理論の別の<strong>粒子種</strong>に対応する。</li>
+<li>\(k\) の符号を反転すると理論の「鏡像」になり、分配関数は複素共役になる。</li>
+</ul>
+
+<div class="caution-box">
+<span class="box-title">注意（枠付け）</span>
+上の議論では結び目の<strong>枠付け (framing)</strong> を指定していない。世界線を線でなくリボンと考えたとき、リボンが自分自身のまわりを何回ねじれるかという情報である（原書 §2.6.1）。
+場の理論の言葉では、点分離による正則化をどう実行するかに対応する。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-5-3">補遺：Chern–Simons 理論のあれこれ<span class="en">Appendix: Odds and Ends about Chern–Simons Theory</span></h2>
+
+<h3 id="sec-5-3-1">§5.3.1 可換 Chern–Simons 理論の正準量子化</h3>
+
+<p>
+経路積分でなく、波動関数と演算子の言葉でも Chern–Simons 理論を扱える。
+ゲージ \(a_0=0\) をとると、ラグランジアンには \(a_x\,\partial_0 a_y\) の形の項が現れる。
+つまり \(a_y(\mathbf{x})\) は \(a_x(\mathbf{x})\) に正準共役な運動量であり、交換関係
+<div class="equation" id="eq-5-ccr">\[
+[a_x(\mathbf{x}),\,a_y(\mathbf{x}')] = \frac{2\pi\ii}{k}\,\delta(\mathbf{x}-\mathbf{x}')
+\]</div>
+が成り立つ（\(\mathbf{x}\) は2次元空間の点）。
+ハミルトニアン形式の目で見ると、Chern–Simons 項は時間微分について1次なので、ハミルトニアンは 0 で、ゲージ場の空間成分どうしが位置と運動量の関係になる。
+</p>
+
+<p>
+トーラスの2つの非自明なサイクル \(L_1, L_2\) に沿う Wilson ループ演算子
+\[
+W_j = \exp\Bigl(\ii q\oint_{L_j}\dd\mathbf{l}\cdot\mathbf{a}\Bigr)\qquad (j=1,2)
+\]
+を考える。2つの経路は1点で交わるので、<a class="eq-ref" href="#eq-5-ccr"></a> により指数の肩どうしの交換子は定数になる。
+\([A,[A,B]]=[B,[A,B]]=0\) のとき成り立つ Baker–Campbell–Hausdorff 公式 \(\ee^A\ee^B = \ee^B\ee^A\ee^{[A,B]}\) を使うと
+<div class="equation" id="eq-5-w1w2">\[
+W_1W_2 = \ee^{2\pi\ii q^2/k}\,W_2W_1
+\]</div>
+を得る。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <rect x="150" y="20" width="140" height="140" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="150" y1="90" x2="290" y2="90" class="line accent" stroke-width="2"/>
+  <line x1="220" y1="20" x2="220" y2="160" class="line accent" stroke-width="2"/>
+  <circle cx="220" cy="90" r="4" class="accent-fill"/>
+  <path d="M 262 84 L 272 90 L 262 96" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 214 58 L 220 48 L 226 58" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="298" y="95" class="label">L1</text>
+  <text x="213" y="14" class="label">L2</text>
+  <text x="230" y="112" class="label-muted">交点は1つ</text>
+  <text x="20" y="85" class="label-muted">左右の辺を</text>
+  <text x="20" y="103" class="label-muted">同一視</text>
+  <text x="165" y="182" class="label-muted">上下の辺を同一視</text>
+</svg>
+<figcaption>図 5.1：トーラス（向かい合う辺を同一視した正方形）の2つのサイクルに沿う Wilson ループ。1点で交わるため \(W_1\) と \(W_2\) は交換しない。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">結果（粒子なしでも基底状態は縮退する）</span>
+<a class="eq-ref" href="#eq-5-w1w2"></a> は、第4章でトーラス上に導入した演算子 \(T_1,T_2\)（粒子・反粒子対を作り、非自明なサイクルを一周させて対消滅させる）と同じ型の代数である。
+互いに位相を除いて交換する2つの演算子は1次元の空間には表現できないので、
+粒子をまったく論じなくても、Chern–Simons 理論のトーラス上の基底状態は縮退する。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足</span>
+<a class="eq-ref" href="#eq-5-w1w2"></a> の位相 \(2\pi q^2/k\) は、\(q=1\) の粒子が別の粒子のまわりを一周するときの位相（交換の位相 \(\pi/k\) の2倍）である。
+なお非可換理論でも \(a_0=0\) ゲージをとると、作用の \(a^3\) の項は消える。
+</div>
+
+<h3 id="sec-5-3-2">§5.3.2 複数のゲージ場と \(K\) 行列</h3>
+
+<p>
+可換 Chern–Simons 理論は、複数のゲージ場 \(a^J_\mu\)（\(J=1,\dots,N\)）へ容易に一般化できる。実際、どんな可換エニオン理論もこの形式で表せる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（\(K\) 行列形式）</span>
+<div class="equation" id="eq-5-Klag">\[
+\mathcal{L} = \frac{K_{IJ}}{4\pi}\,\epsilon^{\alpha\beta\gamma}\,a^I_\alpha\partial_\beta a^J_\gamma - j_J^\alpha a^J_\alpha
+\]</div>
+\(K_{IJ}\) は整数を成分とする \(N\times N\) の<strong>対称で可逆な行列</strong>、\(j_J\) は \(N\) 種類のカレントで、添字 \(I,J\) も和をとる。
+\(K\) が対角なら、<a class="eq-ref" href="#eq-5-lag"></a> の理論が \(N\) 個、結合せずに並んでいるだけである。
+</div>
+
+<p>
+§5.1 と同じ手順をたどる。運動方程式は
+<div class="equation" id="eq-5-Keom">\[
+j_I^\alpha = \frac{K_{IJ}}{2\pi}\,\epsilon^{\alpha\beta\gamma}\,\partial_\beta a^J_\gamma
+\]</div>
+で、有効磁場 \(b^J = \partial_1a^J_2-\partial_2a^J_1\) を定義すると、第0成分から磁束束縛
+<div class="equation" id="eq-5-Kflux">\[
+j_I^0 = \frac{K_{IJ}}{2\pi}\,b^J\qquad\Longleftrightarrow\qquad b^J = 2\pi\,[K^{-1}]_{JI}\,j_I^0
+\]</div>
+が出る。これは、種類 \(I\) の電荷にどの種類の磁束 \(b^J\) がどれだけ付くかを表す。
+結合項の形から、種類 \(J\) の粒子は種類 \(J\) の磁束だけを感じる。
+運動方程式をラグランジアンに戻すと、ここでも \(\mathcal{L} = -\tfrac12 j_I^\alpha a^I_\alpha\) となり、位相は半分になる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（\(K\) 行列理論の統計）</span>
+種類 \(J\) の同種粒子2個の交換位相と、種類 \(L\) の粒子が種類 \(J\) の粒子のまわりを一周するときの位相は
+\[
+\vartheta_J = \pi\,[K^{-1}]_{JJ},\qquad \vartheta_{LJ} = 2\pi\,[K^{-1}]_{LJ}.
+\]
+一般の準粒子は、各種類の電荷を何単位もつかを表す整数ベクトル \(\boldsymbol{\ell}=(\ell_1,\dots,\ell_N)\) で指定され、
+<div class="equation" id="eq-5-Kstat">\[
+\vartheta_{\boldsymbol{\ell}} = \pi\,\boldsymbol{\ell}^{T}K^{-1}\boldsymbol{\ell},\qquad
+\vartheta_{\boldsymbol{\ell},\boldsymbol{\ell}'} = 2\pi\,\boldsymbol{\ell}^{T}K^{-1}\boldsymbol{\ell}'
+\]</div>
+となる。融合は電荷の足し算で、\(\boldsymbol{\ell}\) と \(\boldsymbol{\ell}'\) を融合すると \(\boldsymbol{\ell}+\boldsymbol{\ell}'\) になる。
+</div>
+
+<p>
+第4章で見たとおり、同じ種類のエニオンを十分な個数融合すると真空に戻るので、すべての \(\boldsymbol{\ell}\) が異なる粒子種を表すわけではない。
+「どの粒子種のまわりを回しても同じ位相を得る2つの \(\boldsymbol{\ell}\) は同じ粒子種」と定義すると、
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（粒子種の数）</span>
+異なる粒子種の数は \(|\det K|\) であり、これはトーラス上の基底状態の縮退度にも等しい。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（\(N=1\)、\(K=(k)\)）</span>
+\(1\times1\) 行列 \(K=(k)\) は §5.1 の \(U(1)_k\) である。<a class="eq-ref" href="#eq-5-Kstat"></a> から \(\vartheta_\ell = \pi\ell^2/k\)、\(\vartheta_{\ell,\ell'} = 2\pi\ell\ell'/k\)。
+\(\ell=1\) で \(\vartheta=\pi/k\) が再現され、\(n\) 個を融合した粒子の交換位相が \(n^2\vartheta\) になるという第4章の結果とも合う。
+\(\ell\to\ell+k\) としても \(\vartheta_{\ell,\ell'}\) は \(2\pi\) の整数倍しか変わらないので、粒子種は \(|\det K|=k\) 個である。
+\(\ell=k\) の粒子は他のどの粒子のまわりを回しても位相がつかず、自身の交換位相は \(\pi k\) である。\(k\) が偶数ならボソン、奇数ならフェルミオンになる。
+\(k=1\) がフェルミオンの理論だったことと整合する。
+</div>
+
+<p>
+整数成分で \(\det W = 1\) の行列 \(W\) による基底変換
+\[
+K\to WKW^{T},\qquad \boldsymbol{\ell}\to W\boldsymbol{\ell}
+\]
+は、同じエニオン理論を別の姿で書き直すだけである。
+また §5.1 と同様に、このラグランジアンがゲージ不変なのは閉多様体上だけで、境界でのゲージ不変性の破れは \(N\) 本の伝播する縁モードの存在を示す。
+\(K\) の正の固有値の数を \(n\) とすると、\(n\) 本が一方向に、\(N-n\) 本が逆方向に進む。
+\(K\) 行列形式は分数量子 Hall 効果の物理で多用される（原書第37章）。数学の \(K\) 理論とは名前が似ているだけで関係がない。
+原書の演習では、ここで述べた統計の式と \(|\det K|\) の結果の証明を扱う。
+</p>
+
+<h3 id="sec-5-3-3">§5.3.3 非可換ゲージ場のゲージ変換</h3>
+
+<p>
+ゲージ変換則 <a class="eq-ref" href="#eq-5-nagauge"></a> の由来を見る。
+閉じていない曲線 \(C\)（時空点 \(y\) から \(x\) まで）に沿う、トレースをとらない <strong>Wilson 線演算子</strong>
+\[
+\tilde W_C(x,y) = P\exp\Bigl(\int_C\dd l^\mu a_\mu\Bigr)
+\]
+を定義し、ゲージ変換 \(U(x)\) のもとで両端だけが変換を受ける
+<div class="equation" id="eq-5-wline">\[
+\tilde W_C(x,y)\to U(x)^{-1}\,\tilde W_C(x,y)\,U(y)
+\]</div>
+という変換性を要請する。経路をつなげると間の \(U U^{-1}\) が打ち消し合うので経路の合成と両立し、
+閉じたループではトレースの巡回性により \(U(x)^{-1}\cdots U(x)\) が消えてゲージ不変な Wilson ループを与える。
+</p>
+
+<div class="proof-box">
+<span class="box-title">導出</span>
+微小な線分では \(\tilde W_C(x,x+\dd x) = 1 + a_\mu\dd x^\mu\)。これに <a class="eq-ref" href="#eq-5-wline"></a> を課すと
+\[
+\begin{aligned}
+\tilde W_C(x,x+\dd x) &amp;\to U(x)^{-1}\bigl[1+a_\mu\dd x^\mu\bigr]U(x+\dd x)\\
+&amp;= U(x)^{-1}\bigl[1+a_\mu\dd x^\mu\bigr]\bigl[U(x)+\dd x^\mu\partial_\mu U(x)\bigr]\\
+&amp;= 1+\bigl[U^{-1}a_\mu U + U^{-1}\partial_\mu U\bigr]\dd x^\mu .
+\end{aligned}
+\]
+\(\dd x^\mu\) の係数を比べると \(a_\mu\to U^{-1}a_\mu U+U^{-1}\partial_\mu U\)、すなわち <a class="eq-ref" href="#eq-5-nagauge"></a> が出る。
+</div>
+
+<p>
+格子ゲージ理論のリンク変数が両端のサイトのゲージ変換で挟まれて変換するのと同じ構造で、微小な Wilson 線がちょうどリンク変数にあたる。
+</p>
+
+<h3 id="sec-5-3-4">§5.3.4 Chern–Simons 作用は計量に依存しない</h3>
+
+<p>
+「計量 \(g_{\mu\nu}\) が式に書かれていないから計量非依存」という説明をよく見かけるが、それだけでは論点を外している。
+微分幾何の言葉では、作用は
+\[
+S_{CS} = \frac{k}{4\pi}\int_{\calM}\Tr\Bigl(a\wedge\dd a+\frac23\,a\wedge a\wedge a\Bigr)
+\]
+と3形式の積分に書けるので、計量非依存性は一目でわかる。もう少し具体的に追うと次のようになる。
+</p>
+
+<div class="proof-box">
+<span class="box-title">導出の概略</span>
+まずゲージ場が座標変換でどう変換するかを決める必要がある。
+\(a\) は1形式、つまり線に沿って積分すると座標のとり方によらない量（Wilson ループなど）を与えるものである。
+時空を曲げ伸ばししても、ループを貫く磁束は変わらない。
+線積分 \(\int\dd x^\mu a_\mu\) が座標変換 \(x\to x'\) で不変であるためには
+\[
+a'_\mu(x') = \frac{\partial x^\nu}{\partial x'^\mu}\,a_\nu(x)
+\]
+でなければならない。これを作用の被積分関数に代入すると
+\[
+\epsilon^{\alpha'\beta'\gamma'}\,\frac{\partial x^\alpha}{\partial x'^{\alpha'}}\frac{\partial x^\beta}{\partial x'^{\beta'}}\frac{\partial x^\gamma}{\partial x'^{\gamma'}}\;
+\Tr\Bigl[a_\alpha\partial_\beta a_\gamma+\frac23\,a_\alpha a_\beta a_\gamma\Bigr]
+\]
+となる。\(\epsilon\) と3つの偏微分の組は、ちょうど Jacobi 行列式 \(\det[\partial x/\partial x']\) に \(\epsilon^{\alpha\beta\gamma}\) を掛けたものである。
+これが積分測度の変換 \(\dd^3x = \det[\partial x/\partial x']\,\dd^3x'\) と組み合わさり、新しい座標での作用積分は元と完全に同じ形になる。
+したがって作用は多様体のトポロジカルな性質だけに依存する。
+</div>
+
+<p>
+ゲージ場が1つのとき、トポロジカル不変量を与えるゲージ不変な（3形式の）ラグランジアン密度はこれしかない。§5.2 で述べた一意性である。
+</p>
+
+<h3 id="sec-5-3-5">§5.3.5 巻き数：Pontryagin 指数</h3>
+
+<p>
+<a class="eq-ref" href="#eq-5-pont"></a> の \(\nu\) が、ゲージ群 \(G\)、多様体 \(\calM\)、関数 \(U(x)\) によらず整数になる理由を大まかに述べる。
+</p>
+
+<ul>
+<li>\(\nu\) も Chern–Simons 作用と同じく3形式の積分なので、多様体の計量に依存しない。</li>
+<li>そこで多様体の座標を群の座標で取り直し、時空上の積分を<strong>群の上の積分</strong>に書き換えることができる。</li>
+<li>残る自由度は、写像 \(U(x):\calM\to G\) が群を何回覆うかだけである。したがって \(\nu\) は「ある定数 × 整数」になり、係数 \(1/24\pi^2\) はその定数を 1 にする規格化である。</li>
+</ul>
+
+<p>
+原書の演習では、\(\nu\) が \(U(x)\) の微小変形で変わらないこと、積 \(U_1U_2\) の指数が和 \(\nu[U_1]+\nu[U_2]\) になること、
+\(S^3\to SU(2)\) の恒等写像で実際に \(\nu=1\) になることを確かめる。
+</p>
+
+<h3 id="sec-5-3-6">§5.3.6 多様体の枠付け、あるいは理論の2重化</h3>
+
+<p>
+Chern–Simons 理論には小さなほころびがある。\(Z(\calM)\) は \(\calM\) のトポロジーだけの関数であってほしいが、実際には<strong>位相因子を除いて</strong>そうなっているにすぎない。
+位相まで決めるには、<strong>2-枠付け (2-framing)</strong> と呼ばれる追加の情報が要る。
+</p>
+
+<ul>
+<li>この情報は、\(\calM\) を境界とする4次元多様体 \(\mathcal{N}\)（\(\calM=\partial\mathcal{N}\)）のトポロジーの情報として述べるのがわかりやすい。向き付け可能な閉3次元多様体は必ず何らかの（一般に多数の）4次元多様体の境界になる。</li>
+<li>\(Z(\calM)\) の位相は、\(\mathcal{N}\) の<strong>符号数 (signature)</strong> だけに依存する。</li>
+</ul>
+
+<div class="remark-box">
+<span class="box-title">直観（アノマリー）</span>
+3次元の理論が、それを境界とする4次元多様体の情報に依存するのは、Chern–Simons 理論が<strong>アノマリーをもつ</strong>、つまり3次元単独ではきちんと定義されないことの現れである。
+汎関数積分 \(\int\mathcal{D}a_\mu\) を、時空を小箱に分けて各箱で積分する極限として定義しようとしても、うまくいく極限がない。4次元に拡張すれば理論は良い振る舞いをする。
+これは格子上の<strong>フェルミオンの2重化問題</strong>と同じ種類の現象である。
+\(D\) 次元で片方のカイラリティだけのフェルミオンを書こうとすると必ず逆のカイラリティが現れるが、
+\((D+1)\) 次元の系を考えれば、2つのカイラリティを別々の \(D\) 次元境界に分けて置ける。
+3次元トポロジカル絶縁体の表面に単一の Dirac フェルミオンが現れるのがその例である。
+</div>
+
+<p>
+Chern–Simons 理論をきちんと定義する方法は2つある。4次元に拡張するか、逆のカイラリティをもつ2つの Chern–Simons 理論を組にした<strong>2重化 (doubled) Chern–Simons 理論</strong>を考えて3次元の中でアノマリーを打ち消すかである。
+2重化した理論の多様体不変量は、右巻きの理論から \(Z(\calM)\)、左巻きの理論からその複素共役を受け取るので
+\[
+Z_{\text{doubled}}(\calM) = |Z(\calM)|^2
+\]
+となり、問題の位相は自動的に落ちる。
+</p>
+
+<h3 id="sec-5-3-7">§5.3.7 4次元理論の境界としての Chern–Simons 理論</h3>
+
+<p>
+前小節を受けて、Chern–Simons 理論を4次元のトポロジカルな理論の境界理論として書く。
+場の強さを
+\[
+F_{\mu\nu} = \partial_\mu A_\nu-\partial_\nu A_\mu+[A_\mu,A_\nu]
+\]
+と定義する。可換なら交換子が消えて電磁場の強さに一致し、Yang–Mills 理論を含む非可換ゲージ理論では交換子の項が必要になる。
+4次元では双対な場の強さ \({}^*\!F^{\mu\nu} = \tfrac12\epsilon^{\mu\nu\lambda\rho}F_{\lambda\rho}\) が定義でき、4次元多様体 \(\mathcal{N}\) 上のトポロジカルな作用
+<div class="equation" id="eq-5-theta">\[
+S = \frac{\theta}{16\pi^2}\int_{\mathcal{N}}\dd^4x\;\Tr\bigl[F_{\mu\nu}\,{}^*\!F^{\mu\nu}\bigr]
+\]</div>
+を考える。この4次元の作用はアノマリーをもたず、正則化でき、格子上でも正しく扱える。
+少し計算すると、被積分関数は全微分になる：
+\[
+S = \frac{\theta}{8\pi^2}\int_{\mathcal{N}}\dd^4x\;\partial_\mu G^\mu,\qquad
+G^\mu = 2\,\epsilon^{\mu\nu\lambda\rho}\,\Tr\Bigl[A_\nu\partial_\lambda A_\rho+\frac23\,A_\nu A_\lambda A_\rho\Bigr].
+\]
+したがって閉じた \(\mathcal{N}\) では 0 を与え、境界があるときは境界の単位法線ベクトル \(v_\mu\) を使って
+\[
+S = \frac{\theta}{8\pi^2}\int_{\partial\mathcal{N}}\dd^3x\;G^\mu v_\mu
+\]
+となる。\(G^\mu\) の形を <a class="eq-ref" href="#eq-5-nacs"></a> と見比べると、これは3次元の境界多様体 \(\partial\mathcal{N}\) 上の Chern–Simons 作用にほかならない。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第5章のまとめ</span>
+<ul>
+<li>可換 Chern–Simons 理論 \(\mathcal{L}=\tfrac{k}{4\pi}\epsilon^{\alpha\beta\gamma}a_\alpha\partial_\beta a_\gamma-j^\alpha a_\alpha\) の運動方程式は、電荷 \(q\) に磁束 \(2\pi q/k\) を束縛する。電荷・磁束模型の場の理論による実現である。</li>
+<li>Chern–Simons 項が結合項の半分を打ち消すため、統計角は \(\vartheta=\pi/k\)（\(2\pi/k\) の半分）。ゲージ場を積分すると、世界線の組みひもの巻き数 \(W\) に対する位相 \(\ee^{\ii\vartheta W}\) が残る。</li>
+<li>粒子のない分配関数 \(Z(\calM)=\int\mathcal{D}a\,\ee^{\ii S_{CS}}\) は時空多様体のトポロジカル不変量で、\(Z(\Sigma\times S^1)\) は \(\Sigma\) 上の基底状態の縮退度を与える。</li>
+<li>非可換理論ではゲージ場が Lie 代数値になり、作用に \(\tfrac23 a^3\) の項が加わる。ゲージ変換で作用は \(2\pi\nu k\)（\(\nu\) は整数の Pontryagin 指数）だけずれるので、レベル \(k\) は整数でなければならない。</li>
+<li>Chern–Simons 作用は、\((2+1)\) 次元で計量非依存かつ（ほぼ）ゲージ不変な、ゲージ場1つの唯一の作用である。</li>
+<li>Wilson ループ \(W_L=\Tr P\exp\oint_L a\) の期待値は結び目不変量を与える。\(SU(2)_k\) は \(A=\exp(\ii\pi/(2(k+2)))\) の Kauffman 括弧、\(SU(N)_k\) は HOMFLY 多項式、\(SO(N)_k\) は Kauffman 多項式。</li>
+<li>正準量子化では \([a_x,a_y]=(2\pi\ii/k)\delta\)。トーラスの2サイクルの Wilson ループは \(W_1W_2=\ee^{2\pi\ii q^2/k}W_2W_1\) を満たし、基底状態の縮退を導く。</li>
+<li>\(K\) 行列形式：\(\vartheta_{\boldsymbol\ell}=\pi\boldsymbol\ell^TK^{-1}\boldsymbol\ell\)、\(\vartheta_{\boldsymbol\ell,\boldsymbol\ell'}=2\pi\boldsymbol\ell^TK^{-1}\boldsymbol\ell'\)。粒子種の数とトーラス上の縮退度は \(|\det K|\)。</li>
+<li>\(Z(\calM)\) の位相は 2-枠付けに依存する（アノマリー）。2重化した理論では \(|Z(\calM)|^2\) となり位相は落ちる。Chern–Simons 作用は4次元の \(\Tr F\,{}^*\!F\) 作用の境界項として現れる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

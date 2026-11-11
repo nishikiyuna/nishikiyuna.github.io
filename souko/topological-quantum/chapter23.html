@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="多様体の単体分割と Pachner 移動、Turaev–Viro 状態和（F 行列と五角形方程式から作る3次元 TQFT）、量子重力との関係、Dijkgraaf–Witten 模型">
+  <title>第23章 状態和 TQFT — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter23" data-chapter="23">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第23章に対応</span>
+  第23章 状態和 TQFT
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+平面ダイアグラム代数（球面的な圏）を材料にして、3次元 TQFT を具体的に構成する章である。
+閉じた3次元多様体 \(M\) を四面体に分割し、各辺に量子数（粒子ラベル）を割り当て、ダイアグラム代数から決まる重みをすべてのラベル付けについて足し上げる。
+統計力学の模型に似たこの和が、<a href="chapter07.html">第7章</a>で議論した分配関数 \(Z(M)\) を与える。
+多様体の位相だけに依存することは、四面体分割の取り方を変える Pachner 移動に対する不変性に帰着し、その要求が \(F\) 行列の五角形方程式（<a href="chapter09.html">第9章</a>）に他ならないことが見える。
+入力に必要なのは平面代数だけで、\(R\) 行列（組みひも）は不要である。
+後半では、量子重力（スピンネットワーク）との関係と、群と3コサイクルから作る Dijkgraaf–Witten 模型を扱う。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-23-1">単体分割と Pachner 移動<span class="en">Simplicial Decomposition and Pachner Moves</span></h2>
+
+<p>
+多様体を単体（simplex）の貼り合わせに分割する。滑らかな多様体は、どの次元でもこのような分割ができる（\(d\ge4\) では滑らかにできず、単体に分割できない多様体も存在するが、本書の範囲外である）。
+</p>
+
+<h3 id="sec-23-1-1">§23.1.1 2次元</h3>
+<p>
+2次元の基本単体は三角形で、分割は通常の三角形分割である。位相だけが問題なので頂点の位置は関係なく、点のつながり方（連結構造）だけが意味をもつ。
+同じ多様体（たとえば球面）の三角形分割は何通りもあるが、任意の2つの分割は、次の2つの基本操作（<strong>2次元の Pachner 移動</strong>）の繰り返しで互いに移り合える。
+</p>
+<ul>
+<li><strong>1–3 移動</strong>：三角形の中に頂点を1つ加えて1つの三角形を3つにする、またはその逆（頂点を除去する）。加える頂点は三角形の中心でなくてよい。</li>
+<li><strong>2–2 移動</strong>：隣り合う2つの三角形を、共有する辺を付け替えた別の2つの三角形に置き換える。</li>
+</ul>
+<p>
+したがって、三角形分割に対する関数がこの2つの移動で不変なら、多様体の不変量が得られる。
+なお2次元の Pachner 移動は、3次元の四面体を反対の2方向から見たものと思え、コボルディズム（<a href="chapter07.html">第7章</a>）として解釈できる。
+</p>
+
+<h3 id="sec-23-1-2">§23.1.2 3次元</h3>
+<p>
+(2+1) 次元 TQFT を主に扱うので、3次元の閉じた多様体を四面体（3次元の単体）に分割する。2つの分割が位相的に同値であることは、3次元の Pachner 移動の繰り返しでつながることと同値である：
+</p>
+<ul>
+<li><strong>1–4 移動</strong>：四面体の内部に頂点を1つ加えて1つの四面体を4つにする、またはその逆。</li>
+<li><strong>2–3 移動</strong>：1つの面を共有する2つの四面体（二重四面体）を、新しい辺（中心に走る1本の辺）を中心とする3つの四面体に分け直す、またはその逆。</li>
+</ul>
+<p>
+3次元の Pachner 移動は、4次元の単体（pentachoron）を反対の2方向から見たものと思える。ここでも、Pachner 移動で不変な分割の関数が見つかれば位相不変量が得られる。
+</p>
+</section>
+
+<section>
+<h2 id="sec-23-2">Turaev–Viro 状態和<span class="en">The Turaev–Viro State Sum</span></h2>
+
+<p>
+Turaev–Viro 状態和は、<a href="chapter08.html">第8章</a>〜<a href="chapter22.html">22章</a>で議論した平面ダイアグラム代数の一つから、3次元多様体の不変量を作る方法である。
+向き付け可能な3次元多様体の四面体分割を1つ取り、各辺を代数の量子数（粒子ラベル。自己双対でなければ辺に矢印が必要）でラベル付けして、次の和をとる：
+</p>
+<div class="equation" id="eq-23-ZTV">\[
+Z_{TV}(M)=\calD^{-2N_v}\sum_{\text{全ての辺のラベル付け}}W(\text{ラベル付け})
+\]</div>
+<p>
+ここで \(N_v\) は分割の頂点数、
+\(\calD=\sqrt{\sum_n|d_n|^2}\) は全量子次元（<a href="chapter17.html">第17章</a>）である。融合多重度 \(N_{ab}^c&gt;1\) がある場合は頂点の自由度についても和をとるが、簡単のため無視する。
+\(W\) は辺のラベル付けごとの重みで、統計力学のボルツマン重みに当たる（正や実とは限らない）。重みは
+</p>
+<div class="equation" id="eq-23-W">\[
+W(\text{ラベル付け})=\frac{\displaystyle\prod_{\text{四面体}}\tilde G(\text{四面体})\ \prod_{\text{辺}}d_{\text{辺}}}{\displaystyle\prod_{\text{三角形}}\tilde\Theta(\text{三角形})}
+\]</div>
+<p>
+で定義する。各四面体はラベルに応じた重み \(\tilde G\)、ラベル \(a\) の各辺は重み \(d_a\)、各三角形は重み \(\tilde\Theta^{-1}\) をもつ。
+</p>
+<p>
+\(\tilde G\) と \(\tilde\Theta\) は、<a href="chapter16.html">第16章</a>の \(G\) と \(\Theta\) と密接に関係している：
+</p>
+<div class="equation" id="eq-23-Theta">\[
+\tilde\Theta(a,b,c)=\Theta(a,b,c)=\sqrt{d_ad_bd_c},
+\]</div>
+<div class="equation" id="eq-23-G">\[
+\tilde G\!\begin{pmatrix}b&amp;a&amp;d\\e&amp;c&amp;f\end{pmatrix}=G^{bad}_{ecf}=F^{bad}_{ecf}\,d_f\sqrt{\frac{d_bd_c}{d_f}}\sqrt{\frac{d_ad_e}{d_f}}.
+\]</div>
+<p>
+（根号の符号の取り方は<a href="chapter16.html">第16章</a>の注意に従う。）ただし、式 <a class="eq-ref" href="#eq-23-G"></a> の四面体は、第16章（図16.17）で \(G\) を定義した四面体と異なり、両者は互いに双対である。
+たとえば第16章の四面体では線 \(f,e,\bar c\) がループをなし \(f,\bar e,\bar a\) は一点で出会うが、ここでは \(f,e,\bar c\) が一点で出会い \(f,\bar e,\bar a\) がループをなす。
+本章の四面体では、各面の3辺は真空に融合しなければならない：
+</p>
+<div class="equation" id="eq-23-faces">\[
+N_{ba}^{d}&gt;0,\quad N_{c\bar d}^{e}&gt;0,\quad N_{f\bar e}^{\bar a}&gt;0,\quad N_{\bar c\bar f}^{\bar b}&gt;0
+\]</div>
+<p>
+（原書の表記に従う）でなければ \(\tilde G\) は0になる。\(\tilde G\) の値は \(G\) と同様、四面体を回転しても変わらない。
+</p>
+<div class="remark-box">
+<span class="box-title">補足（入力の条件と文献との違い）</span>
+\(Z_{TV}\) は<strong>ゲージ不変</strong>である。\(F\) 行列（したがって \(\tilde G\)）のゲージ変換（<a href="chapter16.html">第16章</a>の式）を行っても、重み式 <a class="eq-ref" href="#eq-23-W"></a> の中でゲージ因子が打ち消し合う。
+Turaev–Viro の原論文を含む多くの文献は、第22章の Temperley–Lieb に基づく非ユニタリ版（頂点の再規格化なし、\(\Theta\) の代わりに \(\Delta\)）を使うが、再規格化因子は完全に打ち消し合うので、最終的な値は再規格化の有無に依らない。
+実際、完全にユニタリな代数である必要すらない。本章では第16章と同じくアイソトピー不変で融合が可換（\(a\times b=b\times a\)）、四面体対称性をもつことを仮定して簡単にしているが、構成そのものには球面的なテンソル圏（<a href="chapter12.html">第12章</a>）があれば十分で、完全なアイソトピー不変性は要らない。
+融合が非可換でもよく、その特別な場合が §23.4 の Dijkgraaf–Witten である。最も一般的な構成は Barrett–Westbury による。
+</div>
+
+<h3 id="sec-23-2-1">§23.2.1 Turaev–Viro が多様体の不変量であることの証明</h3>
+<p>
+証明は難しくなく、\(Z_{TV}\) が 1–4 移動と 2–3 移動で不変なことを示せばよい。丁寧な帳簿付けの作業である（原書の演習）。見通しは次のとおりである。
+</p>
+
+<div class="proof-box">
+<span class="box-title">証明の概略</span>
+<p><strong>2–3 移動。</strong> 左辺の2つの四面体 1, 2 は三角形 \(\alpha\) を共有する。右辺の3つの四面体 3, 4, 5 は3つの三角形 \(\beta,\gamma,\delta\) を共有し、中央に新しい辺（量子数 \(n\)）が走る。不変性は
+\[
+\frac{\tilde G(1)\tilde G(2)}{\tilde\Theta(\alpha)}=\sum_n\frac{\tilde G(3)\tilde G(4)\tilde G(5)\,d_n}{\tilde\Theta(\beta)\tilde\Theta(\gamma)\tilde\Theta(\delta)}
+\]
+と同値である。\(\tilde\Theta\) は \(\sqrt{d_a}\) の積で、\(\tilde G\)（式 <a class="eq-ref" href="#eq-23-G"></a>）に含まれる \(d_a\) の因子の一部を打ち消す。
+打ち消し合ったあとに残るのは、左辺の2つの \(F\) と右辺の3つの \(F\) の和の間の関係であり、これはまさに五角形方程式（<a href="chapter16.html">第16章</a>、<a href="chapter09.html">第9章</a>）である。
+したがって、五角形方程式を満たす任意の図式代数は、2–3 移動で不変な Turaev–Viro 分配関数を与える。</p>
+<p><strong>1–4 移動。</strong> 少しだけ難しい。左辺の大きな四面体 1 が、右辺の4つの小さな四面体（上の3つ 3, 4, 5 と下の 6）と、内部の4本の辺の量子数を足し上げたあとで等しくなればよい。
+3, 4, 5 は共通の辺をもち、2–3 移動の場合と同じ状況なので、その辺の量子数について足し上げて五角形関係を使うと、3, 4, 5 を2つの四面体（大きな四面体 1 と、残りの小さな四面体 6 と同じ辺からなる 2）に置き換えられる。
+2 と 6 には1と共有しない辺が3本あり、これが足し上げるべき残りの内部辺である。そのうちの1本について足し上げるとき、整合条件（<a href="chapter16.html">第16章</a>の逆変換の式）によりデルタ関数が出て、残りの和の1つを消す。
+最後に残る和は \(\calD^2=\sum_nd_n^2\) を与え、これが式 <a class="eq-ref" href="#eq-23-ZTV"></a> の前因子（頂点が1つ減ったことに対応する）を説明する。</p>
+</div>
+
+<h3 id="sec-23-2-2">§23.2.2 TQFT としての性質</h3>
+<p>
+Turaev–Viro 状態和は、TQFT に期待されるすべての性質をもつ。分割は必要だが、\(Z_{TV}(M)\) は分割の取り方によらず、位相だけで決まる複素数である。
+<a href="chapter07.html">第7章</a>で述べたように、境界のある \(M\) に対しては \(Z_{TV}(M)\) は波動関数になるべきである。2つの境界付き多様体を貼り合わせて閉じた多様体を作ることは、2つの波動関数の内積をとって複素数を得ることに当たる。
+</p>
+<p>
+境界のある多様体では、バルク（3次元の内部）を四面体、境界曲面 \(\Sigma=\partial M\) を三角形に分割する。辺が<strong>境界の辺</strong>であるとは、その両端がともに境界上にあることとし、それ以外をバルクの辺と呼ぶ。
+和をバルクの辺だけにとり、境界の辺の量子数 \(a_1,\dots,a_N\) は固定したままにする：
+</p>
+<div class="equation" id="eq-23-Zbdry">\[
+Z_{TV}(M;a_1,\dots,a_N)=\calD^{-2N_v-n_v}\,W'(a_1,\dots,a_N)\sum_{\text{バルクのラベル付け}}W(\text{バルクのラベル})
+\]</div>
+<p>
+ここで \(N_v\) はバルクの頂点数、\(n_v\) は境界上の頂点数である。\(W\) は式 <a class="eq-ref" href="#eq-23-W"></a> と同じ重みで、バルクの辺・三角形・四面体だけを含む（四面体はすべてバルクとみなし、三角形は3頂点がすべて境界上にあるときだけ境界の三角形とみなす）。
+境界の辺ラベルの関数としての追加の重み
+</p>
+\[
+W'(a_1,\dots,a_N)=\frac{\prod_{\text{境界の辺}}d_{\text{辺}}}{\prod_{\text{境界の三角形}}\tilde\Theta(\text{三角形})}
+\]
+<p>
+が入る。\(Z_{TV}(M;a_1,\dots,a_N)\) は、境界 \(\Sigma\) 上の波動関数 \(|Z(M)\rangle\) と解釈できる（値は物理変数、すなわち辺の量子数の関数として複素数になる）。
+</p>
+<p>
+\(M\) と \(M'\) を共通の境界 \(\Sigma=\partial M=[\partial M']^*\) に沿って貼り合わせた \(M\cup_\Sigma M'\) の分配関数は、境界の量子数についての和として内積になる（<a href="chapter07.html">第7章</a>）：
+</p>
+<div class="equation" id="eq-23-glue">\[
+Z_{TV}(M\cup_\Sigma M')=\langle Z_{TV}(M')|Z_{TV}(M)\rangle
+=\sum_{a_1,\dots,a_N}\big[Z_{TV}(M';\bar a_1,\dots,\bar a_N)\big]^*Z_{TV}(M;a_1,\dots,a_N)
+=\sum_{a_1,\dots,a_N}Z_{TV}(M';a_1,\dots,a_N)\,Z_{TV}(M;a_1,\dots,a_N).
+\]</div>
+<p>
+2行目から3行目へは、\(M'\) の境界は \(M\) と逆向きなので辺変数が反転することと、反射対称性から複素共役と反転が打ち消し合うことによる（原書の演習）。
+最終結果は、両方のバルクと共通境界のすべての量子数について足し上げた、全体の多様体 \(M\cup M'\) に対する Turaev–Viro 不変量に等しい。
+</p>
+<p>
+<a href="chapter07.html">第7章</a>と同様に、時空多様体だけでなく粒子の世界線（ラベル付きの絡み目）も含めた TQFT に拡張できる。世界線は内部の境界とみなし、中空の管に沿う辺の量子数を固定して、世界線の種類を表せばよい。
+入力の \(F\) 行列（入力の圏）から得られる TQFT は、入力の<strong>Drinfel'd 二重 (double)</strong>、Drinfel'd 中心、あるいは量子二重と呼ばれる（第31〜33章で再び扱う）。
+</p>
+
+<h3 id="sec-23-2-3">§23.2.3 Chern–Simons 理論との関係</h3>
+<p>
+Turaev–Viro の分配関数と Chern–Simons 理論の間には驚くべき関係がある。Chern–Simons 理論の \(F\) 行列から Turaev–Viro 理論を作ると、その分配関数は Chern–Simons 理論（第24章では \(Z_{WRT}\) と呼ぶ）の分配関数と
+</p>
+<div class="equation" id="eq-23-TW">\[
+Z_{TV}(M)=|Z_{CS}(M)|^2
+\]</div>
+<p>
+で結びつく。これを<strong>Turaev–Walker の定理</strong>といい、導出の概略は §24.3.2 で述べられる。
+この式は、この場合に「量子二重」という名が適切な理由の一つを与える。Turaev–Viro は、逆の巻き方向をもつ Chern–Simons 理論2つ分と同等なのである。
+</p>
+</section>
+
+<section>
+<h2 id="sec-23-3">量子重力との関係（再訪）<span class="en">Connections to Quantum Gravity Revisited</span></h2>
+
+<p>
+Turaev–Viro 不変量は、Penrose や Ponzano–Regge が開拓した量子重力の最も初期の試みの子孫である。状態和不変量への関心が続く理由の大半は、量子重力との関係にある。
+</p>
+<p>
+巨視的な一般相対性理論（たとえば数値シミュレーション）を扱う一つの方法は、時空を単体（3次元なら四面体、4次元なら4次元単体 pentachoron）に分割することである。時空の曲率（計量）は、辺に割り当てた長さで決まる（Regge 計算。空間だけを離散化して時間を連続にする方法などもある）。
+量子重力に進むには、Feynman の処方に従ってすべての計量について足し上げる（<a href="chapter06.html">第6章</a>）：
+</p>
+<div class="equation" id="eq-23-Zgrav">\[
+Z=\int\mathcal Dg\;e^{iS_{\text{Einstein}}[g]/\hbar}.
+\]</div>
+<p>
+離散化した系では、すべての辺のあらゆる長さについて積分することになる。ただし三角形の三辺の長さには三角不等式
+</p>
+<div class="equation" id="eq-23-triangle">\[
+|l_1-l_2|\le l_3\le l_1+l_2
+\]</div>
+<p>
+という制約がある（曲がった空間でも成り立つ）。重要な観察は、この不等式が通常の角運動量の合成則
+</p>
+<div class="equation" id="eq-23-ang">\[
+j_1\otimes j_2=|j_1-j_2|\oplus(|j_1-j_2|+1)\oplus\cdots\oplus(j_1+j_2)
+\]</div>
+<p>
+の許される範囲とまったく同じことである。そこで各辺に量子力学的なスピンを割り当てて、可能なすべてのスピンについて和をとる。この方法を<strong>スピンネットワーク (spin network)</strong> という。
+量子数が角運動量 \(j\)、融合則が式 <a class="eq-ref" href="#eq-23-ang"></a>、\(F\) 行列が通常の \(6j\) 記号である平面ダイアグラム代数（<a href="chapter21.html">第21章</a>の冒頭で触れた、\(SU(2)\) の表現に基づく代数）から Turaev–Viro 模型（式 <a class="eq-ref" href="#eq-23-ZTV"></a>）を作る。
+このような模型は、時空のトポロジーについての和が別途必要であることを除けば、量子重力の分配関数 <a class="eq-ref" href="#eq-23-Zgrav"></a> と非常に正確に一致する。第6章で見たとおり、(2+1) 次元の量子重力の記述は TQFT になる。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（無限個の表現による発散）</span>
+この方法には明確な問題が1つある。\(SU(2)\) の表現は無限個（\(j\) の値が無限個）あるため、分配関数の和は形式的に発散する。
+この発散は、角運動量の和を最大値 \(k\) で無矛盾に打ち切る方法が見つかれば正則化される。
+<a href="chapter21.html">第21章</a>と<a href="chapter22.html">第22章</a>で組み立てた \(SU(2)_k\) の図式規則（<a href="chapter21.html">第21章</a>の \(j\le k/2\) への切り詰め）を使えばこの打ち切りが実現し、発散のない結果が得られる。
+§23.2.3 のとおり、\(SU(2)_k\) の図式規則による Turaev–Viro 模型は Chern–Simons 理論 \(SU(2)_k\otimes SU(2)_{-k}\) と同値で、これは宇宙定数 \(\lambda=(4\pi/k)^2\) をもつ (2+1) 次元重力と同値である（<a href="chapter06.html">第6章</a>）。
+\(k\to\infty\) の極限が通常の \(SU(2)\) の角運動量合成に対応し、宇宙定数のない宇宙の古典極限を与える。
+</div>
+</section>
+
+<section>
+<h2 id="sec-23-4">Dijkgraaf–Witten 模型<span class="en">Dijkgraaf–Witten Model</span></h2>
+
+<p>
+もう一つの重要な状態和模型が Dijkgraaf–Witten 模型である。Turaev–Viro と同様、空間を単体に分割して、すべての辺のラベルについて足し上げる。
+ここでは群 \(G\) を選び、単体の（向き付けられた）辺を群の元でラベル付けする。考え方は Turaev–Viro とよく似ており、群の積を融合則として使い（<a href="chapter19.html">第19章</a>）、\(F\) 行列の代わりに3コサイクルを使う。
+融合則から、各三角形の周りの群の元の積は単位元でなければならない：三角形の辺 \(a,b,c\) について \(cba=1\)。
+これは式 <a class="eq-ref" href="#eq-23-faces"></a> のように三角形の3つの量子数が真空に融合する条件の類似物で、格子ゲージ理論に由来する名前で<strong>平坦性 (flatness) 条件</strong>と呼ばれる（第31章 §31.7）。
+</p>
+<p>
+群の積を融合則にすると、すべての粒子の量子次元は \(d_a=1\) になる（第19章では \(d_a=-1\) の選択も考えたが、それは選択の問題で、\(+1\) に取り直せる。代わりにアイソトピー不変性を失うことがある）。
+したがって式 <a class="eq-ref" href="#eq-23-W"></a> の \(d_a\) の因子と \(\tilde\Theta\) の因子は自明になり、四面体の因子だけが残る。Dijkgraaf–Witten の分配関数は Turaev–Viro の簡略版になる：
+</p>
+<div class="equation" id="eq-23-ZDW">\[
+Z_{DW}(M)=|G|^{-N_v}\sum_{\text{ラベル付け}}\ \prod_{\text{四面体}}\tilde G(\text{四面体}).
+\]</div>
+<p>
+ここで \(N_v\) は頂点数、\(|G|\) は群の位数であり、和は平坦性条件を満たすラベル付けだけについてとる。
+</p>
+<p>
+四面体のシンボル \(\tilde G\) は、Turaev–Viro で仮定した性質（可換な融合、四面体対称性）が一般には成り立たないので、向きの取り方が結果に効く。そこで次のように定義する。
+まず系のすべての頂点に異なる整数ラベルを付ける（どの頂点にどの番号を付けるかは問題でない）。頂点 \(i_1,i_2,i_3,i_4\) をもつ四面体について、頂点を昇順に並べ替えて \([j_1,j_2,j_3,j_4]=\operatorname{sort}[i_1,i_2,i_3,i_4]\)（\(j_1&lt;j_2&lt;j_3&lt;j_4\)）とし、
+</p>
+<div class="equation" id="eq-23-Gtilde-DW">\[
+\tilde G(\text{四面体})=\omega\big(g_{j_2,j_1},\,g_{j_3,j_2},\,g_{j_4,j_3}\big)^{s(j_1,j_2,j_3,j_4)}
+\]</div>
+<p>
+とする。\(g_{k,l}\) は頂点 \(k\) から \(l\) へ向く辺上の群の元、\(\omega\) は選んだ3コサイクル（<a href="chapter19.html">第19章</a>）、指数 \(s=\pm1\) は、順序付き頂点 \([j_1,j_2,j_3,j_4]\) が定める四面体の向きが、分割している多様体の向きと同じか逆かで決まる
+（向きを調べるには、\(j_1\) を手前に置いて三角形 \([j_2,j_3,j_4]\) が時計回りか反時計回りかを見る）。
+この処方は、対応する図式代数がアイソトピー不変性をもたなくても、任意の3コサイクルについて多様体の不変量（Dijkgraaf–Witten 不変量）を与える。Turaev–Viro と同様に、コサイクルのゲージ変換（第19章）のもとで分配関数は不変である。
+</p>
+
+<h3 id="sec-23-4-1">§23.4.1 他の次元</h3>
+<p>
+Dijkgraaf–Witten 理論の面白い特徴は、本質的に同じ処方でどの次元の TQFT も作れることである。\(D\) 次元多様体を \(D\) 次元単体（1次元なら線分、2次元なら三角形、3次元なら四面体、4次元なら pentachoron）に分割し、各辺に群の元 \(g\in G\)、各頂点に整数を割り当てる。
+平坦性条件はいつも同じで、閉じた経路に沿って群の元を掛けると単位元になる。各 \(D\) 単体には \(D\) 個の引数をもつ \(D\) コサイクル \(\omega_D(g_1,\dots,g_D)\) による重みを付け、
+</p>
+<div class="equation" id="eq-23-ZDWD">\[
+Z_{DW}(M_D)=|G|^{-N_v}\sum_{\text{ラベル付け}}\ \prod_{D\text{単体}}\omega_D\big(g_{j_2,j_1},\dots,g_{j_{D+1},j_D}\big)^{s(j_1,\dots,j_{D+1})}
+\]</div>
+<p>
+とする。引数は \(j_1&lt;j_2&lt;\cdots\) と整列した頂点の間の辺の群の元で、指数 \(s=\pm1\) は順序付き頂点集合 \([j_1,\dots,j_{D+1}]\) の定める単体の向きが多様体の向きと一致するかどうかで決まる。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（2次元の Dijkgraaf–Witten）</span>
+2コサイクル \(\omega_2\) とは、次の条件を満たす任意の関数である：
+\[
+\omega_2(g,h)\,\omega_2(gh,k)=\omega_2(h,k)\,\omega_2(g,hk).
+\]
+分配関数では各三角形がコサイクルの重みをもつ。このコサイクル条件は、まさに 2–2 Pachner 移動で分配関数が不変になるための条件である（左辺と右辺で、2つの三角形を貼り合わせたときの辺 \(gh\) と \(hk\) の付け替えに対応）。
+3–1 移動での不変性の証明は原書の演習。この2コサイクル条件は群の「射影表現」の整合条件に等しい（射影表現では \(\rho(g)\rho(h)=\omega_2(g,h)\rho(gh)\)、通常の表現では \(\omega_2=1\)）。
+\(U(1)\) 値の2コサイクルのゲージ変換 \(\omega_2(g,h)\to\frac{\beta(g)\beta(h)}{\beta(gh)}\omega_2(g,h)\)（\(\beta\) は任意の \(U(1)\) 値関数）は、境界のない2次元多様体の不変量を変えない。
+</div>
+
+<h3 id="sec-23-4-2">§23.4.2 補足</h3>
+<p>
+特に面白い特別な場合が、自明な3コサイクル \(\omega=1\) である。このとき式 <a class="eq-ref" href="#eq-23-ZDW"></a>（あるいは一般に <a class="eq-ref" href="#eq-23-ZDWD"></a>）の和の被積分関数は1であり、分配関数は平坦な場の配位の数を数えて \(|G|^{N_v}\) で割るだけになる。
+これは格子ゲージ理論の分配関数そのもの（§31.7）で、得られる TQFT を群 \(G\) の<strong>量子二重 (quantum double)</strong> という。
+自明でないコサイクルをもつ一般の場合は「ツイストした」ゲージ理論と呼ばれ、コサイクルはもとの単純な理論に対するある種のねじれと考えられる。Dijkgraaf–Witten 理論をツイストした量子二重ともいう（§31.4.1）。
+</p>
+<p>
+さらに、Dijkgraaf–Witten 理論は、適切に選んだ Chern–Simons 理論の対称性を破った結果とみなせる。たとえばコンパクトな \(U(1)\) Chern–Simons ゲージ理論を離散群 \(\Z_n\) に破る（円の対称性を正 \(n\) 角形に破るようなもの）ことが考えられる。
+得られる Dijkgraaf–Witten 理論のコサイクルは、Chern–Simons 項の係数（レベル）の選び方で決まる。
+</p>
+<p>
+驚くべきことに、点状の粒子がボソンであることなどの簡単な条件のもとで、(3+1) 次元のすべての TQFT は Dijkgraaf–Witten の形になることが示されている（Lan–Kong–Wen、Johnson-Freyd）。
+また Dijkgraaf–Witten 理論は凝縮系物理にも広く応用され、対称性に守られたトポロジカル（SPT）相の分類が Dijkgraaf–Witten 理論で与えられる（第35章）。
+</p>
+<p>
+原書の演習では、\(S^3\) の1四面体分割2通り（辺のつながり方が異なる）で自明コサイクルの \(Z_{DW}(S^3)\) を計算して一致を確かめること、Turaev–Viro の \(Z_{TV}(S^3)\) を単純な分割で計算することなどを扱う。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第23章のまとめ</span>
+<ul>
+<li>状態和 TQFT は、三角形・四面体に分割した多様体の辺の量子数について足し上げて分配関数を作る。分割によらないことは Pachner 移動（2次元の 1–3、2–2、3次元の 1–4、2–3）への不変性で示される。</li>
+<li>Turaev–Viro 状態和 \(Z_{TV}=\calD^{-2N_v}\sum\prod\tilde G\prod d/\prod\tilde\Theta\) は、五角形方程式を満たす任意の \(F\) 行列（球面的な圏）から作れ、\(R\) 行列は不要である。2–3 移動の不変性は五角形方程式そのもの、1–4 移動の不変性は逆変換の式と \(\calD^2=\sum d_n^2\) による。</li>
+<li>境界のある多様体では波動関数 \(Z_{TV}(M;a_1,\dots,a_N)\) が得られ、貼り合わせは内積になる。得られる TQFT は入力の量子二重（Drinfel'd 二重）で、Chern–Simons の \(F\) 行列を入れると \(Z_{TV}=|Z_{CS}|^2\)（Turaev–Walker）。</li>
+<li>\(SU(2)\) のスピンネットワークを入力にすると (2+1) 次元の量子重力の和になるが、表現が無限個なので発散する。\(SU(2)_k\) の図式規則による打ち切りで正則化され、Chern–Simons \(SU(2)_k\otimes SU(2)_{-k}\) と同値になる。</li>
+<li>Dijkgraaf–Witten 模型は群 \(G\) と \(D\) コサイクル \(\omega_D\) から作られ、辺に群の元をラベル付けして平坦性条件のもとで和をとる。\(\omega=1\) は格子ゲージ理論（群の量子二重）で、一般の場合はツイストした量子二重。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

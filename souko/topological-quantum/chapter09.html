@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="融合木の基底変換としての F 行列、Fibonacci と Ising の F 行列、五角形方程式、ゲージ変換">
+  <title>第9章 基底変換と F 行列 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter09" data-chapter="9">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第9章に対応</span>
+  第9章 基底変換と F 行列
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter08.html">第8章</a>で、3個のエニオン \(a,b,c\) が全体として \(e\) に融合する状態の空間は、
+「先に \(a\) と \(b\) を融合する木」でも「先に \(b\) と \(c\) を融合する木」でも記述でき、両者は同じ Hilbert 空間の異なる基底であることを見た。
+本章はその<strong>基底変換</strong>を担うユニタリ行列、<strong>\(F\) 行列</strong>を導入する。
+Fibonacci と Ising の \(F\) 行列を具体的に与え、\(F\) 行列が満たすべき整合性条件である<strong>五角形方程式</strong>と、
+頂点の位相の取り方に由来する<strong>ゲージ自由度</strong>を説明する。
+著者は「1章だけ精読するならこの章」と述べている（ゲージ変換の節と付録は初読では軽く流してよい）。
+\(F\) 行列は、次の<a href="chapter10.html">第10章</a>で交換（\(R\) 行列）と組み合わせて組みひもの作用を計算する際に不可欠になる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h3>F 行列の定義</h3>
+
+<p>
+3個のエニオン \(a,b,c\) が \(e\) に融合する状態は、\(a\) と \(b\) の融合チャネル \(d\) で指定することも、
+\(b\) と \(c\) の融合チャネル \(f\) で指定することもできる。どちらの記述も同じ空間の任意の状態を表せるが、基底が異なる。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- left tree: (ab)c -->
+  <line x1="30" y1="25" x2="120" y2="115" class="line" stroke-width="1.5"/>
+  <line x1="80" y1="25" x2="55" y2="50" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="25" x2="95" y2="90" class="line" stroke-width="1.5"/>
+  <text x="26" y="17" class="label">a</text>
+  <text x="76" y="17" class="label">b</text>
+  <text x="126" y="17" class="label">c</text>
+  <text x="58" y="80" class="label">d</text>
+  <text x="124" y="130" class="label">e</text>
+  <!-- middle -->
+  <text x="165" y="75" class="label">＝ Σ [F]</text>
+  <text x="232" y="82" class="label-muted">df</text>
+  <text x="170" y="100" class="label-muted">（f について和）</text>
+  <!-- right tree: a(bc) -->
+  <line x1="420" y1="25" x2="330" y2="115" class="line" stroke-width="1.5"/>
+  <line x1="370" y1="25" x2="395" y2="50" class="line" stroke-width="1.5"/>
+  <line x1="320" y1="25" x2="355" y2="90" class="line" stroke-width="1.5"/>
+  <text x="316" y="17" class="label">a</text>
+  <text x="366" y="17" class="label">b</text>
+  <text x="416" y="17" class="label">c</text>
+  <text x="384" y="80" class="label">f</text>
+  <text x="318" y="130" class="label">e</text>
+</svg>
+<figcaption>図 9.1：\(F\) 行列による基底変換（\(F\) 移動）。左は \(a,b\) を先に \(d\) へ融合する木、右は \(b,c\) を先に \(f\) へ融合する木。</figcaption>
+</figure>
+
+<div class="def-box">
+<span class="box-title">定義（\(F\) 行列）</span>
+<a href="chapter08.html">第8章</a>付録の記法で、同型 \(\bigoplus_dV_d^{ab}\otimes V_e^{dc}\cong\bigoplus_fV_e^{af}\otimes V_f^{bc}\) を与える基底変換を
+<div class="equation" id="eq-9-F">\[
+\ket{(a,b);d}\otimes\ket{d,c;e}=\sum_f\,[F^{abc}_e]_{df}\;\ket{a,f;e}\otimes\ket{(b,c);f}
+\]</div>
+と書く。係数 \([F^{abc}_e]_{df}\) が <strong>\(F\) 行列</strong>である。
+<ul>
+<li>\(a,b,c,e\) を固定すると、\(F^{abc}_e\) は添字 \(d,f\) について<strong>ユニタリ</strong>な行列である（基底変換だから）。</li>
+<li>両辺の図のどれかの頂点が融合則で許されないとき、すなわち \(N_{ab}^d,\,N_{dc}^e,\,N_{bc}^f,\,N_{af}^e\) のいずれかが 0 のとき、\([F^{abc}_e]_{df}=0\) と定める。</li>
+<li>真空を含む \(F\) 移動（\(a,b,c\) のどれかが \(I\)）の値は 1 にとる：
+<div class="equation" id="eq-9-vac">\[
+[F^{Ibc}_e]_{be}=[F^{aIc}_e]_{ac}=[F^{abI}_e]_{eb}=1 .
+\]</div></li>
+</ul>
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（規約と呼び名）</span>
+ここでは簡単のため融合多重度がすべて \(N_{ab}^c\le1\) と仮定している（一般の場合は付録）。
+\(F\) 行列の書き方は Kitaev (2006)、Bonderson (2007) の規約に合わせてある。
+添字が6個あって普通の行列より多いので <strong>\(F\) 記号</strong>とも呼ばれる。
+真空を含む \(F\) を 1 とするのはゲージの選択の一部である。
+</div>
+
+<p>
+この基底変換は角運動量の合成でおなじみのものである。角運動量 \(a,b,c\) を合成して \(e\) を作るとき、
+先に \(a,b\) を合成して \(d\) とする基底と、先に \(b,c\) を合成して \(f\) とする基底の変換係数が <strong>\(6j\) 記号</strong>であり、
+TQFT でも \(F\) 行列を \(6j\) 記号と呼ぶことがある。
+</p>
+
+<div class="thm-box">
+<span class="box-title">重要（\(F\) 移動は図の一部分に適用できる）</span>
+大きな融合木の中の一部分が図 9.1 の左の形をしていれば、その外側を変えずに、内側だけを右の形の重ね合わせに置き換えてよい。
+これを繰り返すと、<strong>任意の形の融合木を他の任意の形の融合木に書き換えられる</strong>。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-9-1">例：Fibonacci エニオン<span class="en">Example: Fibonacci Anyons</span></h2>
+
+<p>
+\(\tau\) を3個融合する。全体が \(I\) になる状態は \(\ket{N}\) ただ1つで、左2個を先に融合しても右2個を先に融合しても中間のラベルは \(\tau\) しかありえない。
+同じ1つの状態を記述しているので
+\[
+[F^{\tau\tau\tau}_I]_{\tau\tau}=1 .
+\]
+また <a class="eq-ref" href="#eq-9-vac"></a> より、上の3本のどれかが真空なら \([F^{I\tau\tau}_e]_{\tau e}=[F^{\tau I\tau}_e]_{\tau\tau}=[F^{\tau\tau I}_e]_{e\tau}=1\)。
+</p>
+
+<p>
+面白いのは全体が \(\tau\) になる場合である。状態空間は2次元で、2通りの基底がある。
+</p>
+<ul>
+<li>左2個を先に融合：結果が \(I\) なら \(\ket0\)、\(\tau\) なら \(\ket1\)。</li>
+<li>右2個を先に融合：結果が \(I\) なら \(\ket{0'}\)、\(\tau\) なら \(\ket{1'}\)。</li>
+</ul>
+<p>両者は同じ空間を張るので、ユニタリな基底変換</p>
+<div class="equation" id="eq-9-basis">\[
+\begin{pmatrix}\ket0\\ \ket1\end{pmatrix}
+=\begin{pmatrix}F_{00'}&amp;F_{01'}\\F_{10'}&amp;F_{11'}\end{pmatrix}
+\begin{pmatrix}\ket{0'}\\ \ket{1'}\end{pmatrix}
+\]</div>
+<p>
+がある。この \(2\times2\) 行列は定義の記法では \([F^{\tau\tau\tau}_\tau]_{ab}\)（\(a,b\in\{I,\tau\}\)）で、添字 0, 1 は \(I,\tau\) の略記である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（Fibonacci の \(F\) 行列）</span>
+<div class="equation" id="eq-9-fibF">\[
+F^{\tau\tau\tau}_\tau=F=\begin{pmatrix}\phi^{-1}&amp;\phi^{-1/2}\\ \phi^{-1/2}&amp;-\phi^{-1}\end{pmatrix},
+\qquad \phi=\frac{\sqrt5+1}{2}\ \text{（黄金比）}.
+\]</div>
+行と列は \((I,\tau)\) の順。この行列は実対称かつユニタリで、\(F^2=\id\) を満たす。
+</div>
+
+<div class="proof-box">
+<span class="box-title">ユニタリ性の確認</span>
+\(\phi^2=\phi+1\) より \(\phi^{-1}+\phi^{-2}=1\)。したがって各行のノルムは \(\phi^{-2}+\phi^{-1}=1\)、
+2つの行の内積は \(\phi^{-1}\phi^{-1/2}-\phi^{-1/2}\phi^{-1}=0\) である。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（ゲージと Galois 共役）</span>
+ケットの位相を取り直す（ゲージを変える）と非対角成分に位相が入るが、最も単純なゲージでは上の形になる。
+ユニタリ性を課さなければ、\(\phi\to-1/\phi\) と置き換えたものも五角形方程式の解になる（Galois 共役）。
+ただし量子力学にはユニタリ性が必要なので、その解は採らない。この行列の導出は五角形方程式による（下の節）。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-9-2">例：Ising エニオン<span class="en">Example: Ising Anyons</span></h2>
+
+<p>
+\(\sigma\) を3個融合すると、全体は必ず \(\sigma\) になる（\(\ket N\) に当たる状態はない）。
+空間は2次元で、Fibonacci と同様に、左2個を先に融合した基底 \(\ket0\)（チャネル \(I\)）、\(\ket1\)（チャネル \(\psi\)）と、
+右2個を先に融合した基底 \(\ket{0'},\ket{1'}\) が <a class="eq-ref" href="#eq-9-basis"></a> の形で結ばれる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（Ising の \(F\) 行列）</span>
+<div class="equation" id="eq-9-isingF">\[
+F^{\sigma\sigma\sigma}_\sigma=F=\frac{1}{\sqrt2}\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}
+\]</div>
+（行と列は \((I,\psi)\) の順）。これは Hadamard 行列である。\(\sigma\) と \(\psi\) が混ざる場合には
+<div class="equation" id="eq-9-isingsign">\[
+[F^{\psi\sigma\psi}_\sigma]_{\sigma\sigma}=-1,\qquad [F^{\sigma\psi\sigma}_\psi]_{\sigma\sigma}=-1 .
+\]</div>
+それ以外の成分は、すべての頂点が許されるなら 1、許されない頂点があれば 0 である。
+</div>
+
+<p>
+\([F^{\psi\sigma\psi}_\sigma]_{\sigma\sigma}=-1\) は、上端が \(\psi,\sigma,\psi\) で全体が \(\sigma\) の木について、
+左側を先に融合した図と右側を先に融合した図が（中間ラベルはどちらも \(\sigma\) で）同じ状態を表しながら符号 \(-1\) だけ異なる、という主張である。
+同じ状態なのに符号が付くのは奇妙に見えるが、この符号は \(F\) 行列全体の整合性（五角形方程式）から要請される。
+スカラーの \(F\) をすべて 1 にとる選択は五角形方程式と両立しない（原書の演習で \(a=b=c=\sigma\)、\(d=f=\psi\) の場合を調べて確かめる）。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（どの成分がゲージ不変か）</span>
+\([F^{\psi\sigma\psi}_\sigma]_{\sigma\sigma}=-1\) はゲージに依らない主張である。
+一方 \([F^{\sigma\psi\sigma}_\psi]_{\sigma\sigma}=-1\) と <a class="eq-ref" href="#eq-9-isingF"></a> の具体形はゲージの選択を含む。
+下のゲージ変換の式で、頂点の位相因子が分子と分母で打ち消し合うかどうかを見れば判定できる。
+同じ理由で、Fibonacci の \([F^{\tau\tau\tau}_\tau]_{\tau\tau}\) はゲージ不変、\([F^{\tau\tau\tau}_\tau]_{I\tau}\) はゲージに依存する。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-9-3">五角形方程式<span class="en">Pentagon</span></h2>
+
+<p>
+4個のエニオン \(a,b,c,d\) が \(e\) に融合する空間には、括弧の付け方に応じて5通りの木がある。
+隣り合う木は1回の \(F\) 移動で結ばれ、全体は五角形をなす。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="80" width="110" height="34" class="gate" stroke-width="1.5"/>
+  <text x="22" y="102" class="label">((ab)c)d</text>
+  <rect x="175" y="15" width="110" height="34" class="gate" stroke-width="1.5"/>
+  <text x="190" y="37" class="label">(ab)(cd)</text>
+  <rect x="340" y="80" width="110" height="34" class="gate" stroke-width="1.5"/>
+  <text x="352" y="102" class="label">a(b(cd))</text>
+  <rect x="80" y="150" width="110" height="34" class="gate" stroke-width="1.5"/>
+  <text x="92" y="172" class="label">(a(bc))d</text>
+  <rect x="270" y="150" width="110" height="34" class="gate" stroke-width="1.5"/>
+  <text x="282" y="172" class="label">a((bc)d)</text>
+  <line x1="95" y1="78" x2="173" y2="42" class="line accent" stroke-width="1.5"/>
+  <line x1="287" y1="42" x2="365" y2="78" class="line accent" stroke-width="1.5"/>
+  <line x1="65" y1="116" x2="105" y2="148" class="line" stroke-width="1.5"/>
+  <line x1="192" y1="167" x2="268" y2="167" class="line" stroke-width="1.5"/>
+  <line x1="355" y1="148" x2="395" y2="116" class="line" stroke-width="1.5"/>
+  <text x="118" y="55" class="label-muted">F</text>
+  <text x="332" y="55" class="label-muted">F</text>
+  <text x="68" y="140" class="label-muted">F</text>
+  <text x="225" y="160" class="label-muted">F</text>
+  <text x="384" y="140" class="label-muted">F</text>
+</svg>
+<figcaption>図 9.2：五角形図式。括弧は融合の順序を表す。左端から右端へ、上の経路（\(F\) 2回）でも下の経路（\(F\) 3回）でも行ける。</figcaption>
+</figure>
+
+<p>
+左端の木（中間ラベル \(f=a\times b\) のチャネル、\(g\)）から右端の木（中間ラベル \(l=c\times d\) のチャネル、\(k\)）へ、
+上回りと下回りの2つの経路で書き換えた結果は一致しなければならない。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（五角形方程式）</span>
+<div class="equation" id="eq-9-pentagon">\[
+[F^{fcd}_e]_{gl}\,[F^{abl}_e]_{fk}=\sum_h\,[F^{abc}_g]_{fh}\,[F^{ahd}_e]_{gk}\,[F^{bcd}_k]_{hl} .
+\]</div>
+左辺が上の経路、右辺が下の経路である。\(h\) は下の経路で現れる \(b\times c\) の中間チャネルで、これについて和をとる。
+</div>
+
+<div class="proof-box">
+<span class="box-title">式と図の対応</span>
+ラベルの付け方は、左端 \(((ab)_f\,c)_g\,d\)、上 \((ab)_f(cd)_l\)、右端 \(a(b(cd)_l)_k\)、左下 \((a(bc)_h)_g\,d\)、右下 \(a((bc)_h\,d)_k\)（全体はすべて \(e\)）。
+<ul>
+<li>上の経路：まず \(f,c,d\) の3本に \(F\) を当てて \(g\to l\)（\([F^{fcd}_e]_{gl}\)）、次に \(a,b,l\) の3本に当てて \(f\to k\)（\([F^{abl}_e]_{fk}\)）。</li>
+<li>下の経路：\(a,b,c\) に当てて \(f\to h\)（\([F^{abc}_g]_{fh}\)）、\(a,h,d\) に当てて \(g\to k\)（\([F^{ahd}_e]_{gk}\)）、\(b,c,d\) に当てて \(h\to l\)（\([F^{bcd}_k]_{hl}\)）。</li>
+</ul>
+式の中の \(F\) は、図で右にある移動ほど右に書く順で並べてある。原書も強調するとおり、この対応は一度自分の手で追っておく価値がある。
+</div>
+
+<p>五角形方程式について知っておくべき事実をまとめる。</p>
+<ul>
+<li>角運動量の \(6j\) 記号にも同じ関係があり、Elliott–Biedenharn 恒等式と呼ばれる。</li>
+<li>Fibonacci のような単純な理論では、融合則と五角形方程式だけで \(F\) 行列が（ゲージの選択を除いて）完全に決まる。
+成分をすべて実にとれば、残る自由度は符号1つだけである。</li>
+<li><strong>Ocneanu 剛性</strong>：与えられた融合則に対して、五角形方程式のゲージ非同値な解は有限個しかない。</li>
+<li>融合則（\(N\) 行列の組）によっては解がまったく存在しない。最も簡単な例は、非自明な粒子が1種類で \(\tau\times\tau=I+n\tau\)（\(n&gt;1\)）という融合則である。</li>
+<li><strong>コヒーレンス定理</strong>（Mac Lane）：もっと複雑な木と経路を考えても、五角形方程式から導けない新しい拘束は現れない。</li>
+</ul>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-9-4">ゲージ変換<span class="en">Gauge Transformations</span></h2>
+
+<p>
+図式の各頂点には位相を選ぶ自由がある。この選択を<strong>ゲージの選択</strong>といい、選び直すと図に位相が掛かる。
+技術的な点だが、<a href="chapter14.html">第14章</a>などで頻繁に使う。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（頂点のゲージ変換）</span>
+分裂頂点のケットを、位相 \(u^{ab}_c\) を使って
+\[
+\ket{a,b;c}=u^{ab}_c\,\widetilde{\ket{a,b;c}}
+\]
+と書き直す（チルダは新しいゲージでの頂点）。これに伴い \(F\) 行列は
+<div class="equation" id="eq-9-gauge">\[
+[\widetilde{F^{abc}_e}]_{df}=\frac{u^{af}_e\,u^{bc}_f}{u^{ab}_d\,u^{dc}_e}\,[F^{abc}_e]_{df}
+\]</div>
+と変換する。
+</div>
+
+<p>
+導出は <a class="eq-ref" href="#eq-9-F"></a> の両辺のケットをチルダ付きで書き直すだけである。
+左辺から \(u^{ab}_du^{dc}_e\)、右辺から \(u^{af}_eu^{bc}_f\) が出る。
+五角形方程式の解はゲージ変換しても解のままである。
+ゲージの選び方には自然なものとそうでないものがあるが、この自由度が常にあることは覚えておく。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（真空を含む頂点）</span>
+上の脚の一方が真空（\(a=I\) または \(b=I\)）の頂点には、通常ゲージ変換を許さない。
+真空の線はいつでも自由に付け外しできるので、真空との頂点は「頂点がないこと」と同じだからである。
+<a class="eq-ref" href="#eq-9-vac"></a> はこの規約と整合している。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-9-5">付録：F 行列に関する補遺<span class="en">Appendix: F-Matrix Odds and Ends</span></h2>
+
+<h3 id="sec-9-5-1">§9.5.1 積理論</h3>
+
+<p>
+<a href="chapter08.html">第8章</a>の積理論 \(T\times t\) で、\(T\) と \(t\) がそれぞれ五角形方程式を満たす \(F\) 行列を持つなら、積理論の \(F\) 行列は
+\[
+[F^{(A,a)(B,b)(C,c)}_{(E,e)}]_{(D,d),(F,f)}=[F^{ABC}_E]_{DF}\,[F^{abc}_e]_{df}
+\]
+で与えられ、これも五角形方程式を満たす。2つの理論は互いをまったく「見ない」。
+</p>
+
+<h3 id="sec-9-5-2">§9.5.2 F のユニタリ性</h3>
+
+<p>
+\(F\) が添字 \(d,f\) についてユニタリなので、<a class="eq-ref" href="#eq-9-F"></a> は逆向きにも解ける：
+\[
+\ket{a,f;e}\otimes\ket{(b,c);f}=\sum_d\,[F^{abc}_e]^*_{df}\;\ket{(a,b);d}\otimes\ket{d,c;e} .
+\]
+ここで \({}^*\) は複素共役（転置を含まない）である。
+</p>
+
+<h3 id="sec-9-5-3">§9.5.3 融合多重度が 1 より大きい場合</h3>
+
+<p>
+\(N_{ab}^c&gt;1\) のとき各頂点は添字を持つので、\(F\) 行列もその添字を運ぶ：
+\[
+\ket{(a,b);d,\mu}\otimes\ket{d,c;e,\nu}
+=\sum_{f,\alpha,\beta}\,[F^{abc}_e]_{(d\mu\nu)(f\alpha\beta)}\;\ket{a,f;e,\beta}\otimes\ket{(b,c);f,\alpha} .
+\]
+頂点の添字は \(\mu\in1\dots N_{ab}^d\)、\(\nu\in1\dots N_{dc}^e\)、\(\alpha\in1\dots N_{bc}^f\)、\(\beta\in1\dots N_{af}^e\)。
+\((d\mu\nu)\) と \((f\alpha\beta)\) はそれぞれ3つをまとめた1つの添字（スーパー添字）で、\(F^{abc}_e\) はこの添字についてユニタリである。
+</p>
+
+<p>
+この場合のゲージ変換は、頂点の添字空間でのユニタリ行列
+\(\ket{a,b;c,\mu}=\sum_{\mu'}[u^{ab}_c]_{\mu\mu'}\widetilde{\ket{a,b;c,\mu'}}\) であり、\(F\) 行列は
+\[
+[\widetilde{F^{abc}_e}]_{(d\mu'\nu')(f\alpha'\beta')}
+=\sum_{\alpha,\beta,\mu,\nu}([u^{ab}_d]^{-1})_{\mu'\mu}\,([u^{dc}_e]^{-1})_{\nu'\nu}\,
+[F^{abc}_e]_{(d\mu\nu)(f\alpha\beta)}\,[u^{af}_e]_{\beta\beta'}\,[u^{bc}_f]_{\alpha\alpha'}
+\]
+と変換する。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第9章のまとめ</span>
+<ul>
+<li>\(F\) 行列 \([F^{abc}_e]_{df}\) は、\((a\times b)\times c\) の木（中間 \(d\)）と \(a\times(b\times c)\) の木（中間 \(f\)）の間の基底変換で、\(d,f\) についてユニタリ。角運動量の \(6j\) 記号に当たる。</li>
+<li>許されない頂点を含む成分は 0、真空を含む \(F\) 移動は 1。\(F\) 移動は大きな図の一部分に適用でき、任意の木を任意の木に書き換えられる。</li>
+<li>Fibonacci：\(F^{\tau\tau\tau}_\tau=\begin{pmatrix}\phi^{-1}&amp;\phi^{-1/2}\\ \phi^{-1/2}&amp;-\phi^{-1}\end{pmatrix}\)、\([F^{\tau\tau\tau}_I]_{\tau\tau}=1\)。</li>
+<li>Ising：\(F^{\sigma\sigma\sigma}_\sigma=\frac{1}{\sqrt2}\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}\)、\([F^{\psi\sigma\psi}_\sigma]_{\sigma\sigma}=[F^{\sigma\psi\sigma}_\psi]_{\sigma\sigma}=-1\)、他は 1 か 0。</li>
+<li>五角形方程式は \(F\) 行列の整合性条件。単純な理論では融合則と合わせて \(F\) を決め、解はゲージ同値を除いて有限個（Ocneanu 剛性）、これ以上の独立な条件はない（コヒーレンス定理）。</li>
+<li>頂点の位相 \(u^{ab}_c\) を取り直すゲージ変換で \(F\) は \(u^{af}_eu^{bc}_f/(u^{ab}_du^{dc}_e)\) 倍される。位相が打ち消す成分だけがゲージ不変。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

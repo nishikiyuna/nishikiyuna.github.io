@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="量子回路モデルの要件をエニオンで満たす方法：ヒルベルト空間・測定・組みひもゲート、Fibonacci の X ゲートとコンパイル、制御ゲート">
+  <title>第11章 エニオンによる計算 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter11" data-chapter="11">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第11章に対応</span>
+  第11章 エニオンによる計算
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+これまでの章でエニオンの融合空間（<a href="chapter08.html">第8章</a>）、基底変換 \(F\)（<a href="chapter09.html">第9章</a>）、交換 \(R\) と組みひもの表現（<a href="chapter10.html">第10章</a>）を準備した。
+本章はそれらを使って、<strong>量子回路モデル</strong>の4つの要件（ヒルベルト空間・初期化・ユニタリ操作・測定）をエニオン系でどう満たすかを概説する。
+まず量子計算の側から「万能ゲート集合」と近似の精度の言葉を用意し、次にエニオン系での実現（量子ビットの符号化、測定、組みひもによるゲート）を述べる。
+後半は Fibonacci エニオンを例に、1量子ビットゲートを組みひもで近似する方法（<strong>トポロジカル量子コンパイル</strong>）と、2量子ビットの制御ゲートの作り方を具体的に見る。
+原書は「Optional/Interesting」と位置づけており、以降の理論の組み立てには必須ではない。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-11-1">量子計算<span class="en">Quantum Computing</span></h2>
+
+<p>
+量子計算の標準的な枠組みでは、小さな部品（量子ビット qubit、量子三準位系 qutrit、一般には qudit）から組んだヒルベルト空間を量子メモリとして使う。
+量子計算の基礎は Nielsen &amp; Chuang の教科書に譲る（このサイトの<a href="../nielsen-chuang/chapter03.html">Nielsen–Chuang ノート</a>も参照）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（量子回路モデルの4ステップ）</span>
+<ul>
+<li>(0) 計算に使うヒルベルト空間を見つける。</li>
+<li>(1) 系を空間内の既知の状態に初期化する。</li>
+<li>(2) 状態に制御されたユニタリ操作を施す。</li>
+<li>(3) 自由度の一部を測定する。</li>
+</ul>
+ステップ (2) のユニタリを、ヒルベルト空間のごく一部（数量子ビット）にだけ作用するユニタリの列として実現する方式を<strong>量子回路モデル</strong>と呼ぶ。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（他のモデル）</span>
+測定だけで計算する方式（初期の高度にもつれた状態に測定を重ねる）もある。
+トポロジカル量子計算では、ユニタリと射影測定を組み合わせる変種が重要で、エニオンによる最初の提案（Kitaev）はこの型だった。
+</div>
+
+<h3 id="sec-11-1-1">§11.1.1 量子回路モデルでの万能量子計算</h3>
+
+<p>
+\(N\) 個の量子ビットのヒルベルト空間は次元 \(D=2^N\) で、可能なユニタリ操作の全体はユニタリ群 \(U(D)\) である。
+計算機は \(p\) 種類の基本操作（<strong>ゲート</strong>）\(U_i\in U(D)\)（\(i=1,\dots,p\)）を1ステップで実行できるとし、それらの積
+</p>
+<div class="equation" id="eq-11-seq">\[
+U=U_{i_t}\cdots U_{i_2}U_{i_1}
+\]</div>
+<p>
+で目的のユニタリを組む（時間順は右から左）。\(t\) をゲート数、すなわち計算の「実行時間」とみなす。
+測定をする前の途中経過はすべてユニタリなので、測定を計算の途中で行わないことが量子回路モデルの前提である。
+</p>
+
+<p>
+計算の結果は最後に量子ビットが \(\ket0\) か \(\ket1\) かを測って得るので、その確率は全体の位相に依らない。
+したがって \(U\) を作る代わりに \(e^{i\varphi}U\) を作っても同じ価値がある。
+ところが、ほとんどすべての \(U\)（測度ゼロの例外を除く）は、有限個のゲートの積として厳密には作れない。
+そこで「十分よく近似できればよい」とし、近似の良さを位相に依らない距離で測る。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（位相不変距離）</span>
+\(D\) 次元ユニタリ行列 \(U,V\) に対し
+<div class="equation" id="eq-11-dist">\[
+\operatorname{dist}(U,V)=\sqrt{1-\left|\frac{\Tr\left[U^\dagger V\right]}{D}\right|}
+\]</div>
+どちらかに全体の位相をかけても dist は変わらず、\(U\) と \(V\) が位相を除いて一致すれば 0 になる。
+dist が小さいとき、\(V\) は \(U\) の（位相を除いた）よい近似であるという。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（万能ゲート集合）</span>
+ゲート集合 \(\{U_i\in U(D)\}_{i=1,\dots,p}\) が<strong>万能 (universal)</strong> であるとは、任意の目標 \(U_{\rm target}\in U(D)\) と任意の許容誤差 \(\epsilon\) に対し、
+<div class="equation" id="eq-11-univ">\[
+\operatorname{dist}\bigl(U_{\rm target},\,U_{i_t}\cdots U_{i_2}U_{i_1}\bigr)&lt;\epsilon
+\]</div>
+を満たすゲート列（長さは一般に \(\epsilon\) に依る）が見つかることをいう。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（Kitaev–Solovay）</span>
+万能ゲート集合（逆元も含むとして）なら、必要なゲート数は
+<div class="equation" id="eq-11-KS">\[
+t\sim O\bigl(\log(1/\epsilon)\bigr)
+\]</div>
+で済む。精度を上げても実行時間は対数でしか増えない。
+</div>
+
+<p>
+直観は次のとおりである。ゲートが \(p\) 種類あれば、長さ \(t\) の列はおよそ \(p^t\) 通りあり（同じユニタリを与える列が重複するので正確には \(p^t\) 未満）、これらが \(U(D)\) をほぼ一様に覆うとすれば、
+最近接点までの距離 \(\epsilon\) は \(t\) に対して指数的に小さくなる。逆に解けば \(t\sim\log(1/\epsilon)\) である。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（どのゲートで十分か）</span>
+どのゲート集合が万能かを決めるのは自明でない計算だが、重要な結果として、
+<strong>任意の1量子ビット回転</strong>と<strong>任意のもつれ生成2量子ビット操作</strong>（隣り合う量子ビット間だけでもよい）があれば万能になる（Brylinski の定理）。
+1量子ビットゲートと2量子ビットゲートを別々に設計すればよいという、本章後半の構成の根拠である。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-11-2">トポロジカル量子計算<span class="en">Topological Quantum Computing</span></h2>
+
+<p>前節の4ステップを、エニオン系で順に実現していく。</p>
+
+<h3 id="sec-11-2-1">§11.2.1 ヒルベルト空間</h3>
+
+<p>
+量子ビット（や qutrit など）は、複数のエニオンが取りうる複数の融合チャネルから作る（<a href="chapter08.html">第8章</a>）。
+例えば Fibonacci エニオンなら、\(\tau\) 3個が全体として \(\tau\) に融合する状態空間（第9章の図 9.4）を量子ビットとする。
+Ising 理論なら、\(\sigma\) 3個が全体として \(\sigma\) に融合する組（図 9.5）を使うこともできるし、
+\(\sigma\) 4個が全体として \(I\) に融合する組を使う方が便利なこともある。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="25" x2="130" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="25" x2="130" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="85" x2="170" y2="110" class="line" stroke-width="1.5"/>
+  <line x1="280" y1="25" x2="230" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="330" y1="25" x2="230" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="230" y1="85" x2="190" y2="110" class="line" stroke-width="1.5"/>
+  <line x1="170" y1="110" x2="190" y2="110" class="line accent" stroke-width="1.5"/>
+  <circle cx="60" cy="25" r="3" class="accent-fill"/>
+  <circle cx="110" cy="25" r="3" class="accent-fill"/>
+  <circle cx="280" cy="25" r="3" class="accent-fill"/>
+  <circle cx="330" cy="25" r="3" class="accent-fill"/>
+  <text x="56" y="15" class="label">σ</text>
+  <text x="106" y="15" class="label">σ</text>
+  <text x="276" y="15" class="label">σ</text>
+  <text x="326" y="15" class="label">σ</text>
+  <text x="132" y="68" class="label">x</text>
+  <text x="212" y="68" class="label">x</text>
+  <text x="170" y="132" class="label">I</text>
+  <text x="350" y="100" class="label-muted">x ∈ {I, ψ}</text>
+</svg>
+<figcaption>図 11.1：Ising エニオン4個が全体として \(I\) に融合する量子ビット。左2個の融合チャネルが \(x\) なら、融合則より右2個も \(x\) でなければならない。2つの状態は \(x=\psi\) と \(x=I\)。</figcaption>
+</figure>
+
+<div class="remark-box">
+<span class="box-title">補足（符号化の効率）</span>
+符号化の仕方は他にも多数ある。ただしほとんどの符号化は量子メモリとしては「非効率」である。
+\(N\) 個の Fibonacci エニオンを3個ずつ量子ビットにすると計算空間の次元は \(2^{N/3}\) で、
+全空間の次元はおよそ \(d_\tau^N\)（\(d_\tau=\phi=(1+\sqrt5)/2\)）であり、\(\phi&gt;2^{1/3}\) なので後者がずっと大きい。
+それでも空間の大部分を捨てるのは、有用なユニタリゲートを簡単に作るためである。
+4個の組を使う符号化は \(SU(2)_k\)（\(k&gt;4\)）などで利点がある。
+</div>
+
+<h3 id="sec-11-2-2">§11.2.2 測定（概略）と初期化</h3>
+
+<p>
+測定の方法は具体的な物理系に依るが、<a href="chapter08.html">第8章</a>で導入した<strong>局所性の原理</strong>が指針になる。
+2個のエニオンの融合チャネルを測るには、両方を囲むような（両方に局所的な）操作が必要である。
+</p>
+
+<ul>
+<li><strong>近づけて測る</strong>：2個を微視的に近づければ波動関数が混ざるので、エネルギーや両者間の力など、ほとんどの非自明な演算子が融合チャネルを区別する。逆に巨視的に離れていると、どの局所演算子も融合チャネルを区別できない（理由は第29章で議論される）。</li>
+<li><strong>干渉で測る</strong>：離したまま、2個を囲む経路をもつ Aharonov–Bohm 型の干渉測定を行う（図 11.2）。試験エニオンの波を2つに分けて測りたいエニオン対の両側を通し、再び干渉させる。通常の Aharonov–Bohm 効果で位相が磁束のまわりを1周する位相であるのと同様に、ここで測るのは試験エニオンが中心領域のエニオン全体のまわりを1周する位相で、これが融合チャネル \(c\) に依存する（図 11.3）。</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 40 75 C 120 15 220 15 300 75" class="line" stroke-width="1.5" fill="none"/>
+  <path d="M 40 75 C 120 135 220 135 300 75" class="line" stroke-width="1.5" fill="none"/>
+  <circle cx="145" cy="75" r="4" class="accent-fill"/>
+  <circle cx="195" cy="75" r="4" class="accent-fill"/>
+  <circle cx="40" cy="75" r="3" class="accent-fill"/>
+  <circle cx="300" cy="75" r="3" class="accent-fill"/>
+  <text x="140" y="68" class="label">a</text>
+  <text x="192" y="68" class="label">a</text>
+  <text x="14" y="95" class="label-muted">入射</text>
+  <text x="306" y="95" class="label-muted">干渉</text>
+  <text x="150" y="150" class="label-muted">試験粒子の2つの経路で囲む</text>
+</svg>
+<figcaption>図 11.2：干渉による融合チャネルの測定（模式図）。試験粒子の2つの部分波が、測りたい2個のエニオンの両側を通って再干渉する。</figcaption>
+</figure>
+
+<div class="remark-box">
+<span class="box-title">補足（位相の表式）</span>
+試験粒子が2個のまわりを1周する操作は、組みひも群の記法で \(\hat\sigma_2\hat\sigma_1^2\hat\sigma_2\) と書け、融合チャネル \(c\) に依存する位相を与える。
+第13章でこの位相を \(R^{fc}_a R^{af}_c\) の形（\(f\) は試験粒子、\(a\) は被測定エニオンの種類を表す）で議論する。
+量子ホール系でのこの種の実験の試みは第37章で扱われる。
+</div>
+
+<p>
+状態を測る方法があり、量子ビットを操作できるなら、<strong>初期化</strong>は自明である。量子ビットを測り、欲しい状態ならそのまま、そうでなければ適当なユニタリで目的の初期状態に変えればよい。
+</p>
+
+<h3 id="sec-11-2-3">§11.2.3 万能な組みひも</h3>
+
+<p>
+トポロジカル量子計算の最も興味深い点は、エニオンを互いのまわりに<strong>組みひも状に動かす</strong>ことでヒルベルト空間へのユニタリ操作を実現することである。
+基本ゲートは、同種エニオン2個の（反時計回りの）交換 \(\hat\sigma_n\) と逆向き（時計回り）の交換 \(\hat\sigma_n^{-1}\)（\(N\) 個の系で \(n=1,\dots,N-1\)）である。
+ここでハット付きの \(\hat\sigma_n\) は、組みひも群の生成元 \(\sigma_n\) の<strong>表現行列</strong>（ヒルベルト空間に働くユニタリ）を表す。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（組みひもの万能性）</span>
+多くの非可換エニオン理論では、基本交換だけで作ったゲート集合が万能になる（Freedman–Larsen–Wang）。
+Fibonacci エニオンで成り立ち、\(SU(2)_k\) Chern–Simons 理論では \(k=3\) と \(k\ge5\) で成り立つ。
+非可換な理論のなかで、組みひもが万能でない理論の方が例外的である。
+Ising エニオンと密接に関連する \(SU(2)_2\) は例外の代表で、\(SU(2)_4\) も組みひもだけでは万能でない。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（回路モデルの外では万能になる場合）</span>
+\(SU(2)_4\) は、組みひもに多数の途中の射影測定を組み合わせる（最後に1回測るだけの量子回路モデルを超える）と万能になることが知られている。
+そもそもエニオンによる計算の最初の提案（Kitaev）が組みひもと射影測定の両方を使うものだった。
+融合チャネルを容易に測れるなら、エニオンを物理的に動かさず、融合チャネルの測定を多数回行うだけでも万能な計算ができる。
+</div>
+
+<p>
+万能な組みひもが可能な系は、<strong>ウィーブ (weave)</strong> でも万能にできる。ウィーブとは、\(N-1\) 個のエニオンを固定し、残り1個だけを他のすべてのまわりに動かす組みひもである。
+ウィーブは組みひものごく限られた部分集合だが、それでも万能なゲート集合をなす。この事実は§11.4.1で使われる（演習 11.5 でも扱う）。
+</p>
+
+<div class="remark-box">
+<span class="box-title">直観（量子化された精度）</span>
+組みひもでユニタリを実装する大きな利点は、結果が<strong>量子化されている</strong>ことである。
+通常の量子ビットで回転をさせるにはマイクロ波を一定時間かけるが、1% 長くかけてしまえば結果に 1% の誤差が出る。
+トポロジカルな量子ビットでは、正しい組みひもを作るか作らないかのどちらかで、わずかに外すことはない。
+組みひもの終わりでエニオンが少し違う場所に戻っても影響しない。効くのは世界線が時空に作る結び目だけだからである。
+</div>
+
+<h3 id="sec-11-2-4">§11.2.4 万能でないエニオンでの計算</h3>
+
+<p>
+<strong>可換 (abelian) エニオン</strong>では、エニオンの数を増やしてもヒルベルト空間は大きくならず、複数のエニオンの状態で量子ビットを符号化できない。
+それでも、高い種数の多様体（\(g\) 個の取っ手のあるトーラス、より簡単には穴（puncture）をいくつか開けた円盤。境界条件は適切に選ぶ。第27章参照）の基底状態の縮退に量子ビットを符号化できる。
+量子メモリとして使え、この空間でユニタリを実装して量子計算機を組むことも原理的には可能である。
+ただし組みひもでは万能にならないので、非トポロジカルなゲートを導入する必要があり、それらは誤りから守られない。
+</p>
+
+<p>
+<strong>非可換エニオン</strong>では、準粒子の数に対してヒルベルト空間が指数的に大きくなる（第3章）ので、非自明な多様体を使わなくても便利な量子メモリになる。
+\(SU(2)_2\) や Ising のように組みひもだけでは万能でない場合には、非トポロジカルなゲートが必要になる。
+それでも組みひもでできるゲートは位相的に守られて非常に正確と仮定できるため、残りの非トポロジカルなゲートは不正確でもよく、許容誤差が大きくなる。
+これを<strong>部分的にトポロジカルな量子計算機</strong>とみなせる（Bravyi、Baraban らが詳しい）。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-11-3">Fibonacci の例<span class="en">Fibonacci Example</span></h2>
+
+<p>
+Fibonacci エニオンは、量子計算に対して万能になる、おそらく最も単純なエニオン系である。
+</p>
+
+<h3 id="sec-11-3-1">§11.3.1 Fibonacci 1量子ビット</h3>
+
+<p>
+\(\tau\) 3個で1つの量子ビットを作る。第8.2.1節、第9.1節、第10.2.1節で何度も出てきたとおり、3個の \(\tau\) の状態は3つあり、
+\(\ket N\)（全体が \(I\)）、\(\ket0\)、\(\ket1\)（全体が \(\tau\)）と記す（図 8.10）。
+\(\ket0,\ket1\) が量子ビットで、\(\ket N\) は量子情報の保存に使わない<strong>非計算状態 (non-computational state)</strong> である。
+</p>
+
+<p>
+3本の組みひも群 \(B_3\)（第3.3.1節）の生成元は2つで、\(\sigma_1\)（第1・第2ひもの反時計回り交換）と \(\sigma_2\)（第2・第3ひもの交換）である。
+3個の組みひもは、\(\sigma_1,\sigma_2,\sigma_1^{-1},\sigma_2^{-1}\) の積として書ける。
+これらの3次元ヒルベルト空間への作用は第10.2.1節で計算した（式 10.7、10.8）。
+ここでは \(\ket0,\ket1\) の空間への作用だけが問題で、そこでは \(\hat\sigma_1,\hat\sigma_2\) は 3×3 行列の下側 2×2 ブロックである（\(\ket N\) の行と列を落とす）。
+\(\ket N\) の扱いは§11.4.1で効いてくる。
+</p>
+
+<h3 id="sec-11-3-1b">例：X ゲート</h3>
+
+<p>
+目標を Pauli の \(\sigma_x\) に当たる X ゲート
+</p>
+<div class="equation" id="eq-11-X">\[
+U_{\rm target}=X=\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}
+\]</div>
+<p>
+とする。どんな組みひもでこれを実現するか。
+5回の基本交換だけの短い組みひも（図 11.5）では、
+</p>
+<div class="equation" id="eq-11-Xapprox">\[
+U_{\rm approx}=\hat\sigma_2^{-1}\hat\sigma_1^{3}\hat\sigma_2^{-1}
+\approx e^{-3\pi i/5}\begin{pmatrix}0.073-0.225i&amp;0.972\\0.972&amp;-0.073-0.225i\end{pmatrix}
+\]</div>
+<p>
+という、かなり粗い近似しか得られない（5回の操作でできる最良のもの）。
+全体の位相 \(e^{-3\pi i/5}\) は目標との比較では無視してよく、位相不変距離は \(\operatorname{dist}(U_{\rm target},U_{\rm approx})\approx0.17\) である。
+実際、上の行列の非対角成分の和から \(\left|\Tr[X^\dagger V]/2\right|=0.972\) で、\(\sqrt{1-0.972}\approx0.17\) になる。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <line x1="50" y1="20" x2="50" y2="130" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="20" x2="110" y2="130" class="line" stroke-width="1.5"/>
+  <line x1="170" y1="20" x2="170" y2="130" class="line" stroke-width="1.5"/>
+  <text x="46" y="145" class="label">τ</text>
+  <text x="106" y="145" class="label">τ</text>
+  <text x="166" y="145" class="label">τ</text>
+  <text x="46" y="12" class="label-muted">1</text>
+  <text x="106" y="12" class="label-muted">2</text>
+  <text x="166" y="12" class="label-muted">3</text>
+  <path d="M 50 125 L 50 100 C 50 90 110 90 110 80 C 110 70 50 70 50 60 L 50 20" class="line accent" stroke-width="1.5" fill="none"/>
+  <text x="200" y="75" class="label-muted">時間は下から上へ</text>
+  <text x="200" y="95" class="label-muted">ひも1と2の交換を繰り返す</text>
+  <text x="200" y="115" class="label-muted">（組みひもの模式。具体的な X ゲートの列は式 11.6、図 11.5）</text>
+</svg>
+<figcaption>図 11.3：3個の \(\tau\) の世界線と、隣り合う2本の交換の模式図（一般の組みひもの見方）。</figcaption>
+</figure>
+
+<p>
+9回の基本交換でできる長い組みひも \(\sigma_1^{-2}\sigma_2^{3}\sigma_1^{2}\sigma_2^{-2}\)（図 11.6）なら \(\operatorname{dist}\approx0.08\) まで近づく。
+さらに長くすればどこまでも近づき、これは Kitaev–Solovay の定理から期待される。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（厳密にできる例）</span>
+標的が厳密に作れることは稀だが、Z ゲートは \(\hat\sigma_1^{5}\) として厳密に実現できる。これは一般的でない特別な事情である。
+</div>
+
+<p>
+1つのエニオンだけを動かすウィーブでも X ゲートは実現でき、図 11.7 のウィーブで \(\operatorname{dist}\approx0.18\) になる。
+ウィーブは形が制限されるため、図 11.5 とほぼ同じ精度を出すのに基本交換がやや多く要る。
+</p>
+
+<h3 id="sec-11-3-2">§11.3.2 トポロジカル量子コンパイル：1量子ビット</h3>
+
+<p>
+目標のユニタリを誤差 \(\epsilon\) 以下で近似する組みひもが存在しても、それが<strong>どの組みひもか</strong>を見つけるのは自明でない。
+どの基本ゲートをどの順で使って目標を実装するかを決める作業を<strong>量子コンパイル (quantum compiling)</strong> と呼ぶ（通常の計算機で高水準言語を機械語に落とす作業に類似）。
+トポロジカル量子計算機では、組みひもの設計が<strong>トポロジカル量子コンパイル</strong>で、Bonesteel らが始めた。
+以下では複雑さと有効性の順に、単一の Fibonacci 量子ビットを例にして手法を述べる。
+</p>
+
+<h4>総当たり探索</h4>
+
+<p>
+粗い近似でよければ短い列で済む。最大長 \(t\) を決め、それ以下のすべてのゲート列を探索して目標に最も近いものを選べばよい。
+目標までの距離は \(t\) に対して指数的に下がる（式 <a class="eq-ref" href="#eq-11-KS"></a> の議論）。
+基本ゲートは \(\hat\sigma_1,\hat\sigma_2,\hat\sigma_1^{-1},\hat\sigma_2^{-1}\) の4つなので、長さ \(t\) の組みひもはおよそ \(4^t\) 個ある。
+\(\sigma_i\) と \(\sigma_i^{-1}\) が連続する列を除くなどの工夫で多少は減らせるが、
+（古典計算機の）計算量は \(t\) に対して指数的に増えるので、小さな誤差を狙う \(t\) が大きい領域では実行不能になる。
+</p>
+
+<h4>Kitaev–Solovay アルゴリズム</h4>
+
+<p>
+Kitaev と Solovay は、万能な基本ゲート集合から、指数的でない妥当な計算量で非常に精度の高い近似を構成するアルゴリズムを与えた。
+要点は次のとおり。
+総当たりで任意のユニタリを \(\operatorname{dist}\sim\epsilon_0\) まで近似する長さ \(t_0\) の列が得られ、その古典計算時間が \(T_0\) だとする。
+</p>
+
+<div class="thm-box">
+<span class="box-title">手順（1段階の改善）</span>
+<ol>
+<li>目標 \(U^{(0)}_{\rm target}\) を総当たりで近似し、\(\operatorname{dist}\sim\epsilon_0\) の \(U^{(0)}_{\rm approx}\)（0次近似）を得る。</li>
+<li>残りの補正を \(U^{(1)}_{\rm target}\equiv\bigl[U^{(0)}_{\rm approx}\bigr]^{-1}U^{(0)}_{\rm target}\) と定める。これが厳密に作れれば \(U^{(0)}_{\rm target}=U^{(0)}_{\rm approx}U^{(1)}_{\rm target}\) になる。</li>
+<li>\(U^{(1)}_{\rm target}\) は必ず恒等に近い（\(\operatorname{dist}\sim\epsilon_0\)）ので、恒等に近いユニタリ \(V,W\)（\(\operatorname{dist}\sim\sqrt{\epsilon_0}\)）を使って群の交換子の形
+\(U^{(1)}_{\rm target}=VWV^{-1}W^{-1}\) に分解できる。</li>
+<li>\(V,W\) を総当たりで \(\epsilon_0\) の精度で近似すれば、\(U^{(1)}_{\rm target}\) が \(\operatorname{dist}\sim\epsilon_0^{3/2}\) で近似でき、
+<div class="equation" id="eq-11-KS1">\[
+U^{(0)}_{\rm target}=U^{(0)}_{\rm approx}\,V\,W\,V^{-1}\,W^{-1}
+\]</div>
+が \(\epsilon_0^{3/2}\) の精度になる。</li>
+</ol>
+</div>
+
+<p>
+右辺の各因子の長さが \(t_0\) なので、ゲート列の全長は \(5t_0\)、古典計算の手間はおよそ \(3T_0\)（\(U_{\rm approx}\) と \(V,W\) の3回の探索）である。
+</p>
+
+<p>
+これを再帰的に繰り返せる。次の段階では、総当たりの代わりに上のアルゴリズム全体を使って、すべての近似を \(\epsilon_0^{3/2}\) の精度にする。
+そうすると新しい近似は \((\epsilon_0^{3/2})^{3/2}\) の精度になる。
+第 \(n\) 段階では、ゲート列の長さが \(5^nt_0\)、精度が \(\operatorname{dist}\sim\epsilon_0^{(3/2)^n}\)、古典計算の手間が \(3^nT_0\) になる。
+全体で精度 \(\epsilon\) を達成するには、
+</p>
+<div class="equation" id="eq-11-KSt">\[
+t=O\bigl[\log(1/\epsilon)\bigr]^{\log5/\log(3/2)}=O\bigl[\log(1/\epsilon)\bigr]^{3.969\ldots},
+\]</div>
+<p>
+計算時間は
+</p>
+<div class="equation" id="eq-11-KST">\[
+T=O\bigl[\log(1/\epsilon)\bigr]^{\log3/\log(3/2)}=O\bigl[\log(1/\epsilon)\bigr]^{2.710\ldots}
+\]</div>
+<p>
+となる（これらの導出は原書の演習 11.3）。
+同じ精度なら総当たり（式 <a class="eq-ref" href="#eq-11-KS"></a>）よりゲート列は長くなるが、はるかに小さな \(\epsilon\) まで計算可能で、より正確な結果を出せる。
+</p>
+
+<h4>Galois 理論による最適コンパイル</h4>
+
+<p>
+Kliuchnikov らは Galois 理論に基づくコンパイル法を開発した。ここでは詳細に立ち入らず、それを可能にする数学的構造だけを述べる。
+この手法はエニオンに限らず、多くの種類の1量子ビットゲート集合のコンパイルに使える。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（3個の Fibonacci エニオンの組みひもが作るユニタリの形）</span>
+3個の Fibonacci エニオンの組みひもで作れるユニタリは、位相を除いて
+<div class="equation" id="eq-11-Uuvk">\[
+U(u,v,k)=\begin{pmatrix}u&amp;v^*\,\omega^k\,\phi^{-1/2}\\ v\,\phi^{-1/2}&amp;-u^*\omega^k\end{pmatrix}
+\]</div>
+の形に書ける。ここで \(\phi=(1+\sqrt5)/2\)（黄金比）、\(k\) は整数、\(\omega=e^{2\pi i/10}\) で、
+<div class="equation" id="eq-11-uvnorm">\[
+|u|^2+\phi^{-1}|v|^2=1 .
+\]</div>
+また \(u,v\) は円分整数環 \(\Z[\omega]\) の元、すなわち整数係数 \(a_i,b_i\) による
+<div class="equation" id="eq-11-uvring">\[
+u=\sum_{i=0}^{3}a_i\,\omega^i,\qquad v=\sum_{i=0}^{3}b_i\,\omega^i
+\]</div>
+の形である。
+</div>
+
+<p>
+組みひもで作れるユニタリがこのように非常に限られた数学的形をとることは、すべてのエニオン理論に共通の性質である（形は理論ごとに異なる）。
+\(F\) 行列と \(R\) 行列が有理数の特定の Galois 拡大の中に住んでいるので、現れる無理数因子が限られるためである。
+</p>
+
+<p>
+\(u,v,k\) が与えられると、そのユニタリを<strong>厳密に</strong>与える組みひもを見つける比較的簡単なアルゴリズムがある（<strong>厳密合成 exact synthesis</strong>）。
+組みひもの長さは係数の大きさの対数程度で抑えられる。ウィーブについても同様のアルゴリズムがある。
+</p>
+
+<p>
+アルゴリズムの残りは、任意の目標ユニタリを式 <a class="eq-ref" href="#eq-11-Uuvk"></a> の形で近似する \(u,v,k\)（\(u,v\) は式 <a class="eq-ref" href="#eq-11-uvring"></a> の形）を見つけることで、これは代数的整数論の確立した手法を使える。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（漸近的に最適なコンパイル）</span>
+このアルゴリズムは絶対的な最適の組みひも（総当たりで見つかるはずのもの）は見つけないが、漸近的に最適で、組みひもの長さは式 <a class="eq-ref" href="#eq-11-KS"></a> と同じ
+\(t=O(\log(1/\epsilon))\)、計算時間は \(T=O\bigl(\log(1/\epsilon)^2\bigr)\) である。
+誤差距離 \(10^{-100}\) 程度でも容易に作れ、その長さは最適な組みひもの定数倍程度にとどまる。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-11-4">2量子ビットゲート<span class="en">Two-Qubit Gates</span></h2>
+
+<p>
+Brylinski の定理（§11.1.1）により、万能にするには1量子ビット回転と、何か1つのもつれ生成2量子ビットゲートがあればよい。
+ここでの2量子ビットゲートも基本の交換操作から組む。もつれを作るには、2つの量子ビットを構成するエニオンの世界線を物理的に絡ませる組みひもが要る（図 11.8）。
+</p>
+
+<h3 id="sec-11-4-0">漏れ誤差 (leakage error)</h3>
+
+<p>
+ただし量子ビット間でエニオンを組むと決定的な問題が生じる。図 11.8 のような組みひもを作ると、各量子ビットを構成するエニオン群の融合チャネル（図の \(c,d\)）が保存されず（第8.6節の局所性の議論）、振幅が非計算空間に漏れる。
+</p>
+
+<p>
+Fibonacci の場合、量子ビット（\(\ket0,\ket1\)）は3個の Fibonacci エニオンの全体の融合チャネルが \(\tau\) の状態で符号化し、\(I\) になる状態は非計算状態 \(\ket N\) である。
+この非計算空間に波動関数の振幅が移ることを<strong>漏れ誤差</strong>という。現実の計算ではごく小さな漏れしか許されない。
+図 11.8 のような組みひもは常にゼロでない漏れ誤差を生む。
+この問題は Fibonacci に限らず、万能な組みひもをもつすべてのエニオン理論に共通の性質で、
+完全に漏れのないゲートは設計できず（Ainsworth–Slingerland）、漏れは近似的にゼロにできるだけである。
+</p>
+
+<p>
+漏れを完全に消すことはできないが、原理的には漏れを任意に小さく（ゼロではなく）したもつれゲートを設計できる。
+そのような組みひもは存在するが、見つけるのは非常に難しい。
+図 11.8 の6個の Fibonacci エニオンのヒルベルト空間は13次元で、\(f=\tau\) の8次元部分空間と \(f=I\) の5次元部分空間に分かれる（これら6個を組んでも \(f\) は変わらない）。
+計算空間で働くゲートは \(f\) の値に依らず漏れが小さくなければならないので、これだけ大きな空間で漏れの小さいユニタリを総当たりで探すのは数値的に不可能である。
+そこで、<strong>分割統治</strong>の考え方で、タスクを小さな部品に分けて1つずつ解決する設計法が必要になる。
+次節がその例である。
+</p>
+
+<h3 id="sec-11-4-1">§11.4.1 制御ゲート</h3>
+
+<p>
+量子計算では、<strong>制御 \(U\) ゲート</strong> \(C(U)\)（\(U\) は2次元ユニタリ）がよく使われる。
+2量子ビットに作用し、制御量子ビットが \(\ket1\) のときだけ標的量子ビットに \(U\) をかけ、制御量子ビットは変えない。
+図 11.9 の記法で右の量子ビットが左を制御するとすれば、
+</p>
+<div class="equation" id="eq-11-CU">\[
+C(U):\quad
+\begin{aligned}
+\ket0\otimes\ket0&amp;\to\ket0\otimes\ket0,\\
+\ket1\otimes\ket0&amp;\to\ket1\otimes\ket0,\\
+\ket0\otimes\ket1&amp;\to(U\ket0)\otimes\ket1,\\
+\ket1\otimes\ket1&amp;\to(U\ket1)\otimes\ket1
+\end{aligned}
+\]</div>
+<p>
+である（重ね合わせには線形に作用する）。\(U=X\) の場合が制御 X、すなわち <strong>CNOT</strong> ゲートである。
+</p>
+
+<div class="remark-box">
+<span class="box-title">直観（制御の源は局所性の原理）</span>
+構成の鍵は<a href="chapter10.html">第10章</a>の局所性の原理（第10.1.1節）である。
+融合チャネルが \(\tau\) の2個のエニオンの組（図 10.7 の \(c=\tau\)）を他のエニオンのまわりに組むと、1個の \(\tau\) を同じように動かしたのと同じ効果になる。
+一方、2個の組が自明な融合チャネル \(I\) にあるなら、真空粒子の組みひもは常に自明なので、他のエニオンのまわりに組んでも何も起きない。
+すなわち、組みひもの効果が2個のエニオンの<strong>融合チャネルによって制御</strong>される。
+この構成は Bonesteel らによる。
+</div>
+
+<h4>制御 \(\hat\sigma_2^2\) ゲート</h4>
+
+<p>
+図 11.10 の構成を考える。最左では、赤で描いた1個のエニオンだけが動き、他の2個は静止する<strong>ウィーブ</strong>である。
+このウィーブは、2個の青いエニオンを互いのまわりに巻き付ける（反時計回りに2回交換する）操作 \(\hat\sigma_1^2\) とほぼ同じ効果を持つように設計されている。
+図のウィーブでは、目標 \(\hat\sigma_1^2\) への距離は \(\operatorname{dist}\approx0.12\) である。
+§11.3.2 のどの手法で作った長いウィーブでも、もっと精度よく近似できる。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（3×3 行列としての同値性）</span>
+左のウィーブが \(\hat\sigma_1^2\) と同値なのは、\(\ket0,\ket1\) だけでなく \(\ket N\) まで含めた3次元ヒルベルト空間全体に作用する3×3行列としてである。
+図 11.10 右の組みひもでは、エニオンが元の3個組から出入りするため、計算空間と非計算空間を簡単には分けられないからである。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <!-- left: three strands with a weave -->
+  <line x1="30" y1="25" x2="30" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="25" x2="70" y2="150" class="line" stroke-width="1.5"/>
+  <path d="M 110 150 L 110 130 C 110 100 20 110 20 80 C 20 55 110 65 110 25" class="line accent" stroke-width="1.5" fill="none"/>
+  <text x="26" y="170" class="label">τ</text>
+  <text x="66" y="170" class="label">τ</text>
+  <text x="106" y="170" class="label">τ</text>
+  <text x="150" y="90" class="label">≈</text>
+  <!-- right: two qubits -->
+  <line x1="250" y1="25" x2="250" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="290" y1="25" x2="290" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="330" y1="25" x2="330" y2="150" class="line" stroke-width="1.5"/>
+  <path d="M 370 150 L 370 130 C 370 100 280 110 280 80 C 280 55 370 65 370 25" class="line accent" stroke-width="1.5" fill="none"/>
+  <path d="M 400 150 L 400 130 C 400 100 310 110 310 80 C 310 55 400 65 400 25" class="line accent" stroke-width="1.5" fill="none"/>
+  <text x="246" y="170" class="label">a</text>
+  <text x="366" y="170" class="label">b</text>
+  <text x="300" y="185" class="label-muted">青：標的量子ビット　赤：制御（2個を1組として動かす）</text>
+</svg>
+<figcaption>図 11.10（模式図）：1個のエニオンによるウィーブが \(\hat\sigma_1^2\) とほぼ等価であることを使い、制御量子ビットを構成する2個の赤いエニオン（融合チャネル \(b\)）を1組として同じウィーブで動かすと、\(b=\tau\) のときだけ標的に効く。</figcaption>
+</figure>
+
+<p>
+次に、右側の6個のエニオンによる2量子ビットを考える。右の（赤い）エニオンが制御量子ビットで、左の（青い）エニオンが標的量子ビットである。
+2個の赤いエニオンを融合チャネル \(b\) の1組にまとめ、それを1つの単位として動かして、最左と同じウィーブ（2個の赤いエニオンと青い量子ビットの右端の2個を使う）を作る。
+</p>
+<ul>
+<li>\(b=I\)（\(\ket0\)）なら、この組みひもはヒルベルト空間に何の効果もない（真空の組みひもは常に自明）。</li>
+<li>\(b=\tau\)（\(\ket1\)）なら、この組みひもは1個の \(\tau\) が最左と同じウィーブで動くのと等価で、右の2個の青いエニオンを反時計回りに2回交換するのと同じ効果になる。</li>
+</ul>
+<p>
+こうして制御ゲート \(C(\hat\sigma_2^2)\) ができる。標的の青い量子ビットに（近似的に）右2本のひもの完全な巻き付けが施されるのは、制御量子ビット \(b\) が \(\tau\)（\(\ket1\)）のときだけである。
+ここで \(b\) を融合チャネル \(I,\tau\) と量子ビット状態 \(\ket0,\ket1\) の両方の意味で使っていることに注意。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（この構成は漏れ誤差を生まない）</span>
+左のウィーブが \(\hat\sigma_1^2\) を精度よく近似している限り、この構成は漏れ誤差を生まない。
+制御量子ビット \(b\) は完全に不変なので、右の3個の非計算空間への漏れが起きない。
+標的量子ビット \(a\) への効果は、青いエニオン2個を組むのと同等に設計されており、これも漏れを作らない。
+</div>
+
+<h4>制御 \(U\) ゲート</h4>
+
+<p>
+もう少し手を加えれば、任意の2次元ユニタリ \(U\)（全体の位相は除く）について制御ゲート \(C(U)\) を作れる。
+</p>
+
+<p>
+まず図 11.11 の<strong>注入ウィーブ (injection weave)</strong> を導入する。
+理想の注入ウィーブはヒルベルト空間を変えない（恒等行列として作用する）が、1量子ビットを構成する3本のひもの並びを変える。
+図のように、底の最右にある赤いひもを、上端の最左へ動かす。
+図の例の目標との距離は \(\operatorname{dist}=0.09\) で、§11.3.2 のように長いウィーブを使えば理想の注入にいくらでも近づけられる。
+</p>
+
+<div class="def-box">
+<span class="box-title">手順（制御 \(U\) ゲートの構成）</span>
+図 11.12 のとおり、2個の赤いエニオン（融合チャネル \(b\)）を1組として動かす。
+<ol>
+<li>この2個を、青い量子ビットの右端の2個とともに注入ウィーブに通し、2個の赤いエニオンを左の量子ビットの中央の位置に移す。</li>
+<li>左端の3本のひも（組にした2個の赤いひもを1本として扱う）に、任意の \(U\) を実現するウィーブを施す。</li>
+<li>最後に、注入ウィーブを逆に行って2個の赤いエニオンを元の位置に戻す。</li>
+</ol>
+こうして作った組みひもは、制御量子ビット \(b\) が \(\ket1\)（\(\tau\)）のときだけ左の青い量子ビット \(a\) に \(U\) をかける \(C(U)\) を与える。
+\(U=X\) とすれば、中間のウィーブとして図 11.7 のようなものを使い、\(C(X)\)、すなわち CNOT ゲートが得られる。
+</div>
+
+<p>
+理屈は、動かすエニオンが組になった2個の赤いエニオンだけで、それらを1つの組として動かすことにある。
+図 11.10 と同様、\(b=I\)（\(\ket0\)）ならヒルベルト空間は変化せず、\(b=\tau\)（\(\ket1\)）なら青い量子ビットに効果が及ぶので、制御ユニタリになる。
+\(b=\tau\) のとき2個の赤いひもを1本の \(\tau\) のひもとみなせ、注入ウィーブはヒルベルト空間に何の効果も持たないよう設計されており、その唯一の役割は赤い二重ひもを青い量子ビットの内側へ動かすことなので、ヒルベルト空間に非自明に効くのは \(U\) だけである。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（なぜ最左への注入なのか）</span>
+原書の演習 11.4 は、3個の Fibonacci エニオンでは、最右から中央へ動かす注入ウィーブ（位相を除いても恒等行列になるもの）が存在しないことを示す問題である。
+注入ウィーブが最右から最左へ動かす形である理由はこれにある。
+演習 11.5 では、任意精度の注入ウィーブがあれば \(N&gt;3\) 個のエニオンで任意の組みひもと同じユニタリがウィーブで作れることを示す。
+原書の他の演習は、Ising の非万能性（有限個のユニタリしか出ない）、Hadamard ゲートの総当たり近似、Kitaev–Solovay の計算量の評価を扱う。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第11章のまとめ</span>
+<ul>
+<li>量子回路モデルは、ヒルベルト空間・初期化・ユニタリ・測定の4ステップからなる。万能ゲート集合は任意のユニタリを位相不変距離 \(\operatorname{dist}\) でいくらでもよく近似でき、Kitaev–Solovay の定理により必要なゲート数は \(O(\log(1/\epsilon))\) で済む。1量子ビット回転と任意のもつれ生成2量子ビットゲートがあれば万能（Brylinski）。</li>
+<li>エニオン系では、融合チャネルで量子ビットを符号化し、干渉測定などで融合チャネルを測り、基本交換 \(\hat\sigma_n^{\pm1}\) をゲートとする。組みひもは Fibonacci、\(SU(2)_k\)（\(k=3,\ k\ge5\)）で万能で、Ising と \(SU(2)_2\)（回路モデルでは \(SU(2)_4\) も）は例外。万能なら1個だけ動かすウィーブでも万能。組みひもの結果は量子化されており、位置の小さなずれは影響しない。</li>
+<li>Fibonacci の X ゲートは、5回の交換で dist 約0.17、9回で約0.08まで近似できる。</li>
+<li>トポロジカル量子コンパイル：総当たり探索（\(4^t\) で指数的）、Kitaev–Solovay（\(t=O[\log(1/\epsilon)]^{3.97}\)、\(T=O[\log(1/\epsilon)]^{2.71}\)）、Galois 理論による厳密合成と最適コンパイル（\(t=O(\log(1/\epsilon))\)、\(T=O(\log(1/\epsilon)^2)\)）。</li>
+<li>量子ビット間の組みひもは漏れ誤差を生む（万能なエニオン理論に共通で完全には消せない）。そこで局所性を使い、制御量子ビットを構成する2個のエニオンを組にして動かす制御ゲート \(C(U)\)（注入ウィーブと \(U\) のウィーブ）を作る。この構成なら漏れが生じず、\(U=X\) で CNOT になる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

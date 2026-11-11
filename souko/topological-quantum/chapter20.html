@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="有限群の既約表現を粒子とする融合圏 Rep(G)：指標による融合則、S_3 と Q_8 の例、Clebsch–Gordan 係数による F 行列、ボソン・フェルミオンの組みひも、3+1 次元のパラ統計の排除">
+  <title>第20章 群の表現から作るボソンとフェルミオン — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter20" data-chapter="20">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第20章に対応</span>
+  第20章 群の表現から作るボソンとフェルミオン
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter19.html">第19章</a>が群の「元」を粒子にしたのに対し、本章は有限群 \(G\) の「既約表現」を粒子とする。
+粒子の融合は表現のテンソル積の既約分解で与えられ、一般には非アーベル的な融合則になる（\(N_{ab}^c&gt;1\) もありうる）。
+この融合圏を \(\mathrm{Rep}(G)\) と呼ぶ。\(F\) 行列は角運動量理論の Clebsch–Gordan 係数・6j 記号と全く同じ考え方で群論から計算できる。
+しかし組みひもは、ボソン（と、中心元があればフェルミオン）しか入れられない。
+最後に、この結果が「\((3+1)\) 次元の点粒子はボソンかフェルミオンしかない」（パラ統計の排除、<a href="chapter03.html">第3章</a>）という定理の正確な内容であることを説明する。
+原書では「Optional / A bit harder」の章。群論の準備は<a href="chapter40.html">第40章</a>にある。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<p>
+有限群の既約表現 (irreducible representation、irrep) \(R_i\) を考える。2つの既約表現のテンソル積は、必ず既約表現の有限個の直和に分解される：
+</p>
+<div class="equation" id="eq-20-tensor">\[
+R_a\otimes R_b\simeq R_c\oplus R_d\oplus\cdots
+\]</div>
+<p>
+（\(\simeq\) は同型で等号ではない。右辺をブロック対角にする基底は、左辺にとって自然な基底ではない。）
+そこで、既約表現 \(R_a\) に粒子 \(a\) を対応させ、この分解を融合則
+\(a\times b=c+d+\cdots\) と読む。粒子 \(a\) の反粒子 \(\bar a\) は双対表現 \(R_{\bar a}=R_a^*\) に対応する。
+こうして得られる融合圏（融合則と \(F\) 行列の組。\(F\) の存在は §20.2 で具体的に作って示す）が \(\mathrm{Rep}(G)\) である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（指標と融合則）</span>
+表現 \(R\) の表現行列を \(\rho_R(g)\)（\(\rho_R(g_1)\rho_R(g_2)=\rho_R(g_1g_2)\) を満たす準同型）とするとき、
+<strong>指標 (character)</strong> を \(\chi_R(g)=\operatorname{Tr}[\rho_R(g)]\) とする。\(\operatorname{Tr}(ab)=\operatorname{Tr}(ba)\) より \(\chi_R(g)=\chi_R(hgh^{-1})\) なので、指標は \(g\) の<strong>共役類</strong>（\(hgh^{-1}\) の形で書ける元の集合）だけで決まる。
+指標は、直和・テンソル積に対して
+<div class="equation" id="eq-20-char">\[
+\chi_{R_a\oplus R_b}(g)=\chi_{R_a}(g)+\chi_{R_b}(g),\qquad
+\chi_{R_a\otimes R_b}(g)=\chi_{R_a}(g)\,\chi_{R_b}(g)
+\]</div>
+と振る舞い、既約表現どうしは直交する：
+<div class="equation" id="eq-20-ortho">\[
+\frac1{|G|}\sum_{g\in G}\big[\chi_{R_a}(g)\big]^*\chi_{R_b}(g)=\delta_{R_a,R_b}.
+\]</div>
+\(|G|\) は群の位数。（これは第40章の大直交定理から従う。指標は共役類の関数なので、和を共役類 \(C\) についての和にして \(|C|/|G|\) を掛けてもよい。）
+</div>
+
+<p>
+式 <a class="eq-ref" href="#eq-20-char"></a> と <a class="eq-ref" href="#eq-20-ortho"></a> から、テンソル積の分解 \(R_a\otimes R_b\simeq\bigoplus_c N_{ab}^cR_c\) が得られ、融合多重度は
+</p>
+<div class="equation" id="eq-20-N">\[
+N_{ab}^c=\frac1{|G|}\sum_{g\in G}\big[\chi_{R_c}(g)\big]^*\chi_{R_a}(g)\,\chi_{R_b}(g)
+\]</div>
+<p>
+で与えられる。融合の言葉では \(a\times b=b\times a=\sum_c N_{ab}^c\,c\) である。
+群がアーベル群なら、表現どうしも群をなす（\(N_{ab}^c=N_{ba}^c\) で、各 \(a,b\) に対して \(N_{ab}^c=1\) となる \(c\) がちょうど1つ）。
+また量子次元は、表現の次元に等しい（原書の演習 20.1）：
+</p>
+<div class="equation" id="eq-20-d">\[
+d_a=\chi_{R_a}(e)
+\]</div>
+<p>
+ここで \(e\) は群の単位元である。
+</p>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-20-1">いくつかの例<span class="en">Some Examples</span></h2>
+
+<h3 id="sec-20-1-1">§20.1.1 \(S_3\) の表現</h3>
+
+<p>
+\(S_3\)（三角形の対称性、位数6。\(D_3\) や \(D_6\) とも書く）は、反転 \(x\) と回転 \(r\) で生成され、\(x^2=r^3=e\)、\(xr=r^{-1}x\) を満たす。
+元は \(e,r,r^{-1},x,xr,xr^{-1}\) で、共役類は3つ：単位元 \(\{e\}\)、回転 \(\{r,r^{-1}\}\)、反転 \(\{x,xr,xr^{-1}\}\)。
+既約表現も3つある（既約表現の個数は共役類の個数に等しい）。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>表現</th><th>単位元（1個）</th><th>回転（2個）</th><th>反転（3個）</th></tr></thead>
+<tbody>
+<tr><td>自明表現 \(I\)</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>符号表現 \(S\)</td><td>1</td><td>1</td><td>\(-1\)</td></tr>
+<tr><td>2次元表現 \(V\)</td><td>2</td><td>\(-1\)</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<p>
+（\(S_3\) の指標表。行どうしが式 <a class="eq-ref" href="#eq-20-ortho"></a> の意味で直交している。）
+式 <a class="eq-ref" href="#eq-20-N"></a> から融合則は
+</p>
+<div class="equation" id="eq-20-S3fusion">\[
+S\times S=I,\qquad S\times V=V,\qquad V\times V=I+S+V
+\]</div>
+<p>
+（\(I\) が真空で、\(I\times X=X\)）となる。たとえば \(V\times V\) は、指標が \(\chi_V=(2,-1,0)\)、\(\chi_{V\otimes V}=\chi_V\chi_V=(4,1,0)\) で、これが \((1,1,1)+(1,1,-1)+(2,-1,0)=\chi_I+\chi_S+\chi_V\) と分解されることから出る。
+量子次元は \(d_I=d_S=1\)、\(d_V=2\)。これは<a href="chapter18.html">第18章</a>の演習 18.8 に出てくる融合則（\(S,V\) の名前もそこから）と同じものである。
+</p>
+
+<h3 id="sec-20-1-2">§20.1.2 四元数群 \(Q_8\)</h3>
+
+<p>
+四元数群は8個の \(2\times2\) 行列 \(\pm1,\pm i\sigma_x,\pm i\sigma_y,\pm i\sigma_z\) からなる群で、5つの共役類 \(\{1\},\{-1\},\{\pm i\sigma_x\},\{\pm i\sigma_y\},\{\pm i\sigma_z\}\) をもち、したがって5つの既約表現をもつ。
+</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>表現</th><th>\(\{1\}\)</th><th>\(\{-1\}\)</th><th>\(\{\pm i\sigma_x\}\)</th><th>\(\{\pm i\sigma_y\}\)</th><th>\(\{\pm i\sigma_z\}\)</th></tr></thead>
+<tbody>
+<tr><td>（元の個数）</td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td></tr>
+<tr><td>\(I\)</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>\(R_x\)</td><td>1</td><td>1</td><td>1</td><td>\(-1\)</td><td>\(-1\)</td></tr>
+<tr><td>\(R_y\)</td><td>1</td><td>1</td><td>\(-1\)</td><td>1</td><td>\(-1\)</td></tr>
+<tr><td>\(R_z\)</td><td>1</td><td>1</td><td>\(-1\)</td><td>\(-1\)</td><td>1</td></tr>
+<tr><td>\(S\)（2次元）</td><td>2</td><td>\(-2\)</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<p>
+（\(Q_8\) の指標表。\(S\) は定義の \(2\times2\) 行列による表現である。）
+式 <a class="eq-ref" href="#eq-20-N"></a> から、自明でない融合則は（真空 \(I\) との融合は省く）
+</p>
+<div class="equation" id="eq-20-Q8fusion">\[
+R_i\times R_i=I\ (i=x,y,z),\qquad S\times R_i=S,\qquad R_x\times R_y=R_z\ (\text{巡回的}),\qquad S\times S=I+R_x+R_y+R_z
+\]</div>
+<p>
+となる。\(d_S=2\)、\(d_{R_i}=1\) である。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-20-2">\(\mathrm{Rep}(G)\) の \(F\) 行列<span class="en">F-Matrices in Rep(G)</span></h2>
+
+<p>
+\(F\) 行列は、この文脈では 6j 記号とも呼ばれ、群論の方法で導出できる。一般には少し込み入るが、原理は単純な群論である
+（同様の議論に Buerschaper–Aguado 2009、Butler 1981、Wang ほか 2020）。
+</p>
+<p>
+角運動量では表現が \(j\)、表現内の状態が \(m\) で、ケット \(|jm\rangle\) と書いた。離散群でも同じで、表現 \(R_a\) を \(a\)、表現内の状態を \(m_a=1,\dots,d_a\) として、ケットを \(|a\,m_a\rangle\) と書く。
+1次元表現（自明表現 \(I\) を含む）では \(m\) は1つの値しかとれないので省く。
+角運動量の Clebsch–Gordan 係数 \(\langle jm|j_1m_1;j_2m_2\rangle\) に対応して、表現 \(a,b,c\) について Clebsch–Gordan 係数 \(\langle c\,m_c|a\,m_a;b\,m_b\rangle\) を考え、ダイアグラムの頂点（\(a,b\to c\)）として描く。
+図を水平軸で反転し矢印を逆にすると複素共役の係数 \(\langle a\,m_a;b\,m_b|c\,m_c\rangle\) になる（<a href="chapter12.html">第12章</a>）。
+図には \(m\) を書かず、頂点をつないで図を組み立てるときは \(m\) をすべて足し上げるものとする。
+Clebsch–Gordan 係数は
+</p>
+<div class="equation" id="eq-20-CG">\[
+\sum_{c,m_c}\langle a\,m_a;b\,m_b|c\,m_c\rangle\langle c\,m_c|a\,m_a';b\,m_b'\rangle=\delta_{m_am_a'}\delta_{m_bm_b'},\qquad
+\sum_{m_a,m_b}\langle c\,m_c|a\,m_a;b\,m_b\rangle\langle a\,m_a;b\,m_b|c'\,m_c'\rangle=\delta_{cc'}\delta_{m_cm_c'}
+\]</div>
+<p>
+を満たす。これらは図の言葉では、前者が完全性関係（<a href="chapter12.html">第12章</a>）、後者が直交関係に当たる。後者の特別な場合
+\(\sum_{m_a,m_{\bar a}}\langle I|a\,m_a;\bar a\,m_{\bar a}\rangle\langle a\,m_a;\bar a\,m_{\bar a}|I\rangle=1\) は、ここでの図が「物理的な規格化」を使っていることを意味する。
+</p>
+<p>
+\(F\) 行列は、図を直接評価して得られる。図（<a href="chapter12.html">第12章</a>の図に類似、真空ループを挟んだ4本足の図）の値が \([F^{abc}_e]_{df}\) を定義する。
+Clebsch–Gordan 係数の積で表すと、\(m\) をすべて足し上げて
+</p>
+<div class="equation" id="eq-20-Fcalc">\[
+[F^{abc}_e]_{df}=\sum_{m_a,m_b,m_c,m_d,m_e,m_{e'},m_{\bar e},m_f}
+\langle I|e\,m_e;\bar e\,m_{\bar e}\rangle\langle e\,m_{e'};\bar e\,m_{\bar e}|I\rangle\;
+\langle e\,m_e|d\,m_d;c\,m_c\rangle\langle d\,m_d|a\,m_a;b\,m_b\rangle\langle b\,m_b;c\,m_c|f\,m_f\rangle\langle a\,m_a;f\,m_f|e\,m_{e'}\rangle .
+\]</div>
+<p>
+こうして得た \(F\) は、アイソトピー不変でなかったり、非自明な Frobenius–Schur 指標を含んだりしうる。簡単のためゲージ変換（<a href="chapter09.html">第9章</a>）して形を整えることもある。これらの問題には、もう十分慣れているはずである。
+</p>
+<p>
+原書の演習 20.4 では、\(S_3\) の \(V\) の4本の外線をすべて 2次元表現にとり、\(3\times3\) のユニタリ行列 \([F^{VVV}_V]_{ef}\) を、式 <a class="eq-ref" href="#eq-20-Fcalc"></a> と後述の式 <a class="eq-ref" href="#eq-20-Utilde"></a> で計算する。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-20-3">\(\mathrm{Rep}(G)\) の簡単な組みひも<span class="en">Some Simple Braidings for Rep(G)</span></h2>
+
+<p>
+ここまでは整合的な融合（五角形方程式を満たす \(F\)）だけを議論した。\(F\) が決まれば \(R\) 行列（六角形方程式の解）を探せる。解は一般に複数あり、そのうち任意の群 \(G\) で簡単に書けるものがある。
+</p>
+
+<h3 id="sec-20-3-1">§20.3.1 「自明な」組みひも：ボソン</h3>
+
+<p>
+組みひもを単にテンソル因子の並べ替えと定める。\(R_a\otimes R_b\)（\(a\) が \(b\) の左）から、\(a,b\) を（手前か奥で）入れ替えると \(R_b\otimes R_a\) になる。次のように \(R\) を割り当てる：
+</p>
+<div class="equation" id="eq-20-Rbos">\[
+R^{ab}_c=\begin{cases}
+1 & a\neq b\\
+1 & a=b\ \text{で}\ R_c\ \text{が}\ R_a\otimes R_a\ \text{の対称部分に現れる}\\
+-1 & a=b\ \text{で}\ R_c\ \text{が}\ R_a\otimes R_a\ \text{の反対称部分に現れる}
+\end{cases}
+\]</div>
+<p>
+\(a=b\) のときは、\(R_a\otimes R_a\) のどの部分が対称か反対称かを知る必要がある（§20.5.1）。
+最後の場合の符号は直観的である。スピン \(\tfrac12\) 2個のスピン一重項のような反対称な組み合わせを交換すると \(-1\) が付く。
+</p>
+<div class="caution-box">
+<span class="box-title">注意（ゲージと規約）</span>
+\(a=b\) のときの \(R^{aa}_c\) 自体はゲージに依存するので、式 <a class="eq-ref" href="#eq-20-Rbos"></a> はゲージの選び方を含む。
+ゲージ不変なのは \(R^{ab}_cR^{ba}_c\)、\(R^{aa}_I\)、ツイスト \(\theta_a\) である。
+ただし \(\theta_a\) はループの重み \(d_a\) の符号の選び方に依存する。Frobenius–Schur 指標 \(\kappa_a&lt;0\) のとき \(d_a\) を負にとる流儀もある（<a href="chapter15.html">第15章</a>）。
+ここでは \(d_a\) を常に正にとる。このとき \(\theta_a=1\) なので、<a href="chapter15.html">第15章</a>の式から、\(\kappa_a=-1\) となるのは \(R_a\) と \(R_a\) が反対称に真空表現へ融合するとき、ちょうどそのときである（スピン \(\tfrac12\) の例、<a href="chapter14.html">第14章</a>）。
+</div>
+<p>
+式 <a class="eq-ref" href="#eq-20-Rbos"></a> は、任意の群 \(G\) について \(\mathrm{Rep}(G)\) の六角形方程式を解く。この組みひもを選ぶと、粒子はすべてボソン（スピン \(\theta_a=1\)）で、群 \(G\) の表現が内部量子数になる。
+</p>
+
+<h3 id="sec-20-3-2">§20.3.2 フェルミオンとボソン</h3>
+
+<p>
+\(G\) に中心元 \(z\)（すべての元と可換）で \(z^2=e\) を満たすものがあるとする。
+表現 \(R_a\) で \(\rho_{R_a}(z)\) を2回かけると \(\rho(z^2)=\rho(e)\) だから、\(\rho_{R_a}(z)\) は恒等写像か \(-1\) 倍のどちらかしかない。
+そこで \(z\) が恒等写像として働くなら \(p(a)=0\)、\(-1\) として働くなら \(p(a)=1\) と定めて、各表現に次数 \(p(a)\) を割り当てる。このとき
+</p>
+<div class="equation" id="eq-20-Rferm">\[
+[R^{ab}_c]_{\text{new}}=(-1)^{p(a)p(b)}\,[R^{ab}_c]_{\text{ボソン}}
+\]</div>
+<p>（右辺の \([R^{ab}_c]_{\text{ボソン}}\) は式 <a class="eq-ref" href="#eq-20-Rbos"></a> の値。）</p>
+<p>
+も整合的な組みひもである（原書の演習 20.3）。ボソンの組みひもを、ボソンとフェルミオンの両方を許すように修正したことになる。
+\(p(a)=0\) の粒子はボソン（\(\theta_a=+1\)）、\(p(a)=1\) の粒子はフェルミオン（\(\theta_a=-1\)）である。
+この解を \(\mathrm{Rep}(G,z)\) と呼び、完全にボソンの解を \(\mathrm{Rep}(G,e)\) と呼ぶこともある（\(z=e\) とおけば全粒子がボソン）。
+</p>
+<div class="example-box">
+<span class="box-title">例（\(Q_8\) と \(z=-1\)）</span>
+\(Q_8\)（§20.1.2）で \(z=-1\) をとると、\(R_x,R_y,R_z\) は \(\chi(-1)=1\) なのでボソン、\(S\) は \(\chi_S(-1)=-2\) なのでフェルミオンになる。
+</div>
+<p>
+\(\mathrm{Rep}(G)\) でも \(\mathrm{Rep}(G,z)\) でも、すべての粒子は<strong>透明</strong>、すなわち他のすべての粒子と自明に組みひもされる。これを<strong>対称テンソル圏</strong>という。
+</p>
+
+<h3 id="sec-20-3-3">§20.3.3 その他の組みひも</h3>
+
+<p>
+\(F\) が与えられたとき、ボソン・フェルミオン以外の、何らかのアニオン的な組みひもを割り当てられるかどうかは、判定がやや難しい。
+ただし、\(\mathrm{Rep}(G)\) が有効な部分圏をもたず \(G\) が非アーベルなら、ボソンしか許されないことは簡単に示せる。
+Nikshych（2018）の定理により、非アーベル群の \(\mathrm{Rep}(G)\) はモジュラーな組みひもをもてない。モジュラーでなければ透明な粒子が存在し、透明な粒子全体は必ずそれ自身で1つの圏をなす。
+部分圏がなければ、全粒子が透明、すなわち組みひもは自明になるしかない。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-20-4">パラ統計再訪<span class="en">Parastatistics Revisited</span></h2>
+
+<p>
+<a href="chapter03.html">第3章</a>（§3.5.1）で、なぜ \((3+1)\) 次元に変わった統計がないのかという問いを立てた。
+置換群の非自明な表現は量子力学の合成則を満たしうるが、粒子の生成消滅や局所性などの条件のためにボソンとフェルミオンに限られる、と述べた。ここでその意味を正確に言える。
+</p>
+<p>
+\((2+1)\) 次元のアニオンの構造は「組みひもつきユニタリ圏」、すなわち融合、五角形方程式を満たす \(F\)、六角形方程式を満たす \(R\) の組である。
+\((3+1)\) 次元で同様のことを試みると、世界線に結び目ができないので（<a href="chapter03.html">第3章</a>、§3.3.2）、世界線の組みひもは非自明になれない。
+したがって、2つの粒子を入れ替えた2通りの図（\(a\) が \(b\) の前を通る場合と後ろを通る場合）が位相同値になり、すべての粒子が透明でなければならない。式で書くと
+</p>
+<div class="equation" id="eq-20-symmetric">\[
+R^{ab}_cR^{ba}_c=1\qquad (N_{ab}^c&gt;0\ \text{を満たすすべての}\ a,b,c)
+\]</div>
+<p>
+である。この条件が成り立ち、かつ六角形方程式の解でもあるとき、<strong>対称テンソル圏</strong>と呼ぶ。
+これはある意味でモジュラーテンソル圏の正反対である（モジュラーでは真空以外に透明な粒子がなく、対称では全粒子が透明）。
+</p>
+<p>
+対称テンソル圏の例はすでに §20.3 で2つ与えた。(a) ボソンが群 \(G\) の表現を内部量子数としてもつ \(\mathrm{Rep}(G)=\mathrm{Rep}(G,e)\)、(b) 表現が \(z\) の作用に応じてフェルミオンとされる \(\mathrm{Rep}(G,z)\)。
+§3.5.1 で触れた決定的な定理（Doplicher–Roberts、また Deligne 2002、Müger 2007）によれば、これ以外の可能性はない：
+任意の対称テンソル圏は、フェルミオンがなければ \(\mathrm{Rep}(G)=\mathrm{Rep}(G,e)\)、フェルミオンがあれば \(\mathrm{Rep}(G,z)\) と同値である。
+すなわち、\((3+1)\) 次元の点粒子には、ボソンとフェルミオンしかない。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-20-5">付録：群論の補足<span class="en">Appendix: Further Group Theory</span></h2>
+
+<h3 id="sec-20-5-1">§20.5.1 \(a\otimes a\) の融合積の対称性</h3>
+
+<p>
+表現 \(a\otimes a\) の融合積のうち、どの部分が2つの因子の入れ替えに対して対称で、どの部分が反対称かを決める公式がある。対称部分と反対称部分の指標は
+</p>
+<div class="equation" id="eq-20-symchar">\[
+\chi^{\text{sym}}_{a\otimes a}(g)=\frac{[\chi_a(g)]^2+\chi_a(g^2)}2,\qquad
+\chi^{\text{asym}}_{a\otimes a}(g)=\frac{[\chi_a(g)]^2-\chi_a(g^2)}2
+\]</div>
+<p>
+で与えられる。通常の指標と同じく、これらも \(g\) の共役類だけに依存する。
+</p>
+<div class="proof-box">
+<span class="box-title">導出の概略</span>
+\(d\) 次元表現の基底を \(e_i\)、\(\rho(g)\) の固有値を \(\lambda_1,\dots,\lambda_d\) とすると、\(\rho(g^2)\) の固有値は \(\lambda_i^2\) である。指標は固有値の和なので \(\chi(g)=\sum_i\lambda_i\)、\(\chi(g^2)=\sum_i\lambda_i^2\)。
+\(\rho(g)\otimes\rho(g)\) は対称な部分（基底 \(e_i\otimes e_j+e_j\otimes e_i\)、\(i\le j\)）と反対称な部分（基底 \(e_i\otimes e_j-e_j\otimes e_i\)、\(i&lt;j\)）に分かれ、固有値はそれぞれ \(\lambda_i\lambda_j\)（\(i\le j\)）、\(\lambda_i\lambda_j\)（\(i&lt;j\)）である。
+\(\chi^{\text{sym}}=\sum_{i\le j}\lambda_i\lambda_j\)、\(\chi^{\text{asym}}=\sum_{i&lt;j}\lambda_i\lambda_j\) を \(\chi(g)^2=\sum_{i,j}\lambda_i\lambda_j\) と \(\chi(g^2)\) で書き直せば上の式になる。
+</div>
+<div class="example-box">
+<span class="box-title">例（\(S_3\) の \(V\otimes V\)）</span>
+\(\chi_V=(2,-1,0)\) なので \([\chi_V]^2=(4,1,0)\)。\(g^2\) の共役類は、単位元 \(\to\) 単位元、回転 \(\to\) 回転、反転 \(\to\) 単位元なので \(\chi_V(g^2)=(2,-1,2)\)。したがって
+\[
+\chi^{\text{sym}}_{V\otimes V}=\frac{(4,1,0)+(2,-1,2)}2=(3,0,1)=\chi_V+\chi_I,\qquad
+\chi^{\text{asym}}_{V\otimes V}=\frac{(4,1,0)-(2,-1,2)}2=(1,1,-1)=\chi_S .
+\]
+融合則 \(V\times V=I+S+V\)（式 <a class="eq-ref" href="#eq-20-S3fusion"></a>）のうち、\(I\) と \(V\) が対称、\(S\) が反対称であることが分かる。
+</div>
+
+<h3 id="sec-20-5-2">§20.5.2 Frobenius–Schur 指標</h3>
+
+<p>
+\(a\otimes a\) を考え、真空表現への融合が対称チャネルか反対称チャネルかを調べる。式 <a class="eq-ref" href="#eq-20-symchar"></a> の指標に、式 <a class="eq-ref" href="#eq-20-ortho"></a> と同様に自明表現の指標 \(\chi_I(g)=1\) を掛けて群で和をとる。
+\(\frac1{|G|}\sum_g\chi^{\text{sym}}_{a\otimes a}(g)\) は、真空が対称に含まれれば 1、そうでなければ 0。反対称についても同様である。両者の差をとると
+</p>
+<div class="equation" id="eq-20-FS">\[
+\kappa_a=\frac1{|G|}\sum_{g\in G}\chi_a(g^2)=
+\begin{cases}
++1 & \text{真空が } a\otimes a \text{ の対称部分に現れる}\\
+-1 & \text{真空が } a\otimes a \text{ の反対称部分に現れる}\\
+0 & a \text{ が自己双対でない}
+\end{cases}
+\]</div>
+<p>
+となり、これが「粒子型」\(a\) の Frobenius–Schur 指標である（自己双対でない場合に 0 を割り当てるのはここだけで、本書の他の箇所では定義を避けている）。
+<a href="chapter14.html">第14章</a>の議論から、反対称な組み合わせで真空に融合する対象は負の Frobenius–Schur 指標をもつ。
+\(g^2\) を \(g^3\) に替えた同様の式で、第3の Frobenius–Schur 指標（<a href="chapter14.html">第14章</a>）も得られる。
+原書の演習 20.2 では、\(S_3\) と \(Q_8\) の指標を計算し、\(Q_8\) と指標表が一致する位数8の二面体群 \(D_8\) とは Frobenius–Schur 指標が異なることを確かめる。
+</p>
+
+<h3 id="sec-20-5-3">§20.5.3 離散群の Clebsch–Gordan 係数</h3>
+
+<p>
+Clebsch–Gordan 係数の求め方は群論の標準的な教科書（Butler 1981、Hamermesh 1989）にあるが、ここでは同等の手順を簡単に説明する。
+\(d_a\) 次元表現 \(\rho_a(g)\) の行と列を \(m_a=1,\dots,d_a\) で添字づける。テンソル積の分解は
+</p>
+<div class="equation" id="eq-20-decomp">\[
+a\otimes b\simeq\bigoplus_{c\in\text{irreps}}N_{ab}^c\,c
+\]</div>
+<p>
+で、これは表現としての同型である。表現行列の等式にするにはユニタリ変換 \(U\) を用いる：
+</p>
+<div class="equation" id="eq-20-U">\[
+\rho_a(g)\otimes\rho_b(g)=U\big(\rho_{c_1}(g)\oplus\rho_{c_2}(g)\oplus\cdots\oplus\rho_{c_n}(g)\big)U^\dagger .
+\]</div>
+<p>
+各ブロックが右辺の各項に対応する（\(N_{ab}^c&gt;1\) なら既約表現 \(c\) の同じブロックが \(N_{ab}^c\) 個並ぶ）。同じ \(U\) がすべての \(g\in G\) に対して同時にブロック対角化する。
+左辺の行と列は \((m_a,m_b)\)（\(d_ad_b\) 通り）で添字づけられ、各ブロック \(c_i\) の行と列は \(m_{c_i}=1,\dots,d_{c_i}\) で添字づけられる。
+\(U\) の成分がまさに Clebsch–Gordan 係数である：
+</p>
+<div class="equation" id="eq-20-Ucg">\[
+U_{(m_am_b),(c_im_{c_i})}=\langle a\,m_a;b\,m_b|c_i\,m_{c_i}\rangle .
+\]</div>
+<p>
+\(U\) の求め方には、\(N_{ab}^c&gt;1\) がない場合に使える巧妙な方法がある（Sakata 1974 が最初に使ったとされる）。任意の行列 \(A\) をとり、
+</p>
+<div class="equation" id="eq-20-Utilde">\[
+\tilde U=\sum_{g\in G}\big[\rho_a(g)\otimes\rho_b(g)\big]\,A\,\big[\rho_{c_1}(g)\oplus\rho_{c_2}(g)\oplus\cdots\oplus\rho_{c_n}(g)\big]^\dagger
+\]</div>
+<p>
+を計算する。\(\tilde U\) は、列が規格化されていない点を除いて \(U\) に等しい。\(N_{ab}^c&gt;1\) の場合はもう少し技巧が必要で、van den Broek–Cornwell 1978 や Butler 1981 に書かれている。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第20章のまとめ</span>
+<ul>
+<li>有限群の既約表現を粒子とし、テンソル積の分解を融合則とする融合圏が \(\mathrm{Rep}(G)\)。融合多重度は \(N_{ab}^c=\frac1{|G|}\sum_g\chi_c^*\chi_a\chi_b\)、量子次元は \(d_a=\chi_a(e)\)。</li>
+<li>例：\(S_3\) は \(V\times V=I+S+V\)（\(d_V=2\)）、\(Q_8\) は \(S\times S=I+R_x+R_y+R_z\)。</li>
+<li>\(F\)（6j 記号）は Clebsch–Gordan 係数から直接計算でき、物理的な規格化の下で評価される。結果はアイソトピー不変でなかったり非自明な Frobenius–Schur 指標をもったりしうる。</li>
+<li>組みひもは、ボソン（\(R\) は並べ替えで、同種表現の対称部分で \(+1\)、反対称部分で \(-1\)）と、中心元 \(z\) があれば \((-1)^{p(a)p(b)}\) を掛けたボソン・フェルミオン混合 \(\mathrm{Rep}(G,z)\) の2種類。非アーベル群ではモジュラーな組みひもはない。</li>
+<li>\((3+1)\) 次元の点粒子では世界線が結べないので全粒子が透明で、対称テンソル圏になる。Doplicher–Roberts の定理により、それは \(\mathrm{Rep}(G)\) か \(\mathrm{Rep}(G,z)\) に限られ、ボソンとフェルミオンしかない。</li>
+<li>\(\kappa_a=\frac1{|G|}\sum_g\chi_a(g^2)\) で Frobenius–Schur 指標が求まり、Clebsch–Gordan 係数は群平均 \(\tilde U\) の手法で計算できる。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

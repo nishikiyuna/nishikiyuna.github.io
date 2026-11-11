@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="交差を含む (2+1) 次元ダイアグラムの規則：異種粒子の R 行列、交差の解消、六角形方程式、R のゲージ変換">
+  <title>第13章 組みひもダイアグラム — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter13" data-chapter="13">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第13章に対応</span>
+  第13章 組みひもダイアグラム
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter12.html">第12章</a>の平面ダイアグラムは \((1+1)\) 次元の物体の絵であり、
+そこで見た非自明な物理は Hilbert 空間の構造（融合と \(F\) 行列）の反映にすぎなかった。
+本章では世界線が互いの上下を通る<strong>交差</strong>を許し、図式規則を \((2+1)\) 次元に拡張する。
+<a href="chapter10.html">第10章</a>で同種粒子について導入した \(R\) 行列を異種粒子に一般化し、
+任意の交差を平面ダイアグラムに「解消」する公式を与える。
+\(F\) と \(R\) が矛盾なく共存する条件が<strong>六角形方程式</strong>であり、
+五角形方程式と合わせた構造がユニタリ組みひも融合圏、すなわち \((2+1)\) 次元のエニオン理論の一般形である。
+規格化は前章と同じ物理的規格化を使う。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-13-1">3次元のダイアグラム<span class="en">Three-Dimensional Diagrams</span></h2>
+
+<p>
+ここからは、線が上を通る・下を通るという交差を持つダイアグラムを考える。
+目指すのは<a href="chapter02.html">第2章</a>の結び目不変量と同じ型の規則、
+つまり「一般化された結び目の絵」を入力して1つの数を出力する規則である。
+一般化されている点は、線がラベル \(a,b,c,\dots\) を持つことと、線どうしが交差するだけでなく融合・分裂することである。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（許される変形は因果的アイソトピーまで）</span>
+Kauffman ブラケットには正則アイソトピー不変性があり、ひもをリボンとみなす限り、切らないどんな変形も許された。
+ここでもひもはリボンとして扱うが、一般の理論で許されるのは<a href="chapter12.html">第12章</a>の<strong>因果的アイソトピー</strong>だけである
+（時間を前向きに進む線を逆行する線に変形することは一般には許されない）。
+正則アイソトピー不変性を持つエニオン理論も存在し<a href="chapter16.html">第16章</a>で扱うが、それは一般的な場合ではない。
+</div>
+
+<p>
+交差の規則は、平面ダイアグラムの規則の矛盾のない拡張として導入する。
+数学の言葉では、ユニタリ融合圏に追加の構造を与えて<strong>ユニタリ組みひも融合圏 (unitary braided fusion category)</strong>
+（ユニタリリボン融合圏と呼んでも同じ）にすることに当たる。
+</p>
+</section>
+
+<section>
+<h2 id="sec-13-2">異種粒子の組みひも<span class="en">Braiding Non-Identical Particles</span></h2>
+
+<p>
+異なる粒子種 \(a\) と \(b\) を交換したら何が起こるか。
+同種粒子のとき（<a href="chapter10.html">第10章</a>）は「融合チャネルを決めた2粒子状態を用意し、交換して付く位相を見る」という定義ができた。
+異種粒子ではこれがそのままでは通用しない。交換前は \(a\) が \(b\) の左、交換後は \(a\) が \(b\) の右にあり、
+始状態と終状態が根本的に別の状態なので、両者を位相だけで比べることができないからである。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（\(R\) 行列）</span>
+\(c\) から分裂して<strong>左に \(b\)、右に \(a\)</strong> が出ていく頂点を考える。
+これと、\(c\) からいったん左に \(a\)、右に \(b\) として分かれ、そのあと2粒子が1回交換されて結局<strong>左に \(b\)、右に \(a\)</strong> となる図とを比べる。
+どちらも終状態は「左 \(b\)、右 \(a\)、融合チャネル \(c\)」で同じなので、両者は位相だけ異なる。その位相を \(R^{ab}_c\) と定義する：
+<div class="equation" id="eq-13-Rdef">\[
+\bigl(c\text{ の上で1回交換してから左 }b\text{・右 }a\text{ に出る図}\bigr)\;=\;R^{ab}_c\;\times\;\bigl(c\text{ から左 }b\text{・右 }a\text{ に出る頂点}\bigr).
+\]</div>
+\(a\) と \(b\) は等しくても異なっていてもよい。記法は Bonderson の学位論文に合わせてある。
+</div>
+
+<p>
+ユニタリな理論では \(R^{ab}_c\) は絶対値 1 の複素数である。
+\(N_{ab}^c=0\) なら \(R^{ab}_c=0\) と約束する。真空との組みひもは自明で、
+\[
+R^{Ia}_a=R^{aI}_a=1
+\]
+である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（2回交換と逆交換）</span>
+<ul>
+<li><strong>フルブレイド</strong>（同じ向きに2回交換し、一方が他方を1周する）：
+\[
+\bigl(c\text{ の上で2回交換して左 }b\text{・右 }a\bigr)=R^{ba}_c\,R^{ab}_c\times\bigl(c\text{ から左 }b\text{・右 }a\text{ の頂点}\bigr).
+\]
+積を右から左に読む順が、図では頂点に近い側（下）から上への順に対応する。まず \(R^{ab}_c\) が頂点に作用し、次に \(R^{ba}_c\) が作用する。
+始めも終わりも \(b\) が左にあるので、これは融合チャネルに依存する Aharonov–Bohm 型の位相とみなせる。</li>
+<li><strong>逆向きの交換</strong>：左に \(a\)、右に \(b\) が出る頂点の下で逆向きに1回交換した図は
+\[
+\bigl[R^{ab}_c\bigr]^{-1}\times\bigl(c\text{ から左 }a\text{・右 }b\text{ の頂点}\bigr)
+\]
+に等しい。上の足のラベルの並びが定義 <a class="eq-ref" href="#eq-13-Rdef"></a> と逆になっていることに注意する。
+1回交換すると頂点の足の順序が入れ替わるので、\(R^{-1}\) は足の順が逆の状態に作用するからである。
+交換の直後に逆交換を行えば \([R^{ab}_c]^{-1}R^{ab}_c=1\) で元の頂点に戻る。</li>
+</ul>
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（透明な粒子）</span>
+\(N_{ab}^c\gt 0\) であるすべての \(b,c\) について \(R^{ab}_c R^{ba}_c=1\) となる粒子種 \(a\)、
+つまり他のどの粒子とのフルブレイドも自明な粒子を<strong>透明 (transparent)</strong> という。真空 \(I\) は常に透明である。
+</div>
+
+<p>
+\(F\) 行列と \(R\) 行列があれば、どんな組みひもの結果も計算できる。
+手順は<a href="chapter10.html">第10章</a>と同じで、交換したい2粒子の融合チャネルが確定する基底へ \(F\) で移り、そこで \(R\) を掛ける。
+特に、頂点から離れた場所にある裸の交差も次のように平面ダイアグラムに書き直せる。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 185" xmlns="http://www.w3.org/2000/svg">
+  <!-- crossing: over strand a from bottom-left to top-right -->
+  <line x1="40" y1="145" x2="110" y2="35" class="line accent" stroke-width="1.5"/>
+  <line x1="110" y1="145" x2="84" y2="104" class="line" stroke-width="1.5"/>
+  <line x1="66" y1="76" x2="40" y2="35" class="line" stroke-width="1.5"/>
+  <text x="34" y="164" class="label">a</text>
+  <text x="106" y="164" class="label">b</text>
+  <text x="34" y="26" class="label">b</text>
+  <text x="106" y="26" class="label">a</text>
+  <!-- equals -->
+  <text x="150" y="95" class="label">=  Σ R(ab; c)</text>
+  <text x="168" y="116" class="label-muted">c について和</text>
+  <!-- resolved planar diagram -->
+  <line x1="320" y1="145" x2="355" y2="115" class="line" stroke-width="1.5"/>
+  <line x1="390" y1="145" x2="355" y2="115" class="line" stroke-width="1.5"/>
+  <line x1="355" y1="115" x2="355" y2="65" class="line accent" stroke-width="1.5"/>
+  <line x1="355" y1="65" x2="320" y2="35" class="line" stroke-width="1.5"/>
+  <line x1="355" y1="65" x2="390" y2="35" class="line" stroke-width="1.5"/>
+  <text x="312" y="164" class="label">a</text>
+  <text x="388" y="164" class="label">b</text>
+  <text x="312" y="26" class="label">b</text>
+  <text x="388" y="26" class="label">a</text>
+  <text x="363" y="95" class="label">c</text>
+</svg>
+<figcaption>図 13.1：交差の解消。左下から右上へ進む a の線が手前を通る交差は、「a と b が c に融合し、左 b・右 a に分裂する」平面図の、R 行列を重みとする和に等しい（物理的規格化）。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">公式（交差の解消）</span>
+下端で左に \(a\)、右に \(b\) があり、上端で左に \(b\)、右に \(a\) となる交差について、
+\(P_c\) を「\(a,b\) が \(c\) に融合し、\(c\) が左 \(b\)・右 \(a\) に分裂する」平面ダイアグラムとすると（物理的規格化）、
+<div class="equation" id="eq-13-resolve">\[
+\bigl(\text{交差}\bigr)=\sum_c R^{ab}_c\;P_c ,\qquad
+\bigl(\text{逆向きの交差}\bigr)=\sum_c \bigl[R^{ba}_c\bigr]^{-1}P_c .
+\]</div>
+前者は左下から右上へ進む線（\(a\)）が手前を通る交差、後者は左上から右下へ走る線（\(b\)）が手前を通る交差である。
+</div>
+
+<div class="proof-box">
+<span class="box-title">導出</span>
+交差の下に、平行な2本の線 \(a,b\) に対する完全性関係（<a href="chapter12.html">第12章</a>）\(\sum_c\ketbra{a,b;c}{a,b;c}\) を挿入する。
+すると各項は「\(a,b\) が \(c\) に融合 → \(c\) が左 \(a\)・右 \(b\) に分裂 → 交換して左 \(b\)・右 \(a\)」となり、
+上半分はちょうど \(R\) 行列の定義 <a class="eq-ref" href="#eq-13-Rdef"></a> の左辺の形である。これを \(R^{ab}_c\) 倍の素直な頂点に置き換えればよい。
+逆向きの交差も同様で、逆交換の規則から \([R^{ba}_c]^{-1}\) が出る。
+</div>
+
+<h3 id="sec-13-2-1">§13.2.1 物理的規格化での \((2+1)\) 次元ダイアグラム評価規則のまとめ</h3>
+
+<div class="thm-box">
+<span class="box-title">規則のまとめ（\((2+1)\) 次元・物理的規格化）</span>
+<a href="chapter12.html">第12章</a>の平面ダイアグラムの規則に、次の2つを加えるだけである。
+<ol>
+<li>\(R\) 移動（定義 <a class="eq-ref" href="#eq-13-Rdef"></a> とその逆）を使ってよい。特に、公式 <a class="eq-ref" href="#eq-13-resolve"></a> で交差を解消できる。</li>
+<li>平面ダイアグラムに帰着したら、平面ダイアグラムの規則で評価する。</li>
+</ol>
+</div>
+
+<p>
+変形の自由度も平面の場合と同様で、線を切らず、時間方向の向きを変えない変形は自由に行える。
+さらに、新しい仮定を置かなくても、ラベル付きの線に対する <strong>Reidemeister II 型移動</strong>
+（並んだ2本を重ねて2回交差させた図は、交差のない図に等しい）と
+<strong>Reidemeister III 型移動</strong>（交差の上または下を第3の線が横切って反対側へ移る）が導ける。
+これらは完全性関係、\(R\) 行列の定義、および次節の六角形方程式から従う（原書の演習で扱う）。
+</p>
+</section>
+
+<section>
+<h2 id="sec-13-3">六角形方程式<span class="en">The Hexagon</span></h2>
+
+<p>
+\(R\) 移動と \(F\) 移動を使えば、真空で始まり真空で終わる任意の \((2+1)\) 次元ダイアグラムを複素数に落とせる。
+ここで気になるのは自己無撞着性、すなわち規則を適用する順序によらず同じ値が出るかどうかである。
+平面ダイアグラムでは五角形方程式がこれを保証した。
+交差を含む場合、与えられた \(F\) に対して結果が一意になるような \(R\) は限られており、その条件が<strong>六角形方程式 (hexagon equations)</strong> である。
+</p>
+
+<p>
+六角形方程式は、3粒子 \(a,b,c\)（全体の電荷 \(d\)）の融合木を出発点とし、
+1本の線を他の2本の向こう側へ運ぶ操作を2通りの経路で表して等置したものである。
+一方の経路は \(R\to F\to R\)（2本を1本ずつ順に越える）、もう一方は \(F\to R\to F\)（2本をまとめた融合結果 \(f\) を一度に越える）で、
+6つの木を頂点とする六角形の上側と下側に当たる。交差の向きが2通りあるので式も2本ある。
+</p>
+
+<div class="thm-box">
+<span class="box-title">定理（六角形方程式）</span>
+<div class="equation" id="eq-13-hex1">\[
+R^{ca}_{e}\,\bigl[F^{acb}_{d}\bigr]_{eg}\,R^{cb}_{g}
+\;=\;\sum_f \bigl[F^{cab}_{d}\bigr]_{ef}\,R^{cf}_{d}\,\bigl[F^{abc}_{d}\bigr]_{fg}
+\]</div>
+<div class="equation" id="eq-13-hex2">\[
+\bigl[R^{ac}_{e}\bigr]^{-1}\bigl[F^{acb}_{d}\bigr]_{eg}\bigl[R^{bc}_{g}\bigr]^{-1}
+\;=\;\sum_f \bigl[F^{cab}_{d}\bigr]_{ef}\,\bigl[R^{fc}_{d}\bigr]^{-1}\bigl[F^{abc}_{d}\bigr]_{fg}
+\]</div>
+左辺が上側の経路（\(R, F, R\)）、右辺が下側の経路（\(F, R, F\)）に対応する。
+<a class="eq-ref" href="#eq-13-hex2"></a> は <a class="eq-ref" href="#eq-13-hex1"></a> の交差をすべて逆向きにしたものである。
+</div>
+
+<div class="remark-box">
+<span class="box-title">直観（右辺の \(R^{cf}_d\) の意味）</span>
+右辺では、まず \(F\) で \(a\) と \(b\) を \(f\) にまとめ、\(c\) を \(f\) と1回だけ交換し（\(R^{cf}_d\)）、再び \(F\) でほどく。
+左辺では \(c\) を \(a\)、\(b\) と1回ずつ交換する。
+「\(c\) にとって、\(a\) と \(b\) を別々に越えるのと、その融合結果 \(f\) をまとめて越えるのは同じ」という局所性の要請を式にしたものと読める。
+</div>
+
+<p>
+五角形方程式と六角形方程式を満たすユニタリな \(F\)・\(R\) の組が<strong>ユニタリ組みひも融合圏</strong>であり、
+\((2+1)\) 次元のエニオン理論はすべてこの形をしている
+（ユニタリリボンテンソル圏、あるいは前モジュラー圏 (premodular category) とも呼ばれる）。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（剛性と解の個数）</span>
+融合則を与えると、五角形方程式の解 \(F\) は有限個しかない（<a href="chapter09.html">第9章</a>）。
+同様に \(F\) を固定すると六角形方程式の解 \(R\) も有限個である。この性質を<strong>剛性 (rigidity)</strong> という。
+したがって、ひとつのエニオン理論を少しだけ摂動して別の理論を得ることはできない
+（ゲージ変換で移り合う解は同じ解と数える）。
+<ul>
+<li><strong>Fibonacci</strong>：融合則だけで \(F\) が完全に決まり、六角形方程式の解はちょうど2つある。
+これが右手型と左手型の Fibonacci エニオン（互いに複素共役な \(R\)。<a href="chapter10.html">第10章</a>の \(R\) 行列はその一方）である。</li>
+<li>五角形方程式を満たす \(F\) があっても、六角形方程式の解が<strong>ひとつも存在しない</strong>ことがある。
+最も簡単な例は粒子種が3つのある種の理論で知られている。そのような融合圏は \((2+1)\) 次元のエニオン理論にはなれない。</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2 id="sec-13-4">\(R\) 行列の補遺<span class="en">R-Matrix Odds and Ends</span></h2>
+
+<h3 id="sec-13-4-1">§13.4.1 付録：ゲージ変換と \(R\)</h3>
+
+<p>
+<a href="chapter09.html">第9章</a>で見たように、各頂点に位相 \(u^{ab}_c\) を掛ける自由度（ゲージ変換）がある：
+\(\ket{a,b;c}=u^{ab}_c\,\widetilde{\ket{a,b;c}}\)。このとき \(R\) 行列は
+<div class="equation" id="eq-13-gauge">\[
+\widetilde{R^{ab}_c}=\frac{u^{ba}_c}{u^{ab}_c}\,R^{ab}_c
+\]</div>
+と変換する。\(R\) は足の順序が異なる2つの頂点を結ぶ量なので、2つの頂点の位相の比が現れるのである。
+この式から、次の量はゲージ不変であることがわかる。
+</p>
+<ul>
+<li>同種粒子の \(R^{aa}_c\)（\(u\) の比が 1 になる）</li>
+<li>フルブレイド \(R^{ab}_c R^{ba}_c\)（比が打ち消し合う）</li>
+</ul>
+<p>
+逆に \(a\neq b\) のときの \(R^{ab}_c\) 単独の値はゲージに依存し、それ自体は物理量ではない。
+\(F\) と \(R\) を同時に変換すれば、六角形方程式の解は解に移る。
+</p>
+
+<h3 id="sec-13-4-2">§13.4.2 積理論</h3>
+
+<p>
+2つのエニオン理論 \(T\) と \(t\) から積理論 \(T\times t\)（<a href="chapter08.html">第8章</a>）を作ると、
+それぞれの無矛盾な \(R\) 行列 \(R^{AB}_C\)、\(R^{ab}_c\) から
+\[
+R^{(A,a)(B,b)}_{(C,c)}=R^{AB}_C\,R^{ab}_c
+\]
+という無矛盾な \(R\) 行列が得られる。積理論では2つの構成要素が互いをまったく「見ない」ことの表れである。
+</p>
+
+<h3 id="sec-13-4-3">§13.4.3 付録：高い融合多重度</h3>
+
+<p>
+\(N_{ab}^c\gt 1\) のチャネルがあると頂点は添字を持ち（<a href="chapter12.html">第12章</a>）、\(R\) もその添字を持つ行列になる：
+\[
+\bigl(\text{添字 }\mu\text{ の頂点の上で1回交換した図}\bigr)=\sum_\nu\bigl[R^{ab}_c\bigr]_{\mu\nu}\,\bigl(\text{添字 }\nu\text{ の、左 }b\text{・右 }a\text{ の頂点}\bigr).
+\]
+\([R^{ab}_c]_{\mu\nu}\) はこれらの添字についてユニタリ行列である。ゲージ変換（頂点ごとのユニタリ行列 \(u^{ab}_c\)）のもとでは
+\[
+\bigl[\widetilde{R^{ab}_c}\bigr]_{\mu'\nu'}=\sum_{\mu,\nu}\bigl(\bigl[u^{ab}_c\bigr]^{-1}\bigr)_{\mu'\mu}\bigl[R^{ab}_c\bigr]_{\mu\nu}\bigl[u^{ba}_c\bigr]_{\nu\nu'}
+\]
+と変換する。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第13章のまとめ</span>
+<ul>
+<li>異種粒子の交換は始状態と終状態が異なるので、「頂点の下で交換した図」と「素直な頂点」を比べることで \(R^{ab}_c\) を定義する。ユニタリ理論では位相であり、\(R^{Ia}_a=R^{aI}_a=1\)。</li>
+<li>フルブレイドは \(R^{ba}_cR^{ab}_c\)。すべての粒子とのフルブレイドが自明な粒子を透明という。</li>
+<li>裸の交差は、完全性関係を挿入して \(\sum_c R^{ab}_c\)（逆向きは \(\sum_c[R^{ba}_c]^{-1}\)）を重みとする平面ダイアグラムの和に解消できる。以後は第12章の規則で評価する。</li>
+<li>\(F\) と \(R\) の無矛盾性の条件が六角形方程式である。五角形・六角形方程式の解がユニタリ組みひも融合圏であり、解は有限個（剛性）。Fibonacci では左右2つの解がある。六角形方程式の解を持たない \(F\) もある。</li>
+<li>\(R^{aa}_c\) とフルブレイド \(R^{ab}_cR^{ba}_c\) はゲージ不変、\(a\neq b\) の \(R^{ab}_c\) 単独はゲージ依存である。</li>
+<li>原書の演習では、Fibonacci の六角形方程式を解くこと、可換エニオンの組みひも、Reidemeister 移動の導出などを扱う。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

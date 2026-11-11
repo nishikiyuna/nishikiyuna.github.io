@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="量子次元とループの重み、unlinking 行列 S~、モジュラー S 行列・T 行列、Verlinde 公式、中心電荷、TQFT の表、Kirby カラー（Ω 線）、超モジュラー理論">
+  <title>第17章 さらなる構造 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter17" data-chapter="17">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第17章に対応</span>
+  第17章 さらなる構造
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+ここまでに集めたダイアグラム代数（<a href="chapter12.html">第12</a>〜<a href="chapter16.html">16章</a>）に、もう一段の構造を見つける章である。
+まず、ループの重み \(d_a\) が融合行列の最大固有値としての量子次元と一致すること（符号を除く）を証明する。
+次に、線 \(x\) に \(a\) の輪を巻き付けると定数 \(\tilde S_{ax}\) が出るという事実から出発して、<strong>モジュラー \(S\) 行列</strong>と <strong>Verlinde 公式</strong>、
+ひねり因子の対角行列 \(T\)、トーラスの微分同相写像との対応（モジュラー群）、<strong>中心電荷</strong> \(c\) を導く。
+続いて小さな理論の表、<strong>Kirby カラー（\(\Omega\) 線）</strong>、超モジュラー理論に触れる。
+\(S\) 行列の性質と \(\Omega\) 線は後の章（状態和、Walker–Wang 模型、量子計算など）で何度も参照されるので、この章は辞書として手元に置くとよい。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<p>
+この章を通して、\(d_a&lt;0\) の場合は<a href="chapter14.html">第14章</a>・<a href="chapter16.html">第16章</a>の規則 0（負 \(d\) キャップに \((-1)\) を掛ける）を適用したユニタリな評価を使う。
+このとき、ループ1個の値は常に正の数 \(|d_a|\) になる。
+</p>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-1">量子次元<span class="en">Quantum Dimension</span></h2>
+
+<p>
+量子次元 \(d_a\) は、\(a\) 粒子を \(M\) 個融合したときのヒルベルト空間の次元が \(d_a^M\) で増えるという性質で定義した（<a href="chapter03.html">第3章</a>）。
+同値な定義は、融合行列 \([N_a]_{bc}=N_{ac}^{\,b}\) の最大固有値である（<a href="chapter08.html">第8章</a>）：
+</p>
+<div class="equation" id="eq-17-dN">\[
+d_a = \text{行列 } N_a \text{ の最大固有値.}
+\]</div>
+<p>
+これが（符号を除いて）ダイアグラム代数のループの重みと等しい、と何度か述べてきた。本節でそれを証明する。
+</p>
+
+<div class="proof-box">
+<span class="box-title">証明の概略</span>
+<p>
+\(a\) のループと \(b\) のループを並べ、完全性関係（<a href="chapter16.html">第16章</a>）で \(a,b\) の平行線を融合チャネル \(c,\mu\) の和に書き換える。
+図を変形して泡を収縮させると、各チャネルから \(c\) のループが1つ残る：
+\[
+\bigcirc_a\,\bigcirc_b = \sum_{c,\mu}\sqrt{\frac{d_c}{d_ad_b}}\sqrt{\frac{d_ad_b}{d_c}}\ \bigcirc_c = \sum_c N_{ab}^{\,c}\ \bigcirc_c .
+\]
+各ループは \(|d|\) に評価されるので
+<div class="equation" id="eq-17-dfusion">\[
+|d_a|\,|d_b| = \sum_c N_{ab}^{\,c}\,|d_c| .
+\]</div>
+成分が \(|d_c|\) のベクトルを \(\boldsymbol d\) と書くと、これは \(|d_a|\,\boldsymbol d = N_a\boldsymbol d\) という固有値方程式である。
+\(N_a\) は非負成分の行列で、\(\boldsymbol d\) は全成分が正の固有ベクトルだから、Perron–Frobenius の定理（§17.8）により \(|d_a|\) は \(N_a\) の最大固有値になる。
+式 <a class="eq-ref" href="#eq-17-dN"></a> と比べて \(d_a=|d_a|\)。
+</p>
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足</span>
+この導出に組みひもは使っていない。途中の変形は、フルのアイソトピー不変性がなくとも pivotal 性（<a href="chapter14.html">第14章</a>）だけで通る（原書の演習 17.2）。
+式 <a class="eq-ref" href="#eq-17-dfusion"></a> は、数 \(|d_a|\) が融合代数の1次元表現をなすことを意味する。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-2">unlinking 行列 \(\tilde S\)<span class="en">The Unlinking \(\tilde S\)-Matrix</span></h2>
+
+<p>
+局所性原理（no-transmutation、<a href="chapter08.html">第8章</a>）により、粒子 \(x\) の世界線に \(a\) の閉じたループを巻き付けた図は、\(x\) の線に比例する。比例定数を \(\tilde S_{ax}\) と書く：
+</p>
+<div class="equation" id="eq-17-Stilde">\[
+\Big(x \text{ の線を } a \text{ のループが取り巻く}\Big) = \tilde S_{ax}\,\Big(x \text{ の線}\Big).
+\]</div>
+<p>
+\(R\) 行列を使えば \(\tilde S_{ax}\) をツイスト \(\theta\)・\(N\)・\(d\) で明示的に書ける（原書の演習 17.4）が、以下では必要ない。
+真空について、次の2つはすぐ分かる。
+</p>
+<div class="equation" id="eq-17-Stilde-I">\[
+\tilde S_{Ix}=1,\qquad \tilde S_{aI}=d_a .
+\]</div>
+<p>
+前者は真空のループを自由に外せることから、後者は線のない所に \(a\) のループだけが残ることから従う。
+</p>
+
+<p>
+\(x\) の線に \(a\) と \(b\) の2つのループを巻くとき、2通りに評価できる。
+一方は、2つのループを §17.1 と同様に融合して \(c\) のループにまとめてから \(\tilde S\) を使う方法で、結果は \(\sum_c N_{ab}^{\,c}\tilde S_{cx}\)。
+他方は、\(\tilde S\) を2回続けて使う方法で、結果は \(\tilde S_{ax}\tilde S_{bx}\)。両者を等置して
+</p>
+<div class="equation" id="eq-17-Stilde-rep">\[
+\tilde S_{ax}\tilde S_{bx} = \sum_c N_{ab}^{\,c}\,\tilde S_{cx} .
+\]</div>
+<p>
+これは、良く定義された組みひもをもつ（六角形方程式を満たす）任意のエニオン理論で成り立つ。\(x=I\) と置くと式 <a class="eq-ref" href="#eq-17-dfusion"></a> に戻る。
+つまり各 \(x\) について、数の組 \(\{\tilde S_{ax}\}_a\) が融合代数の1次元表現になっている。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-3">（モジュラー）\(S\) 行列<span class="en">The (Modular) S-Matrix</span></h2>
+
+<p>
+\(S\) 行列は<a href="chapter07.html">第7章</a>で2通りに定義した。1つは \(S^3\) の中の絡み目の分配関数
+\(S_{ab}=Z(S^3;\ a\text{ のループと }b\text{ のループが絡む})\)、もう1つは（透明な粒子がなければ）トーラスのヒルベルト空間の2つの基底をつなぐユニタリ変換としての定義である。
+ダイアグラムの規格化「規格化された図 \(=Z(S^3;\text{図})/Z(S^3)\)」（<a href="chapter14.html">第14章</a>）を使うと
+</p>
+<div class="equation" id="eq-17-Sdef">\[
+S_{ab} = \frac{1}{\calD}\times\Big(a,\,b\text{ の2つのループが1回絡んだ図（Hopf リンク）}\Big),
+\qquad \calD = \frac{1}{Z(S^3)} .
+\]</div>
+<p>
+矢印の向きの取り方は文献によって違う。本書の規約は Kitaev [2006] のものである。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="190" cy="75" r="45" class="line" fill="none" stroke-width="1.5"/>
+  <circle cx="250" cy="75" r="45" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="140" y="26" class="label">a</text>
+  <text x="290" y="26" class="label">b</text>
+  <text x="95" y="140" class="label-muted">2つのループが1回絡む：S_ab = (この図の値) / D</text>
+</svg>
+<figcaption>図 17.1：Hopf リンクと \(S\) 行列。図の値を全量子次元 \(\calD\) で割ったものが \(S_{ab}\)。</figcaption>
+</figure>
+
+<p>
+等方変形とエルミート共役から、次の対称性がすぐ得られる（原書の演習 17.3）：
+</p>
+<div class="equation" id="eq-17-Ssym">\[
+S_{ab}=S_{ba}=S_{\bar a\bar b}=S_{\bar b\bar a}=S_{\bar a b}^{*}=S_{b\bar a}^{*}=S_{a\bar b}^{*}=S_{\bar b a}^{*} .
+\]</div>
+<p>
+特に、\(a\) か \(b\) の一方が自己双対なら \(S_{ab}\) は実数である。
+一方を真空 \(I\) にすると、残るのは1つのループだけなので
+</p>
+<div class="equation" id="eq-17-SI">\[
+S_{Ia}=S_{aI}=d_a/\calD .
+\]</div>
+
+<p>
+\(\tilde S\) との関係は、\(x\) の上端を曲げて下端とつなぐと2つの輪が絡んだ図（Hopf リンク）になることから得られる。
+この図は、線 \(x\)（今は \(b\)）に \(a\) を巻いたものの値 \(\tilde S_{ab}\) に、\(b\) の閉じたループ \(d_b\) を掛けたものである。したがって
+\(S_{ab}=\tilde S_{ab}\,d_b/\calD=\tilde S_{ab}S_{Ib}\)、すなわち
+</p>
+<div class="equation" id="eq-17-StS">\[
+\tilde S_{ab}=\frac{S_{ab}}{S_{Ib}} .
+\]</div>
+<p>
+これを式 <a class="eq-ref" href="#eq-17-Stilde-rep"></a> に代入すると、\(S\) と融合則の関係式
+</p>
+<div class="equation" id="eq-17-SN">\[
+\frac{S_{ax}S_{bx}}{S_{Ix}} = \sum_c N_{ab}^{\,c}\,S_{cx}
+\]</div>
+<p>
+が得られる。ペンタゴン・ヘキサゴン方程式を満たす任意の組みひも付き理論で成り立つ。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（\(d_a&lt;0\) の符号）</span>
+規則 0 を適用しない（非ユニタリな）評価を使うと、式 <a class="eq-ref" href="#eq-17-Sdef"></a> の右辺は \(S_{ab}\,\sgn(d_ad_b)\) になる。
+\(S_{ab}\) の定義はあくまで、ユニタリな評価（ループは常に \(|d|\)）に基づく。
+</div>
+
+<h3 id="sec-17-3-1">§17.3.1 ユニタリな \(S\) = モジュラー</h3>
+
+<div class="def-box">
+<span class="box-title">定義（モジュラー理論・透明な粒子）</span>
+\(S\) がユニタリであるとき、理論は<strong>モジュラー (modular)</strong> であるという。
+粒子 \(a\) が<strong>透明 (transparent)</strong> とは、\(a\) を（真空でない）任意の粒子のまわりに1周させても位相が付かないことで、\(S\) で書けば
+\[
+S_{ax}=\frac{d_a d_x}{\calD}\quad(\text{すべての } x)
+\]
+と同値である。リボン恒等式（第15章）を使うと、\(N_{ab}^{\,c}\neq0\) となるすべての \(b,c\) について \(\theta_c/(\theta_a\theta_b)=1\) と言っても同じである。
+</div>
+
+<p>
+\(a\) が真空以外の透明粒子なら、行 \(S_{ax}\) と行 \(S_{Ix}\) が比例するので、\(S\) はユニタリになれない。
+逆に、真空が唯一の透明粒子ならば \(S\) はユニタリである。この逆向きの主張は公理的なダイアグラムの議論だけで証明できるが、やや長いので原書は Kitaev [2006] と Etingof らの教科書 [2015] に任せている。
+良く振る舞う異粒子理論はおおむねモジュラー（モジュラーテンソル圏）だが、そうでない例も普通にある。
+典型例は、交換で \(-1\) が付く単一のフェルミオンだけの理論である。フェルミオンの1周は真空と同じ \(+1\) なので透明であり、組みひもは定義されていてもモジュラーではない。
+理論にフェルミオンが含まれ、それが真空と同じ振る舞いをすれば、モジュラー性は壊れる。
+</p>
+
+<p>
+以下、モジュラー（\(S\) ユニタリ）と仮定する。まず \(1=\sum_a|S_{aI}|^2=\calD^{-2}\sum_a d_a^2\) から、正の平方根をとって
+</p>
+<div class="equation" id="eq-17-D">\[
+\calD=+\sqrt{\sum_a |d_a|^2},\qquad S_{II}=1/\calD=Z(S^3) .
+\]</div>
+<p>
+\(\calD\) を<strong>全量子次元 (total quantum dimension)</strong> と呼ぶ。負の平方根をとると、式 <a class="eq-ref" href="#eq-17-c"></a> から分かるように中心電荷が 4 だけ違う理論を表すことになる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">公式（Verlinde 公式）</span>
+式 <a class="eq-ref" href="#eq-17-SN"></a> に右から \(S^{-1}=S^\dagger\) を掛けると
+<div class="equation" id="eq-17-Verlinde">\[
+N_{ab}^{\,c}=\sum_x\frac{S_{ax}S_{bx}\,[S^{-1}]_{xc}}{S_{Ix}}=\sum_x\frac{S_{ax}S_{bx}S_{cx}^{*}}{S_{Ix}} .
+\]</div>
+融合則のすべての情報が \(S\) 行列に入っている。
+</div>
+
+<p>
+Verlinde [1988] が共形場理論の文脈で導き、別の文脈では Pasquier [1987] が先に得ていた。
+同じ式 <a class="eq-ref" href="#eq-17-SN"></a> に左から \(S^\dagger\) を掛ければ（\(S,N\) を行列とみて）
+</p>
+<div class="equation" id="eq-17-diag">\[
+[S^\dagger N_a S]_{xy}=\delta_{xy}\,\frac{S_{ax}}{S_{Ix}}
+\]</div>
+<p>
+となる。つまり（モジュラー理論では）\(S\) は、すべての融合行列 \(N_a\) を同時に対角化するユニタリ行列であり、固有値は \(S_{ax}/S_{Ix}\) である（<a href="chapter08.html">第8章</a>で触れた通り）。
+</p>
+
+<p>
+Verlinde 公式の応用として、粒子を反粒子に入れ替える<strong>共役行列</strong> \(C_{ab}\equiv\delta_{a\bar b}\) を \(S\) で書ける。
+\(C_{ab}=N_{ab}^{\,I}\) に公式を使い、\(S_{Ix}\) が実数であることと \(S\) の対称性を用いると \(C_{ab}=\sum_x S_{ax}S_{bx}=[SS^{T}]_{ab}\)、すなわち
+</p>
+<div class="equation" id="eq-17-C">\[
+C=S^2,\qquad C^2=1 .
+\]</div>
+
+<h3 id="sec-17-3-2">§17.3.2 モジュラー群とトーラスの微分同相写像</h3>
+
+<p>
+ひねり因子を対角に並べた行列を定義する（\(\theta_a\) は \(d_a&gt;0\) とする方式、第14章の Option A で定義したもの）：
+</p>
+<div class="equation" id="eq-17-T">\[
+T_{ab}=\theta_a\,\delta_{ab},\qquad \tilde T = T\,e^{-2\pi\ii c/24} .
+\]</div>
+<p>
+ここで実数 \(c\) は<strong>中心電荷 (chiral central charge)</strong> と呼ばれる。多くの文献で「\(T\) 行列」と言えば \(\tilde T\) を指すが、\(T\) を指す文献もある。
+\(c\) は mod 8 で、ひねり因子と量子次元から次式で決まる（Fröhlich–Gabbiani [1990]、Rehren [1990]）：
+</p>
+<div class="equation" id="eq-17-c">\[
+e^{2\pi\ii c/8}=\frac{1}{\calD}\sum_a d_a^2\,\theta_a .
+\]</div>
+<p>
+\(S\) と \(\tilde T\) が生成する群は<strong>モジュラー群</strong>で、関係式は
+</p>
+<div class="equation" id="eq-17-modgroup">\[
+S^2=C,\qquad C^2=1,\qquad (S\tilde T)^3=C .
+\]</div>
+<p>
+最後の関係式の証明は原書も Kitaev [2006] と Etingof ら [2015] に委ねている。\(C=S^2\) が独立な生成元でないことに注意する。
+これらは \(2\times 2\) 整数行列で行列式が 1 の群 \(SL(2,\Z)\) の群代数と同じで、生成元は
+\[
+S=\begin{pmatrix}0&amp;-1\\1&amp;0\end{pmatrix},\qquad T=\begin{pmatrix}1&amp;1\\0&amp;1\end{pmatrix}
+\]
+である。この \(2\times2\) 行列が上の関係式を満たすことは簡単に確かめられる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">直観（トーラスの微分同相写像）</span>
+トーラスを \(T^2=\R^2/\Z^2\) と見ると、格子点を格子点に写す平面の線形変換 \(v\mapsto Av\)（\(A\in SL(2,\Z)\)）がトーラスの微分同相写像を与える。
+トーラスの向きを保つ微分同相写像のうち、滑らかに変形して移り合うものを同一視した群（写像類群）が \(SL(2,\Z)\) である。
+\(S\) は経線 (meridian) と緯線 (longitude) の入れ替え、\(T\) は Dehn ツイスト（<a href="chapter07.html">第7章</a>）に当たる。
+<br>
+中実トーラス \(D^2\times S^1\) の取っ手に沿って \(a\) の世界線を通した状態を \(\ket{\psi_a}=\ket{Z(D^2\times S^1;a)}\) とすると、\(\{\ket{\psi_a}\}\) は正規直交基底である。
+この内積は2つの中実トーラスを貼り合わせて \(S^2\times S^1\) を作ることに当たる。貼り合わせる前に経線と緯線を入れ替えると \(S^3\) になり、内積が \(S_{ab}\) になる（第7章）。
+つまり、トーラス表面の微分同相写像を行う演算子 \(\hat S\) を使って \(\braket{\psi_b}{\hat S|\psi_a}=S_{ab}\) と書ける。
+\(\hat C=\hat S^2\) は経線・緯線の入れ替えを2回行うので、トーラスを 180 度回すことに当たり、世界線の向きが逆になって \(a\to\bar a\) が実現される。
+\(\hat T\)（Dehn ツイスト）の行列要素が \(\tilde T\) で、\(\ket{\psi_a}\) に \(\theta_a\) が掛かることは第7章の図から明らかである。
+\(\tilde T\) に付く \(e^{-2\pi\ii c/24}\) の位相は、2-フレーミング（第5章）の取り替えに由来する微妙な因子である。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（モジュラーデータ）</span>
+ユニタリ行列 \(S\) と \(T\)（または \(\tilde T\)）を TQFT の<strong>モジュラーデータ</strong>という。
+通常はこれで TQFT がほぼ決まる。つまり \(F\) 行列・\(R\) 行列はこのデータから（一意に）決まり、中心電荷も mod 8 では決まる。
+ただし、1つのモジュラーデータを共有する複数の TQFT が存在する例が知られている（最小のものは粒子の種類が 49 個、Mignard–Schauenburg [2021]）。
+</div>
+
+<p>
+mod 24 の中心電荷を TQFT の性質とみなす流儀もあるが、それはモジュラーデータにない付加情報である。
+また、TQFT の性質（組みひも・ツイスト・融合・中心電荷）が物理系を完全に決めるわけではない。たとえば縁の理論が根本的に異なる系が同じ TQFT を共有しうる
+（アーベル的なアニオンの場合は Cano ら [2014] が議論している）。
+</p>
+
+<h3 id="sec-17-3-3">§17.3.3 中心電荷と共形場理論の関係</h3>
+
+<p>
+中心電荷は \((2+1)\) 次元 TQFT と \((1+1)\) 次元共形場理論 (CFT) の関係から出てくる。
+CFT は大雑把には、ギャップのない1次元系を表す。流れが1方向にだけ向かうカイラルな系では、中心電荷 \(c\) は単位長さあたりの比熱 \(c_v=\pi k_B^2Tc/(3\hbar v)\)（\(v\) は低エネルギーでの流れの速さ）で定義できる。
+温度を \(\delta T\) だけ変えたときの縁を流れる熱流の変化は
+</p>
+<div class="equation" id="eq-17-heat">\[
+\delta J^q=\frac{\pi k_B^2 T c}{3\hbar}\,\delta T .
+\]</div>
+<p>
+TQFT はバルクにギャップがあるので低温の比熱はゼロだが、有限系（たとえば円盤）の縁にはギャップのないモードがありえて、これが熱を運ぶ。
+長方形の TQFT 系の両端を温度差 \(\delta T\) の2つの熱浴につなぐと、流れる熱は式 <a class="eq-ref" href="#eq-17-heat"></a> で与えられ、そこに現れる \(c\) がバルクの中心電荷である。
+熱はつねに高温側から低温側に流れ、\(c\) の符号は、縁を時計回りと反時計回りのどちらに熱が流れるか（カイラリティ）だけを決める。
+式 <a class="eq-ref" href="#eq-17-heat"></a> の係数 \(\pi k_B^2Tc/(3\hbar)\) は<strong>熱ホール係数</strong> \(\kappa_{xy}\)（Righi–Leduc 係数）で、電気的な \(\sigma_{xy}\)（<a href="chapter02.html">第2章</a>）の類似物である。
+</p>
+<p>
+\(c\neq0\) の TQFT の縁には CFT が現れるが、関係はもっと普遍的で、すべての（ユニタリで有理的な）\((1+1)\) 次元 CFT は、それが境界となる \((2+1)\) 次元 TQFT を定める。
+（「有理的」は粒子の種類が有限個ということ。）
+2つの TQFT \(A,B\) の積理論 \(A\times B\)（<a href="chapter08.html">第8章</a>）では、全熱流が和になるので中心電荷も足し算になる。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（なぜ \(c\) は mod 8 か：\((E_8)_1\)）</span>
+式 <a class="eq-ref" href="#eq-17-c"></a> は \(c\) を mod 8 でしか決めない。理由は、\((E_8)_1\) という Chern–Simons 理論（例外型リー群 \(E_8\) のレベル 1）が、真空以外に粒子をもたず、中心電荷 \(c=8\) をもつからである。
+任意の理論 \(A\) に対して \(A\times(E_8)_1\) は粒子の種類も式 <a class="eq-ref" href="#eq-17-c"></a> の右辺も \(A\) と同じなのに、中心電荷だけが 8 増える。逆カイラリティの \((E_8)_{-1}\) は \(c=-8\)。
+このように粒子をもたない TQFT を<strong>可逆なトポロジカル秩序 (invertible topological order)</strong> という（\((E_8)_1\) と \((E_8)_{-1}\) を融合すれば消せる）。
+<br>
+\(K\) 行列（<a href="chapter05.html">第5章</a>）による記述では、\(K\) として \(E_8\) 行列（\(E_8\) リー代数の Cartan 行列）をとる。これは (i) 整数成分、(ii) 行列式 1、(iii) 固有値がすべて正、(iv) 対角成分が偶数、をすべて満たす最小次元（8 次元）の行列である。
+対角成分が偶数なので透明なフェルミオンがなくモジュラーであり、固有値がすべて正なので同じ向きに進む縁モードが8本あり（各 \(c=1\)）、行列式が 1 なので基底状態は一意で非自明な準粒子がない。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-4">TQFT の表<span class="en">Tables of TQFTs</span></h2>
+
+<p>
+ペンタゴン・ヘキサゴン方程式はアニオン理論を強く制限する。融合則を決めれば、ゲージ同値を除いた解は有限個しかない（Etingof ら [2005]、<a href="chapter09.html">第9章</a>・<a href="chapter13.html">第13章</a>の剛性の議論）。
+モジュラー性まで課せば解はさらに減る。そこで、可能な TQFT（ペンタゴン・ヘキサゴンのモジュラーな解）の完全な一覧表を作れる。
+手順は、粒子の種類（<strong>ランク</strong>）を小さな数 \(n\) に固定し、可能な融合則を絞り、ペンタゴンを解き、最後にヘキサゴンを解くことである。
+モジュラーテンソル圏については Rowell ら [2009] がランク 4 までを完成させている（Gepner–Kapustin [1995]、Bonderson [2007] の先行研究あり）。
+アーベル理論は Galindo–Jaramillo [2016] ほかでほぼ完成しており、<a href="chapter18.html">第18章</a>でこの種の表を作る基本原理を調べる。
+</p>
+
+<p>
+表 17.1 に、ランク 4 以下のモジュラー圏から代表的な行を示す（原書の表の抜粋）。\(h\) はトポロジカルスピンで、\(\sgn(d_a)\theta_a=e^{2\pi\ii h_a}\)、並びは \(I,X,Y,Z\) の順である。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>粒子</th><th>融合則</th><th>例</th><th>\(c \bmod 8\)</th><th>\(h \bmod 1\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(I\)</td><td>—</td><td>\((E_8)_1\)</td><td>0</td><td>0</td></tr>
+<tr><td>\(I,X\)</td><td>\(X^2=I\)</td><td>\(SU(2)_1\)（セミオン）</td><td>1</td><td>\(0,\tfrac14\)</td></tr>
+<tr><td>\(I,X\)</td><td>\(X^2=I+X\)</td><td>\((G_2)_1\)＝Fibonacci</td><td>14/5</td><td>\(0,\tfrac25\)</td></tr>
+<tr><td>\(I,X,Y\)</td><td>\(X^2=Y,\ XY=I,\ Y^2=X\)</td><td>\(SU(3)_1\)</td><td>2</td><td>\(0,\tfrac13,\tfrac13\)</td></tr>
+<tr><td>\(I,X,Y\)</td><td>\(X^2=I+Y,\ XY=X,\ Y^2=I\)</td><td>Ising（ほか \(SU(2)_2\), \((C_2)_1\), \((B_3)_1\)）</td><td>1/2（3/2, 5/2, 7/2）</td><td>\(0,\tfrac1{16},\tfrac12\)（\(\tfrac3{16}\), \(\tfrac5{16}\), \(\tfrac7{16}\)）</td></tr>
+<tr><td>\(I,X,Y\)</td><td>\(X^2=I+X+Y,\ XY=X+Y,\ Y^2=I+X\)</td><td>\(SU(2)_5/\Z_2\)</td><td>8/7</td><td>\(0,\tfrac27,\tfrac67\)</td></tr>
+<tr><td>\(I,X,Y,Z\)</td><td>\(\Z_4\) 型</td><td>\(SU(4)_1\)（ほか \((D_9)_1\)）</td><td>3（1）</td><td>\(0,\tfrac38,\tfrac12,\tfrac38\)</td></tr>
+<tr><td>\(I,X,Y,Z\)</td><td>\(\Z_2\times\Z_2\) 型</td><td>\(D(\Z_2)\)＝トーリック符号（ほか \((D_4)_1\)）</td><td>0（4）</td><td>\(0,0,0,\tfrac12\)</td></tr>
+<tr><td>\(I,X,Y,Z\)</td><td>\(\Z_2\times\Z_2\) 型</td><td>\(SU(2)_1\times SU(2)_1\)</td><td>2</td><td>\(0,\tfrac14,\tfrac14,\tfrac12\)</td></tr>
+<tr><td>\(I,X,Y,Z\)</td><td>Fibonacci の積型</td><td>\((G_2)_1\times SU(2)_1\)</td><td>19/5</td><td>\(0,\tfrac25,\tfrac14,\tfrac{13}{20}\)</td></tr>
+<tr><td>\(I,X,Y,Z\)</td><td>Fibonacci の積型</td><td>\((G_2)_1\times(G_2)_1\)</td><td>28/5</td><td>\(0,\tfrac25,\tfrac25,\tfrac45\)</td></tr>
+<tr><td>\(I,X,Y,Z\)</td><td>\(X^2=I+X+Y\) など</td><td>\(SU(2)_7/\Z_2\)</td><td>10/3</td><td>\(0,\tfrac29,\tfrac23,\tfrac13\)</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="remark-box">
+<span class="box-title">表の読み方</span>
+<ul>
+<li>\((G_2)_2\) のように、最後の添字が Chern–Simons 理論のレベルである。上線は鏡像の理論（\(c\)、\(h\) の符号が反転。レベルの符号の反転と同じ）。\(c\neq0,4\pmod 8\) の理論には、鏡像をとって別の理論が得られる。</li>
+<li>\(SU(2)_7/\Z_2\) は \(SU(2)_7\) の「偶数」の粒子だけを取り出したもの（それだけで完全な理論をなす）。\(SU(2)_5/\Z_2\) も同様。</li>
+<li>記号 \(\simeq\) で結ばれた理論はモジュラーデータとして同値で、\(c\) は 8 の整数倍、\(h\) は整数だけ違うことがある。\((E_8)_1\) は粒子をもたないので mod 8 では自明に見えるが、\(c=8\) をもつ。</li>
+<li>この表の範囲には、融合多重度 \(N_{ab}^{\,c}&gt;1\) をもつものはない。</li>
+</ul>
+</div>
+
+<p>
+表の理論の詳細は数値計算で簡単に得られる（原書第39章）。\(\calZ_N^{(n)}\) 型の理論は第18章で扱う。トーリック符号は原書の第27章以降で詳しく調べる。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-5">\(\Omega\) 線（Kirby カラー）<span class="en">\(\Omega\) Strand (Kirby Color)</span></h2>
+
+<p>
+粒子の種類についての重み付き和として定義される線を、\(\Omega\) 線あるいは <strong>Kirby カラー</strong>の線という。この線は任意の平面ダイアグラム代数で定義できる（組みひもは不要）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（\(\Omega\) 線）</span>
+<div class="equation" id="eq-17-Omega">\[
+\Omega \;=\; \frac{1}{\calD}\sum_a d_a\,\big(a\text{ の線}\big) \;=\; \sum_a S_{Ia}\,\big(a\text{ の線}\big).
+\]</div>
+粒子と反粒子について等しい重みの和なので、\(\Omega\) 線に矢印は付かない。規格化に \(\calD\) や \(\calD^{-1}\) の因子を余分に付ける流儀もあり、また \(d_a/\calD\) の代わりに \(d_a\) をそのまま使う流儀（非ユニタリな評価向き）もある。
+後者では下の「殺す性質」が非ユニタリな評価の図でそのまま成り立つ。
+</div>
+
+<p>
+\(\Omega\) 線は、後の章（第24、30、31、32、33章など）でさまざまな文脈で登場する。まず、中心電荷が \(\Omega\) の輪でカールを巻いたものとして書ける：
+</p>
+<div class="equation" id="eq-17-Omega-curl">\[
+\Big(\Omega\text{ のループにカール}\Big)=\frac{1}{\calD}\sum_a d_a\,\theta_a\,d_a=\frac{1}{\calD}\sum_a d_a^2\theta_a=e^{2\pi\ii c/8}.
+\]</div>
+<p>
+最後の等号は式 <a class="eq-ref" href="#eq-17-c"></a>。カールはループ \(a\) に \(\theta_a\) を、ループ自体は \(d_a\) を与える。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（殺す性質 (killing property)）</span>
+モジュラー理論では、線 \(x\) に \(\Omega\) の輪を巻くと、\(x\) が真空のときを除いてゼロになる：
+<div class="equation" id="eq-17-kill">\[
+\Big(x\text{ の線を }\Omega\text{ のループが取り巻く}\Big)=\sum_a S_{Ia}\tilde S_{ax}\,\big(x\text{ の線}\big)=\calD\,\delta_{Ix}\,\big(x\text{ の線}\big).
+\]</div>
+\(\Omega\) の輪は、真空以外の粒子を通さない（殺す）。最後の等号は \(S\) のユニタリ性と \(S_{Ia}=S_{I\bar a}^{*}\)（\(S_{Ia}\) は実）から従う：\(\sum_aS_{Ia}\tilde S_{ax}=\sum_a S_{Ia}S_{ax}/S_{Ix}=(S^2)_{Ix}/S_{Ix}=\delta_{Ix}/S_{II}=\calD\,\delta_{Ix}\)。
+</div>
+
+<p>
+系として、\(\Omega\) の輪で結ばれた2本の線 \(a,b\) は、殺す性質により融合チャネルが真空に強制され、
+</p>
+<div class="equation" id="eq-17-Omega-join">\[
+\Big(a,b\text{ の2線を }\Omega\text{ のループが取り巻く}\Big)=\delta_{a\bar b}\,\frac{\calD}{d_a}\,\Big(a\text{ の線が } a\text{ と }\bar a\text{ をつなぐ形}\Big).
+\]</div>
+<p>
+つまり \(\Omega\) の輪は2本の線をつなぎ合わせる働きをする。式に \(\calD\) が現れるので、\(\Omega\) を別の規格化で定義することもある：
+</p>
+<div class="equation" id="eq-17-Omega-tilde">\[
+\tilde\Omega=\frac{1}{\calD^{2}}\sum_a d_a\,\big(a\text{ の線}\big)=\sum_a\frac{S_{Ia}}{\calD}\,\big(a\text{ の線}\big).
+\]</div>
+<p>
+\(\tilde\Omega\) のループの値は 1 になるように規格化されている。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-6">さらなる構造<span class="en">Still Further Structure</span></h2>
+
+<p>
+モジュラー理論（や多くの非モジュラー理論）は、ここまでに触れていない構造をたくさんもつ。ここでは関係式をいくつか挙げる（出典は原書）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">公式（\(S\) 行列と \(R\) 行列・ツイストの関係、原書の演習 17.4）</span>
+<div class="equation" id="eq-17-SR">\[
+S_{ab}=\frac{1}{\calD}\sum_c N_{a\bar b}^{\,c}\,\frac{\theta_c}{\theta_a\theta_b}\,d_c=\frac{1}{\calD}\sum_c\Tr\!\big[R^{\bar ba}_c R^{a\bar b}_c\big]\,d_c .
+\]</div>
+\(N\) の下添字が \(b\) でなく \(\bar b\) である点に注意する。
+融合多重度があるときはトレースをとる（なければ \(R\) は数）。アーベル理論ではとくに簡単になる：
+<div class="equation" id="eq-17-Sabel">\[
+S_{ab}=\frac{1}{\calD}\,\frac{\theta_{a\times\bar b}}{\theta_a\theta_b}\qquad(\text{アーベル理論}),
+\]</div>
+ここで \(\calD\) は粒子の総数の正の平方根である。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（Fibonacci の \(S\) 行列）</span>
+Fibonacci 理論では \(d_\tau=\phi=(1+\sqrt5)/2\)、\(\calD=\sqrt{1+\phi^2}\)。\(S_{II}=1/\calD\)、\(S_{I\tau}=S_{\tau I}=\phi/\calD\) と \(S\) のユニタリ性から残りの1成分 \(S_{\tau\tau}=-1/\calD\) が決まる。
+\(\theta_\tau=e^{\pm4\pi\ii/5}\) を式 <a class="eq-ref" href="#eq-17-SR"></a> に入れても同じ結果になる（原書の演習 17.1 の主題）。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（Bantay の公式）</span>
+粒子 \(k\) の Frobenius–Schur 指標 \(\kappa_k\)（<a href="chapter14.html">第14章</a>）は \(S\) で書ける：
+<div class="equation" id="eq-17-Bantay">\[
+\sum_{i,j}N_{ij}^{\,k}\,S_{0i}S_{0j}\Big(\frac{\theta_i}{\theta_j}\Big)^2=
+\begin{cases}\kappa_k=\epsilon_k\,\sgn(d_k)&amp;k=\bar k\\[2pt] 0&amp;k\neq\bar k .\end{cases}
+\]</div>
+左辺の指数 2 を 3 に替えると、第14章の第3の Frobenius–Schur 指標が得られる（Ng–Schauenburg [2007]）。
+</div>
+
+<div class="thm-box">
+<span class="box-title">定理（Vafa）</span>
+任意のユニタリな組みひも付き理論（モジュラーでなくてもよい）で、スピン因子 \(\theta_a\) はすべて 1 の \(n\) 乗根（\(\theta_a^n=1\)）で、整数 \(n\) は融合多重度 \(N_{ab}^{\,c}\) だけで決まる。たとえば
+<div class="equation" id="eq-17-Vafa">\[
+\prod_b\theta_b^{X_{ab}}=1,\qquad X_{ab}=-2N_{a\bar a}^{\,b}N_{a\bar a}^{\,\bar b}-N_{aa}^{\,b}N_{\bar a\bar a}^{\,\bar b}+4\delta_{ab}\sum_qN_{aa}^{\,q}N_{\bar a\bar a}^{\,\bar q}.
+\]</div>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-7">フェルミオンと超モジュラー理論<span class="en">Fermions and Super-Modular Theories</span></h2>
+
+<p>
+ここまでモジュラー理論を中心に論じたが、ごく簡単なアニオン理論でも非モジュラーなものがある（<a href="chapter04.html">第4章</a>）。
+典型的な原因は、透明なフェルミオン \(f\) を含むことである：
+</p>
+<div class="equation" id="eq-17-f">\[
+f\times f=I,\qquad \theta_f=-1 .
+\]</div>
+<p>
+粒子がすべて透明な場合は対称テンソル圏と呼ばれる（原書第20章）。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（sVec と超モジュラー）</span>
+真空 \(I\) とフェルミオン \(f\) だけの理論を <strong>sVec</strong>（super vector space）という。
+\[
+S_{\rm sVec}=\frac1{\sqrt2}\begin{pmatrix}1&amp;1\\1&amp;1\end{pmatrix},\qquad T_{\rm sVec}=\begin{pmatrix}1&amp;0\\0&amp;-1\end{pmatrix}.
+\]
+真空のほかに透明な粒子がちょうど1つあり、それが式 <a class="eq-ref" href="#eq-17-f"></a> のフェルミオンであるとき、理論は<strong>超モジュラー (super-modular)</strong> であるという。
+超モジュラー理論では \(S=\underline S\otimes S_{\rm sVec}\)、\(T=\underline T\otimes T_{\rm sVec}\) となる行列 \(\underline S,\underline T\) が存在し、\(\underline S\) には Verlinde 公式の類似がある（Bruillard ら [2017, 2020]）。
+</div>
+
+<p>
+\(\mathcal C_{\text{split}}=\mathcal C\times\mathrm{sVec}\)（\(\mathcal C\) はモジュラー）の形に分解する理論を<strong>分解型 (split)</strong>、しないものを<strong>非分解型 (non-split)</strong> という。分解型では \(\underline S,\underline T\) は \(\mathcal C\) の \(S,T\) である。
+ランク 6 以下の非分解型超モジュラー圏は \(SU(2)_{4k+2}/\Z_2\)（\(k=1,2\)、\(PSU(2)_{4k+2}\) とも書く）だけである。表 17.2 に性質を示す。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>粒子</th><th>融合則</th><th>例</th><th>\(c \bmod \tfrac12\)</th><th>\(h \bmod 1\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(I,f,X,fX\)</td><td>\(f^2=I,\ X^2=I+X+fX\)</td><td>\(SU(2)_6/\Z_2\)</td><td>1/4</td><td>\(0,\tfrac12,\tfrac14,\tfrac34\)</td></tr>
+<tr><td>\(I,f,X,Y,fX,fY\)</td><td>\(f^2=I,\ X^2=I+X+Y\)、ほか</td><td>\(SU(2)_{10}/\Z_2\)</td><td>0</td><td>\(0,\tfrac12,\tfrac16,\tfrac12,0,\tfrac23\)</td></tr>
+</tbody>
+</table>
+</div>
+<p>
+中心電荷はモジュラー拡大から引き継ぐが、拡大が一意でないので mod 1/2 でしか決まらない。
+sVec 自身も \(k=0\) のこの形である：\(SU(2)_2\)（粒子 3 種、スピン \(0,\tfrac3{16},\tfrac12\)）で、スピン 1/2 の粒子が \(f\times f=I\) のフェルミオンになる。
+「偶数」の部分代数は真空とこのフェルミオンだけで、\(SU(2)_2/\Z_2=\mathrm{sVec}\)。
+</p>
+
+<p>
+超モジュラー圏 \(\mathcal C\) の理解には、\(\mathcal C\) を部分代数として含むモジュラー拡大 \(\mathcal C_{\rm ext}\) が役に立つ。
+\(\calD^2_{\mathcal C_{\rm ext}}=2\calD^2_{\mathcal C}\) を満たす拡大が常に存在すると予想されている（Bruillard ら [2020]）。ただし一意でない。
+そのような拡大はちょうど 16 通りあり、中心電荷が 1/2 の倍数ずつ異なると予想されている（Bruillard ら [2017]。原書の演習 25.7）。
+sVec の場合は、表 17.1 から \(\calD^2=4\) で sVec を含む 16 の理論を取り出せる。Kitaev が名づけたこれを <strong>16 重の道 (16-fold way)</strong> という（表 17.3）。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>理論</th><th>\(c \bmod 8\)</th></tr></thead>
+<tbody>
+<tr><td>トーリック符号 \(D(\Z_2)\)</td><td>0</td></tr>
+<tr><td>Ising（\(\simeq\overline{(E_8)_2}\)）</td><td>1/2</td></tr>
+<tr><td>\((D_9)_1\)</td><td>1</td></tr>
+<tr><td>\(SU(2)_2\)</td><td>3/2</td></tr>
+<tr><td>\(SU(2)_1\times SU(2)_1\)</td><td>2</td></tr>
+<tr><td>\((C_2)_1\)</td><td>5/2</td></tr>
+<tr><td>\(SU(4)_1\)</td><td>3</td></tr>
+<tr><td>\((B_3)_1\)</td><td>7/2</td></tr>
+<tr><td>\((D_4)_1\)</td><td>\(4=-4\)</td></tr>
+<tr><td>\(\overline{(B_3)_1}\)</td><td>\(-7/2\)</td></tr>
+<tr><td>\(\overline{SU(4)_1}\)</td><td>\(-3\)</td></tr>
+<tr><td>\(\overline{(C_2)_1}\)</td><td>\(-5/2\)</td></tr>
+<tr><td>\(\overline{SU(2)_1\times SU(2)_1}\)</td><td>\(-2\)</td></tr>
+<tr><td>\(\overline{SU(2)_2}\)</td><td>\(-3/2\)</td></tr>
+<tr><td>\(\overline{(D_9)_1}\)</td><td>\(-1\)</td></tr>
+<tr><td>\(\overline{\text{Ising}}\simeq(E_8)_2\)</td><td>\(-1/2\)</td></tr>
+</tbody>
+</table>
+</div>
+<p>
+表 17.3：16 重の道。すべて \(\calD^2=4\) で、最も簡単な超モジュラー理論 sVec を部分代数として含む。\(c\) は 1/2 刻みで 16 通り。
+</p>
+
+<p>
+モジュラー圏における \((E_8)_1\) に当たるものが超モジュラーにもある。\(p_x\pm\ii p_y\) 秩序（同じ対称性をもつ超伝導状態にちなむ名、Wen [2017]）で、これを掛けると他の性質は同じまま中心電荷が 1/2 だけ増減する。
+そのため表 17.2 の \(c\) は mod 1/2 でしか与えられない。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（物理的重要性と基底状態の数え方）</span>
+超モジュラー圏は物理系で非常によく現れる。1種類の電子（スピン偏極で谷の縮退のないもの）からなる分数量子ホール系はすべて超モジュラーで、電子自身が透明なフェルミオンである（原書第37章）。
+透明なフェルミオンがあると、基底状態の縮退の数え方が変わる。通常は「トーラス上の縮退は粒子の種類の数」（式 (7.9)）だが、透明なフェルミオンは勘定に入れない。
+第4章の電荷・磁束模型では、素励起の統計角が \(\theta=\pi p/m\)（\(p,m\) は互いに素）のときトーラスの縮退は \(m\) だった。\(pm\) が偶数ならモジュラーで粒子は \(m\) 種、縮退は \(m\)。
+\(pm\) が奇数なら透明なフェルミオンがあり超モジュラーで粒子は \(2m\) 種になるが、縮退は \(m\) のままである。つまりフェルミオンの融合で結ばれる \(a\) と \(a\times f\) は、縮退の勘定では1つの粒子として扱う。
+<br>
+また、ディラック・フェルミオンを含む理論では多様体上のスピン構造（各非自明サイクルの境界条件が周期的 P か反周期的 A か）を指定する必要がある。通常は周期的な場合だけを考える。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-8">付録：Perron–Frobenius の定理<span class="en">Appendix: Perron–Frobenius Theorem</span></h2>
+
+<p>
+成分がすべて正の行列には、成分がすべて正の固有ベクトルが（定数倍を除いて）ただ1つ存在する。これを Perron–Frobenius 固有ベクトルと呼び、その固有値は絶対値最大の固有値で、正である。
+さらに、ユニタリ対角化可能で零でない非負成分の行列では、全成分が正の固有ベクトルがあれば、その固有値は正で、他のどの固有値の絶対値以上である。
+</p>
+<p>
+融合行列 \(N_a\) は非負成分しか保証されないので、強い形の定理を直接は使えない。そこで正の係数 \(\alpha_a\) を使って \(M=\sum_a\alpha_aN_a\) を作る。
+\(N_a\) はすべて正規行列で互いに可換（<a href="chapter08.html">第8章</a>）だから共通の固有ベクトルをもち、それは \(M\) の固有ベクトルでもある。
+任意の \(a,b\) について、ある \(c\) で \([N_a]_{cb}&gt;0\) となる（\(\bar a\times b\) の融合先が \(c\) に含まれる）ことから、\(M\) の全成分は厳密に正であり、\(M\) に定理が使える。
+\(M\) の Perron–Frobenius 固有ベクトルは全成分が正で、\(N_a\) の固有ベクトルでもあるから、その固有値は \(N_a\) の固有値のうち最大のものである。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-9">付録：Verlinde 公式の代数的導出<span class="en">Appendix: Algebraic Derivation of the Verlinde Form</span></h2>
+
+<p>
+Verlinde 型の式は組みひもなしでも導ける。平面代数（ユニタリ融合圏）でも、組みひも付きの \((2+1)\) 次元理論でもよく、実際に必要なのは、単位元と逆元をもつ可換な融合環だけである。
+</p>
+<p>
+\(N_a\)（添字 \(b,c\)）は可換な正規行列なので、ユニタリ行列 \(U\) で同時に対角化できる：
+</p>
+<div class="equation" id="eq-17-U">\[
+N_a=U\lambda^{(a)}U^\dagger,\qquad [N_a]_{cb}U_{cd}\ \text{の和}=U_{bd}\lambda^{(a)}_d
+\]</div>
+<p>
+（\(\lambda^{(a)}\) は各 \(a\) について対角。\(d\) に和はとらない。）\(U\) の列は共通固有ベクトルで、位相の取り方に任意性がある。
+真空 \(I\) は \([N_a]_{Ic}=\delta_{ac}\) を満たすから \(U_{ad}=U_{Id}\lambda^{(a)}_d\)、すなわち \(\lambda^{(a)}_d=U_{ad}/U_{Id}\) となり、式 <a class="eq-ref" href="#eq-17-U"></a> に戻すと
+</p>
+<div class="equation" id="eq-17-VerlindeU">\[
+[N_a]_{bc}=\sum_x\frac{U_{bx}U_{ax}U_{cx}^{*}}{U_{Ix}} .
+\]</div>
+<p>
+これは非常に一般的な結果である。モジュラー組みひも理論では \(U\) が \(S\) になる。一般の場合の \(U\) を<strong>偽の (mock) \(S\) 行列</strong>と呼ぶ。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-17-10">付録：量子次元が融合代数の表現をなすことの代数的証明<span class="en">Appendix: Quantum Dimensions Algebraically</span></h2>
+
+<p>
+\(U\) の列は \(N_a\) の共通固有ベクトルである。Perron–Frobenius の定理により、成分がすべて正（定数倍を除く）の列 \(U_{bz}\) が存在する（添字 \(z\)）。
+良く振る舞うモジュラー理論では \(z=I\) だが、一般の融合環では別の添字になりうる（Gannon [2003]）。
+全成分が正の固有ベクトルの固有値 \(\lambda^{(a)}_z\) は \(N_a\) の最大固有値だから、式 <a class="eq-ref" href="#eq-17-dN"></a> より \(d_a=\lambda^{(a)}_z=U_{az}/U_{Iz}\)。
+式 <a class="eq-ref" href="#eq-17-VerlindeU"></a> の両辺に \(d_c=U_{cz}/U_{Iz}\) を掛けて \(c\) で和をとる：
+</p>
+<div class="equation" id="eq-17-dd">\[
+\begin{aligned}
+\sum_cN_{ab}^{\,c}\,d_c&amp;=\sum_{x,c}\frac{U_{bx}U_{ax}U_{cx}^{*}}{U_{Ix}}\frac{U_{cz}}{U_{Iz}}
+=\sum_x\frac{U_{bx}U_{ax}}{U_{Ix}U_{Iz}}\,\delta_{xz}\\
+&amp;=\frac{U_{bz}}{U_{Iz}}\frac{U_{az}}{U_{Iz}}=d_ad_b .
+\end{aligned}
+\]</div>
+<p>
+ここで \(U\) のユニタリ性を使った。よって \(d_ad_b=\sum_cN_{ab}^{\,c}d_c\)。組みひもを使わずに量子次元が融合代数の表現をなすことが示された。
+</p>
+</section>
+
+<div class="remark-box">
+<span class="box-title">原書の演習について</span>
+原書の演習では、Fibonacci の \(S\) 行列の決定、pivotal 性を使った恒等式、\(S\) の対称性、\(\tilde S\) の明示式、粒子が1種類の非自明粒子しかない理論（\(s\times s=I+ms\) で \(m&gt;1\) だと \(S\) がユニタリになれない）、積理論の \(S=S_A\otimes S_B\) と \(c_{A\times B}=c_A+c_B\)、
+種数 \(g\) の曲面の基底状態の数 \(\sum_x(S_{Ix})^{2-2g}\)（Verlinde）とその粒子付きの一般化、\(|\tilde S_{ax}|\le\tilde S_{Ix}\)、融合チャネルの確率 \(p(a,\bar a)=d_a^2/\calD^2\) などを扱う。
+</div>
+
+<div class="summary-box">
+<span class="box-title">第17章のまとめ</span>
+<ul>
+<li>ループの重み \(|d_a|\) は融合行列 \(N_a\) の Perron–Frobenius 固有値、すなわち量子次元 \(d_a\) に等しい。\(|d_a||d_b|=\sum_cN_{ab}^{\,c}|d_c|\)。</li>
+<li>線 \(x\) に \(a\) の輪を巻くと定数 \(\tilde S_{ax}\) が出て、\(\tilde S_{ax}\tilde S_{bx}=\sum_cN_{ab}^{\,c}\tilde S_{cx}\)。\(S_{ab}\) は Hopf リンクを \(\calD\) で割ったもので、\(\tilde S_{ab}=S_{ab}/S_{Ib}\)、\(S_{Ia}=d_a/\calD\)。</li>
+<li>\(S\) がユニタリ（真空だけが透明）ならモジュラー。\(\calD=\sqrt{\sum_a d_a^2}\)、Verlinde 公式 \(N_{ab}^{\,c}=\sum_xS_{ax}S_{bx}S_{cx}^*/S_{Ix}\)、\(S\) は全 \(N_a\) の同時対角化行列、\(C=S^2\)。</li>
+<li>\(T_{ab}=\theta_a\delta_{ab}\)、\(\tilde T=Te^{-2\pi\ii c/24}\)。\(S^2=C\)、\((S\tilde T)^3=C\) は \(SL(2,\Z)\)（トーラスの写像類群）の関係式。中心電荷は \(e^{2\pi\ii c/8}=\calD^{-1}\sum_ad_a^2\theta_a\)（mod 8）で、縁の熱流（熱ホール係数）と CFT に結びつく。</li>
+<li>モジュラー圏は小さいランクで表にできる。\(S\) と \(T\) は通常 TQFT をほぼ決める。</li>
+<li>\(\Omega=\sum_aS_{Ia}\,a\)（Kirby カラー）の輪は真空以外を殺し、カールを付けると \(e^{2\pi\ii c/8}\) を与える。</li>
+<li>透明なフェルミオンをもつ非モジュラー理論は超モジュラー（sVec が最小例）。モジュラー拡大は 16 通り（16 重の道）。</li>
+<li>Verlinde 型の式と \(d_ad_b=\sum_cN_{ab}^{\,c}d_c\) は、組みひもなしに融合環の可換性だけから導ける。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

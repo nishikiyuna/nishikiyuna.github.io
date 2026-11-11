@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="TQFT のデータ（融合則・S 行列・ツイスト）を求めるプログラム Kac の使い方と、モジュラーデータを調べるための文献・データベース案内">
+  <title>第39章 付録：Kac などの TQFT 用リソース — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter39" data-chapter="39">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第39章に対応</span>
+  第39章 付録：Kac などの TQFT 用リソース
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+TQFT の詳細を手で求めるのは、最も単純な場合を除いて面倒な作業である。この付録（原書で Useful とされる）は、多くの TQFT のデータを手軽に得る方法として、Schellekens による計算機プログラム <strong>Kac</strong> の使い方を例で示し、続いて他の有用な文献やデータベースを列挙する。
+具体例として \(SU(2)_2\)（Ising）、\(U(1)_4\)、Virasoro 最小模型、\(SU(2)_4\) のボソン凝縮と分裂（<a href="chapter25.html">第25章</a>）、積理論と剰余類 \(SU(2)_2/(SU(2)_1\times SU(2)_1)\) が出てくる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-39-1">Kac<span class="en">Kac</span></h2>
+
+<p>
+原書の著者が TQFT のデータを得るのに最も有用だと考える単独の資源が、A. N. Schellekens の書いたプログラム Kac である。アルゴリズムの複雑な部分は Fuchs ら [1996] に書かれ、詳細はプロジェクトのウェブページにある（配布元は <code>https://www.nikhef.nl/~t58/Site/Kac.html</code>）。
+プログラムの機能は多く、コマンド行で <code>Help</code> と打つと有用な情報が得られる。ここでは注釈つきの使用例を述べる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（Lie 代数の記法）</span>
+Kac は Dynkin 図（Cartan）の記法で Lie 代数を指定する。対応は
+\[
+A_r=\mathfrak{su}(r+1),\quad B_r=\mathfrak{so}(2r+1),\quad C_r=\mathfrak{sp}(2r),\quad D_r=\mathfrak{so}(2r)
+\]
+で、\(E_6,E_7,E_8,F_4,G_2\) も使える。
+</div>
+
+<h3>基本的な使い方：\(SU(2)_2\)</h3>
+<p>
+まず <code>tensor</code> で「複数の理論のテンソル積を作る」モードにする。<code>g a1 2</code> は群（g）\(A_1=\mathfrak{su}(2)\) をレベル 2 で入力する、すなわち \(SU(2)_2\) の情報を要求する。<code>display</code> で粒子（primary）の一覧が出る：
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>ラベル</th><th>重み \(h\)</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>真空</td></tr>
+<tr><td>1</td><td>1/2</td><td>シンプルカレント</td></tr>
+<tr><td>2</td><td>3/16</td><td></td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+3個の primary があり、うち2個がシンプルカレントで、シンプルカレントは常に先頭に並ぶ。ツイスト因子は \(\theta=e^{2\pi i h}\) で与えられる。重みは 1 を法としてしか正しくない。
+<code>fusion</code> で融合則が出る：\((1)\times(1)=(0)\)、\((1)\times(2)=(2)\)、\((2)\times(2)=(0)+(1)\) など（Ising の \(\psi\times\psi=I\)、\(\psi\times\sigma=\sigma\)、\(\sigma\times\sigma=I+\psi\) に当たる）。
+<code>S</code> で \(S\) 行列の成分が数値で出る。\(S_{00}=S_{01}=S_{11}=1/2\)、\(S_{02}=1/\sqrt2\)、\(S_{12}=-1/\sqrt2\)、\(S_{22}=0\) が得られる（<a href="chapter17.html">第17章</a>の注にあるとおり、本書の記法の \(S\) 行列を正しく与える）。
+<code>Browse Central</code> で中心電荷（この例では 3/2）、<code>Get Schur 2</code> で第2粒子の Frobenius–Schur 指標（この例では \(-1\)）が得られる。
+</p>
+
+<h3>逆のカイラリティ、\(U(1)\)、最小模型</h3>
+<ul>
+<li><strong>逆カイラリティ。</strong> <code>g</code> の代わりに <code>h</code> を使うと逆カイラリティの理論になる。プログラムの記憶を消してテンソルモードに戻るには <code>reset tensor</code>。<code>h a1 2</code> では場 2 の重みが \(13/16=-3/16\pmod 1\) となり、\(\overline{SU(2)_2}\)（\(SU(2)_2\) の鏡像）である。</li>
+<li><strong>\(U(1)\)（アーベル Chern–Simons）理論。</strong> <code>g u 4</code> のように <code>g u</code> に続けてレベルを与える。\(U(1)_4\) では4個の粒子で重みは \(0,1/8,1/2,1/8\)。レベルは <a href="chapter05.html">第5章</a>の式 (5.1) の定数 \(k\) である（\(U(1)\) の添字の付け方には、2倍異なる複数の規約がある）。奇数のレベルを入れると、非モジュラーな理論になる（§4.3.2）ので、プログラムが警告する。</li>
+<li><strong>Virasoro 最小模型。</strong> \(N\) 個の超対称性をもつ最小 CFT 模型も作れ、通常の Virasoro 最小系列は \(N=0\) で、<code>g minimal 0 1</code> が最初の最小模型で、重み \(0,1/2,1/16\) の3粒子、すなわち Ising 模型である。2番目（三臨界 Ising 模型）は <code>g minimal 0 2</code>。\(N=1,2\) の最小模型は Help を参照。</li>
+</ul>
+
+<h3>凝縮と分裂：\(SU(2)_4\)</h3>
+<p>
+Kac は凝縮（condensation）と分裂（splitting）も扱える。<a href="chapter25.html">第25章</a>（§25.4）の \(SU(2)_4\) で試す。<code>g a1 4</code> で \(SU(2)_4\) を作ると、5個の primary があり、重みは \(0,1,1/8,5/8,1/3\)、うち2個がシンプルカレントで、重み 1（整数）の場 1 はボソンである。
+これを凝縮するには、<code>current</code> に凝縮したい場の名前を続けて、<code>current 1</code> と打つ。すると理論は3個の primary になり、重み \(0,1/3,1/3\) となって、4 の粒子が2つに分裂したことが確かめられる（第25章の議論）。
+</p>
+
+<h3>積理論と剰余類</h3>
+<p>
+積理論を作るには複数の理論を続けて入力する。たとえば \(SU(2)_2\times SU(2)_1\times SU(2)_1\) は <code>g a1 2</code>、<code>h a1 1</code>、<code>h a1 1</code> と入力する（<code>reset tensor</code> の後）。
+\(SU(2)_2\) は3個、各 \(SU(2)_1\) は2個の場をもつので、積は \(3\times2\times2=12\) 個の場をもつ。出力の第2列は、各場が構成要素からどう作られるかを示す（たとえばラベル 9 は \(SU(2)_2\) の 2、最初の \(SU(2)_1\) の 0、2番目の \(SU(2)_1\) の 1）。
+</p>
+<p>
+剰余類（コセット）\(SU(2)_2/(SU(2)_1\times SU(2)_1)\) は、<a href="chapter25.html">第25章</a>（§25.6）のとおり、積理論からすべてのシンプルカレントボソンを凝縮して作れる。出力にはシンプルカレントが8個あり、\(\{1,1,1\}\)（ラベル 7）がボソンである。
+<code>current 1 1 1</code> とすると、3個の primary \(\{0,0,0\}\)、\(\{0,1,1\}\)（重み 1/2）、\(\{2,0,1\}\)（重み 15/16）が残り、このコセットが Ising であることがわかる（重み 15/16 は \(-1/16\pmod 1\) なので、\(\sigma\) の重みが \(1/16\) の Ising 模型とはカイラリティが逆の向きの書き方になっている）。
+</p>
+</section>
+
+<section>
+<h2 id="sec-39-2">その他のリソース<span class="en">Other Resources</span></h2>
+
+<div class="caution-box">
+<span class="box-title">注意（モジュラーデータの限界）</span>
+以下の多くの文献が与えるのは TQFT の「モジュラーデータ」、すなわち \(S\) 行列（Verlinde の公式で融合則も決まる）とツイスト因子 \(\theta_a\) だけである。
+最近、同じモジュラーデータをもつ異なるモジュラー TQFT が存在しうることが示された（Mignard–Schauenburg）。ただし、モジュラーデータが TQFT を一意に定めない最も単純な例の粒子種類数は 49 で、単純な TQFT ではモジュラーデータが（少なくとも原理的には）完全な情報である。
+TQFT を一意にするために加えるべき追加データの議論は Bonderson ら、Delaney–Tran、Wen–Wen にある。
+</div>
+
+<p>
+原書が挙げる文献・データベースを、用途別に整理する。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>資料</th><th>内容・使いどころ</th></tr></thead>
+<tbody>
+<tr><td>Di Francesco ら [1997]</td><td>CFT の参考書。Wess–Zumino–Witten 理論（対応する Chern–Simons 理論の内容を与える）を含む。</td></tr>
+<tr><td>Rowell ら [2009]</td><td>周期表上の最も単純ないくつかのモジュラーテンソル圏の詳細。フェルミオン模型は Bruillard ら [2017, 2020]。Lan ら、Wen [2015] も参照。</td></tr>
+<tr><td>Bonderson [2007]</td><td>単純な圏のデータ。\(SU(2)_k\) や他の簡単な理論の \(F\) 行列を含む。</td></tr>
+<tr><td>Ardonne–Slingerland [2010]</td><td>より複雑な理論の \(F\) 行列。これに基づく Mathematica コードが GitHub（<code>ardonne/affine-lie-algebra-tensor-category</code>）にある。</td></tr>
+<tr><td>オンラインデータベース（頂点作用素代数・モジュラー圏・融合環など）</td><td><code>https://www.math.ksu.edu/~gerald/voas/</code> と <code>http://www.thphys.nuim.ie/AnyonWiki/index.php/Main_Page</code>（AnyonWiki）。</td></tr>
+<tr><td>ゲージ理論のモジュラーデータのデータベース</td><td>（ねじれあり・なしの）量子ダブルのモジュラーデータ。<code>https://tqft.net/web/research/students/AngusGruen/</code>。学部の卒業論文として作られたものという。</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第39章のまとめ</span>
+<ul>
+<li>Kac は、群（Cartan 記法）とレベルを与えると、粒子の重み（ツイスト \(\theta=e^{2\pi ih}\)）、融合則、\(S\) 行列、中心電荷、Frobenius–Schur 指標を出力するプログラムである。</li>
+<li>テンソル積（<code>tensor</code>）、逆カイラリティ（<code>h</code>）、\(U(1)\) 理論、最小模型、シンプルカレントの凝縮と分裂（<code>current</code>）、積理論と剰余類を扱える。</li>
+<li>例：\(SU(2)_2\) は Ising、\(SU(2)_4\) の重み 1 のボソンの凝縮で 4 が 2 つに分裂、\(SU(2)_2\times SU(2)_1\times SU(2)_1\) からのボソン凝縮で Ising のコセットが得られる。</li>
+<li>他に、\(F\) 行列を載せた文献と Mathematica コード、モジュラー圏や量子ダブルのオンラインデータベースがある。モジュラーデータは通常十分だが、一般には TQFT を一意に決めるとは限らない。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

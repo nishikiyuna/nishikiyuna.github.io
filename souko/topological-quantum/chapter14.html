@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="ジグザグ恒等式とアイソトピー規格化、Frobenius–Schur 指標、旗による枠付け、頂点の脚の曲げと障害、負の量子次元の帳簿法、ピボタル性と球面性">
+  <title>第14章 アイソトピー不変性を求めて — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter14" data-chapter="14">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第14章に対応</span>
+  第14章 アイソトピー不変性を求めて
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+Kauffman ブラケットのような結び目不変量では、ひもを切らない限り図をどう変形しても値が変わらなかった
+（ひもをリボンとみなす正則アイソトピー。<a href="chapter02.html">第2章</a>）。
+一方、<a href="chapter12.html">第12章</a>・<a href="chapter13.html">第13章</a>で整えた図式規則が保証するのは、
+時間方向の向きを変えない変形（因果的アイソトピー）に対する不変性だけであった。
+本章の目標は、結び目・絡み目不変量を作るのに必要な、より強いアイソトピー不変性に近づくことである。
+鍵になるのは、まっすぐな線と折れ曲がった線を同一視する<strong>ジグザグ恒等式 (zig-zag identity)</strong> である。
+これを成り立たせるためにループの値を \(d_a\) に変える<strong>アイソトピー規格化</strong>を導入し、
+それでも残りうる符号 <strong>Frobenius–Schur 指標</strong>の扱い方を三通り（負の \(\eps_a\)、負の \(d_a\)、旗による枠付け）整理する。
+後半では、融合頂点を含む図での障害（頂点の脚の曲げ、第3 Frobenius–Schur 指標）と、
+ユニタリ融合圏が一般に持つピボタル性・球面性をまとめる。
+手短な入門だけが欲しい場合は、これらの面倒が起きない理論に限った<a href="chapter16.html">第16章</a>へ進めばよい。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<p>
+Reidemeister 移動のうち II 型と III 型に対する不変性は<a href="chapter13.html">第13章</a>ですでに確かめた。
+残る決定的な変形がジグザグである。上向きに進む線 \(a\) を、いったん下へ折り返してから再び上へ向かう形に曲げても値が同じ、という主張で、
+平面の理論でも \((2+1)\) 次元の理論でもアイソトピー不変性にはこれが要る。
+ところが五角形方程式を満たす \(F\) 行列を勝手に持ってきても、この恒等式は一般には成り立たない。
+</p>
+
+<div class="proof-box">
+<span class="box-title">導出（物理的規格化でジグザグを伸ばす）</span>
+ジグザグの図を下から読むと、下から来た \(a\) の右側で \(\bar a\) と \(a\) が対生成し（カップ）、
+元の \(a\) と \(\bar a\) が対消滅して（キャップ）、対生成で生まれた \(a\) が上へ抜ける。
+<a href="chapter12.html">第12章</a>の頂点の脚の曲げと同じ手順で評価する。
+下半分の3本 \(a,\bar a,a\) は「右の2本が先に \(I\) にまとまる木」なので、真空線を補って \(F\) 移動を行い、
+「左の2本が先にまとまる木」に書き換える。上半分のキャップが左の2本を \(I\) に射影するので、
+残る係数は \(\bigl[F^{a\bar a a}_a\bigr]_{II}\) で、図は「\(a\) の小さなループが真空線でぶら下がった \(a\) の直線」になる。
+物理的規格化ではループの値は 1 だから
+\[
+\bigl(a\text{ のジグザグ}\bigr)=\bigl[F^{a\bar a a}_a\bigr]_{II}\times\bigl(a\text{ の直線}\bigr)\qquad(\text{物理的規格化})
+\]
+である。この係数は一般に 1 と異なるので、物理的規格化のままではジグザグ恒等式を満たせない。
+</div>
+
+<section>
+<h2 id="sec-14-1">図のアイソトピー規格化<span class="en">Isotopy Normalization of Diagrams</span></h2>
+
+<p>
+Kauffman ブラケットにならって、図の定義を少しだけ変える。
+粒子 \(a\) の単純なループに、1 の代わりに<strong>ループの重み (loop weight)</strong> \(d_a\) という値を与える。
+ループは対生成の状態とその共役の内積 \(\braket{\text{state}}{\text{state}}\) だったので、
+これは規格化されていないブラとケットを使うことを意味する。量子力学としては何の問題もなく、
+期待値を \(\langle\hat O\rangle=\bra{\psi}\hat O\ket{\psi}/\braket{\psi}{\psi}\) で計算すればよい。
+</p>
+
+<p>
+真空については、真空線や真空のループを自由に付け外しできるように \(d_I=1\) とする。
+空の図の値も 1 である（真空のループが何個かある図と思えばよい）。
+ほかの粒子については
+<div class="equation" id="eq-14-pos">\[
+d_a=\braket{\text{state}}{\text{state}}\gt 0
+\]</div>
+であってほしい。Hilbert 空間には正定値の内積が必要であり、負ノルムの状態は「ユニタリ性を壊す」。
+ただし本章の後半では、便法として \(d_a\lt 0\) の場合も扱う。
+</p>
+
+<p>
+ループの重みを \(d_a\) にしてジグザグを計算し直すと、最後に残る小さなループが \(d_a\) を出すので、
+ジグザグを伸ばす係数は \(d_a\bigl[F^{a\bar a a}_a\bigr]_{II}\) になる。そこで次のように選ぶ。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（アイソトピー規格化とジグザグ位相）</span>
+ループの重みを
+<div class="equation" id="eq-14-loop">\[
+d_a=\frac{\eps_a}{\bigl[F^{a\bar a a}_a\bigr]_{II}},\qquad \eps_a=\pm 1
+\]</div>
+と選ぶ。\(\eps_a\) を<strong>ジグザグ位相 (zig-zag phase)</strong> と呼ぶ。
+この規約を<strong>アイソトピー規格化 (isotopy normalization)</strong> という。
+\(\bigl[F^{a\bar a a}_a\bigr]_{II}\) はゲージ変換（<a href="chapter09.html">第9章</a>、§14.2）でいつでも実数にできるので、\(d_a\) も実数である。
+以後、本書の図はすべてアイソトピー規格化で読む。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- zig-zag -->
+  <path d="M 40 150 L 40 70 C 40 38, 75 38, 75 70 L 75 95 C 75 127, 110 127, 110 95 L 110 20" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="26" y="148" class="label">a</text>
+  <text x="135" y="90" class="label">= εa ×</text>
+  <!-- straight line -->
+  <line x1="215" y1="150" x2="215" y2="20" class="line" stroke-width="1.5"/>
+  <text x="222" y="148" class="label">a</text>
+  <!-- loop -->
+  <circle cx="330" cy="85" r="32" class="line" fill="none" stroke-width="1.5"/>
+  <text x="290" y="60" class="label">a</text>
+  <text x="375" y="90" class="label">= da</text>
+  <text x="30" y="174" class="label-muted">修正されたジグザグ恒等式</text>
+  <text x="295" y="174" class="label-muted">ループの重み</text>
+</svg>
+<figcaption>図 14.1：アイソトピー規格化。ジグザグを伸ばすと符号 εa = ±1 だけが出る（左右を反転したジグザグでも同じ）。ループの値は da である（時間は下から上）。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">結果（修正されたジグザグ恒等式）</span>
+アイソトピー規格化では \(d_a\bigl[F^{a\bar a a}_a\bigr]_{II}=\eps_a\) なので
+<div class="equation" id="eq-14-zigzag">\[
+\bigl(a\text{ のジグザグ}\bigr)=\eps_a\times\bigl(a\text{ の直線}\bigr)
+\]</div>
+となる。左右を反転した形のジグザグについても、エルミート共役（上下反転と矢印の逆転）を取ることで同じ式が成り立つ。
+ジグザグを伸ばす代償は高々符号 \(\pm 1\) である。
+</div>
+
+<p>
+つねに \(\eps_a=+1\) と選べれば話は終わるが、それが許されない場合がある（§14.2）。ひとまず \(\eps_a=+1\) として先へ進む。
+ここで定めた \(d_a\) は、符号を除いて、<a href="chapter08.html">第8章</a>で融合空間の次元の増え方から定めた量子次元 \(d_a\) と一致する
+（<a href="chapter17.html">第17章</a>で示す）。
+</p>
+
+<h3>頂点・バブル・完全性関係の規格化</h3>
+
+<p>
+ケットの規格化を変えたのに合わせて、融合・分裂の頂点の規格化も変える。
+</p>
+
+<div class="def-box">
+<span class="box-title">規約（頂点のアイソトピー規格化）</span>
+\(c\) が \(a,b\) に分裂する頂点（およびその共役）について
+<div class="equation" id="eq-14-vertex">\[
+\bigl(\text{頂点}\bigr)_{\text{アイソトピー}}=\left(\frac{d_a d_b}{d_c}\right)^{1/4}\bigl(\text{頂点}\bigr)_{\text{物理的}}
+\]</div>
+とする。\(c=I\)、\(b=\bar a\) と置くと対生成の頂点に \(\sqrt{d_a}\) が掛かり、
+カップとキャップを合わせたループが \(d_a\) になることと整合する。
+</div>
+
+<p>
+この選び方の利点は、\(F\) 行列を変えなくてよいことである。\(F\) 移動の両辺の木は、どちらも
+\((d_a d_b/d_d)^{1/4}(d_d d_c/d_e)^{1/4}=(d_a d_b d_c/d_e)^{1/4}\) という同じ因子を受け取る（右辺の木でも中間線 \(f\) の因子が打ち消し合う）。
+一方、木の正規直交性と完全性は係数付きになる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">規則（バブルの除去と完全性関係・アイソトピー規格化）</span>
+\(c\) が \(a,b\) に分裂して \(d\) に融合するバブルは
+<div class="equation" id="eq-14-bubble">\[
+\bigl(\text{バブル}\bigr)=\delta_{cd}\,\sqrt{\frac{d_a d_b}{d_c}}\times\bigl(c\text{ の線}\bigr),
+\]</div>
+\(a,b\) の平行な2本の線は
+<div class="equation" id="eq-14-complete">\[
+\bigl(a\text{ と }b\text{ の平行線}\bigr)=\sum_c\sqrt{\frac{d_c}{d_a d_b}}\;\bigl(a,b\text{ が }c\text{ に融合し、再び }a,b\text{ に分裂する図}\bigr)
+\]</div>
+である。\(d\) が負になりうる場合の平方根の符号は §14.5 の式 <a class="eq-ref" href="#eq-14-sqrt"></a> で定める。
+\(N_{ab}^c\gt 1\) のときは頂点の添字も一致していなければならない（§14.9）。
+</div>
+
+<p>
+これ以外の平面ダイアグラムの評価規則は<a href="chapter12.html">第12章</a>のまとめとまったく同じである。
+3本以上の線に対する直交性・完全性は、物理的規格化の式に頂点ごとの因子 <a class="eq-ref" href="#eq-14-vertex"></a> を掛ければ得られる。
+たとえば<a href="chapter12.html">第12章</a>で \(F\) 移動によって評価した閉じた図（外側を \(a\) が回り、内部に \(b,d,e\) が走る図）の値には、
+右辺に \(\sqrt{d_a d_b d_d d_e}\) が掛かる。
+</p>
+
+<p>
+交差の規則（<a href="chapter13.html">第13章</a>）でも \(R\) 行列の使い方は変わらない。
+ただし交差を解消する式は完全性関係を使って導いたので、係数が付く：
+<div class="equation" id="eq-14-cross">\[
+\bigl(a\text{ と }b\text{ の交差}\bigr)=\sum_c\sqrt{\frac{d_c}{d_a d_b}}\;R^{ab}_c\;\bigl(a,b\text{ が }c\text{ に融合し、}b,a\text{ に分裂する図}\bigr).
+\]</div>
+交差の向きと \(R^{ab}_c\) の対応は<a href="chapter13.html">第13章</a>の規約のままである。
+</p>
+</section>
+
+<section>
+<h2 id="sec-14-2">ゲージの選択と Frobenius–Schur 指標<span class="en">Gauge Choice and Frobenius–Schur Indicator</span></h2>
+
+<p>
+式 <a class="eq-ref" href="#eq-14-loop"></a> の \(\bigl[F^{a\bar a a}_a\bigr]_{II}\) をどこまで自由に選べるかを調べる。
+対生成の頂点（カップ）には \(\ket{a\bar a}\)（左に \(a\)、右に \(\bar a\)）と \(\ket{\bar a a}\) の2種類があり、
+対消滅の頂点（キャップ）\(\bra{a\bar a}\)、\(\bra{\bar a a}\) はそれぞれのエルミート共役である。
+ジグザグの図に現れるのは \(\ket{\bar a a}\) と \(\bra{a\bar a}\) で、
+\(a\neq\bar a\) なら<strong>この2つは互いのエルミート共役になっていない</strong>（共役では上下反転に加えて矢印も逆転する）。
+</p>
+
+<p>
+<a href="chapter09.html">第9章</a>のゲージ変換で \(\ket{a\bar a}\) と \(\ket{\bar a a}\) の位相を別々に変えると、
+その位相が \(\bigl[F^{a\bar a a}_a\bigr]_{II}\) に残る。
+一方、\(F\) 移動のあとにできる小ループは \(\ket{\bar a a}\) と \(\bra{\bar a a}\) からなり、位相は打ち消す。
+したがって \(a\neq\bar a\) なら \(\bigl[F^{a\bar a a}_a\bigr]_{II}\) の位相は好きに選べる。
+ふつうは実かつ正に選び、\(d_a\gt 0\)、\(\eps_a=+1\) とする。
+</p>
+
+<p>
+自己双対（\(a=\bar a\)）のときは事情が違う。\(\ket{a\bar a}\) と \(\ket{\bar a a}\) が同じケットなので別々にゲージ変換できず、
+\(\bigl[F^{aaa}_a\bigr]_{II}\) はゲージ変換で動かない。しかもこの量は必ず実数である（§14.6）。
+したがってその符号はゲージ不変な意味を持つ。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（Frobenius–Schur 指標）</span>
+自己双対な粒子 \(a\) に対し
+<div class="equation" id="eq-14-fs">\[
+\kappa_a=\operatorname{sign}\bigl[F^{aaa}_a\bigr]_{II}=\eps_a\,\operatorname{sign}[d_a]
+\]</div>
+を <strong>Frobenius–Schur 指標 (Frobenius–Schur indicator)</strong> という。ゲージ不変な量である。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（用語について）</span>
+自己双対でない粒子に対する「Frobenius–Schur 指標」の定義は文献によってまちまち（0 とする、\(\eps_a\operatorname{sign}[d_a]\) とする、1 とする）なので、
+原書はこの語を自己双対な粒子に限って使う。ここで定義したものは正確には「第2」Frobenius–Schur 指標であり、§14.4 で第3の指標が登場する。
+すべての指標が正の理論を unimodal（unimodular）と呼ぶことがある。
+</div>
+
+<p>
+自己双対な粒子の指標がすべて正（あるいは自己双対な粒子がない）なら、全粒子で \(\eps_a=+1\) かつ \(d_a\gt 0\) とできる。
+正定値の内積を保ったままジグザグを自由に伸ばせるので扱いやすい。
+指標が負の自己双対粒子があると、式 <a class="eq-ref" href="#eq-14-fs"></a> から \(\eps_a\) か \(d_a\) のどちらかを負にせざるを得ず、
+アイソトピー不変性と正定値内積の一方を諦めることになるように見える。
+しかもこれは珍しい事態ではなく、\(SU(2)_1\)（セミオン理論）のような最も単純な理論ですら負の指標を持つ。
+この符号は通常のスピン \(1/2\) にも現れる本物の物理量である（§14.7）。対処法は次の通り。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>選択肢</th><th>\(\eps_a\)</th><th>\(d_a\)</th><th>得るもの</th><th>失うもの</th></tr></thead>
+<tbody>
+<tr><td>A（負の \(\eps_a\)）</td><td>\(-1\)</td><td>\(\gt 0\)</td><td>正定値内積（ユニタリな量子論）</td><td>ジグザグを伸ばすたびに \(-1\)。図式規則が完全にはアイソトピー不変でない</td></tr>
+<tr><td>B（負の \(d_a\)）</td><td>\(+1\)</td><td>\(\lt 0\)</td><td>アイソトピー不変な図式規則</td><td>内積が正定値でない（そのままでは量子力学系を表さない）</td></tr>
+<tr><td>C（旗・§14.3）</td><td colspan="2">\(d_a\gt 0\) のまま、キャップとカップに旗を付ける</td><td>両方</td><td>図の記法が少し複雑になる</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="def-box">
+<span class="box-title">規約（本書の標準：選択肢 A）</span>
+原則として選択肢 A を使う。すなわちすべての \(d_a\gt 0\) とし、
+Frobenius–Schur 指標が負の自己双対粒子だけ \(\eps_a=-1\)、ほかの粒子は \(\eps_a=+1\) とする（Bonderson の規約）。
+</div>
+
+<p>
+選択肢 B は物理の文献でよく見かける。負の \(d_a\) は一見まずいが、内積を定義し直して符号を移し替える帳簿法（§14.5）を使えば、
+実際には \(d_a\gt 0\)、\(\eps_a=-1\) の正当な量子論、つまり選択肢 A とまったく同じものを記述していると解釈できる。
+アイソトピー不変な規則が欲しいときには B が便利である（<a href="chapter32.html">第32章</a>に好例がある）。
+この帳簿法ですべてのジグザグの符号を取り除ける条件は、\(d\) の符号が融合則と整合すること、すなわち
+<div class="equation" id="eq-14-z2">\[
+\operatorname{sign}[d_a]\,\operatorname{sign}[d_b]=\operatorname{sign}[d_c]\qquad\bigl(N_{ab}^c\gt 0\ \text{のとき}\bigr)
+\]</div>
+である。これを融合則の <strong>\(\Z_2\) 次数付け (\(\Z_2\) grading)</strong> という。
+満たせない理論では選択肢 A に頼るしかないが、たいていの理論では満たせる。
+Chern–Simons 理論ではつねに可能であり、モジュラーな理論でこの条件を満たせない最小の例として知られるものは粒子種が 22 個もある。
+</p>
+</section>
+
+<section>
+<h2 id="sec-14-3">アイソトピー不変かつユニタリな規則<span class="en">Isotopy-Invariant Unitary Rules</span></h2>
+
+<p>
+負の Frobenius–Schur 指標を持つ理論でも、ユニタリ性と正しい内積を保ったまま、
+結び目・絡み目の図をアイソトピー不変に評価する規則を作ることができる。圏論の言葉ではむしろこちらが自然である。
+</p>
+
+<h3 id="sec-14-3-1">§14.3.1 Chern–Simons 理論はアイソトピー不変でユニタリではなかったか</h3>
+
+<p>
+その通りである。<a href="chapter05.html">第5章</a>で見たように、Chern–Simons 理論の作用は微分同相不変で、理論はユニタリである。
+にもかかわらず Chern–Simons 理論には負の指標を持つ粒子がよく現れる。この見かけの矛盾の答えは<strong>枠付け (framing)</strong> にある。
+Chern–Simons 理論の不変量は枠付きの結び目の不変量で、経路だけでなくリボンのねじれ方（と表裏）を指定する必要があった。
+本書は<a href="chapter02.html">第2章</a>以来「リボンは黒板の面に平らに置く」という黒板枠付けを暗黙に仮定してきたが、その単純化がここで不足する。
+</p>
+
+<p>
+そこで線を、実線と点線の対（リボン）として描く。矢印の向きに歩いて点線が右にあれば<strong>右手枠付け</strong>、左にあれば<strong>左手枠付け</strong>という。
+上向きの \(a\) の線と下向きの \(\bar a\) の線は同じ絵なので、\(a\) を右手枠付けにすることは \(\bar a\) を左手枠付けにすることと同じである。
+右手枠付けの \(a\) は左手枠付けの \(\bar a\) とだけ対消滅できる。リボンには表裏の区別があるので、半ひねりで右手を左手に変えることはできない。
+粒子と反粒子の対ごとに「一方を右手、他方を左手」と決めておけば済むが、
+自己双対な粒子は線に矢印を描かないので右手と左手を区別できない。これを記録する新しい記号が旗である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（旗）</span>
+指標が負の自己双対粒子 \(a\) について、カップ（対生成）とキャップ（対消滅）のそれぞれに、左か右を向いた大きな三角の矢印
+<strong>旗 (flag)</strong> を付ける。旗は粒子と反粒子を区別する線上の矢印とは別物で、世界線の枠付けを表す
+（カップ・キャップのどちら側に点線が付くかを指定する）。規則は次の通り（Kitaev の方式）。
+<ol>
+<li>エルミート共役は旗の向きを保つ。したがってカップとその共役であるキャップ（旗が同じ向き）を合わせたループは \(d_a\gt 0\) で、内積は正定値である。</li>
+<li>旗が<strong>逆向き</strong>のカップとキャップの対は打ち消し合い、まっすぐな線になる（リボンのうねりを伸ばすことに対応する）。</li>
+<li>旗の向きは Frobenius–Schur 指標を掛ければ反転できる：
+<div class="equation" id="eq-14-flag">\[
+\bigl(\text{左向きの旗}\bigr)=\kappa_a\,\bigl(\text{右向きの旗}\bigr),\qquad\kappa_a=-1 .
+\]</div></li>
+</ol>
+</div>
+
+<p>
+規則 1・2 は Chern–Simons 理論の枠付けを言い直しただけだが、規則 3 は Chern–Simons 理論の外にある付け足しで、
+これにより §14.2 の選択肢を同じ記法で表せる。図の値は、旗をどう割り当てるかに依存する。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>旗の割り当て方</th><th>帰結</th></tr></thead>
+<tbody>
+<tr><td>すべての旗を右向きにする</td><td>選択肢 A が再現される。ジグザグを伸ばすには、式 <a class="eq-ref" href="#eq-14-flag"></a> で片方の旗を反転して \(\kappa_a=-1\) を払い、規則 2 を使う</td></tr>
+<tr><td>線に沿って歩くとき旗の向きが交互になるように付ける（Chern–Simons 理論にならう）</td><td>ジグザグが自由に伸び、アイソトピー不変な規則になる。組みひもを持つ任意のエニオン理論から正則アイソトピー不変な結び目・絡み目不変量が得られる</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（\(F\) 行列は「全部右向き」を前提にしている）</span>
+\(F\) 行列は旗を指定せずに定義してきたが、それは暗黙に選択肢 A、つまりすべての旗が右向きの図を前提としていた。
+交互の旗で図を評価するときは、まずアイソトピー不変性を使って図をできるだけ簡単にし、
+\(F\) 移動を使う前に式 <a class="eq-ref" href="#eq-14-flag"></a> で旗をすべて右向きに直す（ゲージ固定）。
+それ以降は、ジグザグを伸ばすたびに符号が出うることを注意深く追跡する。
+交互の旗による値は、選択肢 A による値とは一般に異なる。
+</div>
+
+<p>
+どちらを使うかは目的による。結び目理論などの数学的応用ではアイソトピー不変な規則が欲しく、
+図式計算の種類によっては選択肢 A が向いている。ジグザグの位相は物理的な意味を持ちうる（§14.7）。
+</p>
+
+<h3 id="sec-14-3-2">§14.3.2 何が達成されたか</h3>
+
+<p>
+<a href="chapter07.html">第7章</a>で TQFT に期待したのは、ラベル付きの結び目・絡み目の図を、
+3次元時空の滑らかな変形（正則アイソトピー）で変わらない複素振幅に対応させる処方であった。
+Reidemeister 移動 II・III に対する不変性はすでにあり、唯一の障害は指標が負の粒子のジグザグ恒等式だったので、
+本節の方法でこれが達成された（選択肢 B でもアイソトピー不変な結び目不変量は得られるが、ユニタリ性を手放す）。
+ただし保証されたのは<strong>結び目・絡み目の図</strong>に対してだけで、融合・分裂を含む図については §14.4 の障害が残る。
+</p>
+
+<p>
+空の図の値が 1 であることから、図の評価は分配関数の比
+<div class="equation" id="eq-14-Z">\[
+\bigl(\text{図の値}\bigr)=\frac{Z(S^3\text{ に絡み目を埋め込んだもの})}{Z(S^3)}=Z(S^2\times S^1\text{ に絡み目を埋め込んだもの})
+\]</div>
+に対応する（後者では絡み目が \(S^1\) の非自明なサイクルを回らないものとする）。
+これは<a href="chapter05.html">第5章</a>の規格化と一致する。一般の閉多様体への拡張は<a href="chapter24.html">第24章</a>で扱う。
+</p>
+</section>
+
+<section>
+<h2 id="sec-14-4">融合ダイアグラムにおけるアイソトピー不変性の障害<span class="en">Impediments to Isotopy Invariance in Fusion Diagrams</span></h2>
+
+<p>
+融合・分裂の頂点を含む図では、完全なアイソトピー不変性はさらに得にくい。
+Frobenius–Schur 指標の問題を別にしても、平面内で線を自由に変形できるとは限らない。
+<a href="chapter12.html">第12章</a>の「頂点の脚を曲げる」計算をアイソトピー規格化でやり直す。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 185" xmlns="http://www.w3.org/2000/svg">
+  <!-- left: bent leg -->
+  <path d="M 30 20 L 30 95 C 30 135, 70 135, 100 75" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="100" y1="155" x2="100" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="100" y1="75" x2="100" y2="20" class="line" stroke-width="1.5"/>
+  <text x="14" y="32" class="label">c</text>
+  <text x="62" y="92" class="label">c̄</text>
+  <text x="108" y="150" class="label">a</text>
+  <text x="108" y="32" class="label">b</text>
+  <!-- middle -->
+  <text x="160" y="88" class="label">= (位相因子) ×</text>
+  <!-- right: plain vertex -->
+  <line x1="370" y1="155" x2="370" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="370" y1="95" x2="335" y2="30" class="line" stroke-width="1.5"/>
+  <line x1="370" y1="95" x2="405" y2="30" class="line" stroke-width="1.5"/>
+  <text x="378" y="150" class="label">a</text>
+  <text x="322" y="24" class="label">c</text>
+  <text x="402" y="24" class="label">b</text>
+  <text x="20" y="178" class="label-muted">c と c̄ が対生成し、c̄ と a が b に融合</text>
+  <text x="318" y="178" class="label-muted">a が c と b に分裂</text>
+</svg>
+<figcaption>図 14.2：頂点の脚の曲げ上げ。左の図は右の素直な頂点に比例するが、比例係数（本文の式）は一般に 1 ではない。</figcaption>
+</figure>
+
+<div class="thm-box">
+<span class="box-title">結果（脚の曲げ上げ・曲げ下げ）</span>
+真空から \(c\) と \(\bar c\) が対生成し、\(c\) は左上へ抜け、\(\bar c\) が下から来た \(a\) と融合して \(b\) になる図は
+<div class="equation" id="eq-14-turnup">\[
+\bigl(\text{左で }c\text{ を曲げた頂点}\bigr)=\sqrt{\frac{d_a d_c}{d_b}}\;\bigl[F^{c\bar c a}_a\bigr]_{Ib}\times\bigl(a\text{ が }c,b\text{ に分裂する頂点}\bigr)
+\]</div>
+に等しい。左右を反転した図（\(a\) が左下から来て、右側で \(\bar c\) と \(c\) が対生成する）は
+<div class="equation" id="eq-14-turnup2">\[
+\bigl(\text{右で }c\text{ を曲げた頂点}\bigr)=\sqrt{\frac{d_a d_c}{d_b}}\;\bigl[F^{a\bar c c}_a\bigr]^{*}_{bI}\times\bigl(a\text{ が }b,c\text{ に分裂する頂点}\bigr)
+\]</div>
+である（\(F\) のユニタリ性 \(F^{-1}=[F^*]^T\) を使う）。
+</div>
+
+<p>
+導出は<a href="chapter12.html">第12章</a>と同じで、真空線を挿入し、\(F\) 移動を行い、できたバブルを式 <a class="eq-ref" href="#eq-14-bubble"></a> で取り除く。
+係数 \(\sqrt{d_a d_c/d_b}\) はこのバブルの除去から来るもので、物理的規格化では現れない。
+この係数と \(F\) の要素の積が 1 になる理由は一般にはないが、§14.8.1 で述べるように絶対値はつねに 1、つまりただの位相である。
+物理的に見ても、「対生成のあとに融合する」過程と「\(a\) がただ \(c\) と \(b\) に分かれる」過程が区別されるのは不自然ではない。
+</p>
+
+<p>
+多くの理論では、ゲージをうまく選ぶと脚の曲げ上げ・曲げ下げの係数をすべて 1 にできる（<a href="chapter16.html">第16章</a>はまさにそのような理論を扱う）。
+そのようなゲージが存在しないとき、<strong>障害 (obstruction)</strong> があるという。
+組みひもとツイストがきちんと定義された理論では、障害が起こりうるのは融合多重度 \(N_{ab}^c\gt 1\) があるときに限られる。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（第3 Frobenius–Schur 指標）</span>
+\(N_{aa}^{\bar a}\gt 0\)（3つの \(a\) が真空に融合できる）とする。3本の脚がすべて \(a\) の頂点（添字 \(\mu\)）を、
+脚を巡回的にひとつずつ回した図（頂点を \(1/3\) 回転した形で、添字 \(\nu\)）で展開する：
+\[
+\bigl(\text{頂点 }\mu\bigr)=\sum_\nu W^a_{\mu\nu}\,\bigl(\text{脚を巡回的に回した頂点 }\nu\bigr),\qquad \kappa^{(3)}_a=\Tr[W^a].
+\]
+\(\kappa^{(3)}_a\) を<strong>第3 Frobenius–Schur 指標</strong>という。\(N_{aa}^{\bar a}=0\) なら \(\kappa^{(3)}_a=0\)、
+\(N_{aa}^{\bar a}=1\) なら \(W^a\) はただの数である。\(W^a\) の固有値は 1 の3乗根に限られる（§14.8.1）。
+\(W^a\) が単位行列のとき、すなわち
+<div class="equation" id="eq-14-k3">\[
+\kappa^{(3)}_a=N_{aa}^{\bar a}
+\]</div>
+のとき、指標は自明であるという。
+</div>
+
+<p>
+第3指標が非自明なら、2つの図はゲージ不変な位相を払わずには互いに変形できず、アイソトピー不変な図式代数を作れない。
+非自明な第3指標を持つ組みひも付きの理論の最も簡単な例は Chern–Simons 理論 \(SO(5)_4\) と \((E_8)_5\) で、どちらも粒子種が 15 個ある。
+平面の図式代数での簡単な例は<a href="chapter19.html">第19章</a>の演習に現れる。
+</p>
+
+<h3 id="sec-14-4-1">§14.4.1 アイソトピー不変な平面ダイアグラム</h3>
+
+<p>
+障害がなく、式 <a class="eq-ref" href="#eq-14-z2"></a> を満たしてジグザグの符号も取り除いてあれば、
+脚の曲げ上げ・曲げ下げがすべて自明になるゲージを選べる。
+このとき図は平面内でどう変形しても値が変わらない（交差はまだ考えていない）。
+「時間」の向きは平面上のどの方向に取ってもよく、図の場所ごとに違っていてもよい。
+図を演算子として読むとき（<a href="chapter12.html">第12章</a>）も、任意の方向を入力、その反対を出力に選べる。
+脚を自由に曲げられるので、3本の脚がすべて同じ側（たとえば下）から入ってくる頂点を定義しておくと便利なことがある。
+</p>
+
+<h3 id="sec-14-4-2">§14.4.2 3次元の図でのアイソトピー</h3>
+
+<p>
+交差を含む図では3次元的に自由に変形したくなるが、平面で脚を自由に曲げられても、
+融合・分裂を含む図の3次元アイソトピー不変性までは保証されない。
+世界線を平面に置いたリボン（頂点ではリボンが二股に分かれる）と考え、表を白、裏を黒に塗る。
+これまでの図式規則はすべて白い面が手前を向いた配置についてのもので、裏返って黒い面が手前に来た図に値を与える規則はない。
+リボンの \(2\pi\) のひねりは<a href="chapter15.html">第15章</a>で扱うが、\(\pi\) のひねり（半ひねり）を含む図には一般に値を与えられない
+（拡張の試みはあるがかなり複雑である）。
+保証されるのは、<strong>変形の最後にすべてのリボンの白い面が手前を向いていれば値は変わらない</strong>、ということである。
+</p>
+</section>
+
+<section>
+<h2 id="sec-14-5">付録：負の \(d\) による帳簿法<span class="en">Appendix: Bookkeeping Scheme with Negative d</span></h2>
+
+<p>
+符号を \(\eps_a\) から \(d_a\) に移し、内積を定義し直すことで、選択肢 B を使って選択肢 A の結果を再現する方法を述べる。
+</p>
+
+<p>
+すべての粒子で \(\eps_a=+1\) とする。\(\kappa_a=-1\) の自己双対粒子には \(d_a\lt 0\) を割り当てる。
+自己双対でない粒子については、式 <a class="eq-ref" href="#eq-14-z2"></a>（\(d\) の符号が融合で掛け算になる）を満たすようにゲージを選ぶ。
+そのために自己双対でない粒子に \(d_a\lt 0\) を割り当てることもあるが、ゲージの選択としては \(d_a\gt 0\) と同等に可能である。
+この条件のもとで \(d_a d_b/d_c\gt 0\) となり、平方根の中身は正になる。残る平方根の符号は次で定める。
+</p>
+
+<div class="def-box">
+<span class="box-title">規約（平方根の符号）</span>
+<div class="equation" id="eq-14-sqrt">\[
+\sqrt{\frac{d_a d_b}{d_c}}\ \text{は}\quad
+\begin{cases}
+\text{負} &amp; d_a\lt 0\ \text{かつ}\ d_b\lt 0\ \text{のとき}\\[2pt]
+\text{正} &amp; \text{それ以外}
+\end{cases}
+\]</div>
+</div>
+
+<p>
+図は §14.1 の規則（ループ \(=d_a\)、式 <a class="eq-ref" href="#eq-14-bubble"></a>・<a class="eq-ref" href="#eq-14-complete"></a>、交差は式 <a class="eq-ref" href="#eq-14-cross"></a>）で評価し、
+ジグザグは自由に伸ばす（脚の曲げも自由にするには、第3指標が自明でそのためのゲージを選べることが要る）。
+\(d_a\lt 0\) の粒子があるとき、こうして得た値を図の<strong>非ユニタリ評価</strong>（\(\eps\gt 0\) 評価）と呼ぶ。
+内積が正定値でなくても \(F\) 行列自体はユニタリでありうる。ユニタリな理論の物理を取り戻すには、規則をひとつ加える。
+</p>
+
+<div class="thm-box">
+<span class="box-title">規則 0（負 \(d\) キャップの数え上げ）</span>
+評価を始める前に、図の中の<strong>負 \(d\) キャップ (negative-\(d\) cap)</strong> の個数 \(n\) を数える。
+図を最後まで評価したあと、結果に \((-1)^n\) を掛ける。
+負 \(d\) キャップとは、時間を前向きに進むとき、\(d\lt 0\) の2粒子が出会って対消滅する点、または \(d\gt 0\) の粒子に融合する頂点のことである。
+<ul>
+<li>下から \(a,b\) が入り上へ \(c\) が出る頂点：\(d_a\lt 0\) かつ \(d_b\lt 0\) のときだけ負 \(d\) キャップ。</li>
+<li>下から \(c\) が入り上へ \(a,b\) が出る頂点（分裂）や、カップ（対生成）：負 \(d\) キャップになることはない。</li>
+<li>\(a\) のキャップ（対消滅）：\(d_a\lt 0\) のときだけ負 \(d\) キャップ（上の頂点で \(c=I\) とした場合）。</li>
+</ul>
+線の矢印の向きは関係しない。別の数え方として、\(d\gt 0\) の線をすべて消すと、式 <a class="eq-ref" href="#eq-14-z2"></a> により閉じたループだけが残るので、
+そのループの極大点（キャップ）を数えればよい。
+</div>
+
+<p>
+規則 0 まで含めた評価を<strong>ユニタリ評価</strong>と呼ぶ。これは正ノルムのユニタリな量子論を記述し、
+選択肢 A（すべての \(d_a\) を正にし、自己双対粒子の \(\eps_a\) を Frobenius–Schur 指標で与える）による評価と完全に一致する。
+直観は簡単で、指標が負の自己双対粒子のジグザグは本来 \(-1\) を出すべきところ、図式代数では \(\eps=+1\) として符号を出さない。
+しかしジグザグには負 \(d\) キャップがひとつ含まれるので、規則 0 が必要な \(-1\) を補う。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（規則 0 の確認）</span>
+<p><strong>単一のループ</strong>（\(d_a\lt 0\)）：ループの頂上に負 \(d\) キャップがひとつある。非ユニタリ評価は \(d_a\lt 0\)、
+規則 0 で \(-1\) を掛けて \(-d_a=|d_a|\gt 0\)。\(\braket{\text{state}}{\text{state}}\) と書ける図にふさわしく正になる。</p>
+<p><strong>バブル付きのループ</strong>：\(c\) が \(a,b\) に分裂して再び \(c\) に融合し、その \(c\) が \(\bar c\) の線で閉じてループをなす図を考える。
+これも \(\braket{\text{state}}{\text{state}}\) の形なので正であるべきである。</p>
+<ul>
+<li>\(d_a,d_b\lt 0\)、\(d_c\gt 0\) の場合：バブルの除去 <a class="eq-ref" href="#eq-14-bubble"></a> と平方根の符号 <a class="eq-ref" href="#eq-14-sqrt"></a> から
+非ユニタリ評価は \(-d_c\sqrt{d_a d_b/d_c}\)（平方根は正の値の意味）。負 \(d\) キャップは \(a,b\) が \(c\) に融合する頂点のひとつで、
+ユニタリ評価は \(+d_c\sqrt{d_a d_b/d_c}\gt 0\)。</li>
+<li>\(d_a,d_c\lt 0\)、\(d_b\gt 0\) の場合：非ユニタリ評価は \(d_c\sqrt{d_a d_b/d_c}\lt 0\)。負 \(d\) キャップは \(c\) のループの頂上ひとつで、
+ユニタリ評価は \(-d_c\sqrt{d_a d_b/d_c}\gt 0\)。</li>
+</ul>
+</div>
+
+<p>
+ジグザグを自由に伸ばせる（\(\eps=+1\)）代わりに負の \(d_a\) を持つ理論はごくありふれている。
+最も簡単な例は \(d=-1\) のループ気体で、規則 0 を加えるとセミオン模型 \(SU(2)_1\)（<a href="chapter02.html">第2章</a>）になる。
+</p>
+</section>
+
+<section>
+<h2 id="sec-14-6">付録：\([F^{aaa}_a]_{II}\) は実数である<span class="en">Appendix: \([F^{aaa}_a]_{II}\) Is Real</span></h2>
+
+<div class="proof-box">
+<span class="box-title">証明</span>
+\(a\) を自己双対（\(a=\bar a\)）とし、物理的規格化で考える。章の冒頭で見たように
+\[
+\bigl(a\text{ のジグザグ}\bigr)=\bigl[F^{aaa}_a\bigr]_{II}\times\bigl(a\text{ の直線}\bigr)
+\]
+である。左右を反転したジグザグについては、逆向きの \(F\) 移動と \(F\) のユニタリ性から
+（あるいは上の式のエルミート共役を取って）
+\[
+\bigl(\text{左右を反転したジグザグ}\bigr)=\bigl[F^{aaa}_a\bigr]^{*}_{II}\times\bigl(a\text{ の直線}\bigr)
+\]
+を得る。次に、極大と極小を2つずつ持つ閉じた曲線（そら豆形のループ）を考える。
+因果的アイソトピーで極大・極小の高さをずらすと、この図は「片側にジグザグを持つ単純ループ」とも
+「反対側に左右反転のジグザグを持つ単純ループ」とも読める。それぞれのジグザグを伸ばせば
+\[
+\bigl[F^{aaa}_a\bigr]_{II}\times\bigl(\text{ループ}\bigr)=\bigl(\text{そら豆形のループ}\bigr)=\bigl[F^{aaa}_a\bigr]^{*}_{II}\times\bigl(\text{ループ}\bigr)
+\]
+となり、\(\bigl[F^{aaa}_a\bigr]_{II}\) は実数である。使ったのは因果的アイソトピー不変性だけである。
+</div>
+</section>
+
+<section>
+<h2 id="sec-14-7">付録：スピン \(1/2\) との類推と Frobenius–Schur の符号の起源<span class="en">Appendix: Spin-1/2 Analogy and Why We Have a Frobenius–Schur Sign</span></h2>
+
+<p>
+時空の線のジグザグが符号を出すのは奇妙に見えるが、角運動量の合成に身近な類例がある。
+粒子種のラベルを全角運動量 \(J\) に対応させる。スピン \(1/2\) の粒子3個が全体として \(J=1/2\) にある状態は、
+融合木で表せる：左の2個を先に \(d=0\)（一重項）か \(d=1\)（三重項）に合成するか、右の2個を先に \(f=0\) か \(f=1\) に合成するか。
+2つの記述を結ぶ \(F\) 行列 \(\bigl[F^{\frac12\frac12\frac12}_{\frac12}\bigr]_{df}\) は角運動量の理論で \(6j\) 記号と呼ばれるものである。
+負の Frobenius–Schur 指標に当たるのは、\(\bigl[F^{\frac12\frac12\frac12}_{\frac12}\bigr]_{00}\) が負であるという事実である。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（具体的な計算）</span>
+全体の \(J_z=1/2\) の成分を取る。左の2個が一重項をなす状態は
+\[
+\ket{\psi}=\frac{1}{\sqrt2}\bigl(\ket{\uparrow_1\downarrow_2}-\ket{\downarrow_1\uparrow_2}\bigr)\otimes\ket{\uparrow_3},
+\]
+右の2個が一重項をなす状態は
+\[
+\ket{\psi'}=\frac{1}{\sqrt2}\,\ket{\uparrow_1}\otimes\bigl(\ket{\uparrow_2\downarrow_3}-\ket{\downarrow_2\uparrow_3}\bigr)
+\]
+である。\(\ket{\psi}\) はジグザグの図の下半分（ケット）に、\(\bra{\psi'}\) は上半分（ブラ）に対応する。
+共通する成分は \(\ket{\uparrow\downarrow\uparrow}\) だけで、その係数は \(\ket{\psi}\) で \(+1/\sqrt2\)、\(\ket{\psi'}\) で \(-1/\sqrt2\) だから
+\[
+\braket{\psi'}{\psi}=-\frac12 .
+\]
+これがジグザグの図の値であり、\(6j\) 記号そのものである。
+状態の規格化を変えれば絶対値は 1 にできるが、符号は取り除けない。
+半奇数スピン2個を一重項に合成する場合はつねに同じことが起こる。
+</div>
+</section>
+
+<section>
+<h2 id="sec-14-8">付録：ユニタリ融合圏のその他の性質<span class="en">Appendix: Some Additional Properties of Unitary Fusion Categories</span></h2>
+
+<p>
+ここまで扱ってきた理論（ユニタリ融合圏）は、次の2つの有用な性質を必ず持つ。証明は Kitaev の論文などに譲る。
+</p>
+
+<h3 id="sec-14-8-1">§14.8.1 ピボタル性</h3>
+
+<div class="def-box">
+<span class="box-title">定義（ピボタル性）</span>
+頂点の脚を1本下向きに曲げた図と上向きに曲げた図、たとえば「\(c\) が \(a,b\) に分裂する頂点」と
+「\(c\) と \(\bar b\) が \(a\) に融合する頂点」が表す状態空間の間に同型が存在するとき、理論は<strong>ピボタル (pivotal)</strong> であるという。
+2つの図は別々の Hilbert 空間に作用する（上下の脚の本数が違う）ので、「ユニタリ変換」ではなく「同型」と呼ぶ。
+</div>
+
+<p>
+当たり前に見える主張だが強力で、ここから §14.4 の脚の曲げの係数が絶対値 1 であることが導かれる：
+<div class="equation" id="eq-14-unit">\[
+\left|\sqrt{\frac{d_a d_c}{d_b}}\,\bigl[F^{c\bar c a}_a\bigr]_{Ib}\right|
+=\left|\sqrt{\frac{d_a d_c}{d_b}}\,\bigl[F^{a\bar c c}_a\bigr]_{bI}\right|=1 .
+\]</div>
+\(N_{ab}^c\gt 1\) のときは頂点に添字 \(\mu,\nu\) が付き、脚の曲げは
+\(\sum_\nu[A^{bc}_a]_{\mu\nu}\) の形の、\(\mu,\nu\) についてユニタリな行列による変換になる。
+</p>
+
+<p>
+脚の曲げ上げと曲げ下げを続けて行うと、頂点の3本の脚を巡回的にひとつ回す変換が得られる：
+\[
+\bigl(c\text{ が }a,b\text{ に分裂する頂点}\bigr)=C^{ab}_c\times\bigl(\text{脚を巡回的にひとつ回した頂点}\bigr).
+\]
+\(C^{ab}_c\) も絶対値 1 の位相である（多重度があれば \([C^{ab}_c]_{\mu\nu}\) というユニタリ行列）。これを3回続けると次を得る。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（ピボタル恒等式）</span>
+<div class="equation" id="eq-14-pivotal">\[
+C^{ab}_c\,C^{bc}_a\,C^{ca}_b=1
+\]</div>
+図で言えば、頂点を \(2\pi\) まるごと回転させ、3本の脚が渦を巻くように引き伸ばされた図は、元の頂点に等しい。
+多重度があるときは、左辺は行列の積で、右辺は単位行列である。
+</div>
+
+<p>
+特に \(a=b=c\) とすれば \(C^3=1\) で、§14.4 の \(W^a\) の固有値が 1 の3乗根であることが従う。
+ピボタル恒等式の導出はやや込み入っているが、脚の1本（\(c\)）を上へ曲げた別形を見ると物理的な意味がわかりやすい。
+そこでは \(a,b,c\) が真空に融合する頂点が現れ、恒等式は
+「真空（あるいは真空に融合する粒子の組）は時空の中で自由に回転できる」という主張になる。
+</p>
+
+<h3 id="sec-14-8-2">§14.8.2 球面性</h3>
+
+<div class="def-box">
+<span class="box-title">定義（球面性）</span>
+上に1本、下に1本の線が出ている図 \(X\) を考える。上の線と下の線を、\(X\) の左側を回るループでつないだものを<strong>左トレース</strong>、
+右側を回るループでつないだものを<strong>右トレース</strong>という。左トレースと右トレースがつねに等しいとき、理論は<strong>球面的 (spherical)</strong> であるという。
+ユニタリな理論はこの性質を持つ。
+</div>
+
+<p>
+名前は、ひもを球面の裏側へ回せば左トレースが右トレースになる、という描像に由来する。
+ただし性質としては名前より強く、球面上にほかのものがあってひもを裏へ回せない状況でも左右のトレースを入れ替えてよい。
+直ちにわかる帰結として \(d_a=d_{\bar a}\) が成り立つ。
+</p>
+</section>
+
+<section>
+<h2 id="sec-14-9">付録：高い融合多重度<span class="en">Appendix: Higher Fusion Multiplicities</span></h2>
+
+<p>
+\(N_{ab}^c\gt 1\) のチャネルがある理論では頂点に添字を付ける。<a href="chapter12.html">第12章</a>の付録の式をアイソトピー規格化に直すと、
+下の頂点に \(\mu\)、上の頂点に \(\nu\) を持つバブル（下の線 \(c\)、上の線 \(d\)）と完全性関係は
+\[
+\bigl(\text{バブル}\bigr)=\delta_{cd}\,\delta_{\mu\nu}\sqrt{\frac{d_a d_b}{d_c}}\times\bigl(c\text{ の線}\bigr),
+\qquad
+\bigl(a,b\text{ の平行線}\bigr)=\sum_{c,\mu}\sqrt{\frac{d_c}{d_a d_b}}\;\bigl(\text{上下の頂点がともに }\mu\text{ の融合・分裂図}\bigr)
+\]
+となる。これを<a href="chapter13.html">第13章</a>の多重度付きの \(R\) 行列と組み合わせると、交差の解消は
+\[
+\bigl(a\text{ と }b\text{ の交差}\bigr)=\sum_{c,\mu,\nu}\sqrt{\frac{d_c}{d_a d_b}}\;\bigl[R^{ab}_c\bigr]_{\mu\nu}\;
+\bigl(a,b\text{ が頂点 }\mu\text{ で }c\text{ に融合し、頂点 }\nu\text{ で }b,a\text{ に分裂する図}\bigr)
+\]
+と一般化される。\(d\lt 0\) の場合の平方根は式 <a class="eq-ref" href="#eq-14-sqrt"></a> に従う。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第14章のまとめ</span>
+<ul>
+<li>アイソトピー不変性の要はジグザグ恒等式である。物理的規格化ではジグザグを伸ばすと \(\bigl[F^{a\bar a a}_a\bigr]_{II}\) が出るので、ループの値を \(d_a=\eps_a/\bigl[F^{a\bar a a}_a\bigr]_{II}\)（\(\eps_a=\pm1\)）とするアイソトピー規格化に切り替える。ジグザグの代償は符号 \(\eps_a\) だけになる。</li>
+<li>頂点には \((d_a d_b/d_c)^{1/4}\) を掛ける。\(F\) 行列は不変で、バブルは \(\sqrt{d_a d_b/d_c}\)、完全性関係と交差の解消は \(\sqrt{d_c/(d_a d_b)}\) を伴う。</li>
+<li>自己双対粒子では \(\bigl[F^{aaa}_a\bigr]_{II}\) は実でゲージ不変であり、その符号 \(\kappa_a=\eps_a\operatorname{sign}[d_a]\) が Frobenius–Schur 指標である。スピン \(1/2\) の一重項に現れる符号と同じ性質のものである。</li>
+<li>\(\kappa_a=-1\) への対処は、A：\(\eps_a=-1\)、\(d_a\gt0\)（本書の標準、ユニタリだがジグザグで符号）、B：\(\eps_a=+1\)、\(d_a\lt0\)（アイソトピー不変、規則 0 を加えると A と同値）、C：旗で枠付けを記録する（交互の旗でユニタリかつアイソトピー不変な結び目不変量）。</li>
+<li>融合頂点を含む図では、脚の曲げが位相 \(\sqrt{d_a d_c/d_b}\,[F^{c\bar c a}_a]_{Ib}\) を出す。ゲージで消せない場合が障害で、非自明な第3 Frobenius–Schur 指標がその例である。リボンの半ひねりを含む図には値が定まらない。</li>
+<li>ユニタリ融合圏はピボタル（\(C^{ab}_cC^{bc}_aC^{ca}_b=1\)）かつ球面的（左トレース＝右トレース、\(d_a=d_{\bar a}\)）である。</li>
+<li>原書の演習では、多重度付きの交差の式の導出、結び目の連結和の値、\(F\) 移動の H 字形の変種を扱う。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

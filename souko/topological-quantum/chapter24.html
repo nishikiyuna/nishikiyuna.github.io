@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="手術（surgery）で任意の3次元多様体を S^3 内の絡み目として表し、Kirby 移動で不変な Ω ストランドの評価から Witten–Reshetikhin–Turaev 不変量を作り、chain-mail 構成で Turaev–Viro との関係 Z_TV = |Z_WRT|^2 を見る">
+  <title>第24章 ダイアグラムからの TQFT の形式的構成：手術とより複雑な3次元多様体 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter24" data-chapter="24">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第24章に対応</span>
+  第24章 ダイアグラムからの TQFT の形式的構成：手術とより複雑な3次元多様体
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+本書の位置づけは「Optional / Hard」で、物理屋は初読時に飛ばしてよいとされている章である。
+<a href="chapter14.html">第14章</a>以降で作ったダイアグラム代数は、ラベル付き絡み目の \(S^3\)（あるいは \(S^2\times S^1\)）での値 \(Z(\text{絡み目 in }S^3)/Z(S^3)\) を与えるところまでだった。
+TQFT としては、任意の3次元多様体 \(M\) に対する \(Z(M)\) や \(Z(M;\text{ラベル付き絡み目})\) がほしい。
+本章ではまず<strong>手術 (surgery)</strong> によって任意の3次元多様体を \(S^3\) 内の絡み目で表せること（Lickorish–Wallace の定理）と、
+同じ多様体を与える絡み目どうしの関係（Kirby 移動）を述べる。
+続いて、<a href="chapter17.html">第17章</a>の Kirby 色 \(\Omega\) の絡み目を評価して Kirby 移動で不変な量を作り、これが Witten–Reshetikhin–Turaev (WRT) 不変量であることを見る。
+これは Chern–Simons 理論（経路積分としては収束せず厳密には定義できない）に対する厳密な定義とみなせる。
+最後に chain-mail 構成により、<a href="chapter23.html">第23章</a>の Turaev–Viro 不変量が \(|Z_{\mathrm{WRT}}|^2\) に等しいことの筋道を見る。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-24-1">手術<span class="en">Surgery</span></h2>
+
+<p>
+<a href="chapter07.html">第7章</a>では、2つのソリッドトーラス \(D^2\times S^1\) を境界 \(S^1\times S^1\) で貼り合わせて \(S^3\) や \(S^2\times S^1\) を作った（貼り合わせ方で結果が変わる）。
+複雑な3次元多様体を扱うには、この貼り合わせの考え方を発展させた手術が便利である。
+手術とは、多様体の一部を切り取って別のものを貼り戻す操作である。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（手術）</span>
+閉多様体 \(M\) を、共通の境界 \(\partial M_1=\partial M_2\) で貼り合わされた2つの境界付き多様体の和 \(M=M_1\cup_{\partial M_1}M_2\) として書く。
+同じ境界をもつ別の境界付き多様体 \(M_2'\)（\(\partial M_2=\partial M_2'\)）を選び、
+\[
+M' = M_1\cup_{\partial M_1} M_2'
+\]
+を作る。\(M\) から \(M'\) を得る操作を \(M\) 上の手術という。向き付け可能な多様体だけを考える。
+</div>
+
+<h3 id="sec-24-1-1">§24.1.1 2次元多様体での簡単な例</h3>
+
+<p>
+球面 \(S^2\) を、2枚の円板 \(M_2=D^2\cup D^2\) とその残り \(M_1=S^2\setminus(D^2\cup D^2)\) に分ける。共通の境界は2つの円 \(S^1\cup S^1\) である。
+同じ境界 \(S^1\cup S^1\) をもつ別の2次元多様体として円筒面 \(M_2'=S^1\times I\)（\(I\) は区間）がある。
+円板2枚を取り除いて円筒を貼ると、結果は<strong>トーラス</strong> \(T^2\) になる。球面がトーラスに手術されたことになる。
+</p>
+<p>
+別の見方もある。\(M=\partial N\) のとき、\(M\) 上の手術は \(N\) への<strong>ハンドルの取り付け</strong>に対応する。
+\(N=B^3\)（3次元球体）に円柱 \(D^2\times I\)（ハンドル）を付けるとソリッドトーラスになり、その境界が \(T^2\) である。
+</p>
+
+<h3 id="sec-24-1-2">§24.1.2 3次元多様体での手術（Dehn 手術）</h3>
+
+<p>
+3次元でも同様である。\(M=S^3\)（考えやすくするには \(\R^3\)）に埋め込まれたソリッドトーラス \(M_2=D^2\times S^1\) を取り除く。
+その境界 \(T^2=S^1\times S^1\) をそのまま境界にもつ別のソリッドトーラスが \(M_2'=S^1\times D^2\) である。
+両者は、どちらの \(S^1\) を「埋める（収縮可能にする）」かが逆になっている。
+\(M_2\) を取り除いて \(M_2'\) を貼ると、境界のない新しい多様体 \(M'\) ができる。
+\(M=\R^3\) のような単純な空間から出発しても \(M'\) は元の空間には埋め込めないので、視覚化は難しい。
+</p>
+<p>
+この<strong>トーラス手術</strong>を <strong>Dehn 手術</strong>という。言い換えると、ソリッドトーラスを取り除き、メリディアン（収縮可能な向き）とロンギチュード（収縮不可能な向き）を入れ替えて貼り戻す操作である。
+貼り戻す前にトーラスにもっと複雑な変換を施す場合も Dehn 手術と呼ぶが（<a href="chapter07.html">第7章</a>）、本章では使わない。
+取り除くソリッドトーラスは、元の多様体の中で結び目状に複雑に埋め込まれていてもよい。
+閉じた曲線 \(S^1\) を横断方向に \(D^2\) へ太らせたものは、位相的にはソリッドトーラスである。
+</p>
+</section>
+
+<section>
+<h2 id="sec-24-2">結び目による多様体の表現<span class="en">Representing Manifolds with Knots</span></h2>
+
+<h3 id="sec-24-2-1">§24.2.1 Lickorish–Wallace の定理</h3>
+
+<div class="thm-box">
+<span class="box-title">定理（Lickorish 1962, Wallace 1960）</span>
+\(S^3\) から出発して、（結び目状に埋め込まれていてもよい）トーラス手術を逐次行うことで、任意の閉・連結・向き付け可能な3次元多様体が得られる。
+</div>
+
+<p>
+手順は次のとおり。\(S^3\) に（複数本からなりうる）絡み目を置き、各成分をソリッドトーラスに太らせて取り除き、メリディアンとロンギチュードを入れ替えたトーラスを貼り戻す。
+適切な絡み目を選べばどの3次元多様体もこの形で得られる：
+\[
+S^3\text{ 内の絡み目} \;\xrightarrow{\ \text{手術}\ }\; \text{ある3次元多様体 } M .
+\]
+つまり、任意の3次元多様体は \(S^3\) 内の絡み目として表せる。
+TQFT を「3次元多様体に複素数 \(Z(M)\) を割り当てるもの」と考えるなら、必要なのは本質的に<strong>絡み目の不変量</strong>である。
+ただし、位相の異なる絡み目がすべて異なる多様体を与えるわけではない。その対応を整理するのが次の Kirby 計算である。
+</p>
+
+<h3 id="sec-24-2-2">§24.2.2 Kirby 計算</h3>
+
+<p>
+同じ多様体を与える絡み目どうしの変形規則は Kirby (1978) が決定した。
+手術後の多様体を変えない絡み目の変形を Kirby 計算という。基本的な移動として2つ（<strong>Kirby 移動</strong>）を取れる。
+</p>
+
+<div class="def-box">
+<span class="box-title">Kirby 移動 1：ブローアップ／ブローダウン</span>
+他の成分と絡まないカール（1回のねじれ）つきの輪を絡み目に加える、あるいは取り除いても、手術後の多様体は変わらない。
+</div>
+
+<p>
+<strong>議論。</strong> 絡み目をリボンとみなし（通常は黒板フレーミング、<a href="chapter02.html">第2章</a>）、各ストランドを太らせたソリッドトーラスを取り除く。
+リボンの縁に沿う線がトーラス面上に残るので、貼り戻すソリッドトーラスのメリディアンがこの線に一致するように貼る。
+カールつきの輪はねじれたリボンと見なせ、その縁の線はトーラス面上でロンギチュードとメリディアンを1回ずつ回る。
+これはちょうど <a href="chapter07.html">第7章</a>のレンズ空間 \(L(1,1)=S^3\) の構成になっているので、この輪への手術は多様体を変えない。
+</p>
+
+<div class="def-box">
+<span class="box-title">Kirby 移動 2：ハンドルスライド</span>
+あるストランドを切り開き、別のストランドの経路全体に沿って引き回してから再接続しても、手術後の多様体は変わらない。
+ストランドは常にリボンとして扱い、他のストランドの上を滑らせたときに自己ねじれがいくつ溜まるかを数える必要がある。
+</div>
+
+<p>
+<strong>議論。</strong> 水平の輪を手術する場合を考える。この輪をソリッドトーラスに太らせてメリディアンとロンギチュードを入れ替えると、
+トーラスの長い方向が収縮可能になる。したがって、手術後は左端の縦線を、他の縦線に触れずにこのトーラスの中を通して引き抜ける。
+左右の図が同じ多様体を表すことがわかる。トーラスが複雑に埋め込まれていても同様である。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（「ハンドルスライド」という名前、第3の移動）</span>
+名前は、球体にハンドルを2つ付けた2ハンドルのソリッドトーラスで、ハンドルの付け根を他のハンドルの上にまで滑らせられることに由来する。
+なお \(S^3\) に埋め込まれていない絡み目まで考えるときは、あるストランドが別のストランドのまわりを1回だけ回る（自己ねじれも他との絡みもない）場合に両者を取り除ける
+<strong>circumcision</strong> が第3の独立な移動になる。\(S^3\) 内の絡み目では最初の2つから従う。
+</div>
+
+<p>
+\(S^3\) 内の2つの絡み目が同じ3次元多様体を表すことと、一方が他方へ Kirby 移動の列と滑らかな変形（正則アイソトピー）で移れることは同値である。
+2つの互いに離れた絡み目 \(L_1\)（手術して \(M_1\)）と \(L_2\)（手術して \(M_2\)）を並べた \(L_1\cup L_2\) は、手術すると<strong>連結和</strong>になる：
+\[
+L_1\cup L_2 \text{ in } S^3 \;\xrightarrow{\ \text{手術}\ }\; M_1\# M_2 .
+\]
+連結和は<a href="chapter07.html">第7章</a>（§7.3.3）で扱った。
+</p>
+</section>
+
+<section>
+<h2 id="sec-24-3">Witten–Reshetikhin–Turaev 不変量<span class="en">Witten–Reshetikhin–Turaev Invariant</span></h2>
+
+<p>
+手術によって、多様体は \(S^3\) 内の絡み目で表せるようになった。したがって、Kirby 移動で値が変わらない絡み目不変量があれば、それが多様体不変量になる。
+Kirby 計算は正則アイソトピー不変なので、不変量は<strong>アイソトピー不変な</strong>ダイアグラム代数（<a href="chapter16.html">第16章</a>、<a href="chapter14.html">第14章</a>）で評価するのが自然である。
+鍵となるのが、<a href="chapter17.html">第17章</a>（§17.5）で導入した \(\Omega\)（Kirby 色）のストランドである。
+\(\Omega\) は全粒子種の重ね合わせ \(\Omega=\sum_a (d_a/\calD)\,a\) で、「殺す性質 (killing property)」をもつ（第17章）。
+手術したい絡み目の各成分を \(\Omega\) ストランドで置き換えた絡み目を評価する。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（WRT 不変量）</span>
+手術して \(M\) を与える \(S^3\) 内の絡み目の各成分を \(\Omega\) ストランドにして評価し、
+<div class="equation" id="eq-24-WRT">\[
+Z_{\mathrm{WRT}}(M)=\frac{1}{\calD}\,\Big(e^{-2\pi \ii c/8}\Big)^{\sigma}\;\Big\langle\Omega\text{ ストランドの絡み目の評価値}\Big\rangle
+\]</div>
+と定める。\(c\) は理論の中心電荷、\(\sigma\) は絡み目の<strong>符号数 (signature)</strong>、すなわち各ストランド間の絡み数 \(\mathrm{lk}_{ij}\) を成分とする行列（絡み行列）の正の固有値の数から負の固有値の数を引いたものである。
+</div>
+
+<p>
+絡み行列を計算するにはストランドに向きを付ける必要があるが、矢印をどちらに向けても結果は変わらない。
+対角成分 \(\mathrm{lk}_{ii}\) はストランド \(i\) の自己絡み（黒板フレーミングでのライスト）である。
+</p>
+<p>
+式 <a class="eq-ref" href="#eq-24-WRT"></a> が実際に多様体不変量になっていることを確かめるには、Kirby 移動で値が変わらないことを示せばよい。
+</p>
+<ul>
+<li><strong>ブローアップ／ブローダウン。</strong> 第17章のツイストの恒等式から、ねじれた輪を加えると絡み目の値に \(e^{\pm 2\pi\ii c/8}\)（ねじれの向きで符号が決まる）が掛かる。
+一方、この輪の追加は符号数 \(\sigma\) を \(\pm1\) 変えるので、前置因子 \((e^{-2\pi\ii c/8})^{\sigma}\) がちょうどこれを打ち消す。</li>
+<li><strong>ハンドルスライド。</strong> \(\Omega\) ストランドは、他のストランド \(a\) が上を滑っても値が変わらない（図 24.10 に相当する計算）。
+完全性関係（<a href="chapter16.html">第16章</a>）を使って \(a\) を \(\sum_{b,c,\mu}\) の形に分解し、頂点を \(b\) の線に沿って1周させて元に戻す。この導出は braiding が定義されていなくても通る。
+滑らされる側のストランドは、滑る相手の \(\Omega\) がねじれていると自己ねじれを獲得するが、その位相も前置因子が正しく補正する。
+\(\Omega\) の係数は、非ユニタリな評価（\(d_a&lt;0\) を許す）でも使えるように \(d_a/\calD\) の形のまま書く。</li>
+<li>第3の移動（circumcision）も \(\Omega\) の殺す性質から従う。</li>
+</ul>
+
+<div class="thm-box">
+<span class="box-title">結果（WRT 不変量の性質）</span>
+<ul>
+<li>式 <a class="eq-ref" href="#eq-24-WRT"></a> は Kirby 移動で不変なので、3次元多様体の不変量である。Reshetikhin–Turaev (1991) が導入し、Witten (1989) の Chern–Simons 多様体不変量（<a href="chapter05.html">第5章</a>）に厳密な定義を与えるので、Witten の名も冠せられる。</li>
+<li>空のダイアグラム（手術していない \(S^3\)）の値は 1 に規格化され、\(Z_{\mathrm{WRT}}(S^3)=1/\calD\) となる（<a href="chapter17.html">第17章</a>の式、<a href="chapter07.html">第7章</a>の式と整合）。</li>
+<li>連結和の乗法則：
+<div class="equation" id="eq-24-connsum">\[
+Z_{\mathrm{WRT}}(M_1\# M_2)=\calD\,Z_{\mathrm{WRT}}(M_1)\,Z_{\mathrm{WRT}}(M_2).
+\]</div>
+これは、互いに離れた絡み目の手術が連結和を与え、その評価値が各評価値の積になることから従う。\(S^3\) が連結和の単位元的であること（\(Z(M\#S^3)=\calD\,Z(M)/\calD=Z(M)\)）とも合う。
+文献によっては前置因子 \(1/\calD\) を落として \(Z(M_1\#M_2)=Z(M_1)Z(M_2)\) と定義する。</li>
+</ul>
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（落とし穴）</span>
+Chern–Simons の分配関数は、本来は多様体の「2-フレーミング」に依存する（<a href="chapter05.html">第5章</a>の議論）。
+Reshetikhin–Turaev 不変量は、そのうち「標準フレーミング」と呼ばれる選び方に対応する。この点は Atiyah (1990) や Kirby–Melvin (1999) に詳しい。
+また Frobenius–Schur 指標が負になる理論では、アイソトピー不変な規則の作り方が複数あり（<a href="chapter14.html">第14章</a>の方式、または <a href="chapter14.html">§14.5</a> の負の \(d_a\) を許して規則 0 を適用しない非ユニタリ評価）、文献ではどちらも使われる。
+</div>
+
+<p>
+ラベル付き絡み目を含む場合へも拡張できる。手術用の \(\Omega\) 絡み目に、評価したいラベル付き絡み目をそのまま加えて評価すればよい：
+</p>
+<div class="equation" id="eq-24-WRTlink">\[
+Z_{\mathrm{WRT}}(M;\text{ラベル付き絡み目})=\frac{1}{\calD}\,\Big(e^{-2\pi \ii c/8}\Big)^{\sigma}\;\Big\langle\Omega\text{ 絡み目}\;\cup\;\text{ラベル付き絡み目の評価値}\Big\rangle .
+\]</div>
+<p>
+こうして、経路積分や Chern–Simons 作用という言葉を一度も使わずに、エニオン理論を「ラベル付き世界線の絡み目を数に変える規則」として扱い、
+\(\Omega\) ストランドへの手術で複雑な多様体を表現する、という枠組みができあがる。
+</p>
+
+<h3 id="sec-24-3-1">§24.3.1 いくつかの例</h3>
+
+<div class="example-box">
+<span class="box-title">例（\(S^3\)）</span>
+手術は不要で \(\Omega\) の絡み目もない。空の絡み目の値は 1、符号数は 0 なので \(Z_{\mathrm{WRT}}(S^3)=1/\calD\) となり、期待どおりである。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（\(S^2\times S^1\)）</span>
+\(S^3\) 内の1本の輪（ほどけた結び目、ねじれなし）への手術で \(S^2\times S^1\) が得られる（原書の演習 24.1）。
+そこで \(\Omega\) の輪1本を評価する。輪にラベル \(a\) を載せると \(d_a\) なので、
+<div class="equation" id="eq-24-loop">\[
+\Omega\text{ の輪}=\sum_a \frac{d_a}{\calD}\,d_a=\frac{\sum_a d_a^2}{\calD}=\calD .
+\]</div>
+符号数は 0 なので \(Z_{\mathrm{WRT}}(S^2\times S^1)=\calD/\calD=1\) となり、<a href="chapter07.html">第7章</a>の結果と一致する。
+</div>
+
+<div class="example-box">
+<span class="box-title">例（3-トーラス \(T^3=S^1\times S^1\times S^1\)）</span>
+<strong>Borromean 環</strong>（3つの輪で、どれか1つを切ると残り2つがばらばらになる）に手術すると \(T^3\) が得られる（原書の演習 24.3：基本群を使って示す）。
+この \(\Omega\) 絡み目を、\(\Omega\) の殺す性質の系（第17章）で評価すると（演習 24.4）
+<div class="equation" id="eq-24-T3">\[
+Z_{\mathrm{WRT}}(T^3)=\text{粒子種の数}
+\]</div>
+となる。これも<a href="chapter07.html">第7章</a>の予言と一致する。符号数は 0 である。
+</div>
+
+<h3 id="sec-24-3-2">§24.3.2 Turaev–Viro 再訪：chain-mail と Turaev–Walker–Roberts の定理</h3>
+
+<p>
+Roberts (1995) は手術の考え方を使って、Turaev–Viro 不変量と Chern–Simons (WRT) 不変量を結びつける Turaev–Walker の定理（Turaev 1992, 1994; Walker 1991）に幾何学的な証明を与えた。
+モジュラーテンソル圏（モジュラーなエニオン理論）に対して
+</p>
+<div class="equation" id="eq-24-TW">\[
+Z_{\mathrm{TV}}(M)=\big|Z_{\mathrm{WRT}}(M)\big|^2 .
+\]</div>
+<p>
+ここでは完全な証明ではなく、筋道を紹介する。まず準備として、\(\Omega\) の殺す性質のもう1つの系が必要である。
+アイソトピー不変な理論（<a href="chapter16.html">第16章</a>）で、3つの線 \(a,b,c\) が1本の \(\Omega\) ストランドを貫くとき、\(a,b,c\) は真空に融合する形に置き換えられ、係数は
+\(\calD/\Theta(a,b,c)\) である。ここでシータ図の値は \(\Theta(a,b,c)=\sqrt{d_ad_bd_c}\)（<a href="chapter16.html">第16章</a>、<a href="chapter23.html">第23章</a>）。
+これは演習 24.6 の内容である。
+</p>
+
+<p>
+Turaev–Viro 不変量の定義（<a href="chapter23.html">第23章</a>）を思い出すと、多様体を四面体に分割（単体分割）し、各辺にラベルを付け、重みを全ラベルで足し上げる。
+この分割から \(\Omega\) ストランドの絡み目を次のように作る。
+</p>
+<div class="def-box">
+<span class="box-title">定義（chain-mail 絡み目と chain-mail 不変量）</span>
+単体分割の各三角形の面の縁に沿って \(\Omega\) の輪を1つ、各辺の腰（辺のまわり）に \(\Omega\) の輪を1つ置き、2種類の輪が互いに鎖のように絡むようにする。
+これを chain-mail（鎖かたびら）絡み目という。chain-mail 不変量は
+<div class="equation" id="eq-24-CH">\[
+\mathrm{CH}(M)=\calD^{-N_v-N_{\mathrm{tet}}}\;\Big\langle\text{単体分割の chain-mail 絡み目（}\Omega\text{ ストランド）の評価値}\Big\rangle
+\]</div>
+で定義する。\(N_v\) は頂点の数、\(N_{\mathrm{tet}}\) は四面体の数である。
+</div>
+<p>
+より一般に、多様体のハンドル分解に対して、1-ハンドルと2-ハンドルのまわりに \(\Omega\) の輪を置けば chain-mail 絡み目が定義でき、\(N_v\) と \(N_{\mathrm{tet}}\) は0-セルと3-セルの数に置き換わる。
+</p>
+
+<h4>分割によらないこと</h4>
+<p>
+\(\mathrm{CH}(M)\) が単体分割によらない（したがって多様体不変量である）ことは容易に示せる。
+Pachner 移動（<a href="chapter23.html">第23章</a>）で不変であることを、\(\Omega\) の殺す性質とハンドルスライド性だけを使って幾何学的に確かめればよい（演習 24.7）。
+</p>
+
+<h4>Turaev–Viro 不変量との一致</h4>
+<p>
+さらに \(\mathrm{CH}(M)=Z_{\mathrm{TV}}(M)\) が次のように示される。chain-mail 絡み目を直接評価する。
+</p>
+<ol>
+<li>各面（上の「金色」の輪）に殺す性質を使い、三角形ごとに係数 \(\calD/\Theta(a,b,c)\) を得る。</li>
+<li>残った辺の \(\Omega\) の輪は、\(\Omega\) の定義にしたがって全粒子種の和で展開し、種 \(a\) に重み \(d_a/\calD\) を掛ける。</li>
+<li>すると、元の四面体1つにつき粒子の線でできた四面体が1つ残る。これは元の四面体の双対四面体の図であり、第23章の式の下で述べた対応と合う。</li>
+</ol>
+<p>
+係数をまとめると、\(N_e\) を辺の数、\(N_f\) を面（三角形）の数として
+\[
+\mathrm{CH}(M)=\calD^{-N_v-N_{\mathrm{tet}}+N_f-N_e}\sum_{\text{辺のラベル}}\frac{\prod_{\text{四面体}}\tilde G(\text{四面体})\;\prod_{\text{辺}}d_{\text{辺}}}{\prod_{\text{三角形}}\tilde\Theta(\text{三角形})}
+\]
+となる（\(\tilde G\)、\(\tilde\Theta\) は四面体図とシータ図の値）。
+3次元の Euler 標数が \(N_{\mathrm{tet}}-N_f+N_e-N_v=0\) であることを使うと、\(\calD\) のべきは \(\calD^{-2N_v}\) にまとまる。
+これはちょうど<a href="chapter23.html">第23章</a>の Turaev–Viro 不変量の定義の前置因子であり、\(\mathrm{CH}(M)=Z_{\mathrm{TV}}(M)\) が示される。
+</p>
+
+<h4>Turaev–Walker の定理の概略</h4>
+<p>
+鍵となる事実は、特に簡単な分割をとると、chain-mail 絡み目への手術が、元の多様体 \(M\) とその鏡像 \(\overline M\) の連結和を与えることである。
+\[
+M\text{ の chain-mail 絡み目}\;\xrightarrow{\ \text{手術}\ }\; M\#\overline{M}.
+\]
+この事実の証明には2段落ほどで足りるが、ハンドル分解の知識が必要なので原書では省かれている（Roberts 1995）。
+したがって chain-mail 絡み目の評価は本質的に \(Z_{\mathrm{WRT}}(M\#\overline M)\) の評価である。
+chain-mail と Turaev–Viro の一致、および連結和の乗法則 <a class="eq-ref" href="#eq-24-connsum"></a> から、\(\calD\) の因子を無視すると
+\[
+Z_{\mathrm{TV}}(M)\sim Z_{\mathrm{WRT}}(M\#\overline M)\sim Z_{\mathrm{WRT}}(M)\,Z_{\mathrm{WRT}}(\overline M)\sim\big|Z_{\mathrm{WRT}}(M)\big|^2
+\]
+となる（鏡像で値が複素共役になる）。\(\calD\) のべきを正確に追うには、この特定の分割のもとで chain-mail 絡み目の式を詳しく見る必要があり、
+そうして追跡すると式 <a class="eq-ref" href="#eq-24-TW"></a> が得られる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（この構成の広がり）</span>
+chain-mail の方法は4次元の Crane–Yetter 不変量の記述にも拡張できる。また、Levin–Wen 模型（<a href="chapter33.html">第33章</a>）の物理への応用が Burnell–Simon (2010, 2011) にある。
+手術・Lickorish–Wallace・Kirby 計算については、Prasolov–Sossinsky、Saveliev、Lickorish の教科書がよい参考書として挙がっている。
+原書の演習では、ループへの手術（24.1）、Hopf 環への手術で \(S^3\) になること（24.2）、Borromean 環の評価（24.3, 24.4）、ブローアップとブローダウンの積が恒等になること（24.5）、
+\(\Omega\) による3線の殺し（24.6）、Pachner 移動に対する chain-mail の不変性（24.7）を扱う。
+</div>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第24章のまとめ</span>
+<ul>
+<li>任意の向き付け可能な3次元多様体は、\(S^3\)（などの基準多様体）内の絡み目への手術として表せる（Lickorish–Wallace）。Kirby 移動（ブローアップ／ブローダウンとハンドルスライド）で結ばれた絡み目は同じ多様体を表す。</li>
+<li>Reshetikhin–Turaev 不変量 \(Z_{\mathrm{WRT}}(M)=\calD^{-1}(e^{-2\pi\ii c/8})^{\sigma}\langle\Omega\text{ 絡み目}\rangle\) は Kirby 移動で不変で、Witten の Chern–Simons 不変量の厳密な構成とみなせる。
+\(Z_{\mathrm{WRT}}(S^3)=1/\calD\)、\(Z_{\mathrm{WRT}}(S^2\times S^1)=1\)、\(Z_{\mathrm{WRT}}(T^3)=\)粒子種の数、\(Z(M_1\#M_2)=\calD\,Z(M_1)Z(M_2)\)。</li>
+<li>chain-mail 構成は Turaev–Viro 不変量を \(\Omega\) の絡み目の評価として幾何学的に表し、モジュラーな場合に \(Z_{\mathrm{TV}}(M)=|Z_{\mathrm{WRT}}(M)|^2\) を導く。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>
