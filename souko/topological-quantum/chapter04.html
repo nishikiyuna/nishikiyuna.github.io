@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Aharonov–Bohm 効果を経路積分で導き、電荷–磁束複合体としての可換エニオン、融合・反エニオン、トーラス上の基底状態縮退と量子メモリを説明する">
+  <title>第4章 Aharonov–Bohm 効果と電荷–磁束複合体 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter04" data-chapter="4">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第4章に対応</span>
+  第4章 Aharonov–Bohm 効果と電荷–磁束複合体
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter03.html">第3章</a>で、\((2+1)\) 次元では任意の統計角 \(\vartheta\) を持つ可換エニオンが量子力学と矛盾しないことを見た。
+本章はそのようなエニオンを実現する最も単純な模型、<strong>電荷–磁束複合体</strong>を与える。
+まず Aharonov–Bohm (AB) 効果を経路積分で導き、磁束の周りを電荷が回ると位相 \(\ee^{\ii q\Phi/\hbar}\) が付くことを確認する。
+次に、電荷と磁束管を束ねた粒子の交換位相、スピン、融合、反粒子（真空との融合）を調べる。
+最後に、エニオン模型をトーラスに載せると、エニオンが1個もない基底状態が縮退し、その縮退度が粒子の種類の数に一致することを示す。
+縮退した基底状態は位相的に保護された量子メモリとして使える。
+本章は<a href="chapter05.html">第5章</a>の Chern–Simons 理論への準備にあたる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-1">Aharonov–Bohm 効果の復習<span class="en">Review of Aharonov–Bohm Effect</span></h2>
+
+<p>
+Young の二重スリット実験を経路積分の言葉で書き直す。出力スクリーン上のある点への振幅は、スリット1を通る経路とスリット2を通る経路の和であり、
+</p>
+\[
+\sum_{\text{paths}}\ee^{\ii S/\hbar}=\sum_{\text{slit 1}}\ee^{\ii S/\hbar}+\sum_{\text{slit 2}}\ee^{\ii S/\hbar}\ \sim\ \ee^{\ii kL_1}+\ee^{\ii kL_2}
+\]
+<p>
+となる。\(L_1,L_2\) はその点に至る2経路の長さ、\(k\) は入射波の波数である。これが通常の二重スリットの干渉パターンを与える。
+</p>
+
+<p>
+ここで、荷電粒子（電子など）を入射し、2つの経路の間の箱の中に磁場を入れる。磁場は箱の外にもれず、粒子は磁場を感じない位置を通る。
+磁場は時間的に一定で、Faraday 効果もない。それにもかかわらず、磁場の有無で干渉パターンがずれる。これが <strong>Aharonov–Bohm 効果</strong>である
+（Ehrenberg と Siday (1949) が先に予言し、Aharonov と Bohm (1959) が独立に再発見した。最初の実験は Chambers (1960)）。
+</p>
+
+<h3>ベクトルポテンシャルとの結合</h3>
+
+<p>
+理由を、Lagrangian 形式での荷電粒子と電磁場の結合から理解する。ベクトルポテンシャル \(\mathbf A\) とスカラーポテンシャル \(A_0\) で
+\(\mathbf B=\nabla\times\mathbf A\)、\(\mathbf E=-\nabla A_0-\dd\mathbf A/\dd t\) と書くと、電荷 \(q\) の粒子の Lagrangian は
+</p>
+<div class="equation" id="eq-4-L">\[
+L=\frac m2\dot{\mathbf x}^2+q\bigl(\mathbf A(\mathbf x)\cdot\dot{\mathbf x}-A_0\bigr)
+\]</div>
+<p>
+である。Euler–Lagrange 方程式から Lorentz 力 \(m\ddot{\mathbf x}=q(\mathbf E+\dot{\mathbf x}\times\mathbf B)\) が正しく得られる（簡単な演習）。
+</p>
+
+<p>
+いま静磁場だけを加えるので、\(q\mathbf A\cdot\dot{\mathbf x}\) の項だけを考えればよい。作用は
+</p>
+<div class="equation" id="eq-4-S">\[
+S=S_0+q\int\dd t\,\dot{\mathbf x}\cdot\mathbf A=S_0+q\int\dd\mathbf l\cdot\mathbf A
+\]</div>
+<p>
+となる。\(S_0\) は磁場がないときの作用、最右辺は粒子がたどる経路に沿った線積分である。
+二重スリットの振幅は、ベクトルポテンシャルがあるとき
+</p>
+\[
+\sum_{\text{slit 1}}\ee^{\ii S_0/\hbar+\ii (q/\hbar)\int\dd\mathbf l\cdot\mathbf A}+\sum_{\text{slit 2}}\ee^{\ii S_0/\hbar+\ii (q/\hbar)\int\dd\mathbf l\cdot\mathbf A}
+\]
+<p>
+と書ける。物理的に意味があるのは2経路の位相差であり、
+</p>
+<div class="equation" id="eq-4-diff">\[
+\exp\!\Bigl(\frac{\ii q}{\hbar}\int_{\text{slit 1}}\dd\mathbf l\cdot\mathbf A-\frac{\ii q}{\hbar}\int_{\text{slit 2}}\dd\mathbf l\cdot\mathbf A\Bigr)
+=\exp\!\Bigl(\frac{\ii q}{\hbar}\oint\dd\mathbf l\cdot\mathbf A\Bigr)
+\]</div>
+<p>
+である。右辺の積分は、スリット1を通ってスクリーン上の点に至り、スリット2を逆向きに戻る閉じた経路に沿う。
+Stokes の定理から
+</p>
+<div class="equation" id="eq-4-stokes">\[
+\frac{\ii q}{\hbar}\oint\dd\mathbf l\cdot\mathbf A=\frac{\ii q}{\hbar}\int_{\text{enclosed}}\dd\mathbf S\cdot(\nabla\times\mathbf A)=\frac{\ii q}{\hbar}\Phi_{\text{enclosed}}
+\]</div>
+<p>
+となる。\(\Phi_{\text{enclosed}}\) は閉経路が囲む磁束である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（AB 位相）</span>
+2経路の間には相対位相 \(\ee^{\ii q\Phi_{\text{enclosed}}/\hbar}\) が生じ、粒子の位置に磁場がなくても干渉パターンがずれる。
+式 <a class="eq-ref" href="#eq-4-L"></a> の Lagrangian は一見ゲージ不変に見えないが、経路を一周する積分をとった最終結果はゲージによらない。
+</div>
+
+<h3>この効果についての注意</h3>
+<ul>
+<li>磁束が磁束量子 \(\Phi_0=2\pi\hbar/q\) の整数倍なら、位相のずれは \(2\pi\) の整数倍で、ずれがないのと同じである。</li>
+<li>磁束の周りに電荷を回す代わりに、電荷の周りに磁束を回しても同じ位相が付く（Aharonov と Casher (1984)）。
+電荷 \(q\) の位置 \(\mathbf x\) と磁束の位置 \(\mathbf X\) の結合項は、Galilei 不変性と並進不変性から \(q\mathbf A(\mathbf x-\mathbf X)\cdot(\dot{\mathbf x}-\dot{\mathbf X})\) の形に限られ、これから上の主張が導ける。</li>
+<li>時空の中を動く粒子では、相対論的に不変な量
+<div class="equation" id="eq-4-cov">\[
+\frac{\ii q}{\hbar}\int\dd l_\mu A^\mu
+\]</div>
+を計算する。</li>
+</ul>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-2">電荷–磁束複合体としてのエニオン<span class="en">Anyons as Charge–Flux Composites</span></h2>
+
+<p>
+可換エニオンの単純な模型を作る。2次元の系に電荷 \(q\) の粒子があり、各電荷が、平面を貫く無限に細い磁束管（磁束 \(\Phi\)）に束縛されているとする。
+この複合体を <strong>\((q,\Phi)\) 粒子</strong>と書く。
+</p>
+
+<p>
+粒子1を粒子2の周りに1周させると、AB 効果で位相が付く。
+粒子1の電荷が粒子2の磁束の周りを回る寄与が \(\ee^{\ii q\Phi/\hbar}\)、粒子1の磁束が粒子2の電荷の周りを回る寄与も \(\ee^{\ii q\Phi/\hbar}\) である。したがって
+</p>
+<div class="equation" id="eq-4-full">\[
+(\text{複合体1が2を一周する位相})=\ee^{2\ii q\Phi/\hbar}.
+\]</div>
+<p>
+1周は交換の2回分（組みひも群で \(\sigma^2\)）なので、交換1回（\(\sigma\)）の位相はその平方根である：
+</p>
+<div class="thm-box">
+<span class="box-title">結果（電荷–磁束複合体の統計）</span>
+\[
+(\text{2個の複合体の交換の位相})=\ee^{\ii q\Phi/\hbar}=\ee^{\ii\vartheta},\qquad \vartheta=\frac{q\Phi}{\hbar}.
+\]
+この粒子を <strong>\(\vartheta\)-エニオン</strong>と呼ぶ。\(\vartheta=0\) はボソン、\(\vartheta=\pi\) はフェルミオン、他の値は<a href="chapter03.html">第3章</a>の可換エニオン（分数統計）である。
+</div>
+
+<p>
+一般に、電荷と磁束が \((q_1,\Phi_1)\) の複合体を \((q_2,\Phi_2)\) の複合体の周りに1周させると、位相は \(\ee^{\ii\varphi}\)、
+</p>
+<div class="equation" id="eq-4-general">\[
+\varphi=\frac{q_1\Phi_2+q_2\Phi_1}{\hbar}
+\]</div>
+<p>である。</p>
+
+<h3>エニオンのスピン</h3>
+
+<p>
+スピンは回転演算子の性質であり、エニオンを自分の軸の周りで実際に回転させて調べる必要がある。
+そのためには電荷と磁束がどう結びついているかの微視的な記述が要る。
+最も簡単なのは、電荷と磁束をごくわずかにずれた位置に置くことである。
+すると粒子を軸の周りに回転させるとき、電荷と磁束が互いの周りを回り、位相 \(\ee^{\ii q\Phi/\hbar}=\ee^{\ii\vartheta}\) が付く。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（スピン統計定理との整合）</span>
+同種粒子の交換で得る位相は、1つの粒子を自分の軸の周りに回転させて得る位相に等しい（<a href="chapter02.html">第2章</a>の図 2.7 付近の議論）。
+上の結果はこのスピン統計定理とよく合う。
+磁束の付け方の細部（たとえば磁束を4つに分けて電荷の東西南北に付ける）に結果は依らないが、電荷と磁束をまったく同じ位置に置くと発散が出て扱えない。
+</div>
+
+<h3 id="sec-4-2-1">§4.2.1 エニオンの融合</h3>
+
+<p>
+2個のエニオンを近づけて新しい粒子を作ることを考える。磁束どうし、電荷どうしは足し算になる。
+系のある領域の全電荷と全磁束は保存するので、これは自然である（この原理はこの先何度も使う）。
+粒子が合体して別の粒子になる過程を<strong>融合図</strong>（fusion diagram）で描く。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（複合体の融合則）</span>
+\[
+(q_1,\Phi_1)\times(q_2,\Phi_2)=(q_1+q_2,\ \Phi_1+\Phi_2).
+\]
+</div>
+
+<div class="example-box">
+<span class="box-title">例（同じ粒子2個の融合）</span>
+同じ \((q,\Phi)\) 粒子2個を融合すると \((2q,2\Phi)\) 粒子ができる。
+この「2重粒子」2個の交換位相は、電荷の因子 2 と磁束の因子 2 が掛け合わされて \(\vartheta'=4q\Phi/\hbar=4\vartheta\) になる。
+</div>
+
+<h3 id="sec-4-2-2">§4.2.2 反エニオンと真空粒子</h3>
+
+<p>
+\((q,\Phi)\) の<strong>反エニオン</strong>を電荷と磁束が \((-q,-\Phi)\) の複合体とする。
+エニオンと反エニオンを融合すると対消滅が起こり、全電荷も全磁束もゼロの<strong>真空</strong>（恒等粒子）\(I=(0,0)\) になる。
+記号は文脈により \(e\)、\(I\)、\(0\)、\(1\) などが使われる（群論の単位元の記号の問題と同じ事情）。
+何もないことを「粒子」と呼ぶのは奇妙だが、対消滅を融合の言葉で語れて便利である。
+</p>
+
+<p>
+真空を明示しないで書くこともできる。時間の向きに進む反エニオンは、時間を逆行するエニオンと同じに見えるので、向きのついた1本の線で
+エニオンと反エニオンの対消滅を描ける（原書図 4.7）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（反エニオンの組みひも位相）</span>
+エニオンを別のエニオンの周りに時計回りに回す位相が \(\ee^{2\ii\vartheta}\) のとき、
+<ul>
+<li>反エニオンを反エニオンの周りに時計回りに回す位相も \(\ee^{2\ii\vartheta}\)（2つの負号が打ち消す。負の磁束と負の電荷の積は正）。</li>
+<li>エニオンを反エニオンの周りに時計回りに回す位相は \(\ee^{-2\ii\vartheta}\)。</li>
+</ul>
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-4-3">トーラス上のエニオン真空と量子メモリ<span class="en">Anyon Vacuum on a Torus and Quantum Memory</span></h2>
+
+<p>
+トポロジカルな模型の驚くべき特徴は、<strong>基底状態が、実際にはそこにいないエニオンの種類を知っている</strong>ことである。
+これを見るために、エニオン模型をトーラス（ドーナツの表面）の上に載せ、その基底状態を考える。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <rect x="150" y="30" width="160" height="110" class="gate" stroke-width="1.5"/>
+  <path d="M 150 85 L 310 85" class="line accent" stroke-width="1.5"/>
+  <path d="M 230 30 L 230 140" class="line accent" stroke-width="1.5"/>
+  <text x="318" y="82" class="label">C1</text>
+  <text x="238" y="24" class="label">C2</text>
+  <text x="130" y="165" class="label-muted">向かい合う辺を同一視するとトーラス</text>
+</svg>
+<figcaption>図 4.1：トーラスを、向かい合う辺を同一視した長方形として描く。2本の非自明なサイクル（トーラスを一周する閉曲線で、1点に縮められないもの）を \(C_1\)（水平）と \(C_2\)（垂直）とする。</figcaption>
+</figure>
+
+<p>
+次の2つの演算子を考える。
+</p>
+<ul>
+<li>\(T_1\)：粒子・反粒子対を作り、2つを逆向きに \(C_1\) に沿って動かし、トーラスの反対側で出会わせて再び対消滅させる演算子。</li>
+<li>\(T_2\)：同じことを \(C_2\) に沿って行う演算子。</li>
+</ul>
+<p>
+それぞれの逆演算子は時間を逆にした過程である。どちらも（原理的には時間に依存する Hamiltonian で実現できるので）ユニタリである。
+たとえば、2つの電荷 \(\pm Q\) を近くに置いて、粒子・反粒子対を真空から引き出すほど強くし、\(\pm Q\) を非自明なサイクルに沿って動かせばよい。
+</p>
+
+<p>
+\(T_1\) と \(T_2\) は<strong>可換でない</strong>。それを見るため、時間を右から左へ読んで \(T_2^{-1}T_1^{-1}T_2T_1\) を考える。
+これは、2つの粒子が作られ、互いの周りを回り、再び対消滅する過程と解釈できる（原書図 4.9）。
+結果は、基底状態の空間の上で（すでに粒子がいる場合は、作った粒子とそれらの組みひもも考える必要があり複雑になる）、
+</p>
+<div class="equation" id="eq-4-TT">\[
+T_2T_1=\ee^{-2\ii\vartheta}\,T_1T_2
+\]</div>
+<p>
+となる。この図の過程は、1つの粒子が別の粒子を1周する過程に帰着するので、位相は \(\ee^{\mp2\ii\vartheta}\)、すなわち上の式になる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（図の描き方）</span>
+図 4.9 でトーラスを横長の長方形として描くと、対生成した粒子を左右に動かして端で再び対消滅させるのが \(T_1\)、前後に動かすのが \(T_2\) である（前後の壁は同じ点）。
+この図を絡み目の形に見せたいなら、各段階の終わりで粒子と反粒子を完全には対消滅させず、近づけるだけにとどめる。
+可換エニオンでは、近づけた粒子対は遠くから見れば真空に融合したように見えるのでこれが許される。
+</div>
+
+<p>
+一方、\(T_1\) も \(T_2\) も Hamiltonian と可換である（始状態と終状態のエネルギーがまったく同じだから。厳密には基底状態空間の上で可換、すなわち交換子 \([T_i,H]\) が基底状態空間を消す）。
+互いに可換でない2つの演算子が、ともに Hamiltonian と可換であれば、<strong>縮退した固有状態</strong>がある。次にそれを見る。
+</p>
+
+<p>
+\(T_1\) はユニタリなので固有値は絶対値1の位相である。基底状態の空間の中での \(T_1\) の固有状態を、固有値で名前をつけて
+</p>
+\[
+T_1\ket{\alpha}=\ee^{\ii\alpha}\ket{\alpha}
+\]
+<p>
+と書く。\(T_2\ket\alpha\) も \(T_2\) が Hamiltonian と可換なので基底状態空間に属する。<a class="eq-ref" href="#eq-4-TT"></a> から
+</p>
+<div class="equation" id="eq-4-shift">\[
+T_1\bigl(T_2\ket\alpha\bigr)=\ee^{2\ii\vartheta}T_2T_1\ket\alpha=\ee^{2\ii\vartheta}\ee^{\ii\alpha}\bigl(T_2\ket\alpha\bigr)
+\]</div>
+<p>
+となるので、新しい基底状態 \(T_2\ket\alpha\) は \(T_1\) の固有値 \(\ee^{\ii(\alpha+2\vartheta)}\) を持つ。これを \(\ket{\alpha+2\vartheta}=T_2\ket\alpha\) と名づける。
+手続きを繰り返せば、さらに新しい基底状態が作れる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（トーラス上の基底状態縮退）</span>
+統計角が \(\vartheta=\pi p/m\)（\(p,m\) は互いに素な整数、つまり \(p/m\) は既約分数）のエニオンの系では、\(\ket\alpha\) から \(T_2\) を繰り返し掛けて
+\[
+\ket\alpha,\ \ket{\alpha+2\pi p/m},\ \ket{\alpha+4\pi p/m},\ \dots,\ \ket{\alpha+2\pi p(m-1)/m}
+\]
+という状態が生成される。次の1回で位相が \(\alpha+2\pi\) になって \(\alpha\) に戻るので、これで<strong>\(m\) 個の独立な基底状態</strong>が得られる。
+</div>
+
+<p>
+厳密には、示したのは縮退度が \(m\) と整数 \(w\) の積であること、というだけで、通常は \(w=1\) と期待される。
+\(w&gt;1\) は「偶然の」縮退に当たる。
+重要なのは、エニオンが1個も存在しない系の基底状態の縮退度が、（作ろうと思えば作れる）エニオンの統計角 \(\vartheta\) に関係していることである。
+</p>
+
+<h3 id="sec-4-3-1">§4.3.1 量子メモリと高い種数 (genus)</h3>
+
+<p>
+トーラス上の縮退した基底状態は<strong>量子メモリ</strong>として使える。\(m\) 個の直交する基底状態があるとき、最も一般的な基底状態の波動関数は重ね合わせ
+</p>
+<div class="equation" id="eq-4-psi">\[
+\ket\Psi=\sum_{n=0}^{m-1}A_n\ket{\alpha+2\pi np/m}
+\]</div>
+<p>
+である。係数 \(A_n\) は任意の（規格化された）複素ベクトルでよい。特定の重ね合わせ（ベクトル \(A_n\)）に初期化すれば、系はその重ね合わせにとどまると期待できる。
+重ね合わせが変わりうるのは \(T_1\) や \(T_2\)、あるいはその組み合わせが実行される場合だけ、すなわちエニオン対が真空から現れ、トーラスの非自明なサイクルを回って再び対消滅する場合だけである。
+励起を作るエネルギーギャップが大きいとき、そのような過程は極めて起こりにくい。したがって、この量子重ね合わせは<strong>位相的に保護されている</strong>。
+（有限サイズ・有限温度では、この過程が起こるまでの時間は有限になるが、非常に長くなりうる。）
+</p>
+
+<p>
+縮退した基底状態を得るために、トーラスは必須ではない。<strong>アニュラス</strong>（円板の中央に大きな穴をあけた形）でもたいてい十分である。
+このとき \(T_1\) はアニュラスの輪に沿ってエニオンを1周させる操作に、\(T_2\) は内側の縁から外側の縁へエニオンを動かす操作に対応する。
+（この場合、基底状態と見なした状態は、内側の縁と外側の縁にエニオンが何個あるかが異なるので、厳密に縮退しているとは限らない。ただし極めて近く縮退しうる。古典的な例は Gefen と Thouless (1993) が論じた。）
+</p>
+
+<p>
+より複雑な幾何、たとえば複数の取っ手があるトーラスや複数の穴をあけた円板も考えられる。
+可換エニオンの理論では、genus \(g\)（\(g\) 個の取っ手、または \(g\) 個の穴）の曲面上の基底状態縮退度は \(m^g\) である（原書の演習 4.1 は \(g=2\) の場合を扱う）。
+genus の高い曲面を使えば、量子情報を蓄える非常に大きな Hilbert 空間が得られる。
+</p>
+
+<h3 id="sec-4-3-2">§4.3.2 エニオンの種類の数</h3>
+
+<p>
+トーラス上に複数の真空状態があることが分かったので、このような系で作れるエニオンに話を戻す。
+再び統計角 \(\vartheta=\pi p/m\)（\(p,m\) は互いに素）のエニオンを考える。
+原書は \(\hbar=1\) とおき、この粒子を電荷–磁束複合体 \((q,\Phi)=(\pi p/m,\,1)\) と書く。
+このエニオン \(n\) 個を融合したクラスター（\(\ket{[n]}\) と書く）は
+</p>
+<div class="equation" id="eq-4-cluster">\[
+\ket{[n]}=(nq,\ n\Phi)=\Bigl(\frac{n\pi p}{m},\ n\Bigr)
+\]</div>
+<p>
+となる。特別なことが起こるのは、素エニオンが \(m\) 個集まったクラスターである：
+</p>
+\[
+\ket{[m]}=(\pi p,\ m).
+\]
+<p>
+任意のクラスター \(\ket{[n]}=(n\pi p/m,\,n)\) を、このクラスター \(\ket{[m]}=(\pi p,\,m)\) の周りに1周させると、式 <a class="eq-ref" href="#eq-4-general"></a> から
+正味の位相は
+\[
+q_1\Phi_2+q_2\Phi_1=\frac{n\pi p}{m}\,m+\pi p\,n=2n\pi p
+\]
+となり、位相なしと同じである。すなわち、どんな粒子も \(\ket{[m]}\) の周りを1周して得る位相は自明である。
+どの粒子も組みひもで \(\ket{[m]}\) を検出できない（<strong>透明な粒子</strong>）ので、このクラスターは真空と同じ振る舞いをし、位相的に真空と同値でなければならない。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（エニオンの種類と基底状態の数）</span>
+\(m\) 個の素エニオンが真空と同値になるので、エニオンの種類はちょうど \(m\) 個だと結論したくなる。実際、この結論は多くの場合正しい。
+そして、トーラス上の基底状態の数もちょうど \(m\) 個である。
+一般に、<strong>行儀のよいトポロジカルな理論では、トーラス上の基底状態の数は粒子の種類の数に一致する</strong>。
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（\(p\) と \(m\) がともに奇数の場合）</span>
+例外がある。\(p\) と \(m\) がともに奇数のとき、\(\ket{[m]}=(\pi p,\,m)\) どうしの交換（半周の組みひも）は非自明な符号を与える。
+1回の交換の位相は、1周の位相 \(2\pi pm\) の半分の \(\pi pm\) で、\(pm\) が奇数だから \(-1\) になる。
+つまり \(\ket{[m]}\) は<strong>フェルミオン</strong>である。
+他のすべての粒子と自明に組みひもされる粒子（透明な粒子）を含む理論は、後に「非モジュラー」と呼ぶ（<a href="chapter17.html">第17章</a>）。
+透明な粒子が1個のフェルミオンだけの場合は「超モジュラー」と呼ばれる。
+\(p,m\) がともに奇数の場合はやや変則的で、扱いが難しい。
+</div>
+
+<p>
+この変則的な場合を除けば、ちょうど \(m\) 種類のエニオンと、トーラス上の \(m\) 個の基底状態があるという結論は正しい。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第4章のまとめ</span>
+<ul>
+<li>AB 効果：静磁場中の作用は \(S=S_0+q\int\dd\mathbf l\cdot\mathbf A\)。2経路の位相差は囲む磁束で決まり \(\ee^{\ii q\Phi/\hbar}\)（磁束量子 \(\Phi_0=2\pi\hbar/q\)）。粒子が磁場のない場所を通っても干渉パターンがずれる。</li>
+<li>電荷–磁束複合体 \((q,\Phi)\)：1周の位相は電荷と磁束の寄与の和で \(\ee^{2\ii q\Phi/\hbar}\)、交換の位相は \(\ee^{\ii\vartheta}\)、\(\vartheta=q\Phi/\hbar\)。一般に \(\varphi=(q_1\Phi_2+q_2\Phi_1)/\hbar\)。これが可換エニオン（\(\vartheta\)-エニオン）の模型で、スピン統計定理とも整合する。</li>
+<li>融合では電荷・磁束がそれぞれ加わる。反エニオン \((-q,-\Phi)\) との融合で真空 \(I=(0,0)\) になる。反エニオンどうしの1周は \(\ee^{2\ii\vartheta}\)、エニオンと反エニオンの1周は \(\ee^{-2\ii\vartheta}\)。</li>
+<li>トーラス上で、対生成した粒子を非自明サイクルに沿って回す演算子 \(T_1,T_2\) は \(T_2T_1=\ee^{-2\ii\vartheta}T_1T_2\) を満たし、Hamiltonian とは可換。\(\vartheta=\pi p/m\) なら基底状態は \(m\) 重（に整数倍）に縮退する。</li>
+<li>この縮退は位相的に保護された量子メモリになり、genus \(g\) の曲面上では \(m^g\) 重。アニュラスでも（ほぼ）同様。</li>
+<li>\(m\) 個の素エニオンのクラスターは透明で真空と同値になり、エニオンは \(m\) 種類。トーラス上の基底状態数と種類数が一致する（\(p,m\) がともに奇数のときは \(\ket{[m]}\) がフェルミオンで、扱いが難しい）。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

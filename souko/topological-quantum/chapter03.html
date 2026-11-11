@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="経路積分と配位空間の経路のトポロジーから、ボソン・フェルミオン・可換エニオン・非可換エニオンという交換統計の可能性を分類する">
+  <title>第3章 粒子の量子統計 — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter03" data-chapter="3">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第3章に対応</span>
+  第3章 粒子の量子統計
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter02.html">第2章</a>では粒子を互いの周りに回す（組みひもを作る）操作を扱った。
+本章は「同種粒子を交換したとき多体波動関数に何が起こるか」、すなわち<strong>粒子の統計</strong>（量子統計、交換統計）を、
+Feynman の経路積分の立場から組み立て直す。
+要点は2つである。(a) 同種粒子の配位空間の中の経路は、連続変形で互いに移れない<strong>トポロジカルな類</strong>に分かれ、類は群をなす。
+(b) 経路積分で各類に掛けてよい因子は、合成則を保つもの、すなわちその群の<strong>ユニタリ表現</strong>に限られる。
+経路の群は \((3+1)\) 次元では置換群 \(S_N\)、\((2+1)\) 次元では組みひも群 \(B_N\) であり、
+前者からはボソンとフェルミオンだけが、後者からは可換エニオン（分数統計）と非可換エニオンが出てくる。
+非可換エニオンの組みひもは縮退した状態空間へのユニタリ行列の作用であり、これが位相的量子計算の原理になる。
+可換エニオンの具体的な模型は次の<a href="chapter04.html">第4章</a>で与えられる。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<!-- ================================================================ -->
+<section>
+<h3>導入：「交換の2乗は恒等」という議論の不備</h3>
+
+<p>
+ボソンは2粒子の交換で波動関数が不変、フェルミオンは符号 \(-1\) を得る。
+入門書によくある説明は「2回交換すれば元に戻るので交換演算子の2乗は恒等であり、1 の平方根は \(\pm1\) だけだから、可能性はこの2つに限られる」というものである。
+</p>
+
+<div class="caution-box">
+<span class="box-title">注意（落とし穴）</span>
+この議論は現在では不十分とされる。問題は「交換」という言葉の定義が粗いことにある。
+2粒子が実際に時空の中をどう動いて入れ替わったか（どちら回りに、何回回ったか）まで区別すると、
+「2回交換すると元に戻る」が成り立つかどうかは空間の次元に依存する。
+これを正しく扱うには経路積分の見方が役に立つ。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-3-1">1粒子の経路積分<span class="en">Single Particle Path Integral</span></h2>
+
+<p>
+\(D\) 次元空間 \(\R^D\) の中を動く非相対論的な1粒子を考える。時刻 \(t_i\) に位置 \(\mathbf{x}_i\) にいた粒子が時刻 \(t_f\) に \(\mathbf{x}_f\) にいる振幅を
+<strong>伝播関数 (propagator)</strong> という：
+\[
+\bra{\mathbf{x}_f}\hat U(t_f,t_i)\ket{\mathbf{x}_i} .
+\]
+\(\hat U\) はユニタリな時間発展演算子である。任意の波動関数 \(\psi(\mathbf{x})=\braket{\mathbf{x}}{\psi}\) は
+\[
+\braket{\mathbf{x}_f}{\psi(t_f)}=\int \dd\mathbf{x}_i\,\bra{\mathbf{x}_f}\hat U(t_f,t_i)\ket{\mathbf{x}_i}\braket{\mathbf{x}_i}{\psi(t_i)}
+\]
+によって時間発展する。
+</p>
+
+<div class="thm-box">
+<span class="box-title">伝播関数が満たすべき2つの性質</span>
+<ul>
+<li><strong>ユニタリ性</strong>：振幅が途中で失われない（規格化された波動関数は規格化されたまま）。</li>
+<li><strong>合成則 (composition)</strong>：\(t_i\to t_m\) と \(t_m\to t_f\) を続けて行うことは \(t_i\to t_f\) と同じ。
+<div class="equation" id="eq-3-comp">\[
+\bra{\mathbf{x}_f}\hat U(t_f,t_i)\ket{\mathbf{x}_i}
+=\int \dd\mathbf{x}_m\,\bra{\mathbf{x}_f}\hat U(t_f,t_m)\ket{\mathbf{x}_m}\bra{\mathbf{x}_m}\hat U(t_m,t_i)\ket{\mathbf{x}_i} .
+\]</div></li>
+</ul>
+</div>
+
+<p>
+合成則は、中間時刻に完全系 \(\id=\int \dd\mathbf{x}_m\ketbra{\mathbf{x}_m}{\mathbf{x}_m}\) を挿入したものにほかならない。
+粒子は中間時刻にどこかにいなければならず、そのすべての可能性を足し上げている。
+本章の議論全体を通じて、<strong>この合成則が「量子力学と矛盾しない」ことの判定基準</strong>として働く。
+</p>
+
+<p>
+Feynman は（Dirac の先行研究に基づいて）時間を無限小の区間に分割し、各時刻の中間位置すべてについて積分すれば、
+あらゆる関数 \(\mathbf{x}(t)\) についての和になることに気づいた。結果は
+</p>
+<div class="equation" id="eq-3-pathsum">\[
+\bra{\mathbf{x}_f}\hat U(t_f,t_i)\ket{\mathbf{x}_i}
+=\mathcal N\sum_{\substack{\text{経路 }\mathbf{x}(t)\\ (\mathbf{x}_i,t_i)\to(\mathbf{x}_f,t_f)}} \ee^{\ii S[\mathbf{x}(t)]/\hbar}
+=\mathcal N\int_{(\mathbf{x}_i,t_i)}^{(\mathbf{x}_f,t_f)}\mathcal D\mathbf{x}(t)\;\ee^{\ii S[\mathbf{x}(t)]/\hbar}
+\]</div>
+<p>
+である。\(\mathcal N\) は規格化定数、\(S\) は経路の<strong>古典的</strong>作用
+\[
+S=\int_{t_i}^{t_f}\dd t\;L[\mathbf{x}(t),\dot{\mathbf{x}}(t),t]
+\]
+で、\(L\) は Lagrangian である。経路についての和は、時間を離散化して各時刻の位置で積分したものの極限として定義される。
+（短い1ステップの伝播関数が古典作用で書けることの証明が残っているが、ここでは認める。）
+</p>
+
+<div class="remark-box">
+<span class="box-title">直観（古典極限）</span>
+通常の積分 \(\int \dd x\,\ee^{\ii S(x)/\hbar}\) は、\(\hbar\) が小さいとき指数の振動が最も緩やかな点、すなわち \(S\) の停留点の近くが支配する（鞍点近似）。
+経路積分でも同様に、\(\hbar\to0\) で支配的になるのは作用 \(S[\mathbf{x}(t)]\) を停留させる経路である。
+これは古典力学の最小作用の原理そのものである。この見方は後の節で「粒子をトラップで運ぶ」実験を考えるときに使う。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-3-2">2個の同種粒子<span class="en">Two Identical Particles</span></h2>
+
+<p>
+同種粒子では「粒子1が \(\mathbf{x}_1\)、粒子2が \(\mathbf{x}_2\) にいる」という言明に意味がなく、言えるのは「\(\mathbf{x}_1\) と \(\mathbf{x}_2\) に粒子がいる」ことだけである。
+\(\ket{\mathbf{x}_1,\mathbf{x}_2}\) と \(\ket{\mathbf{x}_2,\mathbf{x}_1}\) は同じ物理状態なので、
+座標を書く順序の規約（たとえば「左にある粒子を先に書く」）を1つ決めておく。
+簡単のため粒子は硬い芯を持ち \(\mathbf{x}_1\ne\mathbf{x}_2\) とする。
+区別できる2粒子の場合に比べて、Hilbert 空間は半分になる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（規約について）</span>
+フェルミオンに対して \(\ket{\mathbf{x}_1,\mathbf{x}_2}=-\ket{\mathbf{x}_2,\mathbf{x}_1}\) と定める教科書も多い。
+この2つのケットは位相因子が違うだけで Hilbert 空間の同じ状態を表す。
+区別できる粒子では \(\mathbf{x}_1\ne\mathbf{x}_2\) のとき両者が直交するのと対照的である。
+「左を先に書く」規約は1次元でそのまま使える。2次元では \(x\) 座標の小さい方を先に、\(x\) が等しければ \(y\) の小さい方を先に書く、などとすればよい。
+</div>
+
+<p>
+すべての状態のなす空間を<strong>配位空間 (configuration space)</strong> \(\mathcal C\) と呼ぶ。経路積分はこの \(\mathcal C\) の中の経路についての和である。
+鍵になるのは次の事実である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">重要（経路の空間はトポロジカルに分かれる）</span>
+端点を固定したとき、配位空間 \(\mathcal C\) の中の経路の全体は、小さな変形の積み重ねでは互いに移れない、いくつかの成分に分かれる。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 160" xmlns="http://www.w3.org/2000/svg">
+  <!-- time arrow -->
+  <line x1="20" y1="115" x2="20" y2="35" class="line" stroke-width="1.5"/>
+  <path d="M 15 43 L 20 33 L 25 43" class="line" stroke-width="1.5" fill="none"/>
+  <text x="8" y="135" class="label-muted">時間</text>
+  <!-- left: no exchange -->
+  <line x1="110" y1="115" x2="110" y2="35" class="line" stroke-width="1.5"/>
+  <line x1="160" y1="115" x2="160" y2="35" class="line" stroke-width="1.5"/>
+  <circle cx="110" cy="115" r="3" class="accent-fill"/>
+  <circle cx="160" cy="115" r="3" class="accent-fill"/>
+  <circle cx="110" cy="35" r="3" class="accent-fill"/>
+  <circle cx="160" cy="35" r="3" class="accent-fill"/>
+  <text x="92" y="145" class="label">TYPE +1</text>
+  <!-- right: exchange -->
+  <line x1="300" y1="115" x2="350" y2="35" class="line accent" stroke-width="1.5"/>
+  <line x1="350" y1="115" x2="300" y2="35" class="line accent" stroke-width="1.5"/>
+  <circle cx="300" cy="115" r="3" class="accent-fill"/>
+  <circle cx="350" cy="115" r="3" class="accent-fill"/>
+  <circle cx="300" cy="35" r="3" class="accent-fill"/>
+  <circle cx="350" cy="35" r="3" class="accent-fill"/>
+  <text x="282" y="145" class="label">TYPE −1</text>
+  <text x="208" y="80" class="label-muted">変形不可</text>
+</svg>
+<figcaption>図 3.1：同じ2点から同じ2点へ向かう2種類の経路（時間は上向き）。左は交換しない経路（TYPE \(+1\)）、右は交換する経路（TYPE \(-1\)）。端点を固定したまま一方を他方へ連続変形することはできない。</figcaption>
+</figure>
+
+<p>
+交換しない経路を TYPE \(+1\)、交換する経路を TYPE \(-1\) と呼ぶ。
+（交差の上下まで区別してさらに細かく分類することもできるが、ここでは交換の有無だけを見る。）
+経路は「一方をたどってからもう一方をたどる」ことで合成でき、型は次の積表に従う：
+</p>
+
+<div class="equation" id="eq-3-table">\[
+\begin{aligned}
+(+1)\ \text{の後に}\ (+1) &amp;= (+1), &amp;\qquad (+1)\ \text{の後に}\ (-1) &amp;= (-1),\\
+(-1)\ \text{の後に}\ (+1) &amp;= (-1), &amp;\qquad (-1)\ \text{の後に}\ (-1) &amp;= (+1).
+\end{aligned}
+\]</div>
+
+<p>
+つまり経路の型は群（\(\Z_2\)）をなす。交換を2回続けると、正味では交換しない経路になる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（始点と終点が異なる場合）</span>
+\(\ket{\mathbf{x}_{1i}\mathbf{x}_{2i}}\ne\ket{\mathbf{x}_{1f}\mathbf{x}_{2f}}\) のときは型の定義を一般化する必要がある。
+たとえば、決まった方向から眺めて世界線が交差する回数（上の順序規約で言えば、時間発展の途中で順序が入れ替わる回数）を数え、
+偶数回なら TYPE \(+1\)、奇数回なら TYPE \(-1\) とする。
+積表 <a class="eq-ref" href="#eq-3-table"></a> が保たれる限り、他の定義でもよい。
+合成則で中間状態について和をとるときには、必ずこの一般の場合が現れる。
+</div>
+
+<h3>2通りの経路積分</h3>
+
+<p>
+経路についての和を2つの類に分けて書くと
+</p>
+<div class="equation" id="eq-3-boson">\[
+\bra{\mathbf{x}_{1f}\mathbf{x}_{2f}}\hat U(t_f,t_i)\ket{\mathbf{x}_{1i}\mathbf{x}_{2i}}
+=\mathcal N\Biggl(\ \sum_{\substack{\text{TYPE }+1\\ i\to f}}\ee^{\ii S[\text{経路}]/\hbar}
+\;+\;\sum_{\substack{\text{TYPE }-1\\ i\to f}}\ee^{\ii S[\text{経路}]/\hbar}\Biggr)
+\]</div>
+<p>となる。これは単なる書き直しである。ところが、次のように符号を変えたものも量子力学として完全に整合する：</p>
+<div class="equation" id="eq-3-fermion">\[
+\bra{\mathbf{x}_{1f}\mathbf{x}_{2f}}\hat U(t_f,t_i)\ket{\mathbf{x}_{1i}\mathbf{x}_{2i}}
+=\mathcal N\Biggl(\ \sum_{\substack{\text{TYPE }+1\\ i\to f}}\ee^{\ii S[\text{経路}]/\hbar}
+\;-\;\sum_{\substack{\text{TYPE }-1\\ i\to f}}\ee^{\ii S[\text{経路}]/\hbar}\Biggr).
+\]</div>
+
+<div class="proof-box">
+<span class="box-title">確認（符号を変えても合成則が保たれる）</span>
+中間時刻 \(t_m\) で分割し、右辺の2つの伝播関数それぞれに <a class="eq-ref" href="#eq-3-fermion"></a> を代入すると、記号的に
+\[
+\int \dd\mathbf{x}_{1m}\dd\mathbf{x}_{2m}\,
+\Biggl(\sum_{\substack{+1\\ m\to f}}-\sum_{\substack{-1\\ m\to f}}\Biggr)
+\Biggl(\sum_{\substack{+1\\ i\to m}}-\sum_{\substack{-1\\ i\to m}}\Biggr)\ee^{\ii S[\text{経路}]/\hbar}
+\]
+を得る。前半と後半をつないだ全体の経路の型は積表 <a class="eq-ref" href="#eq-3-table"></a> で決まる。
+<ul>
+<li>全体が TYPE \(+1\) になるのは、両方が \(+1\) か、両方が \(-1\) のとき。どちらも係数は \(+1\)（後者では2つの \(-1\) が打ち消す）。</li>
+<li>全体が TYPE \(-1\) になるのは、ちょうど一方が \(-1\) のとき。係数は \(-1\)。</li>
+</ul>
+したがって全体の経路についても「TYPE \(+1\) には \(+1\)、TYPE \(-1\) には \(-1\)」という規則が再現され、<a class="eq-ref" href="#eq-3-fermion"></a> の形が保たれる。
+</div>
+
+<p>
+<a class="eq-ref" href="#eq-3-boson"></a> がボソン、<a class="eq-ref" href="#eq-3-fermion"></a> がフェルミオンである。
+量子力学の法則はどちらを使うべきかを教えない。どちらも許され、ある粒子がどちらに従うかは実験で決まる事柄である。
+（ただし、粒子のスピンが分かっていればどちらかに定まる、といった整合性条件が別に導かれることはある。）
+</p>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-3-3">多数の同種粒子：準備<span class="en">Many Identical Particles: Preliminaries</span></h2>
+
+<p>2粒子の例を一般化すると、量子力学と整合する統計を調べる手順は次の2段階になる。</p>
+<ul>
+<li>(a) 配位空間の中の経路の空間を特徴づける。</li>
+<li>(b) 合成則のもとでの整合性を要求する。</li>
+</ul>
+
+<div class="def-box">
+<span class="box-title">定義（同種粒子の配位空間）</span>
+\(D\) 次元空間の区別できる \(N\) 粒子の配位空間は \((\R^D)^N\)（座標 \(\{\mathbf{x}_1,\dots,\mathbf{x}_N\}\)）である。
+粒子は微小な直径の剛体球であるとして、2粒子が同じ位置にくる点の集合（一致点の集合）\(\Delta\) を取り除き、\((\R^D)^N\setminus\Delta\) とする。
+同種粒子では座標を書く順序に意味がないので、\(N!\) 通りの並べ方を同値関係 \(\sim\) で同一視する：
+\[
+\mathcal C=\bigl((\R^D)^N\setminus\Delta\bigr)\big/\sim .
+\]
+</div>
+
+<p>
+同一視によって Hilbert 空間は区別できる粒子の場合の \(1/N!\) になる。
+これは統計力学の Gibbs のパラドックスに現れる不可弁別性の因子と同じものである。
+</p>
+
+<p>
+\(\mathcal C\) の中の経路とは、\(N\) 個の点が時間とともに動く様子 \(\{\mathbf{x}_1(t),\dots,\mathbf{x}_N(t)\}\)（ただし順序は問わない）であり、
+時空の中の \(N\) 本の向きのついた曲線（世界線）とみなせる。
+「向きのついた」とは、曲線が時間方向に折り返さないという意味である。
+折り返しは粒子・正孔対の生成や消滅を表すが、それはまだ考えない。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（基本群）</span>
+端点を固定した経路を連続変形で同一視した類は、経路の合成（一方をたどり、続けて他方をたどる）を積として群をなす。
+これを配位空間の<strong>第1ホモトピー群</strong>または<strong>基本群 (fundamental group)</strong> \(\Pi_1(\mathcal C)\) という（<a href="chapter40.html">第40章</a>）。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（基本亜群）</span>
+始点と終点の配置が一致しない経路まで含めて扱うには、厳密には基本亜群 (fundamental groupoid) が必要になる。
+説明のためには基本群で足りる。
+</div>
+
+<h3 id="sec-3-3-1">§3.3.1 \((2+1)\) 次元の経路と組みひも群</h3>
+
+<p>
+2次元空間の粒子の配位空間の経路を<strong>組みひも (braid)</strong> という。\(N\) 粒子の世界線は \((2+1)\) 次元時空の中の \(N\) 本のひもである。
+</p>
+<ul>
+<li>端点を固定して連続変形しても、ひも同士を切って通り抜けさせない限り、同じトポロジカルな類、すなわち組みひも群の同じ元である。</li>
+<li>ひもが時間方向に折り返すことは許さない（対生成・対消滅は後の章で扱う）。</li>
+</ul>
+
+<div class="def-box">
+<span class="box-title">定義（組みひも群 \(B_N\)）</span>
+\(N\) 本のひもの組みひもの全体は、2つの組みひもを縦に積み重ねる（一方を行ってからもう一方を行う）ことを積として群をなす。
+これを<strong>組みひも群</strong> \(B_N\) と書く。
+隣り合う \(i\) 番目と \(i+1\) 番目のひもを1回交換する元 \(\sigma_i\)（\(i=1,\dots,N-1\)）を<strong>生成元</strong>といい、
+逆向きの交換が \(\sigma_i^{-1}\) である。任意の組みひもは生成元とその逆元の積で書ける。
+単位元は、まったく絡まない（各粒子が動かない）ものと同値な組みひもであり、\(\sigma_i\sigma_i^{-1}=1\) が成り立つ。
+</div>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- panel 1: sigma_1 -->
+  <line x1="40" y1="110" x2="65" y2="30" class="line accent" stroke-width="1.5"/>
+  <line x1="65" y1="110" x2="55.6" y2="80" class="line" stroke-width="1.5"/>
+  <line x1="49.4" y1="60" x2="40" y2="30" class="line" stroke-width="1.5"/>
+  <line x1="90" y1="110" x2="90" y2="30" class="line" stroke-width="1.5"/>
+  <line x1="115" y1="110" x2="115" y2="30" class="line" stroke-width="1.5"/>
+  <text x="66" y="138" class="label">σ1</text>
+  <!-- panel 2: sigma_2 -->
+  <line x1="190" y1="110" x2="190" y2="30" class="line" stroke-width="1.5"/>
+  <line x1="215" y1="110" x2="240" y2="30" class="line accent" stroke-width="1.5"/>
+  <line x1="240" y1="110" x2="230.6" y2="80" class="line" stroke-width="1.5"/>
+  <line x1="224.4" y1="60" x2="215" y2="30" class="line" stroke-width="1.5"/>
+  <line x1="265" y1="110" x2="265" y2="30" class="line" stroke-width="1.5"/>
+  <text x="216" y="138" class="label">σ2</text>
+  <!-- panel 3: sigma_1 inverse -->
+  <line x1="365" y1="110" x2="340" y2="30" class="line accent" stroke-width="1.5"/>
+  <line x1="340" y1="110" x2="349.4" y2="80" class="line" stroke-width="1.5"/>
+  <line x1="355.6" y1="60" x2="365" y2="30" class="line" stroke-width="1.5"/>
+  <line x1="390" y1="110" x2="390" y2="30" class="line" stroke-width="1.5"/>
+  <line x1="415" y1="110" x2="415" y2="30" class="line" stroke-width="1.5"/>
+  <text x="352" y="138" class="label">σ1 の逆元</text>
+</svg>
+<figcaption>図 3.2：4本のひもの組みひも群 \(B_4\) の生成元の模式図（時間は上向き、色のついたひもが手前を通る）。生成元とその逆元は、交差でどちらのひもが手前を通るかが逆になっている。</figcaption>
+</figure>
+
+<p>
+生成元の積を並べた式、たとえば \(\sigma_1\sigma_2\sigma_3^{-1}\sigma_1\) を<strong>組みひも語 (braid word)</strong> という。
+原書の規約では語を<strong>右から左へ</strong>読む（右端の操作を最初に行い、図では下から上へ積む）。逆の規約を使う文献もあるので、1つに決めて一貫させることが大切である。
+</p>
+
+<p>
+異なる語が同じ組みひもを表すことがある。原書が挙げる例は \(B_4\) での
+\[
+\sigma_1^{-1}\sigma_2^{-1}\sigma_1=\sigma_2\,\sigma_1^{-1}\sigma_2^{-1}
+\]
+で、左辺の図は端点を固定したまま右辺の図に変形できる。語の同値はすべて
+</p>
+<div class="equation" id="eq-3-yb">\[
+\sigma_n\sigma_{n+1}\sigma_n=\sigma_{n+1}\sigma_n\sigma_{n+1}
+\]</div>
+<p>
+から導ける（離れた生成元が可換であること \(\sigma_i\sigma_j=\sigma_j\sigma_i\)、\(|i-j|&gt;1\) と合わせたものが \(B_N\) の定義関係式で、原書の演習で幾何学的に確かめる）。
+<a class="eq-ref" href="#eq-3-yb"></a> は<a href="chapter02.html">第2章</a>の Reidemeister 移動 III に、\(\sigma_i\sigma_i^{-1}=1\) は移動 II に対応している。
+</p>
+
+<div class="def-box">
+<span class="box-title">定義（巻きつき数）</span>
+組みひもの<strong>巻きつき数 (winding number)</strong> を
+\[
+W=(\text{上交差の数})-(\text{下交差の数})
+\]
+と定める。上交差は \(\sigma\)、下交差は \(\sigma^{-1}\) である。
+\(W\) は語の書き方によらない<strong>組みひもの不変量</strong>で、ひもを切って通したり、端点を動かしたり、折り返したりしない限り変わらない。
+</div>
+
+<p>
+上の例でも両辺とも \(W=-1\) で一致している。関係式 <a class="eq-ref" href="#eq-3-yb"></a> の両辺で \(\sigma\) の個数が等しいことから、\(W\) が不変量であることが分かる。
+</p>
+
+<h3 id="sec-3-3-2">§3.3.2 \((3+1)\) 次元の経路と置換群</h3>
+
+<p>
+\((3+1)\) 次元では事情が一変する。鍵となる事実は、<strong>4次元空間の中の1次元の世界線は結び目を作れない</strong>ことである。
+</p>
+
+<div class="remark-box">
+<span class="box-title">直観（次元を1つ下げた類推）</span>
+1次元の直線上では、2つの点は衝突せずにすれ違うことができない。しかし2次元に動けるなら、互いに触れずに回り込める。
+同じように、3次元空間のひもは押しつけると互いにぶつかって絡まるが、4つ目の次元方向に一方を少しずらせば、触れることなくすり抜けられる。
+したがって4次元に埋め込まれた1次元の物体には結び目も絡み目もない。
+</div>
+
+<p>
+世界線が絡まないので、経路のトポロジカルな類を決めるのは「どのひもがどこから出てどこに着くか」だけである。
+組みひもに似た図を描くことはできるが、交差の上下には意味がなく、世界線を切ることなくすべてほどける。
+これはまさに<strong>置換群</strong>（対称群）\(S_N\) の元である。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（経路の群）</span>
+\[
+\Pi_1(\mathcal C)=
+\begin{cases}
+B_N\ \text{（組みひも群）} &amp; (2+1)\ \text{次元}\\[2pt]
+S_N\ \text{（置換群）} &amp; (3+1)\ \text{次元}
+\end{cases}
+\]
+</div>
+
+<div class="caution-box">
+<span class="box-title">注意（交換の2乗）</span>
+置換群では交換の2乗は恒等である。しかし組みひも群では \(\sigma_i^2\) は非自明な組みひもであって、恒等元と異なる。
+章の冒頭の「交換の2乗は 1」という議論は、\((2+1)\) 次元では成り立たない。
+\(S_N\) は \(B_N\) に関係式 \(\sigma_i^2=1\) を追加したもの（\(B_N\) の「切り詰め」）とみなせる。
+\(\sigma_i^2=1\) は \(\sigma_i=\sigma_i^{-1}\)、つまり上交差と下交差を同一視することと同じである。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-3-4">経路積分の構成：可換な場合<span class="en">Building a Path Integral: Abelian Case</span></h2>
+
+<p>
+経路積分（歴史についての和）を量子力学の最も基本的な原理とみなす立場では、各歴史について \(\ee^{\ii S/\hbar}\) を足し上げることが多粒子系の性質のほとんどを決める。
+しかし量子力学は、次の2条件を満たす限り、和の前に因子を付けることを許す。
+</p>
+<ul>
+<li>(a) 連続変形で移り合う経路には同じ因子を付ける。</li>
+<li>(b) 因子は合成則を保つ。</li>
+</ul>
+<p>2粒子の TYPE \(\pm1\) の符号はその例であった。\(N\) 粒子の座標をまとめて \(\{\mathbf{x}\}\) と書き、一般に次の形を考える。</p>
+
+<div class="thm-box">
+<span class="box-title">公式（統計因子つきの経路積分）</span>
+<div class="equation" id="eq-3-abelian">\[
+\bra{\{\mathbf{x}\}_f}\hat U(t_f,t_i)\ket{\{\mathbf{x}\}_i}
+=\mathcal N\sum_{g\in G}\rho(g)\sum_{\substack{\text{経路}\,\in\, g\\ i\to f}}\ee^{\ii S[\text{経路}]/\hbar} .
+\]</div>
+\(G\) は経路の群（配位空間の基本群。\((3+1)\) 次元で \(S_N\)、\((2+1)\) 次元で \(B_N\)）。
+外側の和は類 \(g\) について、内側の和は類 \(g\) に属する（互いに連続変形できる）経路についてとる。
+\(\rho\) は \(G\) の<strong>スカラーのユニタリ表現</strong>、すなわち \(G\) の各元に複素位相を対応させ \(\rho(g_1)\rho(g_2)=\rho(g_1g_2)\) を満たす写像である。
+</div>
+
+<p>
+位相同士は可換なので、これを<strong>可換表現 (abelian representation)</strong> という（群 \(G\) 自身は一般に非可換であることに注意）。
+始点と終点の配置が異なる場合も、決まった方向から眺め、新しい交差を作らないように端点を基準位置までなめらかに動かすことで、
+各時空経路に \(G\) の元 \(g\) を対応させられる（交差は順序規約での座標の並べ替えとして定義できる）。
+</p>
+
+<div class="proof-box">
+<span class="box-title">確認（合成則）</span>
+中間時刻で分割し、2つの伝播関数に <a class="eq-ref" href="#eq-3-abelian"></a> を代入すると
+\[
+\int \dd\{\mathbf{x}\}_m
+\Biggl(\sum_{g_1\in G}\rho(g_1)\sum_{\substack{\text{経路}\,\in\, g_1\\ m\to f}}\Biggr)
+\Biggl(\sum_{g_2\in G}\rho(g_2)\sum_{\substack{\text{経路}\,\in\, g_2\\ i\to m}}\Biggr)\ee^{\ii S[\text{経路}]/\hbar} .
+\]
+前半が類 \(g_2\)、後半が類 \(g_1\) の経路をつなぐと、全体は類 \(g_1g_2\) の経路になる。
+因子は \(\rho(g_1)\rho(g_2)=\rho(g_1g_2)\) と掛け合わされる。これは \(\rho\) が表現であることの定義そのものである。
+よって \(i\to f\) の各経路の因子は、その経路の類 \(g\) に対する \(\rho(g)\) になり、<a class="eq-ref" href="#eq-3-abelian"></a> の形が合成のもとで保たれる。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（数学が決めること、物理が決めること）</span>
+数学が教えるのは「どの表現が許されるか」までである。実際にどの表現が実現するかは、考えている系についての物理的な情報である。
+</div>
+
+<h3 id="sec-3-4-1">§3.4.1 \((3+1)\) 次元</h3>
+
+<p>
+\(G=S_N\) のスカラーのユニタリ表現は2つしかない（証明は数行で済み、原書の演習になっている。
+要点は、\(\sigma_i^2=1\) から \(\rho(\sigma_i)=\pm1\)、関係式 <a class="eq-ref" href="#eq-3-yb"></a> からすべての \(\rho(\sigma_i)\) が等しいことが従う点にある）。
+</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>表現</th><th>\(\rho(g)\)</th><th>粒子</th></tr></thead>
+<tbody>
+<tr><td>自明表現</td><td>すべての \(g\) で \(1\)</td><td>ボソン。因子なしで全経路を単純に足す</td></tr>
+<tr><td>交代表現（符号表現）</td><td>偶数回の交換で \(+1\)、奇数回で \(-1\)</td><td>フェルミオン。2粒子の例の一般化</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sec-3-4-2">§3.4.2 \((2+1)\) 次元</h3>
+
+<p>
+\(G=B_N\) の1次元表現は、1個の実パラメータ \(\vartheta\) で指定できる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（可換エニオン）</span>
+<div class="equation" id="eq-3-anyon">\[
+\rho(g)=\ee^{\ii\vartheta W(g)}
+\]</div>
+\(W(g)\) は組みひも \(g\) の巻きつき数。時計回りの交換1回で位相 \(\ee^{\ii\vartheta}\)、反時計回りの交換1回で \(\ee^{-\ii\vartheta}\) が付く。
+<ul>
+<li>\(\vartheta=0\)：位相なし。ボソン。</li>
+<li>\(\vartheta=\pi\)：\(\ee^{\ii\pi}=\ee^{-\ii\pi}\) なので、向きによらず交換ごとに \(-1\)。フェルミオン。</li>
+<li>それ以外の \(\vartheta\)：<strong>エニオン (anyon)</strong>、<strong>分数統計 (fractional statistics)</strong>。次節の非可換な場合と区別して<strong>可換エニオン (abelian anyon)</strong> とも呼ぶ。</li>
+</ul>
+</div>
+
+<p>
+<a class="eq-ref" href="#eq-3-anyon"></a> が表現になるのは、\(W\) が組みひもの不変量で、積み重ねに対して加法的（\(W(g_1g_2)=W(g_1)+W(g_2)\)）だからである。
+\(\vartheta\) が \(0\) と \(\pi\) 以外のとき、時計回りと反時計回りの交換が区別され、交換の2乗 \(\ee^{2\ii\vartheta}\) は 1 と異なる。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（歴史）</span>
+分数統計が量子力学と整合することは Leinaas と Myrheim (1977) が最初に指摘し、Goldin ら (1981)、Wilczek (1982) が続いた（「エニオン」は Wilczek の命名）。
+その後すぐに Halperin (1984) と Arovas, Schrieffer, Wilczek (1984) が、分数量子 Hall 系でエニオンが実際に現れることを理論的に示した。
+分数統計は近年、実験で明瞭に観測されている（<a href="chapter37.html">第37章</a>）。
+統計の記述に置換群を使う考えは Laidlaw と DeWitt (1971)、組みひも群を使う考えは Goldin ら (1983) に遡る。
+</div>
+</section>
+
+<!-- ================================================================ -->
+<section>
+<h2 id="sec-3-5">非可換な場合<span class="en">Nonabelian Case</span></h2>
+
+<p>
+<a class="eq-ref" href="#eq-3-abelian"></a> では \(G\) の1次元表現を使った。高次元の表現を使うこともできるだろうか。
+量子力学では一般に、高次元表現は<strong>縮退</strong>に対応する。ここでも縮退が必要になる。
+</p>
+
+<p>
+\(N\) 個の粒子が位置 \(\{\mathbf{x}\}\) にあるとする。位置（および粒子に付随する局所的な量子数）をすべて固定してもなお、系の状態に \(M\) 重の縮退が残ると仮定し、
+その状態を \(\ket{n;\{\mathbf{x}\}}\)（\(n=1,\dots,M\)）と書く。一般の波動関数は
+</p>
+<div class="equation" id="eq-3-vec">\[
+\ket{\psi_{\{\mathbf{x}\}}}=\sum_{n=1}^{M}A_n\ket{n;\{\mathbf{x}\}}
+\]</div>
+<p>
+である（基底が正規直交なら規格化条件は \(\sum_n|A_n|^2=1\)）。
+つまり位置を与えたとき、波動関数は \(M\) 次元複素ベクトル \(A_n\) である。
+ベクトルがあるなら、\(M\) 次元の表現を経路積分に使える。
+この縮退の起源は今の段階では想像しにくいが、具体例は後の章（<a href="chapter27.html">第27章</a>以降）に現れる。
+</p>
+
+<div class="thm-box">
+<span class="box-title">公式（非可換統計の経路積分）</span>
+<div class="equation" id="eq-3-nonabelian">\[
+\bra{n;\{\mathbf{x}\}_f}\hat U(t_f,t_i)\ket{n';\{\mathbf{x}\}_i}
+=\mathcal N\sum_{g\in G}[\rho(g)]_{n,n'}\sum_{\substack{\text{経路}\,\in\, g\\ i\to f}}\ee^{\ii S[\text{経路}]/\hbar} .
+\]</div>
+\(\rho(g)\) は \(M\times M\) のユニタリ行列で、\(G\) の表現（行列として \(\rho(g_1)\rho(g_2)=\rho(g_1g_2)\)）である。
+ユニタリ性は確率の保存のために必要である。合成則は可換な場合と同じ計算で、行列の積として保たれる。
+</div>
+
+<div class="remark-box">
+<span class="box-title">補足（基底の取り方）</span>
+この式では、\(\ee^{\ii S/\hbar}\) の項が添字 \(n,n'\) について対角になるような基底を選んでいる。性質のよい理論では常に可能である。
+原理的には位置の組ごとに基底を独立に選べるが、話が煩雑になる。
+この注意は、始点と終点が異なる場合や基本亜群についての補足と関連しており、モノドロミーとホロノミーの区別として議論される。
+</div>
+
+<h3>粒子を運ぶ実験</h3>
+
+<p>
+粒子をトラップに捕らえ、指定した軌道 \(\{\mathbf{x}(t)\}\) に沿って動かす実験を考える。
+鞍点近似により、経路についての和に効くのは古典経路の近くだけで、選んだ軌道に対応する<strong>ただ1つの群の元 \(g\)</strong> からの寄与だけが残る
+（すべての経路は和に含まれているが、有意に寄与するのは指定したものだけである）。
+</p>
+
+<p>
+始状態を <a class="eq-ref" href="#eq-3-vec"></a> の形でベクトル \(A_n^{(i)}\) により表し、粒子を組みひも \(g\) に沿って回してから同じ位置の組に戻す。
+同種粒子なので、各粒子が自分の元の位置に戻る必要はない。
+終状態は同じ基底 \(\ket{n;\{\mathbf{x}\}}\) で書けて、その係数は
+</p>
+<div class="equation" id="eq-3-braidact">\[
+A_n^{(f)}=\sum_{n'}[\rho(g)]_{n,n'}\,A_{n'}^{(i)}
+\]</div>
+<p>となる。すなわち組みひもは、縮退空間のベクトルにユニタリ行列 \(\rho(g)\) を掛ける操作である。</p>
+
+<div class="def-box">
+<span class="box-title">定義（非可換エニオン）</span>
+<a class="eq-ref" href="#eq-3-braidact"></a> の型の組みひも統計に従う粒子を<strong>非可換エニオン (nonabelian anyon, nonabelion)</strong> という。
+「非可換」は、行列 \(\rho(g)\) が一般に互いに交換しないことを指す。組みひもを行う順序によって結果が変わる。
+</div>
+
+<div class="def-box">
+<span class="box-title">定義（量子次元）</span>
+縮退空間の次元 \(M\) は一般に粒子数 \(N\) について指数関数的に大きくなる。大きな \(N\) で
+<div class="equation" id="eq-3-qdim">\[
+M\sim \mathsf{d}^{\,N}
+\]</div>
+と増大するときの \(\mathsf{d}\) を<strong>量子次元 (quantum dimension)</strong> という。
+\(\mathsf{d}&gt;1\) であれば、行列 \(\rho\) は必ず非可換になる。
+</div>
+
+<p>
+<a href="chapter02.html">第2章</a>の Kauffman 不変量でループ（自明な結び目）の値を \(d\) と書いたのと同じ文字を使っているのは偶然ではない。
+<a href="chapter17.html">第17章</a>で、量子次元は（符号の可能性を除いて）自明な結び目の値に等しいことを見る。
+符号の違いがありうるので、原書は2つの量を書体で区別している。
+</p>
+
+<div class="remark-box">
+<span class="box-title">量子計算との関係</span>
+量子計算とは、Hilbert 空間に対するユニタリ操作を制御して行うこと（に初期化と測定を加えたもの）である。
+非可換エニオンを互いの周りに回すことは、まさにベクトルにユニタリ行列を掛ける操作である。
+<a href="chapter02.html">第2章</a>で述べた「粒子の組みひもによる量子計算」はこうして実現される。具体的な方法は<a href="chapter11.html">第11章</a>で扱う。
+</div>
+
+<h3 id="sec-3-5-1">§3.5.1 \((3+1)\) 次元のパラ統計</h3>
+
+<p>
+置換群 \(S_N\) にも高次元の表現はあるので、\((3+1)\) 次元でもより複雑な統計に従う粒子を考えることはできる。これを<strong>パラ統計 (parastatistics)</strong> という。
+しかし、いくつかの「追加の条件」のもとでは、本質的に新しいものは何も得られない。
+得られるのはボソンとフェルミオン、およびそれに付随する内部自由度だけである（Doplicher らの定理。最初の証明は200ページほどを要した）。
+</p>
+
+<div class="thm-box">
+<span class="box-title">追加の条件</span>
+<ul>
+<li><strong>対生成と対消滅ができること。</strong>
+粒子を回すだけでなく、生成・消滅させ、近づけて1つにまとめることもできる。したがって考えるべき構造は組みひも群より豊かで、
+圏論によって与えられる（その一部を<a href="chapter08.html">第8章</a>から簡単な言葉で学ぶ）。</li>
+<li><strong>局所性。</strong>
+地球で実験をしている最中に木星で誰かが粒子・反粒子対を作っても、地球の実験結果に影響しない。</li>
+</ul>
+</div>
+
+<p>
+この2つの制限が、\((3+1)\) 次元をボソンとフェルミオンだけに絞り込む決め手になる。
+\((2+1)\) 次元のエニオンの構造を一通り見た後では、\((3+1)\) 次元がなぜこれほど制限されるかがかなり明瞭になる（<a href="chapter20.html">第20章</a>で再び触れる）。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（\((3+1)\) 次元も退屈ではない）</span>
+条件を緩めれば面白い例が得られる。たとえば点状の粒子の代わりにひも状の物体を考えると、
+ループが別のループをくぐり抜けるとき（あるいは点粒子がループをくぐるとき）に何が起こるか、という風変わりな統計がありうる。
+その場合はループが時間の中で掃く世界面のトポロジーを考えることになる。
+</div>
+
+<p>
+原書の演習では、組みひも群の定義関係式、球面上の組みひも群に現れる追加の関係式、\(S_N\) の1次元表現が2つしかないことの証明、
+Majorana フェルミオンを用いた Ising エニオンの組みひも表現、球面上の少数のエニオンの組みひも群が有限群になることを扱う。
+</p>
+</section>
+
+<!-- ================================================================ -->
+<div class="summary-box">
+<span class="box-title">第3章のまとめ</span>
+<ul>
+<li>経路積分は時空の中のすべての経路についての和 \(\sum\ee^{\ii S/\hbar}\) であり、伝播関数はユニタリ性と合成則を満たさねばならない。</li>
+<li>経路の足し方には、合成則を保つ範囲で自由度がある。その自由度の違いが粒子の統計の違いである。</li>
+<li>\(N\) 個の同種粒子の配位空間 \(\mathcal C=((\R^D)^N\setminus\Delta)/\sim\) の経路は、トポロジカルな類に分かれて群（基本群）をなす。
+\((3+1)\) 次元では置換群 \(S_N\)、\((2+1)\) 次元では組みひも群 \(B_N\) である。</li>
+<li>\(B_N\) は生成元 \(\sigma_i\) と関係式 \(\sigma_n\sigma_{n+1}\sigma_n=\sigma_{n+1}\sigma_n\sigma_{n+1}\) などで定まり、\(\sigma_i^2\ne1\)。\(S_N\) はこれに \(\sigma_i^2=1\) を課したもの。</li>
+<li>統計は経路の群のユニタリ表現 \(\rho\) で指定される。\(S_N\) の1次元表現は自明表現（ボソン）と交代表現（フェルミオン）だけ。</li>
+<li>\(B_N\) の1次元表現は \(\rho(g)=\ee^{\ii\vartheta W(g)}\)（\(W\) は巻きつき数）で、任意の \(\vartheta\) が許される。これが可換エニオン（分数統計）。</li>
+<li>位置を固定しても \(M\) 重の縮退が残るとき、\(M\) 次元表現が使え、組みひもは \(A^{(f)}=\rho(g)A^{(i)}\) とユニタリ行列で作用する（非可換エニオン）。\(M\sim\mathsf{d}^N\) の \(\mathsf{d}\) が量子次元。</li>
+<li>ある種の非可換表現を持つエニオンの組みひもで量子計算ができる。\((3+1)\) 次元では、対生成・消滅と局所性を課すとボソンとフェルミオンしか残らない。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>

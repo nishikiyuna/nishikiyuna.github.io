@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="SU(2) の表現論の q 変形 U_q(sl2) と、q が1の冪根のときに SU(2)_k の有限個の既約表現・融合則・F 行列・R 行列が得られること、他の Lie 群への拡張の概略">
+  <title>第21章 量子群（概略） — Topological Quantum ノート</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="chapter21" data-chapter="21">
+  <div class="topbar">
+    <button id="theme-toggle" class="utility-button" type="button">表示: 自動</button>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="章内目次">
+      <p class="sidebar-title">Contents</p>
+      <nav id="sidebar-toc"></nav>
+    </aside>
+
+    <main class="article">
+
+<h1>
+  <span class="chapter-label">Simon『Topological Quantum』第21章に対応</span>
+  第21章 量子群（概略）
+</h1>
+
+<div class="remark-box">
+<span class="box-title">この章の概要</span>
+<a href="chapter20.html">第20章</a>では、離散群の表現を粒子の種類とみなして平面ダイアグラム代数を作った。
+連続群（Lie 群）の表現でも同じことはできるが、既約表現が無限個あり、組みひもも自明なものしか作れない。
+そこで Lie 群の表現を<strong>変形</strong>し、q を1の冪根に取ると、既約表現が有限個になり、非自明な組みひも（\(R\) 行列）も現れる。
+こうして得られる構造は、その Lie 群をゲージ群とする Chern–Simons 理論のエニオン理論に一致することが多い。
+本章は原書自身が「選択的で概略的」と断る章で、厳密な導出は行わず、\(SU(2)\) の場合を中心に結果の見取り図を与える。
+\(SU(2)_k\) の具体例は<a href="chapter18.html">第18章</a>で扱った。
+</div>
+
+<details class="mobile-toc" open>
+<summary>章内目次</summary>
+<nav id="mobile-toc"></nav>
+</details>
+
+<section>
+<h2 id="sec-21-1">連続（Lie）群の表現？<span class="en">Continuous (Lie) Group Representations?</span></h2>
+
+<p>
+第20章の離散群の代わりに \(SU(2)\) のような連続群の表現を粒子の種類に採用する。\(SU(2)\) の既約表現はスピン \(j\) で区別され、融合は通常の角運動量の合成則で与えられる。
+これは平面ダイアグラム代数としては申し分ないが、次の2つの問題がある。
+</p>
+<ul>
+<li><strong>粒子の種類が無限個</strong>になる（\(j\) はいくらでも大きくできる）。「有限個の粒子種」という前提に反し、物理的な用途で困る。
+たとえば既約表現が無限個ある代数から TQFT を作ると発散が出る（<a href="chapter23.html">第23章</a>の状態和、§23.3）。</li>
+<li>組みひもは<a href="chapter20.html">第20章</a>の自明なもの（群の表現に由来するもの）しか選べず、非自明な組みひもをもつエニオン理論にならない。</li>
+</ul>
+
+<div class="remark-box">
+<span class="box-title">方針</span>
+両方の問題を同時に解決するのが、Lie 群の表現の<strong>変形 (deformation)</strong>、すなわち<strong>量子群 (quantum group)</strong> の表現である。
+量子群は群ではなく、より精巧な数学的構造である（本書ではそれが何かの説明すらしない）。
+ただし表現論だけを見れば、元の Lie 群の表現論の変形にすぎず、扱いは難しくない。
+</div>
+</section>
+
+<section>
+<h2 id="sec-21-2">\(U_q(sl_2)\)：\(SU(2)\) の表現の変形<span class="en">Uq(sl2): The Deformation of Representations of SU(2)</span></h2>
+
+<h3 id="sec-21-2-1">§21.2.1 \(SU(2)\) の表現論の復習</h3>
+
+<p>
+角運動量演算子 \(\hat L_x,\hat L_y,\hat L_z\) から \(\hat L_\pm=\hat L_x\pm i\hat L_y\) を作ると、交換関係は
+</p>
+<div class="equation" id="eq-21-comm">\[
+[\hat L_z,\hat L_\pm]=\pm\hat L_\pm,\qquad [\hat L_+,\hat L_-]=2\hat L_z
+\]</div>
+<p>
+となり、二次の Casimir 演算子は
+</p>
+<div class="equation" id="eq-21-casimir">\[
+J^2=\hat L_x^2+\hat L_y^2+\hat L_z^2=\hat L_+\hat L_-+\hat L_z(\hat L_z-1)
+\]</div>
+<p>
+で、\(\hat L_z,\hat L_\pm\) と可換である。\(\hat L_z\) の固有状態を基底に選ぶ。\(\hat L_+\) で消える状態を<strong>最高ウェイト状態 (highest-weight state)</strong>、\(\hat L_-\) で消える状態を最低ウェイト状態という。
+固有値 \(j\) の最高ウェイト状態 \(|j,j\rangle\) に \(\hat L_-\) を繰り返し作用させると、規格化された基底 \(|j,m\rangle\) が得られる：
+</p>
+<div class="equation" id="eq-21-undef-basis">\[
+\hat L_z|j,m\rangle=m|j,m\rangle,\quad
+\hat L_\pm|j,m\rangle=\sqrt{(j\mp m)(j\pm m+1)}\,|j,m\pm1\rangle,\quad
+J^2|j,m\rangle=j(j+1)|j,m\rangle .
+\]</div>
+<p>
+有限次元表現になるには最低ウェイト状態に到達する必要があり、そのためには \(2j\) が整数でなければならない（平方根の中身が最高ウェイトでの \(\hat L_+\)、最低ウェイトでの \(\hat L_-\) の両方で0になる）。
+こうして \(j\) は整数または半整数、\(m=-j,\dots,j\) となる。
+</p>
+<p>
+Clebsch–Gordan 係数を第20章の式に入れれば \(6j\) 記号、すなわち \(F\) 行列が得られる。融合則は通常の角運動量の合成則
+</p>
+<div class="equation" id="eq-21-fusion-gen">\[
+j_1\otimes j_2=|j_1-j_2|\oplus(|j_1-j_2|+1)\oplus\cdots\oplus(j_1+j_2)
+\]</div>
+<p>
+であり、組みひもは群の表現に由来する自明なもの
+</p>
+<div class="equation" id="eq-21-R-triv">\[
+R^{ab}_c=(-1)^{a+b-c}
+\]</div>
+<p>しか取れない。</p>
+
+<h3 id="sec-21-2-2">§21.2.2 \(q\) 変形</h3>
+
+<p>
+<strong>\(q\) 変形 (q-deformation)</strong> とは、数学的対象をパラメータ \(q\) の関数にして、\(q\to1\) で元の対象が戻るようにすることである。整数 \(n\) の変形として次を使う：
+</p>
+<div class="equation" id="eq-21-qint">\[
+[n]_q=\frac{q^{n/2}-q^{-n/2}}{q^{1/2}-q^{-1/2}}
+=q^{-(n-1)/2}+q^{-(n-3)/2}+\cdots+q^{(n-3)/2}+q^{(n-1)/2},
+\]</div>
+<p>
+\([1]_q=1\)、\([0]_q=0\)、\([-n]_q=-[n]_q\)、\(\lim_{q\to1}[n]_q=n\) である。<strong>\(q\) 階乗</strong>は \([n]_q!=[n]_q[n-1]_q\cdots[2]_q[1]_q\)（\([0]_q!=1\)）で定義する。
+この変形は \([n+m]_q[n-m]_q=[n]_q^2-[m]_q^2\) など、通常の整数が満たす恒等式の多くを保つ。
+</p>
+<div class="caution-box">
+<span class="box-title">注意（\(q\) の定義は文献ごとに違う）</span>
+物理の文献には \(\tilde q=q^{1/2}\) を使って \([n]_q=(\tilde q^{\,n}-\tilde q^{-n})/(\tilde q-\tilde q^{-1})\) と書くものがある。組合せ論の文献では \([n]_q=(1-q^n)/(1-q)\) という別の定義もよく使われる。
+本章は最初の定義だけを使う。他の文献と比べるときは、まずどの定義かを確認すること。
+</div>
+
+<h3 id="sec-21-2-3">§21.2.3 変形された表現論</h3>
+
+<p>
+次の変形を考える（これを \(U_q(sl_2)\) といい、通常の \(SU(2)\) の表現論は \(U(sl_2)\) に当たる）：
+</p>
+<div class="equation" id="eq-21-qcomm">\[
+[\hat L_z,\hat L_\pm]=\pm\hat L_\pm,\qquad [\hat L_+,\hat L_-]=[2\hat L_z]_q,
+\]</div>
+<div class="equation" id="eq-21-qcasimir">\[
+J^2=\hat L_+\hat L_-+[\hat L_z]_q[\hat L_z-1]_q=\hat L_-\hat L_++[\hat L_z]_q[\hat L_z+1]_q .
+\]</div>
+<p>
+式 <a class="eq-ref" href="#eq-21-comm"></a>, <a class="eq-ref" href="#eq-21-casimir"></a> とそっくりで、違いは右辺の \(\hat L_z\) が \(q\) 変形されている点だけである。
+同じ手順で、最高ウェイト状態から規格化された基底 \(|j,m\rangle\) が作れる：
+</p>
+<div class="equation" id="eq-21-qbasis">\[
+\hat L_z|j,m\rangle=m|j,m\rangle,\quad
+\hat L_\pm|j,m\rangle=\sqrt{[j\mp m]_q[j\pm m+1]_q}\,|j,m\pm1\rangle,\quad
+J^2|j,m\rangle=[j]_q[j+1]_q|j,m\rangle .
+\]</div>
+<p>
+有限次元になる条件は変わらず、\(j\) は整数か半整数、\(m=-j,\dots,j\) である。
+\(q\) 変形された Clebsch–Gordan 係数から \(F\) 行列が作れ、融合則は \(SU(2)\) のもの <a class="eq-ref" href="#eq-21-fusion-gen"></a> のままである。
+</p>
+
+<div class="remark-box">
+<span class="box-title">補足（内積と複素共役）</span>
+一般の \(q\) では <a class="eq-ref" href="#eq-21-qbasis"></a> の平方根の中身が実数とは限らず、\(\hat L_+\) が \(\hat L_-^\dagger\) にならない。
+後で使う \(q\) の値（式 <a class="eq-ref" href="#eq-21-q"></a>）では、\(2j\le k+1\) に対して中身が正で、必要な範囲では問題がない。
+また量子群の内積は \(q\) を実軸から複素平面へ解析接続したものであるため、第20章の \(F\) 行列の構成式の一部の項が「誤って複素共役されたように」見える。
+これは、\(q\) が1の原始冪根のとき \(F\) 行列がユニタリであるために必要な修正である（Ardonne–Slingerland）。
+</div>
+
+<p>
+\(F\) 行列の一般式は Kirillov–Reshetikhin によって求められた。\(a\le b+c,\ b\le a+c,\ c\le a+b\) かつ \(a+b+c\) が整数のとき
+</p>
+<div class="equation" id="eq-21-Delta">\[
+\Delta(a,b,c)=\sqrt{\frac{[a+b-c]_q!\,[a-b+c]_q!\,[-a+b+c]_q!}{[a+b+c+1]_q!}}
+\]</div>
+<p>と定義して</p>
+<div class="equation" id="eq-21-F">\[
+\begin{aligned}
+[F^{abc}_d]_{ef}={}&amp;(-1)^{a+b+c+d}\,\Delta(a,b,e)\Delta(c,d,e)\Delta(b,c,f)\Delta(a,d,f)\sqrt{[2e+1]_q[2f+1]_q}\\
+&amp;\times\sum_n\frac{(-1)^n\,[n+1]_q!}{\begin{aligned}&amp;[a+b+c+d-n]_q!\,[a+c+e+f-n]_q!\,[b+d+e+f-n]_q!\\&amp;\times[n-a-b-e]_q!\,[n-c-d-e]_q!\,[n-b-c-f]_q!\,[n-a-d-f]_q!\end{aligned}}
+\end{aligned}
+\]</div>
+<p>
+である。和は \(\max(a+b+e,\,c+d+e,\,b+c+f,\,a+d+f)\le n\le\min(a+b+c+d,\,a+c+e+f,\,b+d+e+f)\) を満たす非負整数 \(n\) でとる。
+\(q\to1\) で通常の \(6j\) 記号（角運動量合成の式）に帰着する。
+</p>
+
+<p>
+組みひもについては、自明な \(R^{ab}_c=(-1)^{a+b-c}\) は \(q\ne1\) では六角形方程式を満たさなくなる。簡単な修正で救える：
+</p>
+<div class="thm-box">
+<span class="box-title">結果（\(U_q(sl_2)\) の \(R\) 行列、ツイスト、FS 指標）</span>
+\[
+R^{ab}_c=(-1)^{a+b-c}\,q^{\frac12\{c(c+1)-a(a+1)-b(b+1)\}},
+\qquad
+\theta_j=q^{j(j+1)},\qquad \kappa_j=(-1)^{2j}.
+\]
+これは六角形方程式を満たす。Frobenius–Schur 指標 \(\kappa_j\) は離散値しか取れないので \(q\) に依存できず、\(q\to1\) のときの値のままである。
+\(\kappa_j\ne1\) のため、ダイアグラム代数はアイソトピー不変にならないが、その扱いは<a href="chapter14.html">第14章</a>（§14.5）で議論したとおりである。
+</div>
+<p>
+ツイストの式 \(\theta_j=q^{j(j+1)}\) は、Casimir 演算子の固有値 \(j(j+1)\) が指数に入った形であることに注意する。
+</p>
+
+<h3 id="sec-21-2-4">§21.2.4 \(q\) が1の冪根のとき：\(SU(2)_k\)</h3>
+
+<p>
+\(q\) が一般の値のとき、変形された表現論は \(SU(2)\) のものと似ていて、既約表現は無限個ある。面白いのは \(q\) が特別な値のときで、既約表現が有限個になる。ここでは
+</p>
+<div class="equation" id="eq-21-q">\[
+q=e^{2\pi i/(k+2)}
+\]</div>
+<p>
+を取る（別定義 \(\tilde q\) なら \(\tilde q=e^{i\pi/(k+2)}\)）。\(k\to\infty\) で \(q\to1\) となり、通常の \(SU(2)\) に戻る。
+</p>
+
+<p>
+このとき任意の整数 \(p\) について \([p(k+2)]_q=0\) となる。したがって、どの \(|j,m\rangle\) にも \((\hat L_\pm)^{k+2}|j,m\rangle=0\) が成り立つ。
+\(\hat L_\pm\) を繰り返し作用させると、式 <a class="eq-ref" href="#eq-21-qbasis"></a> の因子のどこかに \([p(k+2)]_q\) が現れるからである。
+</p>
+<ul>
+<li>\(j\le k/2\) では、元々 \(\hat L_\pm^{k+2}\) がこの表現を消してしまうので、一般の \(q\) と何も変わらない。</li>
+<li>\(j\ge(k+1)/2\) では、一般の \(q\) では消えない状態が \(\hat L_\pm\) で消えるようになり、新たな最高・最低ウェイト状態が現れる。これは表現が既約でないことを意味する。</li>
+</ul>
+<p>
+よって既約表現は \(j\le k/2\) のものだけになり、有限個のリストが手に入る。融合則は切り詰められて
+</p>
+<div class="equation" id="eq-21-fusion-k">\[
+j_1\otimes j_2=|j_1-j_2|\oplus(|j_1-j_2|+1)\oplus\cdots\oplus\min(j_1+j_2,\;k-j_1-j_2)
+\]</div>
+<p>
+となり、\(j>k/2\) は現れない（\(j>k/2\) を式 <a class="eq-ref" href="#eq-21-F"></a> に代入すると \(F\) 行列は必ず0になる）。
+驚くべきことに、こうして得られる \(q\) 変形 \(F\) 行列はユニタリのままで、ユニタリな量子力学的エニオン系に使える。量子次元は
+</p>
+<div class="equation" id="eq-21-dj">\[
+d_j=[2j+1]_q=\frac{\sin\frac{(2j+1)\pi}{k+2}}{\sin\frac{\pi}{k+2}}
+\]</div>
+<p>
+で、式 <a class="eq-ref" href="#eq-21-q"></a> を式 <a class="eq-ref" href="#eq-21-F"></a> と上の \(R\) 行列に入れたものは、粒子種 \(j\in\{0,\tfrac12,1,\tfrac32,\dots,\tfrac k2\}\) をもつ Chern–Simons 理論 \(SU(2)_k\) の \(F\) 行列と \(R\) 行列に正確に一致する。
+鏡像理論は \(q\) をあらゆる場所で複素共役したものである。\(F\) は変わらず、\(R\) だけが複素共役される。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(k=1,2,3\) の粒子種）</span>
+\(SU(2)_1\) は \(j\in\{0,\tfrac12\}\)（セミオン理論）、\(SU(2)_2\) は \(j\in\{0,\tfrac12,1\}\)（Ising 型）、\(SU(2)_3\) は \(j\in\{0,\tfrac12,1,\tfrac32\}\)（Fibonacci 理論を含む）である。
+原書の演習では、これらの \(F\)・\(R\) を式 <a class="eq-ref" href="#eq-21-F"></a> と上の \(R\) から実際に計算して、<a href="chapter18.html">第18章</a>の結果と照合する。
+また \(d_{1/2}=2\cos\frac{\pi}{k+2}\) や \(\calD^2=\sum_jd_j^2=\frac{k+2}{2\sin^2[\pi/(k+2)]}\)、\(S\) 行列
+\(S_{jj'}=\sqrt{\tfrac{2}{k+2}}\sin\frac{\pi(2j+1)(2j'+1)}{k+2}\) が演習として挙げられている。
+</div>
+
+<h4>\(m\) はどこへ行ったか</h4>
+<p>
+量子群の表現には通常の角運動量と同じく状態 \(|j,m\rangle\) があるが、\(F\) 行列はすべて \(j\) だけで書かれ、\(m\) は現れない。
+通常の \(SU(2)\) では \(m\) は物理的な自由度だが、エニオン理論には粒子ラベル \(j\) のほかに内部量子数がない。\(m\) の自由度は消えているのである。
+これを「エニオン系には隠れた量子群対称性がある」という。
+</p>
+<p>
+\(m\) が無いことは本質的である。通常のスピン \(1/2\) を2つ、一重項 \(j_{\mathrm{total}}=0\) に組んで遠くへ離したとする。
+片方のスピンだけを反転する局所演算子（たとえば \(\sigma_x\)）を作用させると、一重項 \(\tfrac{1}{\sqrt2}(|\uparrow\downarrow\rangle-|\downarrow\uparrow\rangle)\) は \(\tfrac1{\sqrt2}(|\downarrow\downarrow\rangle-|\uparrow\uparrow\rangle)\)、すなわち \(m=\pm1\) の三重項の重ね合わせに変わり、全スピンが変わってしまう。
+一方 \(SU(2)_k\)（\(k>1\)）の \(j=1/2\) エニオン2個を全体 \(j_{\mathrm{total}}=0\) の融合チャネルに置いて遠ざけた場合、片方のエニオンだけに作用して融合チャネルを変えられる演算子があってはならない。
+そのような演算子があれば<a href="chapter08.html">第8章</a>（§8.6）の局所性原理に反するからである。
+</p>
+</section>
+
+<section>
+<h2 id="sec-21-3">その他の Lie 群<span class="en">Other Lie Groups</span></h2>
+
+<p>
+同じ変形は他の Lie 群にもできる。手順は、(1) その Lie 群の表現論（既約表現、Clebsch–Gordan 係数、\(6j\) 記号）を、\(SU(2)\) の式 <a class="eq-ref" href="#eq-21-comm"></a> に相当する演算子と交換関係から組み立て、
+(2) それを \(q\) 変形して量子群と対応する \(F\) 行列、組みひも \(R\) 行列を得る、である。
+一般には \(SU(2)\) より複雑で、\(F\) 行列の具体的な導出は、最も簡単な場合を除いて代数的に非常に大変になる。
+それでも、量子群の方法は任意の Chern–Simons 理論の記述に使える。
+</p>
+
+<div class="thm-box">
+<span class="box-title">結果（一般の Lie 代数と Chern–Simons 理論）</span>
+Lie 代数 \(\mathfrak g\) を選ぶ。変形パラメータ \(q\) の量子群の表現を \(U_q(\mathfrak g)\) と書く。
+\[
+q=e^{2\pi i/\ell},\qquad \ell=m(\mathfrak g)\,\bigl(k+\breve h(\mathfrak g)\bigr)
+\]
+と取ると、\(\mathfrak g\) をゲージ群の Lie 代数とするレベル \(k>0\) の Chern–Simons 理論 \(\mathfrak g_k\) がちょうど得られる。\(q\) を複素共役すると鏡像理論（レベル \(-k\) と同じ）になる。
+中心電荷は
+\[
+c(\mathfrak g_k)=\frac{k\,\dim(\mathfrak g)}{k+\breve h(\mathfrak g)}
+\]
+である。ここで \(\breve h\) は双対 Coxeter 数、\(m(\mathfrak g)\) は代数の最長の根と最短の根の長さの比の二乗（長い根と短い根の長さの比に関係する数）で、表 21.1 に与えられる。
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>\(\mathfrak g\)</th><th>\(A_r\)</th><th>\(B_r\)</th><th>\(C_r\)</th><th>\(D_r\)</th><th>\(E_6\)</th><th>\(E_7\)</th><th>\(E_8\)</th><th>\(F_4\)</th><th>\(G_2\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(\dim\mathfrak g\)</td><td>\(r^2+2r\)</td><td>\(2r^2+r\)</td><td>\(2r^2+r\)</td><td>\(2r^2-r\)</td><td>78</td><td>133</td><td>248</td><td>52</td><td>14</td></tr>
+<tr><td>\(\breve h(\mathfrak g)\)</td><td>\(r+1\)</td><td>\(2r-1\)</td><td>\(r+1\)</td><td>\(2r-2\)</td><td>12</td><td>18</td><td>30</td><td>9</td><td>4</td></tr>
+<tr><td>\(m(\mathfrak g)\)</td><td>1</td><td>2</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td>3</td></tr>
+</tbody>
+</table>
+</div>
+<p>
+表 21.1：Lie 代数の次元・双対 Coxeter 数・\(m(\mathfrak g)\)。\(A_r=su(r+1)\)、\(B_r=so(2r+1)\)、\(C_r=sp(2r)\)、\(D_r=so(2r)\)。
+</p>
+
+<div class="example-box">
+<span class="box-title">例（\(SU(2)\) の再現）</span>
+\(SU(2)=A_1\) では \(\dim=3,\ \breve h=2,\ m=1\) なので \(\ell=k+2\)、\(q=e^{2\pi i/(k+2)}\) で式 <a class="eq-ref" href="#eq-21-q"></a> に一致し、
+中心電荷は \(c=3k/(k+2)\) となる。
+</div>
+
+<p>
+\(q\) として非原始的な冪根 \(q=e^{2\pi iz/\ell}\)（\(z\) は整数）を取ることもできる。\(z\) が \(\ell\) と互いに素なら \(z=1\) と同じ融合則の理論が得られる（ただしモジュラーでもユニタリでもあるとは限らない）。
+\(z\) が \(m(\mathfrak g)\) の倍数となる「非一様（nonuniform）」な場合には、Chern–Simons 理論 \(\mathfrak g_k\) とまったく無関係な理論が得られることもある（詳細は Rowell の総説）。
+</p>
+
+<p>
+一般の量子群で \(F\) 行列を計算するのは極めて複雑だが、そのためのソフトウェアがある（原書の参考文献を参照。第39章でも一部が紹介される）。
+一方、\(S\) 行列と \(T\) 行列の計算は解析的にはそれほど難しくない（Chern–Simons の場合は Di Francesco らの教科書や Rowell の総説）。ただし Lie 代数の構造のより詳しい議論が必要になる。
+</p>
+</section>
+
+<div class="summary-box">
+<span class="box-title">第21章のまとめ</span>
+<ul>
+<li>Lie 群の表現を粒子種とすると、既約表現が無限個になり、組みひもも自明なものに限られる。</li>
+<li>\(SU(2)\) の表現を \(q\) 変形した \(U_q(sl_2)\) では、交換関係の右辺が \([2\hat L_z]_q\) になり、\(F\) 行列は Kirillov–Reshetikhin の式、\(R^{ab}_c=(-1)^{a+b-c}q^{\frac12\{c(c+1)-a(a+1)-b(b+1)\}}\)、\(\theta_j=q^{j(j+1)}\)、\(\kappa_j=(-1)^{2j}\) となる。</li>
+<li>\(q=e^{2\pi i/(k+2)}\) とすると \(j\le k/2\) の既約表現だけが残り、融合則は切り詰められ、\(d_j=[2j+1]_q\)、\(F\) はユニタリのまま、結果は Chern–Simons 理論 \(SU(2)_k\) に一致する。\(q\) の複素共役が鏡像理論である。</li>
+<li>エニオンには \(m\) の自由度がなく、これは局所性原理から要請される（「隠れた量子群対称性」）。</li>
+<li>一般の \(\mathfrak g\) では \(q=e^{2\pi i/\ell}\)、\(\ell=m(\mathfrak g)(k+\breve h(\mathfrak g))\) で \(\mathfrak g_k\) が得られ、中心電荷は \(c=k\dim\mathfrak g/(k+\breve h)\) である。</li>
+</ul>
+</div>
+
+    </main>
+  </div>
+</body>
+</html>
