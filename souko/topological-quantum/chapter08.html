@@ -77,8 +77,36 @@
 融合は2粒子が空間的に接近していることを要求しない。2つの粒子を囲む円を描き、
 その内側の「合計の粒子タイプ」を問えば、それが融合の結果である。
 2粒子 \(a,b\) の状態を表すケットは、\(c\) から \(a\) と \(b\) が分かれる分裂図として描かれる。
-これは「左に \(a\)、右に \(b\) があり、全体の量子数（全融合チャネル）が \(c\)」という現在の状況がどう生じたかの時空履歴と読める。
+これは「左に \(a\)、右に \(b\) があり、全体の量子数（全融合チャネル）が \(c\)」という現在の状況がどう生じたかの時空履歴と読める（図 8.1）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <line x1="50" y1="125" x2="80" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="125" x2="80" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="80" y1="85" x2="80" y2="40" class="line accent" stroke-width="1.5"/>
+  <text x="50" y="143" text-anchor="middle" class="label">a</text>
+  <text x="110" y="143" text-anchor="middle" class="label">b</text>
+  <text x="80" y="28" text-anchor="middle" class="label">c</text>
+  <text x="80" y="170" text-anchor="middle" class="label-muted">融合：a × b = c</text>
+  <line x1="230" y1="125" x2="230" y2="85" class="line accent" stroke-width="1.5"/>
+  <line x1="230" y1="85" x2="200" y2="40" class="line" stroke-width="1.5"/>
+  <line x1="230" y1="85" x2="260" y2="40" class="line" stroke-width="1.5"/>
+  <text x="230" y="143" text-anchor="middle" class="label">c</text>
+  <text x="200" y="28" text-anchor="middle" class="label">a</text>
+  <text x="260" y="28" text-anchor="middle" class="label">b</text>
+  <text x="230" y="170" text-anchor="middle" class="label-muted">分裂：c → a + b</text>
+  <path d="M 350 125 L 350 80 C 350 40 410 40 410 80 L 410 125" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 345 111 L 350 103 L 355 111" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="350" y="143" text-anchor="middle" class="label">a</text>
+  <text x="410" y="143" text-anchor="middle" class="label">ā</text>
+  <text x="380" y="170" text-anchor="middle" class="label-muted">a と ā → 真空</text>
+  <line x1="445" y1="125" x2="445" y2="50" class="line" stroke-width="1.2"/>
+  <path d="M 440 58 L 445 48 L 450 58" class="line" fill="none" stroke-width="1.2"/>
+  <text x="440" y="143" text-anchor="middle" class="label-muted">時間</text>
+</svg>
+<figcaption>図 8.1：融合（2本が合流して1本に）、分裂（その時間反転）、および粒子と反粒子の対消滅（世界線の U ターン）。時間は上向きで、真空の線は描かない。</figcaption>
+</figure>
 
 <div class="remark-box">
 <span class="box-title">補足（真空の記号）</span>
@@ -180,8 +208,47 @@ I\times I=I,\qquad I\times\tau=\tau,\qquad \tau\times\tau=I+\tau .
 <p>
 \(\tau\) 2個の Hilbert 空間は2次元（チャネル \(I\) と \(\tau\)）。3個では3次元になる。
 はじめの2個が \(\tau\) に融合した場合、その組は1個の \(\tau\) のように振る舞い、3個目の \(\tau\) と2通りに融合できるからである。
-3粒子の基底には量子計算の文脈で次の名前が付いている。
+3粒子の基底には量子計算の文脈で次の名前が付いている（図 8.2）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="35" x2="60" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="80" y1="35" x2="60" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="120" y1="35" x2="80" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="70" x2="80" y2="105" class="line" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="80" y1="105" x2="80" y2="140" class="line" stroke-width="1.5"/>
+  <text x="40" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="80" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="120" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="64" y="92" text-anchor="end" class="label">I</text>
+  <text x="88" y="126" class="label">τ</text>
+  <text x="80" y="168" text-anchor="middle" class="label">|0⟩</text>
+  <line x1="190" y1="35" x2="210" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="230" y1="35" x2="210" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="270" y1="35" x2="230" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="210" y1="70" x2="230" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="230" y1="105" x2="230" y2="140" class="line" stroke-width="1.5"/>
+  <text x="190" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="230" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="270" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="214" y="92" text-anchor="end" class="label">τ</text>
+  <text x="238" y="126" class="label">τ</text>
+  <text x="230" y="168" text-anchor="middle" class="label">|1⟩</text>
+  <line x1="340" y1="35" x2="360" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="380" y1="35" x2="360" y2="70" class="line" stroke-width="1.5"/>
+  <line x1="420" y1="35" x2="380" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="360" y1="70" x2="380" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="380" y1="105" x2="380" y2="140" class="line" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="340" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="380" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="420" y="25" text-anchor="middle" class="label">τ</text>
+  <text x="364" y="92" text-anchor="end" class="label">τ</text>
+  <text x="388" y="126" class="label">I</text>
+  <text x="380" y="168" text-anchor="middle" class="label">|N⟩</text>
+</svg>
+<figcaption>図 8.2：3個の \(\tau\) の融合木と、表の3つの基底状態。左2個が融合した中間の線のラベルと、全体のラベル（根）が異なる。点線は真空 \(I\) の線を表す。</figcaption>
+</figure>
 
 <div class="table-wrap">
 <table>
@@ -203,7 +270,7 @@ I\times I=I,\qquad I\times\tau=\tau,\qquad \tau\times\tau=I+\tau .
 </p>
 
 <p>
-4個の場合は、まず融合木（正確には分裂木）の枝分かれの形を決め、上端の枝をすべて \(\tau\) として、内部の辺のラベルを数える。
+4個の場合は、まず融合木（正確には分裂木）の枝分かれの形を決め、上端の枝をすべて \(\tau\) として、内部の辺のラベルを数える（図 8.3）。
 </p>
 
 <figure>
@@ -238,7 +305,7 @@ I\times I=I,\qquad I\times\tau=\tau,\qquad \tau\times\tau=I+\tau .
   <text x="368" y="144" class="label">w</text>
   <text x="290" y="178" class="label-muted">(u, v, w) も 5 通り</text>
 </svg>
-<figcaption>図 8.1：4個の Fibonacci エニオンの2種類の融合木。どちらの木で数えても Hilbert 空間の次元は同じ 5 になる。</figcaption>
+<figcaption>図 8.3：4個の Fibonacci エニオンの2種類の融合木。どちらの木で数えても Hilbert 空間の次元は同じ 5 になる。</figcaption>
 </figure>
 
 <p>
@@ -513,8 +580,27 @@ Fibonacci と Ising で \(N_a\) が対称なのは、すべての粒子が自分
 という<a href="chapter07.html">第7章</a>の結果が再現される。
 縫い合わせられるのは、2つの穴が互いに反対の粒子タイプを持つときである。これは TQFT の貼り合わせ公理そのもので、
 時間方向 \(S^1_{\text{time}}\) も込めると、貼り合わせているのは \(S^1_{\text{puncture}}\times S^1_{\text{time}}\) という2次元面同士であり、
-その上の波動関数の内積が2つの穴の量子数を互いに共役にする。
+その上の波動関数の内積が2つの穴の量子数を互いに共役にする（図 8.4）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 165" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="40" x2="40" y2="130" class="line" stroke-width="1.5"/>
+  <line x1="100" y1="40" x2="100" y2="130" class="line" stroke-width="1.5"/>
+  <ellipse cx="70" cy="40" rx="30" ry="9" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="70" cy="130" rx="30" ry="9" class="line accent" stroke-width="1.5"/>
+  <text x="112" y="44" class="label">a</text>
+  <text x="112" y="134" class="label">ā</text>
+  <line x1="160" y1="88" x2="210" y2="88" class="line" stroke-width="1.5"/>
+  <path d="M 202 82 L 212 88 L 202 94" class="line" fill="none" stroke-width="1.5"/>
+  <text x="185" y="75" text-anchor="middle" class="label-muted">縫う</text>
+  <ellipse cx="330" cy="85" rx="85" ry="48" class="gate" stroke-width="1.5"/>
+  <ellipse cx="330" cy="85" rx="34" ry="12" class="gate" stroke-width="1.5"/>
+  <ellipse cx="389.5" cy="85" rx="8" ry="24" class="line accent" stroke-width="2"/>
+  <text x="330" y="152" text-anchor="middle" class="label-muted">縫い合わせた円（色付き）</text>
+</svg>
+<figcaption>図 8.4：穴を2つあけた球面（円筒と同相）の2つの穴の縁を縫い合わせるとトーラスになる。縫い合わせられるのは、穴のラベルが互いに反対の粒子タイプ \(a,\bar a\) のときである。</figcaption>
+</figure>
 
 <h3>パンツ分解</h3>
 
@@ -522,8 +608,35 @@ Fibonacci と Ising で \(N_a\) が対称なのは、すべての粒子が自分
 3粒子 \(a,b,c\) を載せた球面では、3つが真空に融合する仕方が \(N_{abc}=N_{ab}^{\bar c}\) 通りある。
 3つ穴の球面は形から<strong>パンツ (pair of pants)</strong> と呼ばれる。
 \(S^2\) と \(T^2\) 以外の向き付け可能な曲面はすべて、パンツの穴同士を縫い合わせて作れる（<strong>パンツ分解</strong>）。
-縮退度を求めるには、縫い目に付けるラベルの可能な割り当てを、パンツごとの因子 \(N_{abc}\) を掛けながら数えればよい。
+縮退度を求めるには、縫い目に付けるラベルの可能な割り当てを、パンツごとの因子 \(N_{abc}\) を掛けながら数えればよい（図 8.5）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 185" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="60" cy="45" rx="20" ry="6" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="140" cy="45" rx="20" ry="6" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="100" cy="125" rx="24" ry="7" class="line accent" stroke-width="1.5"/>
+  <path d="M 40 45 C 40 95 76 85 76 125" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 160 45 C 160 95 124 85 124 125" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 80 45 C 85 85 115 85 120 45" class="line" fill="none" stroke-width="1.5"/>
+  <text x="60" y="27" text-anchor="middle" class="label">a</text>
+  <text x="140" y="27" text-anchor="middle" class="label">b</text>
+  <text x="100" y="152" text-anchor="middle" class="label">c</text>
+  <text x="100" y="176" text-anchor="middle" class="label-muted">パンツ（穴3つの球面）</text>
+  <text x="305" y="20" text-anchor="middle" class="label-muted">種数 2：パンツ2枚を3か所で縫う</text>
+  <rect x="180" y="73" width="70" height="34" class="gate" stroke-width="1.5"/>
+  <rect x="360" y="73" width="70" height="34" class="gate" stroke-width="1.5"/>
+  <text x="215" y="95" text-anchor="middle" class="label">パンツ 1</text>
+  <text x="395" y="95" text-anchor="middle" class="label">パンツ 2</text>
+  <path d="M 250 80 C 280 40 330 40 360 80" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="250" y1="90" x2="360" y2="90" class="line accent" stroke-width="1.5"/>
+  <path d="M 250 100 C 280 140 330 140 360 100" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="305" y="42" text-anchor="middle" class="label">a</text>
+  <text x="305" y="84" text-anchor="middle" class="label">b</text>
+  <text x="305" y="152" text-anchor="middle" class="label">c</text>
+</svg>
+<figcaption>図 8.5：左はパンツ（穴が3つの球面）。右は種数2の曲面を、パンツ2枚を3つの縫い目 \(a,b,c\) で貼り合わせたものとして表した模式図。縫い目のラベルの割り当てごとに、各パンツの因子 \(N_{abc}\) を掛けて足し上げる。</figcaption>
+</figure>
 
 <div class="thm-box">
 <span class="box-title">結果（種数の高い曲面の縮退度）</span>

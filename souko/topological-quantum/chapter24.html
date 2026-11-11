@@ -73,6 +73,19 @@ M' = M_1\cup_{\partial M_1} M_2'
 同じ境界 \(S^1\cup S^1\) をもつ別の2次元多様体として円筒面 \(M_2'=S^1\times I\)（\(I\) は区間）がある。
 円板2枚を取り除いて円筒を貼ると、結果は<strong>トーラス</strong> \(T^2\) になる。球面がトーラスに手術されたことになる。
 </p>
+<figure>
+<svg viewBox="0 0 330 140" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="70" cy="70" r="40" class="line" fill="none" stroke-width="1.5"/>
+  <circle cx="55" cy="55" r="9" class="line accent" fill="none" stroke-width="1.5"/>
+  <circle cx="88" cy="85" r="9" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="116" y="50" class="label-muted">円筒を貼る</text>
+  <text x="137" y="78" class="label">→</text>
+  <ellipse cx="250" cy="70" rx="60" ry="38" class="line" fill="none" stroke-width="1.5"/>
+  <ellipse cx="250" cy="70" rx="22" ry="10" class="line" fill="none" stroke-width="1.5"/>
+</svg>
+<figcaption>図 24.1：球面から円板2枚を取り除き（太線の円）、円筒を貼るとトーラスになる。</figcaption>
+</figure>
+
 <p>
 別の見方もある。\(M=\partial N\) のとき、\(M\) 上の手術は \(N\) への<strong>ハンドルの取り付け</strong>に対応する。
 \(N=B^3\)（3次元球体）に円柱 \(D^2\times I\)（ハンドル）を付けるとソリッドトーラスになり、その境界が \(T^2\) である。
@@ -93,6 +106,19 @@ M' = M_1\cup_{\partial M_1} M_2'
 取り除くソリッドトーラスは、元の多様体の中で結び目状に複雑に埋め込まれていてもよい。
 閉じた曲線 \(S^1\) を横断方向に \(D^2\) へ太らせたものは、位相的にはソリッドトーラスである。
 </p>
+<figure>
+<svg viewBox="0 0 360 140" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="100" cy="70" rx="70" ry="40" class="line" fill="none" stroke-width="1.5"/>
+  <ellipse cx="100" cy="70" rx="30" ry="12" class="line" fill="none" stroke-width="1.5"/>
+  <ellipse cx="100" cy="70" rx="50" ry="26" class="line" fill="none" stroke-width="1.2"/>
+  <ellipse cx="100" cy="96" rx="5" ry="14" class="line accent" fill="none" stroke-width="1.8"/>
+  <text x="64" y="128" class="label">メリディアン</text>
+  <text x="176" y="74" class="label">ロンギチュード</text>
+  <text x="176" y="96" class="label-muted">（貼り戻すとき入れ替える）</text>
+</svg>
+<figcaption>図 24.2：ソリッドトーラスの表面の2つの閉曲線。小さく管を一周する太線がメリディアン（収縮可能）、管に沿って一周する細線がロンギチュードで、Dehn 手術ではこの2つの役割を入れ替えて貼り戻す。</figcaption>
+</figure>
+
 </section>
 
 <section>
@@ -134,6 +160,22 @@ TQFT を「3次元多様体に複素数 \(Z(M)\) を割り当てるもの」と�
 カールつきの輪はねじれたリボンと見なせ、その縁の線はトーラス面上でロンギチュードとメリディアンを1回ずつ回る。
 これはちょうど <a href="chapter07.html">第7章</a>のレンズ空間 \(L(1,1)=S^3\) の構成になっているので、この輪への手術は多様体を変えない。
 </p>
+<figure>
+<svg viewBox="0 0 260 110" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="20" x2="30" y2="100" class="line" stroke-width="1.5"/>
+  <text x="36" y="18" class="label">L</text>
+  <line x1="130" y1="80" x2="116.4" y2="66.4" class="line" stroke-width="1.5"/>
+  <line x1="103.6" y1="53.6" x2="90" y2="40" class="line" stroke-width="1.5"/>
+  <line x1="90" y1="80" x2="130" y2="40" class="line accent" stroke-width="1.5"/>
+  <path d="M90 40 C60 40, 60 80, 90 80" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M130 40 C160 40, 160 80, 130 80" class="line" fill="none" stroke-width="1.5"/>
+  <text x="180" y="65" class="label">=</text>
+  <line x1="225" y1="20" x2="225" y2="100" class="line" stroke-width="1.5"/>
+  <text x="231" y="18" class="label">L</text>
+</svg>
+<figcaption>図 24.3：Kirby 移動 1。他の成分と絡まないカール付きの輪を、絡み目に加えても取り除いても手術後の多様体は変わらない。</figcaption>
+</figure>
+
 
 <div class="def-box">
 <span class="box-title">Kirby 移動 2：ハンドルスライド</span>
@@ -162,6 +204,19 @@ L_1\cup L_2 \text{ in } S^3 \;\xrightarrow{\ \text{手術}\ }\; M_1\# M_2 .
 \]
 連結和は<a href="chapter07.html">第7章</a>（§7.3.3）で扱った。
 </p>
+<figure>
+<svg viewBox="0 0 250 130" xmlns="http://www.w3.org/2000/svg">
+  <path d="M88.3 50 A30 30 0 1 0 88.3 70" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M161.7 50 A30 30 0 1 1 161.7 70" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="88.3" y1="50" x2="161.7" y2="50" class="line" stroke-width="1.5"/>
+  <line x1="88.3" y1="70" x2="161.7" y2="70" class="line" stroke-width="1.5"/>
+  <text x="52" y="64" class="label">M1</text>
+  <text x="178" y="64" class="label">M2</text>
+  <text x="100" y="118" class="label-muted">M1 # M2</text>
+</svg>
+<figcaption>図 24.4：連結和 \(M_1\# M_2\)。各多様体から小さな球体を取り除き、その境界どうしを管でつなぐ（2次元の絵では円板を取り除いた曲面を貼り合わせる操作に当たる）。</figcaption>
+</figure>
+
 </section>
 
 <section>

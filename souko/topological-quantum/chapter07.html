@@ -232,8 +232,26 @@ Z(\calM)=\sum_{\alpha\beta}U^{\alpha\beta}\,\ket{\psi_{\Sigma_2,\alpha}}\otimes\
 \]</div>
 <p>
 と書ける（\(\ket{\psi_{\Sigma_2,\alpha}}\) は \(V(\Sigma_2)\) の基底、\(\bra{\psi_{\Sigma_1,\beta}}\) は \(V(\Sigma_1^*)\) の基底）。
-つまりコボルディズムは \(V(\Sigma_1)\) から \(V(\Sigma_2)\) への線形写像（発展）である。
+つまりコボルディズムは \(V(\Sigma_1)\) から \(V(\Sigma_2)\) への線形写像（発展）である（図 7.2）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="160" x2="60" y2="40" class="line" stroke-width="1.5"/>
+  <path d="M 54 50 L 60 38 L 66 50" class="line" fill="none" stroke-width="1.5"/>
+  <text x="60" y="180" text-anchor="middle" class="label-muted">時間</text>
+  <ellipse cx="170" cy="150" rx="30" ry="8" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="290" cy="150" rx="30" ry="8" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="230" cy="35" rx="40" ry="9" class="line accent" stroke-width="1.5"/>
+  <path d="M 140 150 C 140 100 190 90 190 35" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 320 150 C 320 100 270 90 270 35" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 200 150 C 205 110 225 105 230 105 C 235 105 255 110 260 150" class="line" fill="none" stroke-width="1.5"/>
+  <text x="230" y="72" text-anchor="middle" class="label">M</text>
+  <text x="322" y="38" class="label">出力 Σ2：円1つ</text>
+  <text x="230" y="178" text-anchor="middle" class="label">入力 Σ1：円2つ</text>
+</svg>
+<figcaption>図 7.2：コボルディズムの例（時間は上向き）。\(\calM\) は下の円2つ（\(\Sigma_1\)）から上の円1つ（\(\Sigma_2\)）への時間発展を表し、線形写像 \(V(\Sigma_1)\to V(\Sigma_2)\) を与える。</figcaption>
+</figure>
 
 <div class="caution-box">
 <span class="box-title">注意（ユニタリとは限らない）</span>
@@ -394,8 +412,22 @@ Z(\calM)=\sum_{i,j}Z(\calM;i,j)\,\bra{\psi_{L_1,i}}\otimes\bra{\psi_{L_2,j}}
 貼り合わせの公式 <a class="eq-ref" href="#eq-7-glue"></a> を使って、3次元多様体を部品から組み立てる。
 基本の部品はソリッドトーラス \(D^2\times S^1\)（円板 \(D^2\) と円 \(S^1\) の直積）である（初等的なトポロジーの復習は<a href="chapter40.html">第40章</a>）。
 用語として、ソリッドトーラスの表面のループのうち、内部で縮められる向き（\(D^2\) の境界）を<strong>メリディアン</strong>、
-縮められない向き（ハンドルを一周する向き）を<strong>ロンジチュード</strong>と呼ぶ。
+縮められない向き（ハンドルを一周する向き）を<strong>ロンジチュード</strong>と呼ぶ（図 7.3）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 155" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="150" cy="85" rx="100" ry="55" class="gate" stroke-width="1.5"/>
+  <ellipse cx="150" cy="85" rx="45" ry="14" class="gate" stroke-width="1.5"/>
+  <ellipse cx="150" cy="85" rx="72" ry="34" class="line" fill="none" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <ellipse cx="222" cy="85" rx="9" ry="24" class="line accent" stroke-width="2"/>
+  <text x="270" y="60" class="label">m：メリディアン</text>
+  <text x="270" y="78" class="label-muted">内部で縮められる</text>
+  <text x="270" y="110" class="label">l：ロンジチュード</text>
+  <text x="270" y="128" class="label-muted">縮められない（破線）</text>
+</svg>
+<figcaption>図 7.3：ソリッドトーラス \(D^2\times S^1\) と、その表面上の2つのループ。色付きの小さな円がメリディアン \(m\)（断面 \(D^2\) の境界）、破線がロンジチュード \(l\)（ハンドルを一周するループ）。</figcaption>
+</figure>
 
 <h3 id="sec-7-3-1">§7.3.1 \(S^3\) とモジュラー \(S\) 行列</h3>
 
@@ -519,8 +551,30 @@ Z(S^2\times S^1)=1 .
 <div class="def-box">
 <span class="box-title">定義（連結和）</span>
 2つの多様体 \(\calM,\calM'\) のそれぞれから小さな球体を取り除き、現れた球面どうしを貼り合わせて得られる多様体を
-<strong>連結和</strong> (connected sum) といい \(\calM\#\calM'\)（\(=\calM'\#\calM\)）と書く。
+<strong>連結和</strong> (connected sum) といい \(\calM\#\calM'\)（\(=\calM'\#\calM\)）と書く（図 7.4）。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 185" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="85" r="35" class="line" stroke-width="1.5"/>
+  <circle cx="150" cy="85" r="35" class="line" stroke-width="1.5"/>
+  <ellipse cx="95" cy="85" rx="4" ry="14" class="line accent" stroke-width="2"/>
+  <ellipse cx="115" cy="85" rx="4" ry="14" class="line accent" stroke-width="2"/>
+  <text x="60" y="140" text-anchor="middle" class="label">M</text>
+  <text x="150" y="140" text-anchor="middle" class="label">M'</text>
+  <line x1="200" y1="85" x2="245" y2="85" class="line" stroke-width="1.5"/>
+  <path d="M 237 79 L 247 85 L 237 91" class="line" fill="none" stroke-width="1.5"/>
+  <text x="222" y="72" text-anchor="middle" class="label-muted">貼る</text>
+  <path d="M 333 73.3 A 35 35 0 1 0 333 96.7" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 357 73.3 A 35 35 0 1 1 357 96.7" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="333" y1="73.3" x2="357" y2="73.3" class="line" stroke-width="1.5"/>
+  <line x1="333" y1="96.7" x2="357" y2="96.7" class="line" stroke-width="1.5"/>
+  <ellipse cx="345" cy="85" rx="4" ry="11.7" class="line accent" stroke-width="2"/>
+  <text x="345" y="140" text-anchor="middle" class="label">M # M'</text>
+  <text x="230" y="172" text-anchor="middle" class="label-muted">小球体を除き、現れた球面どうしを貼り合わせる</text>
+</svg>
+<figcaption>図 7.4：連結和の模式図（3次元の多様体を2次元の球で代用して描いている）。\(\calM\) と \(\calM'\) からそれぞれ小球体を除き、現れた境界の球面（色付き）を貼り合わせると、首でつながった一つの多様体 \(\calM\#\calM'\) ができる。</figcaption>
+</figure>
 
 <p>
 例えば2次元では、トーラス面2枚の連結和 \(T^2\#T^2\) はハンドルが2つある曲面である。

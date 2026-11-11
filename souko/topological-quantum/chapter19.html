@@ -65,6 +65,24 @@ g\times h=gh,\qquad N_{gh}^{a}=\delta_{a,gh}.
 粒子をたくさん集めてもヒルベルト空間の次元は増えない。
 頂点の向きの約束は次のとおり：3本の線をすべて頂点から出る向きに描いたとき、頂点のまわりを時計回りに元を掛けると単位元になる（\(gh\,(h^{-1}g^{-1})=I\) など）。
 </p>
+<figure>
+<svg viewBox="0 0 400 130" xmlns="http://www.w3.org/2000/svg">
+  <line x1="130" y1="70" x2="130" y2="20" class="line" stroke-width="1.5"/>
+  <path d="M134.0 49.5 L130.0 42.5 L126.0 49.5" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="130" y1="70" x2="173" y2="95" class="line" stroke-width="1.5"/>
+  <path d="M145.6 83.7 L153.7 83.8 L149.6 76.8" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="130" y1="70" x2="87" y2="95" class="line" stroke-width="1.5"/>
+  <path d="M110.4 76.8 L106.3 83.8 L114.4 83.7" class="line" fill="none" stroke-width="1.5"/>
+  <circle cx="130" cy="70" r="3.5" class="accent-fill"/>
+  <text x="137" y="28" class="label">g</text>
+  <text x="180" y="102" class="label">h</text>
+  <text x="36" y="112" class="label">(gh)^-1</text>
+  <text x="215" y="52" class="label-muted">時計回りに掛けると</text>
+  <text x="215" y="72" class="label-muted">g h (gh)^-1 = I</text>
+</svg>
+<figcaption>図 19.1：群の元でラベルした頂点。3本をすべて頂点から出る向きに描き、時計回りに元を掛けると単位元になる。</figcaption>
+</figure>
+
 
 <!-- ================================================================ -->
 <section>
@@ -90,12 +108,12 @@ g\times h=gh,\qquad N_{gh}^{a}=\delta_{a,gh}.
 \big[F^{abc}_{abc}\big]_{(ab),(bc)}=\omega(a,b,c)
 \]</div>
 <p>
-とおく（融合 \((a,b)\to ab\) を通る木と \((b,c)\to bc\) を通る木の間の \(F\) 移動の係数、図 19.1）。
+とおく（融合 \((a,b)\to ab\) を通る木と \((b,c)\to bc\) を通る木の間の \(F\) 移動の係数、図 19.2）。
 五角形方程式（<a href="chapter09.html">第9章</a>）の \(F\) の積の和（内線 \(h\) についての和）は、2つの元の積が常に1つの元になるため和が1項に潰れ、式 <a class="eq-ref" href="#eq-19-cocycle"></a> と同じ式になる。
 </p>
 
 <figure>
-<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 460 158" xmlns="http://www.w3.org/2000/svg">
   <!-- left tree: (ab) then c -->
   <line x1="40" y1="25" x2="75" y2="75" class="line" stroke-width="1.5"/>
   <line x1="110" y1="25" x2="75" y2="75" class="line" stroke-width="1.5"/>
@@ -120,7 +138,7 @@ g\times h=gh,\qquad N_{gh}^{a}=\delta_{a,gh}.
   <text x="430" y="92" class="label-muted">bc</text>
   <text x="392" y="148" class="label-muted">abc</text>
 </svg>
-<figcaption>図 19.1：3-コサイクルは \(F\) 移動の係数そのものである。融合 \((ab)\) を先に行う木を、\((bc)\) を先に行う木に書き換えると位相 \(\omega(a,b,c)\) が掛かる。</figcaption>
+<figcaption>図 19.2：3-コサイクルは \(F\) 移動の係数そのものである。融合 \((ab)\) を先に行う木を、\((bc)\) を先に行う木に書き換えると位相 \(\omega(a,b,c)\) が掛かる。</figcaption>
 </figure>
 
 <h3>ゲージ変換と正規化</h3>
@@ -209,10 +227,24 @@ R^{c,a}_{ca}\,\omega(a,c,b)\,R^{c,b}_{cb} &amp;= \omega(c,a,b)\,R^{c,ab}_{cab}\,
 \]</div>
 <p>
 となる。これは <a href="chapter18.html">第18章</a>の \(d=-1\) のループガスと同じである。
-\(F\) が \(-1\) になるのは、図 19.1 の4本の外線 \(a,b,c,abc\) がすべて 1 のとき、すなわち手術移動（ループのつなぎ替え）のときだけで、そこで符号が出る
+\(F\) が \(-1\) になるのは、図 19.2 の4本の外線 \(a,b,c,abc\) がすべて 1 のとき、すなわち手術移動（ループのつなぎ替え）のときだけで、そこで符号が出る
 （ここで \(abc\) は群演算の積、つまり \(a+b+c\bmod2\)）。
 アイソトピー不変性の条件 <a class="eq-ref" href="#eq-19-isotopy"></a> も満たされる。
 </p>
+<figure>
+<svg viewBox="0 0 300 135" xmlns="http://www.w3.org/2000/svg">
+  <text x="37" y="16" class="label">1</text>
+  <text x="77" y="16" class="label">1</text>
+  <line x1="40" y1="26" x2="40" y2="126" class="line" stroke-width="1.5"/>
+  <line x1="80" y1="26" x2="80" y2="126" class="line" stroke-width="1.5"/>
+  <text x="110" y="80" class="label">=</text>
+  <text x="130" y="80" class="label">(-1) ×</text>
+  <path d="M200 26 L200 46 A20 20 0 0 0 240 46 L240 26" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M200 126 L200 106 A20 20 0 0 1 240 106 L240 126" class="line accent" fill="none" stroke-width="1.5"/>
+</svg>
+<figcaption>図 19.3：\(\Z_2\) の \(p=1\)（\(d=-1\) のループガス）で符号が出る唯一の移動。手術移動で線のつなぎ替えを行うと \(F=-1\) が掛かる。</figcaption>
+</figure>
+
 
 <h3>\(\Z_3\) 以上</h3>
 <p>
@@ -249,6 +281,27 @@ R^{c,a}_{ca}\,\omega(a,c,b)\,R^{c,b}_{cb} &amp;= \omega(c,a,b)\,R^{c,ab}_{cab}\,
 そこで、頂点が許される融合になる条件を一般に「頂点から出る3粒子の元を時計回りに掛けると単位元になる」と定めれば、非可換群も使える。
 本章の図はすべてこの規則と整合するように描かれている。
 </p>
+<figure>
+<svg viewBox="0 0 300 125" xmlns="http://www.w3.org/2000/svg">
+  <line x1="70" y1="60" x2="40" y2="20" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="60" x2="100" y2="20" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="60" x2="70" y2="100" class="line" stroke-width="1.5"/>
+  <circle cx="70" cy="60" r="3.5" class="accent-fill"/>
+  <text x="32" y="16" class="label">g</text>
+  <text x="102" y="16" class="label">h</text>
+  <text x="62" y="114" class="label">gh</text>
+  <text x="142" y="65" class="label">≠</text>
+  <line x1="230" y1="60" x2="200" y2="20" class="line" stroke-width="1.5"/>
+  <line x1="230" y1="60" x2="260" y2="20" class="line" stroke-width="1.5"/>
+  <line x1="230" y1="60" x2="230" y2="100" class="line" stroke-width="1.5"/>
+  <circle cx="230" cy="60" r="3.5" class="accent-fill"/>
+  <text x="194" y="16" class="label">h</text>
+  <text x="262" y="16" class="label">g</text>
+  <text x="222" y="114" class="label">hg</text>
+</svg>
+<figcaption>図 19.4：平面上では、左右の順序が決まるので \(g\times h\) と \(h\times g\) を区別できる。非可換群でも平面ダイアグラム代数が作れる理由である。</figcaption>
+</figure>
+
 <p>
 ただし六角形方程式は可換な融合を暗黙に仮定するので、非可換群からは平面ダイアグラム代数は作れても、<strong>適切な組みひもは与えられない</strong>。
 </p>

@@ -92,6 +92,37 @@
 2ビットが同時に反転すると訂正できない論理誤りになるので、複数の誤りが重なる前に頻繁に状態を調べて訂正する必要がある。
 5ビットや7ビットのようにもっと冗長にすれば複数の反転にも耐えられる（5ビットなら2つの反転まで多数決で訂正できる）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 125" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="35" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <rect x="54" y="35" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <rect x="88" y="35" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="34" y="55" class="label" text-anchor="middle">0</text>
+  <text x="68" y="55" class="label" text-anchor="middle">0</text>
+  <text x="102" y="55" class="label" text-anchor="middle">0</text>
+  <line x1="130" y1="49" x2="160" y2="49" class="line accent" stroke-width="1.5"/>
+  <path d="M154 44 L160 49 L154 54" class="line accent" stroke-width="1.5"/>
+  <rect x="170" y="35" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <rect x="204" y="35" width="28" height="28" class="gate accent" stroke-width="1.5"/>
+  <rect x="238" y="35" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="184" y="55" class="label" text-anchor="middle">0</text>
+  <text x="218" y="55" class="label" text-anchor="middle">1</text>
+  <text x="252" y="55" class="label" text-anchor="middle">0</text>
+  <line x1="280" y1="49" x2="310" y2="49" class="line accent" stroke-width="1.5"/>
+  <path d="M304 44 L310 49 L304 54" class="line accent" stroke-width="1.5"/>
+  <rect x="320" y="35" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <rect x="354" y="35" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <rect x="388" y="35" width="28" height="28" class="gate" stroke-width="1.5"/>
+  <text x="334" y="55" class="label" text-anchor="middle">0</text>
+  <text x="368" y="55" class="label" text-anchor="middle">0</text>
+  <text x="402" y="55" class="label" text-anchor="middle">0</text>
+  <text x="68" y="95" class="label-muted" text-anchor="middle">符号空間</text>
+  <text x="218" y="95" class="label-muted" text-anchor="middle">1ビット反転の誤り</text>
+  <text x="368" y="95" class="label-muted" text-anchor="middle">多数決で訂正</text>
+</svg>
+<figcaption>図 26.1：3ビット繰り返し符号。000 の2番目のビットが反転して 010 になっても、多数決で少数派のビットを見つけて反転し直せば 000 に戻る。</figcaption>
+</figure>
 <p>
 量子でも「量子ビットを複数コピーして比べる」ことが考えられるが、2つの大きな問題がある。1つは<strong>複製不可能定理 (no-cloning theorem)</strong>、すなわち量子ビットの完全な複製は作れないこと。
 もう1つは、測定が必ず状態を変えてしまうことである。
@@ -176,6 +207,22 @@ e^{\ii\chi}\,(\alpha\ket0+\beta\ket1)\otimes(\alpha\ket0+\beta\ket1)=e^{\ii\chi}
 これらを<strong>スタビライザー演算子 (stabilizer operators)</strong>（符号空間を変えない演算子）といい、その固有値を<strong>シンドローム (syndrome)</strong> という（波動関数に「病気」が生じていないかを診断するため）。
 \(\hat O_{12}\) と \(\hat O_{23}\) がともに \(+1\) なら3つの量子ビットが揃っており、符号空間にある。どちらかが（あるいは両方が）\(-1\) なら誤りが起きている。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 155" xmlns="http://www.w3.org/2000/svg">
+  <path d="M100 62 L100 40 L230 40 L230 62" class="line accent" stroke-width="1.5"/>
+  <path d="M230 98 L230 120 L360 120 L360 98" class="line accent" stroke-width="1.5"/>
+  <circle cx="100" cy="80" r="16" class="gate" stroke-width="1.5"/>
+  <circle cx="230" cy="80" r="16" class="gate" stroke-width="1.5"/>
+  <circle cx="360" cy="80" r="16" class="gate" stroke-width="1.5"/>
+  <text x="100" y="85" class="label" text-anchor="middle">1</text>
+  <text x="230" y="85" class="label" text-anchor="middle">2</text>
+  <text x="360" y="85" class="label" text-anchor="middle">3</text>
+  <text x="165" y="30" class="label" text-anchor="middle">O12 = σz(1) σz(2)</text>
+  <text x="295" y="141" class="label" text-anchor="middle">O23 = σz(2) σz(3)</text>
+</svg>
+<figcaption>図 26.2：3量子ビット符号のスタビライザー。括弧は隣り合う2つの量子ビットが z 基底で同じかどうかだけを測ることを表し、各量子ビットの値は測らない。</figcaption>
+</figure>
 <p>
 \(\sigma_x\) 誤りが高々1つだと仮定すると、問題の量子ビットが特定でき、もう一度 \(\sigma_x\) をかけて訂正できる。たとえば量子ビット1に \(\sigma_x\) がかかったなら \(\hat O_{12}\) だけが \(-1\) になる。
 規則は次の表のとおり。
@@ -251,6 +298,41 @@ X\ket\pm=\ket\mp,\qquad Z\ket\pm=\pm\ket\pm
 と書き直せ、式 <a class="eq-ref" href="#eq-26-stab3"></a> と全く同じ形になる。これらは \(X_{123}\)、\(X_{456}\)、\(X_{789}\) が作用したことを検出できる。
 ところが \(X\) は元の量子ビットの \(\sigma_z\) と等価なので、この2つのスタビライザーが \(\sigma_z\) 誤りを検出し、どの演算子で訂正すべきかを教えてくれる。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 160" xmlns="http://www.w3.org/2000/svg">
+  <path d="M100 55 L100 38 L210 38 L210 55" class="line accent" stroke-width="1.5"/>
+  <path d="M250 55 L250 38 L360 38 L360 55" class="line accent" stroke-width="1.5"/>
+  <text x="155" y="28" class="label" text-anchor="middle">O1-6</text>
+  <text x="305" y="28" class="label" text-anchor="middle">O4-9</text>
+  <rect x="20" y="55" width="120" height="50" rx="6" class="gate" stroke-width="1.5"/>
+  <rect x="170" y="55" width="120" height="50" rx="6" class="gate" stroke-width="1.5"/>
+  <rect x="320" y="55" width="120" height="50" rx="6" class="gate" stroke-width="1.5"/>
+  <circle cx="42" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="80" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="118" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="192" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="230" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="268" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="342" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="380" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="418" cy="80" r="12" class="gate" stroke-width="1.5"/>
+  <text x="42" y="85" class="label" text-anchor="middle">1</text>
+  <text x="80" y="85" class="label" text-anchor="middle">2</text>
+  <text x="118" y="85" class="label" text-anchor="middle">3</text>
+  <text x="192" y="85" class="label" text-anchor="middle">4</text>
+  <text x="230" y="85" class="label" text-anchor="middle">5</text>
+  <text x="268" y="85" class="label" text-anchor="middle">6</text>
+  <text x="342" y="85" class="label" text-anchor="middle">7</text>
+  <text x="380" y="85" class="label" text-anchor="middle">8</text>
+  <text x="418" y="85" class="label" text-anchor="middle">9</text>
+  <text x="80" y="128" class="label" text-anchor="middle">O12, O23</text>
+  <text x="230" y="128" class="label" text-anchor="middle">O45, O56</text>
+  <text x="380" y="128" class="label" text-anchor="middle">O78, O89</text>
+  <text x="230" y="151" class="label-muted" text-anchor="middle">上：符号誤り用（3つ組どうしを比較）　下：ビット反転用（3つ組の内部）</text>
+</svg>
+<figcaption>図 26.3：Shor 符号の構造。9量子ビットは3つ組に分かれ、各3つ組の内部で \(\sigma_z\sigma_z\) 型のスタビライザーがビット反転を、3つ組どうしを比べる \(\sigma_x\) の積型のスタビライザーが符号誤りを検出する。</figcaption>
+</figure>
 
 <p>
 こうして符号 <a class="eq-ref" href="#eq-26-shor"></a> の誤りの検出・訂正規則の全体が次の表になる。

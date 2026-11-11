@@ -357,8 +357,23 @@ S=\int_{t_i}^{t_f}\dd t\;L[\mathbf{x}(t),\dot{\mathbf{x}}(t),t]
 \]</div>
 <p>
 から導ける（離れた生成元が可換であること \(\sigma_i\sigma_j=\sigma_j\sigma_i\)、\(|i-j|&gt;1\) と合わせたものが \(B_N\) の定義関係式で、原書の演習で幾何学的に確かめる）。
-<a class="eq-ref" href="#eq-3-yb"></a> は<a href="chapter02.html">第2章</a>の Reidemeister 移動 III に、\(\sigma_i\sigma_i^{-1}=1\) は移動 II に対応している。
+<a class="eq-ref" href="#eq-3-yb"></a> は<a href="chapter02.html">第2章</a>の Reidemeister 移動 III に、\(\sigma_i\sigma_i^{-1}=1\) は移動 II に対応している（図 3.3）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <path d="M50 140 L65 122.5 L80 105 L95 87.5 L110 70 L110 35" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M80 140 L68.9 127.1  M61.1 117.9 L50 105 L50 70 L65 52.5 L80 35" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M110 140 L110 105 L98.9 92.1  M91.1 82.9 L80 70 L68.9 57.1  M61.1 47.9 L50 35" class="line" fill="none" stroke-width="1.5"/>
+  <text x="180" y="94" text-anchor="middle" class="label">=</text>
+  <path d="M250 140 L250 105 L265 87.5 L280 70 L295 52.5 L310 35" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M280 140 L295 122.5 L310 105 L310 70 L298.9 57.1  M291.1 47.9 L280 35" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M310 140 L298.9 127.1  M291.1 117.9 L280 105 L268.9 92.1  M261.1 82.9 L250 70 L250 35" class="line" fill="none" stroke-width="1.5"/>
+  <text x="80" y="166" text-anchor="middle" class="label">σ1 σ2 σ1</text>
+  <text x="280" y="166" text-anchor="middle" class="label">σ2 σ1 σ2</text>
+</svg>
+<figcaption>図 3.3：3本のひもの関係式 \(\sigma_1\sigma_2\sigma_1=\sigma_2\sigma_1\sigma_2\)（時間は上向き）。どちらの図でも色付きのひもは他の2本の上を通り、残る2本のうち左から出るひもが右から出るひもの上を通る。端点を固定したまま一方を他方へ変形できる（Reidemeister 移動 III）。</figcaption>
+</figure>
 
 <div class="def-box">
 <span class="box-title">定義（巻きつき数）</span>
@@ -411,6 +426,21 @@ S_N\ \text{（置換群）} &amp; (3+1)\ \text{次元}
 \(S_N\) は \(B_N\) に関係式 \(\sigma_i^2=1\) を追加したもの（\(B_N\) の「切り詰め」）とみなせる。
 \(\sigma_i^2=1\) は \(\sigma_i=\sigma_i^{-1}\)、つまり上交差と下交差を同一視することと同じである。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <path d="M70 140 L85 115 L100 90 L88.1 70.1  M81.9 59.9 L70 40" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M100 140 L88.1 120.1  M81.9 109.9 L70 90 L85 65 L100 40" class="line" fill="none" stroke-width="1.5"/>
+  <text x="10" y="166" class="label-muted">(2+1) 次元：σ² は絡んだまま</text>
+  <line x1="200" y1="97" x2="250" y2="97" class="line" stroke-width="1.5"/>
+  <path d="M 242 91 L 252 97 L 242 103" class="line" fill="none" stroke-width="1.5"/>
+  <text x="225" y="84" text-anchor="middle" class="label-muted">ほどける</text>
+  <line x1="330" y1="140" x2="330" y2="40" class="line accent" stroke-width="1.5"/>
+  <line x1="360" y1="140" x2="360" y2="40" class="line" stroke-width="1.5"/>
+  <text x="270" y="166" class="label-muted">(3+1) 次元：恒等と同じ</text>
+</svg>
+<figcaption>図 3.4：交換を2回続けた組みひも \(\sigma_1^2\)（左、時間は上向き）。(2+1) 次元では色付きのひもが先に手前、後に奥を通る形で絡み合い、恒等元とは異なる。(3+1) 次元では交差の上下に意味がなく、世界線を4つ目の方向へずらしてほどけるので、置換群の中で \(\sigma_1^2=1\) となる。</figcaption>
+</figure>
 </section>
 
 <!-- ================================================================ -->

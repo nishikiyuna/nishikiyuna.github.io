@@ -141,6 +141,33 @@ TQFT でも \(F\) 行列を \(6j\) 記号と呼ぶことがある。
 <li>左2個を先に融合：結果が \(I\) なら \(\ket0\)、\(\tau\) なら \(\ket1\)。</li>
 <li>右2個を先に融合：結果が \(I\) なら \(\ket{0'}\)、\(\tau\) なら \(\ket{1'}\)。</li>
 </ul>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="25" x2="120" y2="115" class="line" stroke-width="1.5"/>
+  <line x1="80" y1="25" x2="55" y2="50" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="25" x2="95" y2="90" class="line" stroke-width="1.5"/>
+  <text x="26" y="17" class="label">τ</text>
+  <text x="76" y="17" class="label">τ</text>
+  <text x="126" y="17" class="label">τ</text>
+  <text x="58" y="80" class="label">x</text>
+  <text x="124" y="130" class="label">τ</text>
+  <text x="20" y="152" class="label-muted">左2個を先に融合</text>
+  <text x="20" y="172" class="label-muted">x = I：0、x = τ：1</text>
+  <text x="180" y="72" class="label">F で結ばれる</text>
+  <line x1="420" y1="25" x2="330" y2="115" class="line accent" stroke-width="1.5"/>
+  <line x1="370" y1="25" x2="395" y2="50" class="line accent" stroke-width="1.5"/>
+  <line x1="320" y1="25" x2="355" y2="90" class="line accent" stroke-width="1.5"/>
+  <text x="316" y="17" class="label">τ</text>
+  <text x="366" y="17" class="label">τ</text>
+  <text x="416" y="17" class="label">τ</text>
+  <text x="384" y="80" class="label">y</text>
+  <text x="318" y="130" class="label">τ</text>
+  <text x="300" y="152" class="label-muted">右2個を先に融合</text>
+  <text x="300" y="172" class="label-muted">y = I：0'、y = τ：1'</text>
+</svg>
+<figcaption>図 9.2：3個の \(\tau\) が全体として \(\tau\) に融合する2次元空間の2つの基底。左の木の中間ラベル \(x\) と右の木の中間ラベル \(y\) はそれぞれ \(I\) か \(\tau\) で、両者の基底が \(2\times2\) の \(F\) 行列で結ばれる。</figcaption>
+</figure>
 <p>両者は同じ空間を張るので、ユニタリな基底変換</p>
 <div class="equation" id="eq-9-basis">\[
 \begin{pmatrix}\ket0\\ \ket1\end{pmatrix}
@@ -244,7 +271,7 @@ F^{\sigma\sigma\sigma}_\sigma=F=\frac{1}{\sqrt2}\begin{pmatrix}1&amp;1\\1&amp;-1
   <text x="225" y="160" class="label-muted">F</text>
   <text x="384" y="140" class="label-muted">F</text>
 </svg>
-<figcaption>図 9.2：五角形図式。括弧は融合の順序を表す。左端から右端へ、上の経路（\(F\) 2回）でも下の経路（\(F\) 3回）でも行ける。</figcaption>
+<figcaption>図 9.3：五角形図式。括弧は融合の順序を表す。左端から右端へ、上の経路（\(F\) 2回）でも下の経路（\(F\) 3回）でも行ける。</figcaption>
 </figure>
 
 <p>
@@ -302,6 +329,29 @@ F^{\sigma\sigma\sigma}_\sigma=F=\frac{1}{\sqrt2}\begin{pmatrix}1&amp;1\\1&amp;-1
 \]</div>
 と変換する。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="20" x2="75" y2="65" class="line" stroke-width="1.5"/>
+  <line x1="120" y1="20" x2="75" y2="65" class="line" stroke-width="1.5"/>
+  <line x1="75" y1="65" x2="75" y2="108" class="line" stroke-width="1.5"/>
+  <circle cx="75" cy="65" r="3" class="line"/>
+  <text x="22" y="14" class="label">a</text>
+  <text x="116" y="14" class="label">b</text>
+  <text x="82" y="100" class="label">c</text>
+  <text x="25" y="130" class="label-muted">元のゲージの頂点</text>
+  <text x="170" y="68" class="label">＝　u × </text>
+  <line x1="320" y1="20" x2="365" y2="65" class="line accent" stroke-width="1.5"/>
+  <line x1="410" y1="20" x2="365" y2="65" class="line accent" stroke-width="1.5"/>
+  <line x1="365" y1="65" x2="365" y2="108" class="line accent" stroke-width="1.5"/>
+  <circle cx="365" cy="65" r="4" class="accent-fill"/>
+  <text x="312" y="14" class="label">a</text>
+  <text x="406" y="14" class="label">b</text>
+  <text x="372" y="100" class="label">c</text>
+  <text x="305" y="130" class="label-muted">新しいゲージの頂点</text>
+</svg>
+<figcaption>図 9.4：頂点のゲージ変換。頂点に位相 \(u^{ab}_c\) を掛けて取り直す。\(F\) 行列は左右の木の頂点の位相の比だけ変わる。</figcaption>
+</figure>
 
 <p>
 導出は <a class="eq-ref" href="#eq-9-F"></a> の両辺のケットをチルダ付きで書き直すだけである。

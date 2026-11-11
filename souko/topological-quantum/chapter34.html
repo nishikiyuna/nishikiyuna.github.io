@@ -130,8 +130,40 @@ A と B の間にはその境界の長さに比例する短距離のエンタン
 <p>
 式 <a class="eq-ref" href="#eq-34-psi"></a> を Schmidt 形に直す。まず少しずるをして系を3つに分ける。
 単連結な2領域を分ける橙色の線（頂点を横切らない）を引き、線の内側にだけ完全に収まる辺の集合を領域 A、外側にだけ完全に収まる辺の集合を領域 B とし、橙色の線が横切る辺を<strong>境界領域</strong>とする。
-球面では内と外に区別はないので、どちらを A と呼んでもよい。境界の辺のスピン配位を<strong>境界状態</strong> \(\ket{a}\) と呼ぶ（以下では \(a\) と書く。\(M\) 本の境界辺があるので \(2^M\) 通り）。
+球面では内と外に区別はないので、どちらを A と呼んでもよい。境界の辺のスピン配位を<strong>境界状態</strong> \(\ket{a}\) と呼ぶ（以下では \(a\) と書く。\(M\) 本の境界辺があるので \(2^M\) 通り）。図 34.1 に切断の様子を示す。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="20" x2="240" y2="20" class="line" stroke-width="1"/>
+  <line x1="60" y1="50" x2="240" y2="50" class="line" stroke-width="1"/>
+  <line x1="60" y1="80" x2="240" y2="80" class="line" stroke-width="1"/>
+  <line x1="60" y1="110" x2="240" y2="110" class="line" stroke-width="1"/>
+  <line x1="60" y1="140" x2="240" y2="140" class="line" stroke-width="1"/>
+  <line x1="60" y1="170" x2="240" y2="170" class="line" stroke-width="1"/>
+  <line x1="60" y1="20" x2="60" y2="170" class="line" stroke-width="1"/>
+  <line x1="90" y1="20" x2="90" y2="170" class="line" stroke-width="1"/>
+  <line x1="120" y1="20" x2="120" y2="170" class="line" stroke-width="1"/>
+  <line x1="150" y1="20" x2="150" y2="170" class="line" stroke-width="1"/>
+  <line x1="180" y1="20" x2="180" y2="170" class="line" stroke-width="1"/>
+  <line x1="210" y1="20" x2="210" y2="170" class="line" stroke-width="1"/>
+  <line x1="240" y1="20" x2="240" y2="170" class="line" stroke-width="1"/>
+  <line x1="150" y1="50" x2="150" y2="80" class="line accent" stroke-width="3"/>
+  <line x1="180" y1="50" x2="180" y2="80" class="line accent" stroke-width="3"/>
+  <line x1="150" y1="110" x2="150" y2="140" class="line accent" stroke-width="3"/>
+  <line x1="180" y1="110" x2="180" y2="140" class="line accent" stroke-width="3"/>
+  <line x1="120" y1="80" x2="150" y2="80" class="line accent" stroke-width="3"/>
+  <line x1="120" y1="110" x2="150" y2="110" class="line accent" stroke-width="3"/>
+  <line x1="180" y1="80" x2="210" y2="80" class="line accent" stroke-width="3"/>
+  <line x1="180" y1="110" x2="210" y2="110" class="line accent" stroke-width="3"/>
+  <circle cx="165" cy="95" r="34" fill="none" class="line" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="161" y="100" class="label">A</text>
+  <text x="270" y="70" class="label">破線：A と B の切断</text>
+  <text x="270" y="95" class="label">太線：切られる辺（M 本）</text>
+  <text x="270" y="120" class="label-muted">内側が A、外側が B</text>
+</svg>
+<figcaption>図 34.1：トーリック符号の格子（スピンは辺上）を円で A と B に切る。切断線が横切る M 本の辺が境界領域で、この図では M = 8。</figcaption>
+</figure>
 <p>
 境界状態が \(a\) のときの領域 A の基底状態の波動関数を \(\ket{\psi^A_a}\)、領域 B のものを \(\ket{\psi^B_a}\) とする。
 \[
@@ -209,6 +241,20 @@ S_{A,B}=\alpha L-\gamma+\cdots
 これは驚くべき結果で、系の波動関数が与えられたとき、系を分割して2つの部分のエンタングルメントを計算するだけで、トポロジカルな性質が分かる。
 一般公式 <a class="eq-ref" href="#eq-34-gamma"></a> の3通りの導出は §34.3 で与える。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="160" x2="60" y2="16" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="100" x2="400" y2="100" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="130" x2="380" y2="40" class="line accent" stroke-width="2.5"/>
+  <circle cx="60" cy="130" r="3.5" class="accent-fill"/>
+  <text x="70" y="26" class="label">S</text>
+  <text x="300" y="122" class="label">L（境界の長さ）</text>
+  <text x="170" y="50" class="label">S = αL − γ</text>
+  <text x="74" y="156" class="label-muted">切片 −γ = −log D</text>
+</svg>
+<figcaption>図 34.2：エンタングルメント・エントロピーを境界の長さ L に対して描いた模式図。傾き α は系の詳細に依存し、切片 −γ がトポロジカルな寄与である。</figcaption>
+</figure>
 </section>
 
 <!-- ================================================================ -->
@@ -243,7 +289,7 @@ S_{\text{top}}=-\gamma
 </p>
 
 <figure>
-<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 485 200" xmlns="http://www.w3.org/2000/svg">
   <circle cx="230" cy="100" r="70" fill="none" class="line" stroke-width="1.5"/>
   <line x1="230" y1="100" x2="230" y2="30" class="line accent" stroke-width="2"/>
   <line x1="230" y1="100" x2="169.4" y2="135" class="line accent" stroke-width="2"/>
@@ -254,7 +300,7 @@ S_{\text{top}}=-\gamma
   <text x="352" y="48" class="label">D（円の外側すべて）</text>
   <text x="25" y="190" class="label-muted">3本の線分（長さ L_straight）と、D を囲む3本の円弧（長さ L_curved）</text>
 </svg>
-<figcaption>図 34.1：Kitaev–Preskill の分割（模式図）。球面を4領域に分け、領域 D は残りの球面（無限遠を含む）。</figcaption>
+<figcaption>図 34.3：Kitaev–Preskill の分割（模式図）。球面を4領域に分け、領域 D は残りの球面（無限遠を含む）。</figcaption>
 </figure>
 
 <p>
@@ -323,6 +369,33 @@ S^{\text{double}}_{\text{top}}=2S_{\text{top}}
 TQFT に穴を開けると一般にその境界に低エネルギーの端モードができるが、ここでは \(T\) の穴と \(\overline T\) の穴で鏡像の端モードができるので、2つの端を結合させて低エネルギーモードを消せる（\(T\times\overline T\) の端にはギャップを開けられる、第25章 §25.8）。
 その結果、4つの「ワームホール」で結ばれた2層構造が得られ、低エネルギーモードはない。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 50 30 L 310 30 L 280 70 L 20 70 Z" class="gate" stroke-width="1.5"/>
+  <path d="M 50 110 L 310 110 L 280 150 L 20 150 Z" class="gate" stroke-width="1.5"/>
+  <line x1="63" y1="50" x2="63" y2="130" class="line accent" stroke-width="1.5"/>
+  <line x1="87" y1="50" x2="87" y2="130" class="line accent" stroke-width="1.5"/>
+  <line x1="123" y1="50" x2="123" y2="130" class="line accent" stroke-width="1.5"/>
+  <line x1="147" y1="50" x2="147" y2="130" class="line accent" stroke-width="1.5"/>
+  <line x1="183" y1="50" x2="183" y2="130" class="line accent" stroke-width="1.5"/>
+  <line x1="207" y1="50" x2="207" y2="130" class="line accent" stroke-width="1.5"/>
+  <line x1="238" y1="50" x2="238" y2="130" class="line accent" stroke-width="1.5"/>
+  <line x1="262" y1="50" x2="262" y2="130" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="75" cy="50" rx="12" ry="5" fill="none" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="135" cy="50" rx="12" ry="5" fill="none" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="195" cy="50" rx="12" ry="5" fill="none" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="250" cy="50" rx="12" ry="5" fill="none" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="75" cy="130" rx="12" ry="5" fill="none" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="135" cy="130" rx="12" ry="5" fill="none" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="195" cy="130" rx="12" ry="5" fill="none" class="line accent" stroke-width="1.5"/>
+  <ellipse cx="250" cy="130" rx="12" ry="5" fill="none" class="line accent" stroke-width="1.5"/>
+  <text x="330" y="55" class="label">上層：T</text>
+  <text x="330" y="135" class="label">下層：T の鏡像</text>
+  <text x="20" y="180" class="label-muted">4つの三重交点に穴を開け、両層を管でつなぐ</text>
+</svg>
+<figcaption>図 34.4：二重系 T×(T の鏡像) の2層構造に4つの穴を開け、鏡像の端モードどうしを結合させてできる「ワームホール」の模式図。</figcaption>
+</figure>
 <p>
 穴を開けて繋ぎ直すのは局所的な変更なので、トポロジカル・エンタングルメント・エントロピーは変わらないと考える。
 式 <a class="eq-ref" href="#eq-34-Stop"></a> の右辺の各エントロピーを計算する。\(S_{A,BCD}\) では領域 A だけを切り出す。すると A は3つの大きな穴を持つ球面である（A の上下の層の2つの三角形を、ワームホール管の一部をなす3本の帯でつないだもの）。

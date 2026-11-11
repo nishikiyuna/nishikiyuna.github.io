@@ -123,8 +123,30 @@ Fibonacci 因子のため、この状態はトポロジカル量子計算に対�
 <p>
 他の充填率でも非アーベルの可能性が提案されている（\(\nu=19/8\)、\(7/3\)、\(8/3\) など）が、詳しい研究が少なく、説得力は劣る。
 ここまでの理論はスピン偏極した電子を想定している。スピンが偏極しない実験を考えると、実現しうる状態の数ははるかに増える。グラフェン、幅広い量子井戸、2層系などではバレー指数やサブバンド指数のような追加の量子数も持ちうる。
-どの観測された分数量子ホール状態がどの TQFT に対応するかを解き明かすのは、今後も長く続く大きな課題である。
+どの観測された分数量子ホール状態がどの TQFT に対応するかを解き明かすのは、今後も長く続く大きな課題である。図 37.1 に \(2\le\nu\le3\) の範囲で本文に出てきた分数を並べる。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="90" x2="400" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="84" x2="60" y2="96" class="line" stroke-width="1.5"/>
+  <line x1="400" y1="84" x2="400" y2="96" class="line" stroke-width="1.5"/>
+  <circle cx="173.3" cy="90" r="5" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="196" cy="90" r="5.5" class="accent-fill"/>
+  <circle cx="230" cy="90" r="5.5" class="accent-fill"/>
+  <circle cx="286.7" cy="90" r="5" fill="none" class="line" stroke-width="1.5"/>
+  <text x="60" y="118" text-anchor="middle" class="label">ν = 2</text>
+  <text x="400" y="118" text-anchor="middle" class="label">ν = 3</text>
+  <text x="173" y="118" text-anchor="middle" class="label">7/3</text>
+  <text x="230" y="118" text-anchor="middle" class="label">5/2</text>
+  <text x="230" y="138" text-anchor="middle" class="label-muted">Ising 型</text>
+  <text x="196" y="70" text-anchor="middle" class="label">12/5</text>
+  <text x="196" y="50" text-anchor="middle" class="label-muted">Fibonacci 型（万能）</text>
+  <text x="287" y="70" text-anchor="middle" class="label">8/3</text>
+  <text x="60" y="170" class="label-muted">塗りつぶし：非アーベルの有力候補、白抜き：他の提案</text>
+</svg>
+<figcaption>図 37.1：\(2\le\nu\le3\) の充填率の軸と、非アーベルの候補とされる分数の位置（模式図）。</figcaption>
+</figure>
 
 <h3 id="sec-37-1-3">§37.1.3 分数 Chern 絶縁体</h3>
 
@@ -171,9 +193,50 @@ H_K=J_x\sum_{\langle ij\rangle\in\text{赤}}\sigma^x_i\sigma^x_j
 \]</div>
 <p>
 （簡単のため \(J_x,J_y,J_z&gt;0\)。方向ごとの相互作用が互いに競合し、通常のスピン秩序をフラストレートさせる。）
+結合の3方向を図 37.2 に示す。
 この模型は驚くべきことに厳密に解ける。ある結合定数が他の2つの和より大きい領域ではギャップがあり、トポロジカル秩序はちょうどトーリック符号のものである。それ以外ではギャップレス相になる。
 ギャップレス相でも、各スピンに磁場 \(\delta H=\sum_i(h_x\sigma^x_i+h_y\sigma^y_i+h_z\sigma^z_i)\) のような小さな摂動を加え、\(h_x,h_y,h_z\) がすべて 0 でなければ、ギャップが開いて Ising 型の相（Ising 理論またはその鏡像）になる（Kitaev [2006]）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 210" xmlns="http://www.w3.org/2000/svg">
+  <line x1="120" y1="50" x2="154.64" y2="70" class="line" stroke-dasharray="6 4" stroke-width="2"/>
+  <line x1="154.64" y1="70" x2="154.64" y2="110" class="line" stroke-width="3"/>
+  <line x1="154.64" y1="110" x2="120" y2="130" class="line accent" stroke-width="2.5"/>
+  <line x1="120" y1="130" x2="85.36" y2="110" class="line" stroke-dasharray="6 4" stroke-width="2"/>
+  <line x1="85.36" y1="110" x2="85.36" y2="70" class="line" stroke-width="3"/>
+  <line x1="85.36" y1="70" x2="120" y2="50" class="line accent" stroke-width="2.5"/>
+  <line x1="189.28" y1="50" x2="223.92" y2="70" class="line" stroke-dasharray="6 4" stroke-width="2"/>
+  <line x1="223.92" y1="70" x2="223.92" y2="110" class="line" stroke-width="3"/>
+  <line x1="223.92" y1="110" x2="189.28" y2="130" class="line accent" stroke-width="2.5"/>
+  <line x1="189.28" y1="130" x2="154.64" y2="110" class="line" stroke-dasharray="6 4" stroke-width="2"/>
+  <line x1="154.64" y1="70" x2="189.28" y2="50" class="line accent" stroke-width="2.5"/>
+  <line x1="189.28" y1="130" x2="189.28" y2="170" class="line" stroke-width="3"/>
+  <line x1="189.28" y1="170" x2="154.64" y2="190" class="line accent" stroke-width="2.5"/>
+  <line x1="154.64" y1="190" x2="120" y2="170" class="line" stroke-dasharray="6 4" stroke-width="2"/>
+  <line x1="120" y1="170" x2="120" y2="130" class="line" stroke-width="3"/>
+  <circle cx="120" cy="50" r="3.5" class="accent-fill"/>
+  <circle cx="154.64" cy="70" r="3.5" class="accent-fill"/>
+  <circle cx="154.64" cy="110" r="3.5" class="accent-fill"/>
+  <circle cx="120" cy="130" r="3.5" class="accent-fill"/>
+  <circle cx="85.36" cy="110" r="3.5" class="accent-fill"/>
+  <circle cx="85.36" cy="70" r="3.5" class="accent-fill"/>
+  <circle cx="189.28" cy="50" r="3.5" class="accent-fill"/>
+  <circle cx="223.92" cy="70" r="3.5" class="accent-fill"/>
+  <circle cx="223.92" cy="110" r="3.5" class="accent-fill"/>
+  <circle cx="189.28" cy="130" r="3.5" class="accent-fill"/>
+  <circle cx="189.28" cy="170" r="3.5" class="accent-fill"/>
+  <circle cx="154.64" cy="190" r="3.5" class="accent-fill"/>
+  <circle cx="120" cy="170" r="3.5" class="accent-fill"/>
+  <line x1="280" y1="65" x2="315" y2="65" class="line accent" stroke-width="2.5"/>
+  <text x="325" y="70" class="label">x 結合（σx σx）</text>
+  <line x1="280" y1="100" x2="315" y2="100" class="line" stroke-dasharray="6 4" stroke-width="2"/>
+  <text x="325" y="105" class="label">y 結合（σy σy）</text>
+  <line x1="280" y1="135" x2="315" y2="135" class="line" stroke-width="3"/>
+  <text x="325" y="140" class="label">z 結合（σz σz）</text>
+</svg>
+<figcaption>図 37.2：蜂の巣格子の辺は向きによって3種類（x, y, z）に分かれ、各頂点には3種類の辺が1本ずつ集まる。本文の赤・青・緑の辺は、この図の x, y, z 結合に対応する。</figcaption>
+</figure>
 <p>
 Kitaev 模型とそのさまざまな修正は、スピン液体の玩具模型として非常によく研究されており、追加項や高次元への拡張がある。2次元では、<a href="chapter17.html">第17章</a>の表 17.3 の16重の道のすべての相を実現する模型も構成できる。
 さらに驚くべきことに、Kitaev 模型（とその拡張）は、自然界のある種の物質の記述としてそれほど不正確でない。方向に依存するスピン相互作用は奇妙に思えるが、Jackeli–Khaliullin は、強い相互作用と強いスピン軌道相互作用をもつある種の化合物ではそれが自然になることを示した。
@@ -188,8 +251,27 @@ Kitaev 模型とそのさまざまな修正は、スピン液体の玩具模型�
 \[
 H=-J\sum_{\langle ij\rangle}\boldsymbol\sigma_i\cdot\boldsymbol\sigma_j\qquad(J&lt;0)
 \]
-では隣接スピンは逆向きに揃いたがるが、三角形のプラケットでは、2つのスピンを互いに逆向きにすると、3つ目のスピンは両方と逆向きにはなれない。このような<strong>フラストレーション</strong>は通常の秩序の形成を妨げ、トポロジカル秩序のようなより珍しい秩序を可能にする。
+では隣接スピンは逆向きに揃いたがるが、三角形のプラケットでは、2つのスピンを互いに逆向きにすると、3つ目のスピンは両方と逆向きにはなれない。このような<strong>フラストレーション</strong>は通常の秩序の形成を妨げ、トポロジカル秩序のようなより珍しい秩序を可能にする（図 37.3）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 130 35 L 190 135 L 70 135 Z" class="gate" stroke-width="1.5"/>
+  <line x1="130" y1="35" x2="190" y2="135" class="line accent" stroke-width="3"/>
+  <line x1="190" y1="135" x2="70" y2="135" class="line" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <line x1="70" y1="135" x2="130" y2="35" class="line" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <circle cx="130" cy="35" r="4" class="accent-fill"/>
+  <circle cx="190" cy="135" r="4" class="accent-fill"/>
+  <circle cx="70" cy="135" r="4" class="accent-fill"/>
+  <text x="130" y="22" text-anchor="middle" class="label">↑</text>
+  <text x="203" y="141" class="label">↓</text>
+  <text x="48" y="141" text-anchor="end" class="label">?</text>
+  <text x="270" y="60" class="label">太線：反平行で満足</text>
+  <text x="270" y="85" class="label-muted">破線：残りの2本は</text>
+  <text x="270" y="105" class="label-muted">同時には満足できない</text>
+</svg>
+<figcaption>図 37.3：三角形プラケット上の反強磁性相互作用のフラストレーション。2つのスピンを反平行にすると、3つ目のスピンは両方と反平行にはなれない。</figcaption>
+</figure>
 <p>
 そこで頂点にスピンを置いた三角格子（<a href="chapter35.html">第35章</a>の図 35.1 の格子）の反強磁性模型をまず考えるが、明らかなフラストレーションにもかかわらず、三角格子の Heisenberg 反強磁性模型は通常の秩序状態をつくりそうである。はるかによい候補は、反強磁性<strong>カゴメ格子</strong> Heisenberg 模型である。
 古典スピン（交換関係のないベクトル）では、カゴメ反強磁性体の基底状態は高度に縮退する。基底状態が高度に縮退して無秩序な場合、量子力学的な基底状態が量子スピン液体になる見込みが高いと考えられる。

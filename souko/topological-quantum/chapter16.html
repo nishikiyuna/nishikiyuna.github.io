@@ -174,6 +174,18 @@ F^{bad}_{ecf} = [F^{\bar a\bar b\bar c}_{e}]_{df}
 (iii) は<a href="chapter14.html">第14章</a>の完全性関係そのもので、ここでは図をどの向きに置いて使ってもよい。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="65" r="35" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="100" y1="100" x2="100" y2="150" class="line" stroke-width="1.5"/>
+  <circle cx="100" cy="100" r="3.5" class="accent-fill"/>
+  <text x="145" y="70" class="label">a</text>
+  <text x="108" y="140" class="label">c</text>
+  <text x="190" y="100" class="label">＝ 0　（c が真空でないとき）</text>
+</svg>
+<figcaption>図 16.3：おたまじゃくし型の図。ループに1本だけ線が生えた図は、その線 \(c\) が真空でない限りゼロになる。</figcaption>
+</figure>
+
 <h3 id="sec-16-1-2">§16.1.2 平面アイソトピー不変な理論のダイアグラム規則のまとめ</h3>
 
 <p>
@@ -336,6 +348,21 @@ F^{\bar c a b}_{\bar a c I} = \sqrt{\frac{d_b}{d_a d_c}} \qquad (c\times b = a+\
 となる。最右辺の平方根は、\(d_a,d_b,d_c\) がすべて正の場合を除いて負にとる。
 </div>
 
+<figure>
+<svg viewBox="0 0 460 160" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 120 85 C 140 25 220 25 240 85" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="120" y1="85" x2="240" y2="85" class="line" stroke-width="1.5"/>
+  <path d="M 120 85 C 140 145 220 145 240 85" class="line accent" fill="none" stroke-width="1.5"/>
+  <circle cx="120" cy="85" r="4" class="accent-fill"/>
+  <circle cx="240" cy="85" r="4" class="accent-fill"/>
+  <text x="176" y="30" class="label">a</text>
+  <text x="176" y="76" class="label">b</text>
+  <text x="176" y="152" class="label">c</text>
+  <text x="285" y="90" class="label">＝ √(d_a d_b d_c)</text>
+</svg>
+<figcaption>図 16.4：シータ図。2つの頂点を3本の線 \(a,b,c\) で結んだ図で、値は \(\sqrt{d_ad_bd_c}\)。</figcaption>
+</figure>
+
 <div class="example-box">
 <span class="box-title">例（四面体図）</span>
 四面体の辺に6つのラベルを載せた図（平面図として、あるいは球面上の図として読む）を評価する。
@@ -348,6 +375,30 @@ G^{bad}_{ecf} \equiv F^{bad}_{ecf}\; d_f\,\sqrt{\frac{d_bd_c}{d_f}}\,\sqrt{\frac
 後者は平面図の恒等式でありながら、四面体を3次元的に回したように見える。この2つを組み合わせると四面体を好きな向きに回せ、
 さらに鏡映対称性 <a class="eq-ref" href="#eq-16-refl"></a> を仮定すれば鏡像もとれるので、対称性で結ばれた24個の四面体図が等しくなる（<strong>四面体対称性</strong>）。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <line x1="150" y1="25" x2="60" y2="140" class="line" stroke-width="1.5"/>
+  <line x1="150" y1="25" x2="240" y2="140" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="140" x2="240" y2="140" class="line" stroke-width="1.5"/>
+  <line x1="150" y1="100" x2="150" y2="25" class="line accent" stroke-width="1.5"/>
+  <line x1="150" y1="100" x2="60" y2="140" class="line accent" stroke-width="1.5"/>
+  <line x1="150" y1="100" x2="240" y2="140" class="line accent" stroke-width="1.5"/>
+  <circle cx="150" cy="25" r="3.5" class="accent-fill"/>
+  <circle cx="60" cy="140" r="3.5" class="accent-fill"/>
+  <circle cx="240" cy="140" r="3.5" class="accent-fill"/>
+  <circle cx="150" cy="100" r="3.5" class="accent-fill"/>
+  <text x="82" y="82" class="label">a</text>
+  <text x="206" y="82" class="label">b</text>
+  <text x="146" y="160" class="label">c</text>
+  <text x="158" y="62" class="label">d</text>
+  <text x="108" y="108" class="label">e</text>
+  <text x="188" y="108" class="label">f</text>
+  <text x="290" y="85" class="label-muted">六辺にラベルを</text>
+  <text x="290" y="105" class="label-muted">載せた四面体図</text>
+</svg>
+<figcaption>図 16.5：四面体図。平面図として描いた四面体で、6本の辺にラベルが載る。\(F\) 移動1回と泡の収縮2回で評価でき、値は \(G^{bad}_{ecf}\) になる。</figcaption>
+</figure>
 
 <div class="remark-box">
 <span class="box-title">補足（四面体対称性は常にとれるとは限らない）</span>

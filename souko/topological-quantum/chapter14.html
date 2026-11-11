@@ -305,6 +305,22 @@ Chern–Simons 理論の不変量は枠付きの結び目の不変量で、経�
 自己双対な粒子は線に矢印を描かないので右手と左手を区別できない。これを記録する新しい記号が旗である。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <line x1="100" y1="150" x2="100" y2="34" class="line" stroke-width="1.5"/>
+  <polygon points="100,22 94,34 106,34" class="accent-fill"/>
+  <line x1="122" y1="150" x2="122" y2="34" class="line" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="78" y="16" class="label">a</text>
+  <text x="30" y="178" class="label-muted">右手枠付け（点線が右）</text>
+  <line x1="330" y1="150" x2="330" y2="34" class="line" stroke-width="1.5"/>
+  <polygon points="330,22 324,34 336,34" class="accent-fill"/>
+  <line x1="308" y1="150" x2="308" y2="34" class="line" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="338" y="16" class="label">a</text>
+  <text x="250" y="178" class="label-muted">左手枠付け（点線が左）</text>
+</svg>
+<figcaption>図 14.2：リボンの枠付け。実線がひもで、点線は枠（リボンの縁）を表す。矢印の向きに進んで点線が右にあれば右手枠付け、左にあれば左手枠付けである。</figcaption>
+</figure>
+
 <div class="def-box">
 <span class="box-title">定義（旗）</span>
 指標が負の自己双対粒子 \(a\) について、カップ（対生成）とキャップ（対消滅）のそれぞれに、左か右を向いた大きな三角の矢印
@@ -400,7 +416,7 @@ Frobenius–Schur 指標の問題を別にしても、平面内で線を自由�
   <text x="20" y="178" class="label-muted">c と c̄ が対生成し、c̄ と a が b に融合</text>
   <text x="318" y="178" class="label-muted">a が c と b に分裂</text>
 </svg>
-<figcaption>図 14.2：頂点の脚の曲げ上げ。左の図は右の素直な頂点に比例するが、比例係数（本文の式）は一般に 1 ではない。</figcaption>
+<figcaption>図 14.3：頂点の脚の曲げ上げ。左の図は右の素直な頂点に比例するが、比例係数（本文の式）は一般に 1 ではない。</figcaption>
 </figure>
 
 <div class="thm-box">
@@ -639,6 +655,25 @@ Frobenius–Schur 指標の問題を別にしても、平面内で線を自由�
 \(C^{ab}_c\) も絶対値 1 の位相である（多重度があれば \([C^{ab}_c]_{\mu\nu}\) というユニタリ行列）。これを3回続けると次を得る。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <line x1="90" y1="100" x2="90" y2="150" class="line accent" stroke-width="1.5"/>
+  <line x1="90" y1="100" x2="60" y2="40" class="line" stroke-width="1.5"/>
+  <line x1="90" y1="100" x2="120" y2="40" class="line" stroke-width="1.5"/>
+  <text x="52" y="32" class="label">a</text>
+  <text x="118" y="32" class="label">b</text>
+  <text x="98" y="148" class="label">c</text>
+  <text x="170" y="100" class="label">＝ C ×</text>
+  <line x1="370" y1="100" x2="370" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="370" y1="100" x2="340" y2="40" class="line accent" stroke-width="1.5"/>
+  <line x1="370" y1="100" x2="400" y2="40" class="line" stroke-width="1.5"/>
+  <text x="332" y="32" class="label">c</text>
+  <text x="398" y="32" class="label">a</text>
+  <text x="378" y="148" class="label">b</text>
+</svg>
+<figcaption>図 14.4：頂点の脚を巡回的にひとつ回す。位相 \(C^{ab}_c\) を除いて、\(c\) が \(a,b\) に分裂する頂点は \(b\) が \(c,a\) に分裂する頂点に等しい。3回続けると元に戻る。</figcaption>
+</figure>
+
 <div class="thm-box">
 <span class="box-title">結果（ピボタル恒等式）</span>
 <div class="equation" id="eq-14-pivotal">\[
@@ -669,6 +704,21 @@ C^{ab}_c\,C^{bc}_a\,C^{ca}_b=1
 ただし性質としては名前より強く、球面上にほかのものがあってひもを裏へ回せない状況でも左右のトレースを入れ替えてよい。
 直ちにわかる帰結として \(d_a=d_{\bar a}\) が成り立つ。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 100 60 L 100 35 C 100 15 40 15 40 40 L 40 140 C 40 165 100 165 100 140 L 100 120" class="line accent" fill="none" stroke-width="1.5"/>
+  <rect x="70" y="60" width="60" height="60" class="gate" stroke-width="1.5"/>
+  <text x="96" y="95" class="label">X</text>
+  <text x="50" y="186" class="label-muted">左トレース</text>
+  <text x="212" y="95" class="label">＝</text>
+  <path d="M 360 60 L 360 35 C 360 15 420 15 420 40 L 420 140 C 420 165 360 165 360 140 L 360 120" class="line accent" fill="none" stroke-width="1.5"/>
+  <rect x="330" y="60" width="60" height="60" class="gate" stroke-width="1.5"/>
+  <text x="356" y="95" class="label">X</text>
+  <text x="320" y="186" class="label-muted">右トレース</text>
+</svg>
+<figcaption>図 14.5：球面性。上の線と下の線を \(X\) の左側でつないだ左トレースと、右側でつないだ右トレースは等しい。</figcaption>
+</figure>
 </section>
 
 <section>
