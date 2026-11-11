@@ -174,7 +174,7 @@ Haldane 相はギャップがあることは既知だったが、それが実は
 </p>
 
 <p>
-三角格子の各頂点にスピン 1/2 を置く（図 35.1 に当たる配置）。Pauli 演算子を使って、サイト \(i\) の反転は \(\hat U^{(i)}=\sigma^x_{(i)}\) で、\(\sigma_x^2=1\) だから群はたしかに \(\Z_2\) である。
+三角格子の各頂点にスピン 1/2 を置く。Pauli 演算子を使って、サイト \(i\) の反転は \(\hat U^{(i)}=\sigma^x_{(i)}\) で、\(\sigma_x^2=1\) だから群はたしかに \(\Z_2\) である。
 唯一の非自明な大域対称性操作は
 </p>
 <div class="equation" id="eq-35-Uglobal">\[
@@ -235,14 +235,78 @@ s(p)=\prod_{\langle pqr\rangle} i^{\,(1-\sigma^z_{(q)}\sigma^z_{(r)})/2}.
 \]</div>
 <p>
 積は、点 \(p\) を頂点にもつ6つの三角形 \(\langle pqr\rangle\) について行い、\(q,r\) はその三角形の残り2頂点である。
-\(s(p)\) は \(p\) を囲む六角形上で、隣り合うスピンが逆向きの組1つにつき \(i\) の因子を与える。そのような組の数は常に偶数なので \(s(p)=\pm1\) となり、\(s(p)^2=1\) である。
+\(s(p)\) は \(p\) を囲む六角形上で、隣り合うスピンが逆向きの組1つにつき \(i\) の因子を与える。そのような組の数は常に偶数なので \(s(p)=\pm1\) となり、\(s(p)^2=1\) である（図 35.1）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <line x1="130" y1="90" x2="180" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="90" x2="155" y2="133.3" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="90" x2="105" y2="133.3" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="90" x2="80" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="90" x2="105" y2="46.7" class="line" stroke-width="1.5"/>
+  <line x1="130" y1="90" x2="155" y2="46.7" class="line" stroke-width="1.5"/>
+  <path d="M 180 90 L 155 133.3 L 105 133.3 L 80 90 L 105 46.7 L 155 46.7 Z" fill="none" class="line" stroke-width="1.5"/>
+  <path d="M 130 90 L 180 90 L 155 46.7 Z" fill="none" class="line accent" stroke-width="3"/>
+  <circle cx="130" cy="90" r="4.5" class="accent-fill"/>
+  <circle cx="180" cy="90" r="4" class="accent-fill"/>
+  <circle cx="155" cy="46.7" r="4" class="accent-fill"/>
+  <circle cx="155" cy="133.3" r="4" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="105" cy="133.3" r="4" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="80" cy="90" r="4" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="105" cy="46.7" r="4" fill="none" class="line" stroke-width="1.5"/>
+  <text x="150" y="108" class="label">p</text>
+  <text x="190" y="95" class="label">q</text>
+  <text x="161" y="40" class="label">r</text>
+  <text x="260" y="65" class="label">p：中心のサイト</text>
+  <text x="260" y="90" class="label">六角形を作る6つの三角形</text>
+  <text x="260" y="115" class="label-muted">太線は ⟨pqr⟩ の1つ</text>
+</svg>
+<figcaption>図 35.1：三角格子上のサイト p とそれを囲む6つの三角形。s(p) は各三角形の残り2頂点 q, r のスピンの向きが逆なら i を与える因子の積である。</figcaption>
+</figure>
 <p>
 \(z\) 基底で見ると、同じ \(B_p\) は次のように言い換えられる。まず上向きスピンと下向きスピンの境界である<strong>ドメインウォール</strong>をすべて見つける。ドメインウォールは必ず閉じたループをなす。すると
 </p>
 <div class="equation" id="eq-35-Bp-dw">
 \(B_p\) =「スピン \(p\) を反転し、ドメインウォールの本数の偶奇が変わったなら \(-1\) を掛ける」。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="40" cy="30" r="5" class="accent-fill"/>
+  <circle cx="80" cy="30" r="5" class="accent-fill"/>
+  <circle cx="120" cy="30" r="5" class="accent-fill"/>
+  <circle cx="160" cy="30" r="5" class="accent-fill"/>
+  <circle cx="200" cy="30" r="5" class="accent-fill"/>
+  <circle cx="240" cy="30" r="5" class="accent-fill"/>
+  <circle cx="60" cy="64" r="5" class="accent-fill"/>
+  <circle cx="100" cy="64" r="5" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="140" cy="64" r="5" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="180" cy="64" r="5" class="accent-fill"/>
+  <circle cx="220" cy="64" r="5" class="accent-fill"/>
+  <circle cx="260" cy="64" r="5" class="accent-fill"/>
+  <circle cx="40" cy="98" r="5" class="accent-fill"/>
+  <circle cx="80" cy="98" r="5" class="accent-fill"/>
+  <circle cx="120" cy="98" r="5" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="160" cy="98" r="5" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="200" cy="98" r="5" class="accent-fill"/>
+  <circle cx="240" cy="98" r="5" class="accent-fill"/>
+  <circle cx="60" cy="132" r="5" class="accent-fill"/>
+  <circle cx="100" cy="132" r="5" class="accent-fill"/>
+  <circle cx="140" cy="132" r="5" class="accent-fill"/>
+  <circle cx="180" cy="132" r="5" class="accent-fill"/>
+  <circle cx="220" cy="132" r="5" class="accent-fill"/>
+  <circle cx="260" cy="132" r="5" class="accent-fill"/>
+  <path d="M 80 50 L 160 50 L 184 90 L 164 116 L 118 116 L 94 84 Z" fill="none" class="line accent" stroke-width="2" stroke-dasharray="6 4"/>
+  <circle cx="295" cy="56" r="5" class="accent-fill"/>
+  <text x="310" y="61" class="label">上向きスピン</text>
+  <circle cx="295" cy="86" r="5" fill="none" class="line" stroke-width="1.5"/>
+  <text x="310" y="91" class="label">下向きスピン</text>
+  <text x="290" y="121" class="label-muted">破線：ドメインウォール</text>
+  <text x="290" y="141" class="label-muted">（閉じたループ）</text>
+</svg>
+<figcaption>図 35.2：スピン配置とドメインウォール。上下のスピンの境界は必ず閉じたループになり、端点をもたない。</figcaption>
+</figure>
 <p>
 この \(B_p\) は \(\hat U_{\text{global}}\) と可換で、互いに可換で、2乗が1であり（原書の演習 35.1 で確かめる）、基底状態は \(B_p=+1\) の状態である。基底状態は
 </p>
@@ -295,8 +359,22 @@ s(p)=\prod_{\langle pqr\rangle} i^{\,(1-\sigma^z_{(q)}\sigma^z_{(r)})/2}.
 欠陥を囲む任意の円は奇数本のドメインウォールと交わるので、ドメインウォールは欠陥でちょうど終わらなければならない。
 これで、SPT の中にドメインウォールの端点をつくる方法が得られた。
 ドメインウォールの端点は二重セミオン模型でのループの端点に対応し、それはセミオン準粒子に対応するので、<strong>SPT における対称性欠陥は実効的にセミオン</strong>である。
-ただしこれは「外因的 (extrinsic)」な対象で、ねじれた境界条件を課した場所に固定されている。
+ただしこれは「外因的 (extrinsic)」な対象で、ねじれた境界条件を課した場所に固定されている（図 35.3）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 175" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="150" cy="85" r="42" fill="none" class="line" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="150" y1="85" x2="420" y2="85" class="line accent" stroke-width="2.5"/>
+  <line x1="144" y1="79" x2="156" y2="91" class="line accent" stroke-width="2.5"/>
+  <line x1="156" y1="79" x2="144" y2="91" class="line accent" stroke-width="2.5"/>
+  <circle cx="192" cy="85" r="3.5" class="accent-fill"/>
+  <text x="150" y="28" text-anchor="middle" class="label">対称性欠陥</text>
+  <text x="320" y="75" text-anchor="middle" class="label">ドメインウォール</text>
+  <text x="230" y="150" text-anchor="middle" class="label-muted">欠陥を囲む円は奇数本（1本）のウォールと交わる</text>
+</svg>
+<figcaption>図 35.3：対称性欠陥。ねじれた境界条件のために、欠陥を囲む任意の円が奇数本のドメインウォールと交わり、ウォールは欠陥で終わる。</figcaption>
+</figure>
 
 <h3 id="sec-35-4-2">§35.4.2 端状態</h3>
 
@@ -391,8 +469,28 @@ Dijkgraaf–Witten 模型は任意の次元で存在するので、非ゲージ�
 U_{(n_L,n_R),(m_L,m_R)}(g)=V_{n_L,m_L}(g)\,V^\dagger_{n_R,m_R}(g).
 \]</div>
 <p>
-両端の変換が互いに共役になるのは、端をつなぎ直したとき系全体が対称操作のもとで自明に変換しなければならないからである。
+両端の変換が互いに共役になるのは、端をつなぎ直したとき系全体が対称操作のもとで自明に変換しなければならないからである（図 35.4）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="85" x2="400" y2="85" class="line" stroke-width="1.5"/>
+  <circle cx="100" cy="85" r="3" class="accent-fill"/>
+  <circle cx="140" cy="85" r="3" class="accent-fill"/>
+  <circle cx="180" cy="85" r="3" class="accent-fill"/>
+  <circle cx="220" cy="85" r="3" class="accent-fill"/>
+  <circle cx="260" cy="85" r="3" class="accent-fill"/>
+  <circle cx="300" cy="85" r="3" class="accent-fill"/>
+  <circle cx="340" cy="85" r="3" class="accent-fill"/>
+  <circle cx="60" cy="85" r="9" class="gate" stroke-width="2"/>
+  <circle cx="400" cy="85" r="9" class="gate" stroke-width="2"/>
+  <text x="40" y="52" class="label">左端 L：V(g)</text>
+  <text x="420" y="52" text-anchor="end" class="label">右端 R：V†(g)</text>
+  <text x="230" y="125" text-anchor="middle" class="label-muted">バルク：G 対称で一意の基底状態</text>
+  <text x="230" y="152" text-anchor="middle" class="label-muted">全体の作用 U(g) = V(g) ⊗ V†(g) は通常の表現</text>
+</svg>
+<figcaption>図 35.4：1次元 SPT の開いた鎖。バルクは対称で自明に変換し、両端の端状態だけが射影表現 V(g) と V†(g) で変換する。</figcaption>
+</figure>
 
 <p>
 ここで \(V(g)\) が \(G\) の表現だと結論したくなるが、積 <a class="eq-ref" href="#eq-35-UVV"></a> で打ち消し合う位相の自由度がある。\(U(g)\) が表現であるために必要なのは

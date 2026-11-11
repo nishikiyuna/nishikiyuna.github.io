@@ -86,8 +86,26 @@ P S P^T = S,\qquad P T P^T = T
 第35章では \(\Z_2\) の微視的変数を \(\Z_2\) の作用でねじった。ここでは、エニオン置換対称性の対称性欠陥を考える。
 それは2次元系の中の1点で、粒子をその点の周りに引きずると、粒子の種類が \(P\)（式 <a class="eq-ref" href="#eq-36-perm"></a> のうちの1つ）で変わる、というものである。
 トーリック符号では \(m\) 粒子が欠陥を1周すると \(e\) 粒子に変わる（逆も同様）。つまり \(e\) と \(m\) が「入れ替わった」。
-2種類の励起は局所的には区別できるが、大域的には区別できない（欠陥を回ると互いに変わるため）。
+2種類の励起は局所的には区別できるが、大域的には区別できない（欠陥を回ると互いに変わるため）。図 36.1 にこの様子を示す。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 193.5 96.6 A 45 45 0 1 1 193.5 73.4" fill="none" class="line accent" stroke-width="2"/>
+  <line x1="105" y1="85" x2="100" y2="93" class="line accent" stroke-width="2"/>
+  <line x1="105" y1="85" x2="110" y2="93" class="line accent" stroke-width="2"/>
+  <line x1="150" y1="85" x2="270" y2="85" class="line" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <circle cx="150" cy="85" r="4.5" class="accent-fill"/>
+  <circle cx="193.5" cy="96.6" r="3.5" class="accent-fill"/>
+  <circle cx="193.5" cy="73.4" r="3.5" class="accent-fill"/>
+  <text x="150" y="26" text-anchor="middle" class="label">対称性欠陥</text>
+  <text x="205" y="116" class="label">m（出発）</text>
+  <text x="205" y="62" class="label">e（1周後）</text>
+  <text x="285" y="90" class="label-muted">枝切り線</text>
+  <text x="230" y="158" text-anchor="middle" class="label-muted">欠陥の周りを1周すると m が e に変わる</text>
+</svg>
+<figcaption>図 36.1：エニオン置換対称性の対称性欠陥。欠陥の周りに粒子を引きずって1周させると、粒子の種類が置換される（e と m の入れ替え）。</figcaption>
+</figure>
 
 <p>
 この種の対称性欠陥は通常の TQFT の構造には含まれず、<strong>\(G\)-交差拡大 (\(G\)-crossed extension)</strong>（\(G\) は対称性の群）という数学的構造の中に含まれる。
@@ -133,6 +151,26 @@ H_{\text{toric code}}=-\frac{\Delta}{2}\sum_{\text{菱形 }q}\sigma^z_{q_N}\,\si
 すべての項が互いに可換であることは通常のトーリック符号と同様に確かめられる。
 </div>
 
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 130 40 L 190 90 L 130 140 L 70 90 Z" class="gate" stroke-width="1.5"/>
+  <circle cx="130" cy="40" r="4" class="accent-fill"/>
+  <circle cx="190" cy="90" r="4" class="accent-fill"/>
+  <circle cx="130" cy="140" r="4" class="accent-fill"/>
+  <circle cx="70" cy="90" r="4" class="accent-fill"/>
+  <text x="130" y="28" text-anchor="middle" class="label">σz（北）</text>
+  <text x="130" y="162" text-anchor="middle" class="label">σz（南）</text>
+  <text x="200" y="95" class="label">σx（東）</text>
+  <text x="60" y="95" text-anchor="end" class="label">σx（西）</text>
+  <text x="130" y="94" text-anchor="middle" class="label-muted">q</text>
+  <text x="290" y="75" class="label">菱形 q の項</text>
+  <text x="290" y="100" class="label-muted">北・南の角に σz</text>
+  <text x="290" y="120" class="label-muted">東・西の角に σx</text>
+  <text x="290" y="145" class="label-muted">全菱形で同じ形</text>
+</svg>
+<figcaption>図 36.2：対称な形のトーリック符号の1項。菱形の4つの角のスピンに σz, σx, σz, σx（北・東・南・西の順）を掛ける。</figcaption>
+</figure>
+
 <p>
 元は頂点とプラケットという2種類の項で、それらの破れを \(e\)、\(m\) と呼んでいた。いまはすべて同じ形の菱形になったが、緑の菱形が \(e\)、ピンクの菱形が \(m\) に対応していることには変わりがない。
 \(e\) は対で生成・消滅でき、\(m\) も対で生成・消滅できる（基底状態から頂点にあるスピンに \(\sigma^x\) をかけると、その頂点の北と南の菱形に励起の対ができ、\(\sigma^z\) をかけると東と西の菱形に対ができ、\(\sigma^y=i\sigma^x\sigma^z\) は両方を行う）。
@@ -162,8 +200,29 @@ H_{\text{toric code}}=-\frac{\Delta}{2}\sum_{\text{菱形 }q}\sigma^z_{q_N}\,\si
 \[
 -\frac{\Delta}{2}\,\sigma^z_N\,\sigma^x_E\,\sigma^z_S\,\sigma^x_W\,\sigma^y_{\text{3価}}
 \]
-で、固有値は \(\pm1\) であり、他のプラケット演算子（式 <a class="eq-ref" href="#eq-36-Hsym"></a>）とも可換である。したがって、解析的に解ける可換射影模型であることに変わりはない。
+で、固有値は \(\pm1\) であり、他のプラケット演算子（式 <a class="eq-ref" href="#eq-36-Hsym"></a>）とも可換である。したがって、解析的に解ける可換射影模型であることに変わりはない（図 36.3）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 175" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 130 30 L 187 72 L 165 138.5 L 95 138.5 L 73 72 Z" class="gate" stroke-width="1.5"/>
+  <circle cx="130" cy="30" r="4" class="accent-fill"/>
+  <circle cx="187" cy="72" r="4" class="accent-fill"/>
+  <circle cx="165" cy="138.5" r="4" class="accent-fill"/>
+  <circle cx="95" cy="138.5" r="4" class="accent-fill"/>
+  <circle cx="73" cy="72" r="4" class="accent-fill"/>
+  <text x="130" y="20" text-anchor="middle" class="label">σz</text>
+  <text x="197" y="72" class="label">σx</text>
+  <text x="63" y="72" text-anchor="end" class="label">σx</text>
+  <text x="175" y="156" class="label">σz</text>
+  <text x="85" y="156" text-anchor="end" class="label">σy（3価）</text>
+  <text x="270" y="70" class="label">5頂点のプラケット</text>
+  <text x="270" y="95" class="label-muted">余分な3価の頂点に σy</text>
+  <text x="270" y="125" class="label-muted">転位は Majorana</text>
+  <text x="270" y="145" class="label-muted">ゼロモードを運ぶ</text>
+</svg>
+<figcaption>図 36.3：転位の位置にある5頂点のプラケット。通常の北・東・南・西の σz, σx, σz, σx に加えて、余分な3価の頂点に σy を掛ける。</figcaption>
+</figure>
 
 <h3>基底状態の縮退の数え上げ</h3>
 
@@ -195,6 +254,34 @@ H_{\text{toric code}}=-\frac{\Delta}{2}\sum_{\text{菱形 }q}\sigma^z_{q_N}\,\si
 <li>\(\mathcal T=\)「トーリック符号の欠陥化 (defectization)」：\(\mathcal A\) から \(\mathcal T\) へは凝縮 (condense) で下り、\(\mathcal T\) から \(\mathcal A\) へはゲージ化 (gauge) で上がる。</li>
 <li>\(\mathcal U=\)\(\Z_2\) 対称性をもつトーリック符号：\(\mathcal T\) から \(\mathcal U\) へは欠陥を閉じ込めて (confine) 下り、\(\mathcal U\) から \(\mathcal T\) へは欠陥を導入して (defectize) 上がる。</li>
 </ul>
+
+<figure>
+<svg viewBox="0 0 460 205" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="15" width="240" height="36" class="gate" stroke-width="1.5"/>
+  <rect x="20" y="85" width="240" height="36" class="gate" stroke-width="1.5"/>
+  <rect x="20" y="155" width="240" height="36" class="gate" stroke-width="1.5"/>
+  <text x="140" y="38" text-anchor="middle" class="label">A = Ising × Ising</text>
+  <text x="140" y="108" text-anchor="middle" class="label">T = トーリック符号の欠陥化</text>
+  <text x="140" y="178" text-anchor="middle" class="label">U = Z2 対称トーリック符号</text>
+  <line x1="100" y1="53" x2="100" y2="83" class="line accent" stroke-width="1.5"/>
+  <line x1="100" y1="83" x2="95" y2="76" class="line accent" stroke-width="1.5"/>
+  <line x1="100" y1="83" x2="105" y2="76" class="line accent" stroke-width="1.5"/>
+  <line x1="180" y1="83" x2="180" y2="53" class="line accent" stroke-width="1.5"/>
+  <line x1="180" y1="53" x2="175" y2="60" class="line accent" stroke-width="1.5"/>
+  <line x1="180" y1="53" x2="185" y2="60" class="line accent" stroke-width="1.5"/>
+  <line x1="100" y1="123" x2="100" y2="153" class="line accent" stroke-width="1.5"/>
+  <line x1="100" y1="153" x2="95" y2="146" class="line accent" stroke-width="1.5"/>
+  <line x1="100" y1="153" x2="105" y2="146" class="line accent" stroke-width="1.5"/>
+  <line x1="180" y1="153" x2="180" y2="123" class="line accent" stroke-width="1.5"/>
+  <line x1="180" y1="123" x2="175" y2="130" class="line accent" stroke-width="1.5"/>
+  <line x1="180" y1="123" x2="185" y2="130" class="line accent" stroke-width="1.5"/>
+  <text x="285" y="66" class="label-muted">A→T：凝縮</text>
+  <text x="285" y="84" class="label-muted">T→A：ゲージ化</text>
+  <text x="285" y="136" class="label-muted">T→U：閉じ込め</text>
+  <text x="285" y="154" class="label-muted">U→T：欠陥導入</text>
+</svg>
+<figcaption>図 36.4：凝縮・ゲージ化・欠陥化の3段の図式。左の矢印は下向きが凝縮または閉じ込め、右の矢印は上向きがゲージ化または欠陥の導入を表す。</figcaption>
+</figure>
 <p>
 第25章の凝縮と違い、中間の \(\mathcal T\) 理論では、対称性欠陥は理論の境界だけでなくバルクに住むことができる。欠陥を含む理論の数学的構造が \(G\)-交差拡大である。
 最も興味深い段階は \(\mathcal T\) から \(\mathcal A\) へ上がるところで、\(\Z_2\) 対称性をゲージ対称性に格上げして凝縮を「元に戻す」。これは §35.6 の議論と非常によく似ている。

@@ -76,6 +76,18 @@
 P_2=\id-\bar P_2=\;(\text{平行2本}) - \frac1d\,(\text{カップとキャップ})
 \]</div>
 <p>である。代数的にも \(P_2^2=\id-2\bar P_2+\bar P_2^2=P_2\)、\(\bar P_2P_2=\bar P_2-\bar P_2^2=0\)（\(P_2\bar P_2=0\) も同様）となり、\(P_2\) は \(\bar P_2\) と直交する。</p>
+<figure>
+<svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg">
+  <path d="M40 150 V138 A15 15 0 0 1 70 138 V150" class="line accent" fill="none" stroke-width="1.5"/>
+  <circle cx="55" cy="96" r="15" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M40 40 V52 A15 15 0 0 0 70 52 V40" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="95" y="100" class="label">= d ×</text>
+  <path d="M160 150 V138 A15 15 0 0 1 190 138 V150" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M160 40 V52 A15 15 0 0 0 190 52 V40" class="line accent" fill="none" stroke-width="1.5"/>
+</svg>
+<figcaption>図 22.1：\(\bar P_2\) を2つ重ねると中央に閉じたループができ、値 \(d\) が掛かる。\(\bar P_2^{\,2}=\frac1{d^2}\cdot d\,(\cdots)=\bar P_2\) となる理由である。</figcaption>
+</figure>
+
 
 <figure>
 <svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
@@ -87,7 +99,7 @@ P_2=\id-\bar P_2=\;(\text{平行2本}) - \frac1d\,(\text{カップとキャッ�
   <path d="M215 25 V45 A15 15 0 0 0 245 45 V25" class="line accent" fill="none" stroke-width="1.5"/>
   <text x="290" y="70" class="label-muted">下から上へ読む</text>
 </svg>
-<figcaption>図 22.1：2弦の Jones–Wenzl 射影演算子 \(P_2\)。恒等（平行な2本）から、真空への射影（カップとキャップ、係数 \(1/d\)）を引く。</figcaption>
+<figcaption>図 22.2：2弦の Jones–Wenzl 射影演算子 \(P_2\)。恒等（平行な2本）から、真空への射影（カップとキャップ、係数 \(1/d\)）を引く。</figcaption>
 </figure>
 
 <p>
@@ -134,6 +146,36 @@ d_2=\;(P_2\text{ を閉じたループ})=d^2-1
 <div class="equation" id="eq-22-P3coef">\[
 \alpha=1,\qquad \beta=\gamma=-\frac{d}{d^2-1},\qquad \delta=\epsilon=\frac{1}{d^2-1}.
 \]</div>
+<figure>
+<svg viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
+  <line x1="20" y1="20" x2="20" y2="100" class="line" stroke-width="1.5"/>
+  <line x1="45" y1="20" x2="45" y2="100" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="20" x2="70" y2="100" class="line" stroke-width="1.5"/>
+  <text x="40" y="128" class="label-muted">1</text>
+  <text x="88" y="64" class="label">+</text>
+  <line x1="160" y1="20" x2="160" y2="100" class="line" stroke-width="1.5"/>
+  <path d="M110 100 V88 A12.5 12.5 0 0 1 135 88 V100" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M110 20 V32 A12.5 12.5 0 0 0 135 32 V20" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="102" y="128" class="label-muted">-d/(d^2-1)</text>
+  <text x="178" y="64" class="label">+</text>
+  <line x1="200" y1="20" x2="200" y2="100" class="line" stroke-width="1.5"/>
+  <path d="M225 100 V88 A12.5 12.5 0 0 1 250 88 V100" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M225 20 V32 A12.5 12.5 0 0 0 250 32 V20" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="192" y="128" class="label-muted">-d/(d^2-1)</text>
+  <text x="268" y="64" class="label">+</text>
+  <path d="M290 20 V35 A12.5 12.5 0 0 0 315 35 V20" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M315 100 V85 A12.5 12.5 0 0 1 340 85 V100" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M290 100 V72 C290 58, 340 62, 340 48 V20" class="line" fill="none" stroke-width="1.5"/>
+  <text x="282" y="128" class="label-muted">1/(d^2-1)</text>
+  <text x="358" y="64" class="label">+</text>
+  <path d="M405 20 V35 A12.5 12.5 0 0 0 430 35 V20" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M380 100 V85 A12.5 12.5 0 0 1 405 85 V100" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M430 100 V72 C430 58, 380 62, 380 48 V20" class="line" fill="none" stroke-width="1.5"/>
+  <text x="372" y="128" class="label-muted">1/(d^2-1)</text>
+</svg>
+<figcaption>図 22.3：\(P_3\) を構成する5つの図式と係数 \(\alpha,\beta,\gamma,\delta,\epsilon\)。平行3本の係数が \(\alpha=1\)、隣り合う2本にカップとキャップを付けた4通りのうち、同じ位置どうしが \(\beta,\gamma\)、位置がずれたものが \(\delta,\epsilon\) である。</figcaption>
+</figure>
+
 <p>
 3弦のループの値は
 </p>
@@ -241,6 +283,27 @@ a\times b=|a-b|,\ |a-b|+2,\ \dots,\ \min(a+b,\,2k-a-b).
 粒子 \(a=2j\) と読めば、これは \(SU(2)_k\) の融合則（<a href="chapter21.html">第21章</a>の式 \(j_1\otimes j_2=\cdots\min(j_1+j_2,k-j_1-j_2)\)）と同じである。\(k\to\infty\) では通常の \(SU(2)\) の角運動量合成則に戻る。
 最大の粒子 \(a=k\) は<strong>simple current</strong> で、任意の \(b\) と \(k\times b=k-b\) と一意に融合する。
 </p>
+<figure>
+<svg viewBox="0 0 320 115" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="45" x2="100" y2="45" class="line" stroke-width="1.5"/>
+  <line x1="100" y1="45" x2="160" y2="45" class="line" stroke-width="1.5"/>
+  <line x1="160" y1="45" x2="220" y2="45" class="line" stroke-width="1.5"/>
+  <line x1="220" y1="45" x2="280" y2="45" class="line" stroke-width="1.5"/>
+  <circle cx="40" cy="45" r="8" class="line" fill="none" stroke-width="1.5"/>
+  <text x="37" y="76" class="label">0</text>
+  <circle cx="100" cy="45" r="8" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="97" y="76" class="label">1</text>
+  <circle cx="160" cy="45" r="8" class="line" fill="none" stroke-width="1.5"/>
+  <text x="157" y="76" class="label">2</text>
+  <circle cx="220" cy="45" r="8" class="line" fill="none" stroke-width="1.5"/>
+  <text x="217" y="76" class="label">3</text>
+  <circle cx="280" cy="45" r="8" class="line" fill="none" stroke-width="1.5"/>
+  <text x="277" y="76" class="label">4</text>
+  <text x="20" y="104" class="label-muted">辺は 1 弦との融合：1×a = (a-1) + (a+1)</text>
+</svg>
+<figcaption>図 22.4：\(k=4\) の融合グラフ。粒子 \(a=0,\dots,k\) が鎖状につながり、両端 \(0\) と \(k\) では隣が1つしかない（\(a\times1\) の項は \(k\) を超えて打ち切られる）。</figcaption>
+</figure>
+
 
 <h4>Theta 図</h4>
 <p>
@@ -326,6 +389,23 @@ A=i^\alpha\exp\!\Big[\pm\frac{i\pi}{2(k+2)}\Big],\qquad \alpha=0,1,2,3,\quad k\g
 <div class="equation" id="eq-22-R112">\[
 R^{11}_2=A
 \]</div>
+<figure>
+<svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="95" x2="44.5" y2="67.8" class="line" stroke-width="1.5"/>
+  <line x1="35.5" y1="52.2" x2="20" y2="25" class="line" stroke-width="1.5"/>
+  <line x1="20" y1="95" x2="60" y2="25" class="line accent" stroke-width="1.5"/>
+  <text x="78" y="64" class="label">=</text>
+  <text x="92" y="64" class="label">A ×</text>
+  <line x1="130" y1="25" x2="130" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="160" y1="25" x2="160" y2="95" class="line" stroke-width="1.5"/>
+  <text x="185" y="64" class="label">+</text>
+  <text x="200" y="64" class="label">A^-1 ×</text>
+  <path d="M255 95 V82 A15 15 0 0 1 285 82 V95" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M255 25 V38 A15 15 0 0 0 285 38 V25" class="line accent" fill="none" stroke-width="1.5"/>
+</svg>
+<figcaption>図 22.5：Kauffman ブラケットによる交差の展開。交差は平行2本の項（係数 \(A\)）と折り返しの項（係数 \(A^{-1}\)）の和で、\(P_2\) はカップと直交するので \(R^{11}_2=A\) だけが残る。</figcaption>
+</figure>
+
 <p>となる。より一般には（Kauffman–Lins）</p>
 <div class="equation" id="eq-22-R">\[
 R^{ab}_c=(-1)^{\frac12(a+b-c)}A^{\frac12\{c(c+2)-a(a+2)-b(b+2)\}}.

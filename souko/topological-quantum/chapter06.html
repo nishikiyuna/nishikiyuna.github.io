@@ -78,6 +78,38 @@ Planck スケールの物理を推測するとは、加速器実験が到達し�
 低エネルギーの実験から得た物理原理が Planck スケールでも成り立つ保証はない。
 確実に要求できるのは、低エネルギーの有効理論が現に観測される世界と一致することだけである。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 196" xmlns="http://www.w3.org/2000/svg">
+  <line x1="20" y1="90" x2="440" y2="90" class="line" stroke-width="1.5"/>
+  <circle cx="36.4" cy="90" r="4" class="accent-fill"/>
+  <circle cx="56.7" cy="90" r="4" class="accent-fill"/>
+  <circle cx="230" cy="90" r="4" class="accent-fill"/>
+  <circle cx="323.3" cy="90" r="4" class="accent-fill"/>
+  <circle cx="430" cy="90" r="4" class="accent-fill"/>
+  <line x1="36.4" y1="94" x2="36.4" y2="112" class="line" stroke-width="1"/>
+  <text x="10" y="126" class="label">身の回りの温度</text>
+  <text x="10" y="142" class="label-muted">0.03 eV</text>
+  <line x1="56.7" y1="86" x2="56.7" y2="68" class="line" stroke-width="1"/>
+  <text x="50" y="62" class="label">化学・可視光</text>
+  <text x="50" y="46" class="label-muted">1 eV</text>
+  <line x1="230" y1="94" x2="230" y2="112" class="line" stroke-width="1"/>
+  <text x="230" y="126" text-anchor="middle" class="label">LHC</text>
+  <text x="230" y="142" text-anchor="middle" class="label-muted">10¹³ eV</text>
+  <line x1="323.3" y1="86" x2="323.3" y2="68" class="line" stroke-width="1"/>
+  <text x="323" y="62" text-anchor="middle" class="label">最高エネルギー宇宙線</text>
+  <text x="323" y="46" text-anchor="middle" class="label-muted">10²⁰ eV</text>
+  <line x1="430" y1="94" x2="430" y2="112" class="line" stroke-width="1"/>
+  <text x="452" y="126" text-anchor="end" class="label">Planck スケール</text>
+  <text x="452" y="142" text-anchor="end" class="label-muted">10²⁸ eV</text>
+  <line x1="230" y1="168" x2="430" y2="168" class="line accent" stroke-width="1.5"/>
+  <line x1="230" y1="162" x2="230" y2="174" class="line accent" stroke-width="1.5"/>
+  <line x1="430" y1="162" x2="430" y2="174" class="line accent" stroke-width="1.5"/>
+  <text x="330" y="188" text-anchor="middle" class="label-muted">約15桁の外挿</text>
+  <text x="10" y="188" class="label-muted">エネルギー（対数目盛）</text>
+</svg>
+<figcaption>図 6.1：対数目盛で見たエネルギースケール。加速器（LHC）の到達点から Planck スケールまでは約 15 桁あり、宇宙線の観測でもなお 8 桁足りない。</figcaption>
+</figure>
 </section>
 
 <!-- ================================================================ -->
@@ -175,7 +207,7 @@ Z = \sum_{\text{多様体 }\calM}\ \int_{\calM}\mathcal{D}g(x)\;\ee^{\ii S[g(x)]
   <text x="335" y="40" class="label-muted">空間 = 円 2 つ</text>
   <text x="285" y="160" class="label-muted">空間 = 円 1 つ</text>
 </svg>
-<figcaption>図 6.1：空間的な切り口（一定時刻の断面）のトポロジーが時間とともに変わる時空多様体の例。下端では円1つ、上端では円2つになる。</figcaption>
+<figcaption>図 6.2：空間的な切り口（一定時刻の断面）のトポロジーが時間とともに変わる時空多様体の例。下端では円1つ、上端では円2つになる。</figcaption>
 </figure>
 
 <div class="thm-box">
@@ -228,8 +260,27 @@ Achúcarro と Townsend (1986) が最初に指摘し、Witten (1988) らが発�
 
 <p>
 \(n=4\) では 4 で、重力波の2つの偏極とその共役運動量にあたる。<strong>\(n=3\) では 0</strong> となり、局所的な自由度がない。
-ハミルトニアン形式でゲージ理論の物理的自由度を「変数 − 拘束 − ゲージ固定」と数えるのと同じ勘定である。
+ハミルトニアン形式でゲージ理論の物理的自由度を「変数 − 拘束 − ゲージ固定」と数えるのと同じ勘定である（図 6.3）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 175" xmlns="http://www.w3.org/2000/svg">
+  <line x1="140" y1="28" x2="140" y2="163" class="line" stroke-width="1.5"/>
+  <text x="148" y="20" class="label-muted">物理的自由度 n(n−3)</text>
+  <text x="10" y="46" class="label">n = 3（2+1次元）</text>
+  <text x="148" y="46" class="label-muted">0（局所的な自由度なし）</text>
+  <text x="10" y="84" class="label">n = 4（3+1次元）</text>
+  <rect x="140" y="69" width="48" height="18" class="gate accent" stroke-width="1.5"/>
+  <text x="196" y="84" class="label-muted">4（重力波の2偏極とその共役運動量）</text>
+  <text x="10" y="122" class="label">n = 5（4+1次元）</text>
+  <rect x="140" y="107" width="120" height="18" class="gate" stroke-width="1.5"/>
+  <text x="268" y="122" class="label-muted">10</text>
+  <text x="10" y="160" class="label">n = 6（5+1次元）</text>
+  <rect x="140" y="145" width="216" height="18" class="gate" stroke-width="1.5"/>
+  <text x="364" y="160" class="label-muted">18</text>
+</svg>
+<figcaption>図 6.3：\(n\) 次元時空の一般相対論の物理的自由度 \(n(n-3)\)（時空1点あたり）。\(n=4\) では重力波の2つの偏極とその共役運動量にあたる 4 個が残るが、\(n=3\) では 0 になり、重力波が存在しない。</figcaption>
+</figure>
 
 <h3>線形化した重力波による確認</h3>
 

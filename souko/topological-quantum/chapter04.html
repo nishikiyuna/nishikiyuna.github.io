@@ -62,9 +62,26 @@ Young の二重スリット実験を経路積分の言葉で書き直す。出�
 
 <p>
 ここで、荷電粒子（電子など）を入射し、2つの経路の間の箱の中に磁場を入れる。磁場は箱の外にもれず、粒子は磁場を感じない位置を通る。
-磁場は時間的に一定で、Faraday 効果もない。それにもかかわらず、磁場の有無で干渉パターンがずれる。これが <strong>Aharonov–Bohm 効果</strong>である
+磁場は時間的に一定で、Faraday 効果もない。それにもかかわらず、磁場の有無で干渉パターンがずれる。これが <strong>Aharonov–Bohm 効果</strong>である（図 4.1）
 （Ehrenberg と Siday (1949) が先に予言し、Aharonov と Bohm (1959) が独立に再発見した。最初の実験は Chambers (1960)）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 30 95 C 120 20 320 20 410 95" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 30 95 C 120 170 320 170 410 95" class="line" fill="none" stroke-width="1.5"/>
+  <circle cx="30" cy="95" r="4" class="accent-fill"/>
+  <rect x="190" y="70" width="60" height="50" class="gate" stroke-width="1.5"/>
+  <text x="220" y="100" text-anchor="middle" class="label">磁束 Φ</text>
+  <line x1="410" y1="30" x2="410" y2="160" class="line" stroke-width="2"/>
+  <text x="410" y="20" text-anchor="middle" class="label">スクリーン</text>
+  <text x="30" y="138" text-anchor="middle" class="label">電子源</text>
+  <text x="220" y="26" text-anchor="middle" class="label-muted">経路 1</text>
+  <text x="220" y="176" text-anchor="middle" class="label-muted">経路 2</text>
+  <text x="220" y="140" text-anchor="middle" class="label-muted">磁場は箱の中だけ</text>
+</svg>
+<figcaption>図 4.1：Aharonov–Bohm 効果の配置。電子は磁束を含む箱の上側（経路 1）と下側（経路 2）を通ってスクリーンに達する。電子は磁場のある場所を通らないが、2つの経路が囲む磁束 \(\Phi\) に応じて干渉縞がずれる。</figcaption>
+</figure>
 
 <h3>ベクトルポテンシャルとの結合</h3>
 
@@ -139,7 +156,7 @@ Stokes の定理から
 </p>
 
 <p>
-粒子1を粒子2の周りに1周させると、AB 効果で位相が付く。
+粒子1を粒子2の周りに1周させると（図 4.2）、AB 効果で位相が付く。
 粒子1の電荷が粒子2の磁束の周りを回る寄与が \(\ee^{\ii q\Phi/\hbar}\)、粒子1の磁束が粒子2の電荷の周りを回る寄与も \(\ee^{\ii q\Phi/\hbar}\) である。したがって
 </p>
 <div class="equation" id="eq-4-full">\[
@@ -155,6 +172,25 @@ Stokes の定理から
 \]
 この粒子を <strong>\(\vartheta\)-エニオン</strong>と呼ぶ。\(\vartheta=0\) はボソン、\(\vartheta=\pi\) はフェルミオン、他の値は<a href="chapter03.html">第3章</a>の可換エニオン（分数統計）である。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="120" cy="95" r="65" class="line" fill="none" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <path d="M 114 24 L 122 30 L 114 36" class="line accent" fill="none" stroke-width="1.5"/>
+  <circle cx="120" cy="95" r="10" class="gate" stroke-width="1.5"/>
+  <circle cx="120" cy="95" r="3" class="accent-fill"/>
+  <circle cx="176" cy="62.5" r="10" class="gate" stroke-width="1.5"/>
+  <circle cx="176" cy="62.5" r="3" class="accent-fill"/>
+  <text x="120" y="125" text-anchor="middle" class="label">粒子 2</text>
+  <text x="192" y="52" class="label">粒子 1</text>
+  <text x="240" y="40" class="label">複合体：電荷 q と磁束 Φ</text>
+  <text x="240" y="70" class="label">1周の位相：exp(2iqΦ/ħ)</text>
+  <text x="240" y="100" class="label">交換（半周）：exp(iqΦ/ħ)</text>
+  <text x="240" y="135" class="label-muted">電荷が相手の磁束を回る寄与と</text>
+  <text x="240" y="152" class="label-muted">磁束が相手の電荷を回る寄与の和</text>
+</svg>
+<figcaption>図 4.2：電荷–磁束複合体（円は磁束、中の点は電荷）。粒子1が粒子2の周りを1周すると、電荷の寄与と磁束の寄与がそれぞれ \(\ee^{\ii q\Phi/\hbar}\) を与え、合わせて \(\ee^{2\ii q\Phi/\hbar}\) になる。交換はその半分である。</figcaption>
+</figure>
 
 <p>
 一般に、電荷と磁束が \((q_1,\Phi_1)\) の複合体を \((q_2,\Phi_2)\) の複合体の周りに1周させると、位相は \(\ee^{\ii\varphi}\)、
@@ -175,7 +211,7 @@ Stokes の定理から
 
 <div class="remark-box">
 <span class="box-title">補足（スピン統計定理との整合）</span>
-同種粒子の交換で得る位相は、1つの粒子を自分の軸の周りに回転させて得る位相に等しい（<a href="chapter02.html">第2章</a>の図 2.7 付近の議論）。
+同種粒子の交換で得る位相は、1つの粒子を自分の軸の周りに回転させて得る位相に等しい（<a href="chapter02.html">第2章</a>の §2.2.1 の議論）。
 上の結果はこのスピン統計定理とよく合う。
 磁束の付け方の細部（たとえば磁束を4つに分けて電荷の東西南北に付ける）に結果は依らないが、電荷と磁束をまったく同じ位置に置くと発散が出て扱えない。
 </div>
@@ -194,6 +230,27 @@ Stokes の定理から
 (q_1,\Phi_1)\times(q_2,\Phi_2)=(q_1+q_2,\ \Phi_1+\Phi_2).
 \]
 </div>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <line x1="70" y1="140" x2="120" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="170" y1="140" x2="120" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="120" y1="95" x2="120" y2="45" class="line accent" stroke-width="1.5"/>
+  <text x="70" y="158" text-anchor="middle" class="label">(q1, Φ1)</text>
+  <text x="170" y="158" text-anchor="middle" class="label">(q2, Φ2)</text>
+  <text x="120" y="32" text-anchor="middle" class="label">(q1+q2, Φ1+Φ2)</text>
+  <line x1="290" y1="140" x2="340" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="390" y1="140" x2="340" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="340" y1="95" x2="340" y2="45" class="line" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="290" y="158" text-anchor="middle" class="label">(q, Φ)</text>
+  <text x="390" y="158" text-anchor="middle" class="label">(−q, −Φ)</text>
+  <text x="340" y="32" text-anchor="middle" class="label">真空 I = (0, 0)</text>
+  <line x1="445" y1="140" x2="445" y2="60" class="line" stroke-width="1.2"/>
+  <path d="M 440 68 L 445 58 L 450 68" class="line" fill="none" stroke-width="1.2"/>
+  <text x="440" y="176" text-anchor="middle" class="label-muted">時間</text>
+</svg>
+<figcaption>図 4.3：複合体の融合図（時間は上向き）。左は電荷と磁束がそれぞれ足し合わされる融合、右はエニオンと反エニオンの融合で、全電荷・全磁束がゼロの真空（点線）になる。</figcaption>
+</figure>
 
 <div class="example-box">
 <span class="box-title">例（同じ粒子2個の融合）</span>
@@ -243,7 +300,7 @@ Stokes の定理から
   <text x="238" y="24" class="label">C2</text>
   <text x="130" y="165" class="label-muted">向かい合う辺を同一視するとトーラス</text>
 </svg>
-<figcaption>図 4.1：トーラスを、向かい合う辺を同一視した長方形として描く。2本の非自明なサイクル（トーラスを一周する閉曲線で、1点に縮められないもの）を \(C_1\)（水平）と \(C_2\)（垂直）とする。</figcaption>
+<figcaption>図 4.4：トーラスを、向かい合う辺を同一視した長方形として描く。2本の非自明なサイクル（トーラスを一周する閉曲線で、1点に縮められないもの）を \(C_1\)（水平）と \(C_2\)（垂直）とする。</figcaption>
 </figure>
 
 <p>
@@ -330,10 +387,25 @@ T_1\bigl(T_2\ket\alpha\bigr)=\ee^{2\ii\vartheta}T_2T_1\ket\alpha=\ee^{2\ii\varth
 </p>
 
 <p>
-縮退した基底状態を得るために、トーラスは必須ではない。<strong>アニュラス</strong>（円板の中央に大きな穴をあけた形）でもたいてい十分である。
+縮退した基底状態を得るために、トーラスは必須ではない。<strong>アニュラス</strong>（円板の中央に大きな穴をあけた形。図 4.5）でもたいてい十分である。
 このとき \(T_1\) はアニュラスの輪に沿ってエニオンを1周させる操作に、\(T_2\) は内側の縁から外側の縁へエニオンを動かす操作に対応する。
 （この場合、基底状態と見なした状態は、内側の縁と外側の縁にエニオンが何個あるかが異なるので、厳密に縮退しているとは限らない。ただし極めて近く縮退しうる。古典的な例は Gefen と Thouless (1993) が論じた。）
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="150" cy="95" r="70" class="gate" stroke-width="1.5"/>
+  <circle cx="150" cy="95" r="28" class="gate" stroke-width="1.5"/>
+  <text x="150" y="99" text-anchor="middle" class="label-muted">穴</text>
+  <circle cx="150" cy="95" r="49" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 143 40 L 151 46 L 143 52" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="178" y1="95" x2="220" y2="95" class="line" stroke-width="1.5"/>
+  <path d="M 204 89 L 212 95 L 204 101" class="line" fill="none" stroke-width="1.5"/>
+  <text x="250" y="70" class="label">T1：輪に沿って1周</text>
+  <text x="250" y="110" class="label">T2：内縁から外縁へ</text>
+</svg>
+<figcaption>図 4.5：アニュラス上の2つの操作。\(T_1\)（色付きの円）はエニオンを輪に沿って1周させ、\(T_2\)（動径方向の線）は内側の縁から外側の縁へ動かす。2つの線は1点で交わるので、トーラスの \(C_1,C_2\) と同じ代数を満たす。</figcaption>
+</figure>
 
 <p>
 より複雑な幾何、たとえば複数の取っ手があるトーラスや複数の穴をあけた円板も考えられる。

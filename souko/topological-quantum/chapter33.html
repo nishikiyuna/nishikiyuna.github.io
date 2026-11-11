@@ -94,8 +94,40 @@ Fibonacci 代数は組みひもを許すモジュラーなので、出力は Fib
 <li>局所性：1本だけ外に出ている「おたまじゃくし」の図式は \(0\)。</li>
 </ul>
 <p>
-これらと平面アイソトピー不変性から、この代数が完全に決まる。
+これらと平面アイソトピー不変性から、この代数が完全に決まる（図 33.1）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="50" r="20" fill="none" class="line accent" stroke-width="1.5"/>
+  <text x="95" y="55" class="label">= φ（= d_τ）</text>
+  <line x1="260" y1="12" x2="260" y2="32" class="line" stroke-width="1.5"/>
+  <circle cx="260" cy="52" r="20" fill="none" class="line accent" stroke-width="1.5"/>
+  <circle cx="260" cy="32" r="3" class="accent-fill"/>
+  <text x="295" y="57" class="label">= 0</text>
+  <line x1="70" y1="140" x2="70" y2="180" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="140" x2="48" y2="118" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="140" x2="92" y2="118" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="180" x2="48" y2="202" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="180" x2="92" y2="202" class="line" stroke-width="1.5"/>
+  <circle cx="70" cy="140" r="3" class="accent-fill"/>
+  <circle cx="70" cy="180" r="3" class="accent-fill"/>
+  <text x="80" y="164" class="label">e</text>
+  <text x="122" y="165" class="label">= Σ F ×</text>
+  <line x1="228" y1="160" x2="272" y2="160" class="line" stroke-width="1.5"/>
+  <line x1="228" y1="160" x2="206" y2="138" class="line" stroke-width="1.5"/>
+  <line x1="228" y1="160" x2="206" y2="182" class="line" stroke-width="1.5"/>
+  <line x1="272" y1="160" x2="294" y2="138" class="line" stroke-width="1.5"/>
+  <line x1="272" y1="160" x2="294" y2="182" class="line" stroke-width="1.5"/>
+  <circle cx="228" cy="160" r="3" class="accent-fill"/>
+  <circle cx="272" cy="160" r="3" class="accent-fill"/>
+  <text x="246" y="152" class="label">f</text>
+  <text x="325" y="152" class="label-muted">縦の内線を横の</text>
+  <text x="325" y="172" class="label-muted">内線に付け替え</text>
+  <text x="325" y="192" class="label-muted">（f について和）</text>
+</svg>
+<figcaption>図 33.1：Fibonacci 平面代数の3つの規則。可縮ループの値 φ、おたまじゃくし（1本だけ外に出る図式）は 0、F-move（内線を縦から横に付け替える）。</figcaption>
+</figure>
 
 <h3 id="sec-33-1-1">§33.1.1 準粒子の種類</h3>
 
@@ -108,6 +140,38 @@ Fibonacci 代数は組みひもを許すモジュラーなので、出力は Fib
 <li>どちらの境界にも青い線が出ていないもの（上付き 00）：\(\ket{0^{00}},\ket{1^{00}}\) の2つ（「何もない」状態と、環を1周する \(\tau\) ループの状態）。</li>
 <li>片側の境界にだけ線が出ているもの（上付き 01 と 10）：\(\ket{O_m^{01}},\ket{O_m^{10}}\) の2つ。</li>
 </ul>
+
+<p>
+図 33.2 に、環の基底状態の型を模式的に示す。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 160" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="60" r="44" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="60" cy="60" r="14" fill="none" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="46" x2="60" y2="16" class="line accent" stroke-width="2"/>
+  <text x="60" y="128" text-anchor="middle" class="label">上付き 11</text>
+  <text x="60" y="148" text-anchor="middle" class="label-muted">内外を結ぶ線</text>
+  <circle cx="175" cy="60" r="44" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="175" cy="60" r="14" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="175" cy="60" r="29" fill="none" class="line accent" stroke-width="2"/>
+  <text x="175" y="128" text-anchor="middle" class="label">上付き 00</text>
+  <text x="175" y="148" text-anchor="middle" class="label-muted">周回ループ</text>
+  <circle cx="290" cy="60" r="44" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="290" cy="60" r="14" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="290" cy="60" r="29" fill="none" class="line accent" stroke-width="2"/>
+  <line x1="290" y1="31" x2="290" y2="16" class="line accent" stroke-width="2"/>
+  <text x="290" y="128" text-anchor="middle" class="label">上付き 01</text>
+  <text x="290" y="148" text-anchor="middle" class="label-muted">外側だけに線</text>
+  <circle cx="405" cy="60" r="44" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="405" cy="60" r="14" fill="none" class="line" stroke-width="1.5"/>
+  <circle cx="405" cy="60" r="29" fill="none" class="line accent" stroke-width="2"/>
+  <line x1="405" y1="46" x2="405" y2="31" class="line accent" stroke-width="2"/>
+  <text x="405" y="128" text-anchor="middle" class="label">上付き 10</text>
+  <text x="405" y="148" text-anchor="middle" class="label-muted">内側だけに線</text>
+</svg>
+<figcaption>図 33.2：環（外側の円と内側の円の間）上の状態の4つの型。上付き文字は内側・外側の境界に交わる青い線の本数で、11 は内外を結ぶ線、00 は境界に触れない状態（何もない状態を含む）。</figcaption>
+</figure>
 
 <h3 id="sec-33-1-2">11 セクターのツイスト因子</h3>
 
@@ -212,8 +276,24 @@ Fibonacci の \(F\) 行列は、六角方程式（式 (13.1)(13.2)）を満た�
 \]</div>
 <p>
 と定義する（<a href="chapter17.html">第17章</a>の図17.7）。
-対辺を同一視した正方形でトーラスを描くと、4つの基底状態は \(\Omega\) 弦をトーラスのあるサイクルに沿って置き、もう一方のサイクルを巻く線（\(I\)、\(\tau\) の交差など）と組み合わせた図として、簡単な絵 (33.16)〜(33.19) で表せる。
+対辺を同一視した正方形でトーラスを描くと、4つの基底状態は \(\Omega\) 弦をトーラスのあるサイクルに沿って置き、もう一方のサイクルを巻く線（\(I\)、\(\tau\) の交差など）と組み合わせた図として、簡単な絵 (33.16)〜(33.19) で表せる（図 33.3）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <rect x="30" y="20" width="120" height="120" class="gate" stroke-width="1.5"/>
+  <line x1="30" y1="80" x2="150" y2="80" class="line accent" stroke-width="2.5"/>
+  <line x1="90" y1="20" x2="90" y2="74" class="line" stroke-width="1.5"/>
+  <line x1="90" y1="86" x2="90" y2="140" class="line" stroke-width="1.5"/>
+  <text x="90" y="164" text-anchor="middle" class="label-muted">対辺を同一視したトーラス</text>
+  <line x1="190" y1="50" x2="220" y2="50" class="line accent" stroke-width="2.5"/>
+  <text x="230" y="55" class="label">Ω 弦（一方のサイクル）</text>
+  <line x1="190" y1="90" x2="220" y2="90" class="line" stroke-width="1.5"/>
+  <text x="230" y="95" class="label">粒子線（他方のサイクル）</text>
+  <text x="190" y="125" class="label-muted">交差は R 行列で平面図式に直す</text>
+</svg>
+<figcaption>図 33.3：トーラスの基底状態の描き方。正方形の対辺を貼り合わせた上で、一方のサイクルに Ω 弦、もう一方のサイクルに粒子線を巻く。交差では粒子線が Ω 弦の下をくぐる（線を切って表示）。</figcaption>
+</figure>
 <ul>
 <li>\(\ket{O_I}_{\text{torus}}\)：\(\Omega\) 弦だけ。恒等部分が式 <a class="eq-ref" href="#eq-33-OI00"></a> の第1項、\(\tau\) 部分が第2項を与え、振幅比が \(\varphi\) になる。</li>
 <li>\(\ket{O_R}_{\text{torus}}\)：\(\Omega\) 弦の1本の青い線が交差する図。第1項（縦の青い線）が \(\ket{a^{11}}\)、第2項（2本の線の交差）を式 <a class="eq-ref" href="#eq-33-crossing"></a> で外すと \(\ket{b^{11}},\ket{c^{11}}\) の項が正しい振幅と位相で出て、式 <a class="eq-ref" href="#eq-33-eig"></a> の第1行になる。\(\ket{O_L}\) も同様。</li>
@@ -307,7 +387,7 @@ S^{\text{double}}_{[i,j],[n,m]}=S_{in}\,S^*_{jm}.
 </p>
 
 <figure>
-<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 475 200" xmlns="http://www.w3.org/2000/svg">
   <path d="M 150 40 L 197 67 L 197 133 L 150 160 L 103 133 L 103 67 Z" class="line" stroke-width="2"/>
   <line x1="150" y1="40" x2="150" y2="10" class="line" stroke-width="2"/>
   <line x1="197" y1="67" x2="223" y2="52" class="line" stroke-width="2"/>
@@ -323,7 +403,7 @@ S^{\text{double}}_{[i,j],[n,m]}=S_{in}\,S^*_{jm}.
   <text x="270" y="130" class="label-muted">プラケット演算子 P̂β は</text>
   <text x="270" y="150" class="label-muted">Ω̃ ループを辺へ押し込む操作</text>
 </svg>
-<figcaption>図 33.1：太い格子のプラケットと、プラケット演算子を表す Ω̃ ループ（模式図）。</figcaption>
+<figcaption>図 33.4：太い格子のプラケットと、プラケット演算子を表す Ω̃ ループ（模式図）。</figcaption>
 </figure>
 
 <p>
@@ -346,6 +426,48 @@ S^{\text{double}}_{[i,j],[n,m]}=S_{in}\,S^*_{jm}.
 \]</div>
 \(\hat V_\alpha\) は固有値 \(0,1\) だけを持つ射影演算子である。
 </div>
+
+<p>
+Fibonacci 代数の場合の頂点の例を図 33.5 に示す。
+</p>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="55" x2="60" y2="25" class="line" stroke-width="2"/>
+  <line x1="60" y1="55" x2="34" y2="70" class="line" stroke-width="2"/>
+  <line x1="60" y1="55" x2="86" y2="70" class="line" stroke-width="2"/>
+  <circle cx="60" cy="55" r="3" class="accent-fill"/>
+  <text x="60" y="16" text-anchor="middle" class="label">τ</text>
+  <text x="26" y="88" text-anchor="middle" class="label">τ</text>
+  <text x="94" y="88" text-anchor="middle" class="label">τ</text>
+  <text x="60" y="124" text-anchor="middle" class="label">V = 1</text>
+  <line x1="175" y1="55" x2="175" y2="25" class="line" stroke-width="2"/>
+  <line x1="175" y1="55" x2="149" y2="70" class="line" stroke-width="2"/>
+  <line x1="175" y1="55" x2="201" y2="70" class="line" stroke-width="2"/>
+  <circle cx="175" cy="55" r="3" class="accent-fill"/>
+  <text x="175" y="16" text-anchor="middle" class="label">I</text>
+  <text x="141" y="88" text-anchor="middle" class="label">τ</text>
+  <text x="209" y="88" text-anchor="middle" class="label">τ</text>
+  <text x="175" y="124" text-anchor="middle" class="label">V = 1</text>
+  <line x1="290" y1="55" x2="290" y2="25" class="line" stroke-width="2"/>
+  <line x1="290" y1="55" x2="264" y2="70" class="line" stroke-width="2"/>
+  <line x1="290" y1="55" x2="316" y2="70" class="line" stroke-width="2"/>
+  <circle cx="290" cy="55" r="3" class="accent-fill"/>
+  <text x="290" y="16" text-anchor="middle" class="label">I</text>
+  <text x="256" y="88" text-anchor="middle" class="label">I</text>
+  <text x="324" y="88" text-anchor="middle" class="label">I</text>
+  <text x="290" y="124" text-anchor="middle" class="label">V = 1</text>
+  <line x1="405" y1="55" x2="405" y2="25" class="line" stroke-width="2"/>
+  <line x1="405" y1="55" x2="379" y2="70" class="line" stroke-width="2"/>
+  <line x1="405" y1="55" x2="431" y2="70" class="line" stroke-width="2"/>
+  <circle cx="405" cy="55" r="3" class="accent-fill"/>
+  <text x="405" y="16" text-anchor="middle" class="label">τ</text>
+  <text x="371" y="88" text-anchor="middle" class="label">I</text>
+  <text x="439" y="88" text-anchor="middle" class="label">I</text>
+  <text x="405" y="124" text-anchor="middle" class="label">V = 0</text>
+</svg>
+<figcaption>図 33.5：頂点演算子の作用。融合則 τ×τ=I+τ で許される頂点（左3つ）では V=1、許されない頂点（右端、I×I は τ を含まない）では V=0。</figcaption>
+</figure>
 
 <div class="def-box">
 <span class="box-title">定義（プラケット演算子）</span>

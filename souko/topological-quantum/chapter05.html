@@ -123,9 +123,23 @@ j^0 = \sum_{n} q_n\,\delta(\mathbf{x}-\mathbf{x}_n) = \frac{k}{2\pi}\bigl(\parti
 
 <div class="thm-box">
 <span class="box-title">結果（電荷・磁束束縛）</span>
-運動方程式 <a class="eq-ref" href="#eq-5-flux"></a> は、電荷 \(q_n\) の各粒子の位置に、磁束 \(2\pi q_n/k\) をもつ無限に細い磁束管を貼り付ける。
+運動方程式 <a class="eq-ref" href="#eq-5-flux"></a> は、電荷 \(q_n\) の各粒子の位置に、磁束 \(2\pi q_n/k\) をもつ無限に細い磁束管を貼り付ける（図 5.1）。
 Chern–Simons 項は、第4章で手で仮定した「電荷と磁束の複合粒子」を力学的に実現する。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 185" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 110 150 L 320 150 L 370 100 L 160 100 Z" class="gate" stroke-width="1.5"/>
+  <ellipse cx="240" cy="125" rx="14" ry="7" class="line" stroke-width="1.2"/>
+  <circle cx="240" cy="125" r="3.5" class="accent-fill"/>
+  <line x1="240" y1="118" x2="240" y2="40" class="line accent" stroke-width="2"/>
+  <path d="M 234 50 L 240 38 L 246 50" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="254" y="62" class="label">磁束 2πq/k</text>
+  <text x="262" y="132" class="label">電荷 q_n</text>
+  <text x="130" y="172" class="label-muted">2次元空間</text>
+</svg>
+<figcaption>図 5.1：Chern–Simons 項が課す電荷・磁束束縛。電荷 \(q_n\) の粒子がいる点（平面上の点）に、平面に垂直な細い磁束管が貼り付き、磁束は \(2\pi q_n/k\) になる。</figcaption>
+</figure>
 
 <div class="remark-box">
 <span class="box-title">補足（\(U(1)_k\) という名前）</span>
@@ -359,8 +373,19 @@ Z(\calM) = \int_{\calM}\mathcal{D}a_\mu(x)\;\ee^{\ii S_{CS}}
 <div class="equation" id="eq-5-knot">\[
 \frac{Z(S^3,L_1,L_2)}{Z(S^3)} = \frac{\displaystyle\int_{S^3}\mathcal{D}a_\mu(x)\;W_{L_1}W_{L_2}\,\ee^{\ii S_{CS}}}{\displaystyle\int_{S^3}\mathcal{D}a_\mu(x)\;\ee^{\ii S_{CS}}}
 \]</div>
-がその不変量である。これは Witten (1989) による結び目不変量と Chern–Simons 理論の対応で、<a href="chapter02.html">第2章</a>の Kauffman 括弧に場の理論の起源を与える。
+がその不変量である。これは Witten (1989) による結び目不変量と Chern–Simons 理論の対応で、<a href="chapter02.html">第2章</a>の Kauffman 括弧に場の理論の起源を与える（図 5.2）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <path d="M180 45 L183.1 45.1 L186.3 45.5 L189.3 46.1 L192.4 47 L195.3 48 L198.2 49.4 L200.9 50.9 L203.5 52.6 L206 54.6 L208.3 56.7 L210.4 59 L212.4 61.5 L214.1 64.1 L215.6 66.8 L217 69.7 L218 72.6 L218.9 75.7 L219.5 78.7 L219.9 81.9 L220 85 L219.9 88.1 L219.5 91.3 L218.9 94.3 L218 97.4 L217 100.3 L215.6 103.2 L214.1 105.9 L212.4 108.5 L210.4 111 L209.4 112.1  M200.1 119.6 L198.2 120.6 L195.3 122 L192.4 123 L189.3 123.9 L186.3 124.5 L183.1 124.9 L180 125 L176.9 124.9 L173.7 124.5 L170.7 123.9 L167.6 123 L164.7 122 L161.8 120.6 L159.1 119.1 L156.5 117.4 L154 115.4 L151.7 113.3 L149.6 111 L147.6 108.5 L145.9 105.9 L144.4 103.2 L143 100.3 L142 97.4 L141.1 94.3 L140.5 91.3 L140.1 88.1 L140 85 L140.1 81.9 L140.5 78.7 L141.1 75.7 L142 72.6 L143 69.7 L144.4 66.8 L145.9 64.1 L147.6 61.5 L149.6 59 L151.7 56.7 L154 54.6 L156.5 52.6 L159.1 50.9 L161.8 49.4 L164.7 48 L167.6 47 L170.7 46.1 L173.7 45.5 L176.9 45.1 L180 45" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M230 45 L233.1 45.1 L236.3 45.5 L239.3 46.1 L242.4 47 L245.3 48 L248.2 49.4 L250.9 50.9 L253.5 52.6 L256 54.6 L258.3 56.7 L260.4 59 L262.4 61.5 L264.1 64.1 L265.6 66.8 L267 69.7 L268 72.6 L268.9 75.7 L269.5 78.7 L269.9 81.9 L270 85 L269.9 88.1 L269.5 91.3 L268.9 94.3 L268 97.4 L267 100.3 L265.6 103.2 L264.1 105.9 L262.4 108.5 L260.4 111 L258.3 113.3 L256 115.4 L253.5 117.4 L250.9 119.1 L248.2 120.6 L245.3 122 L242.4 123 L239.3 123.9 L236.3 124.5 L233.1 124.9 L230 125 L226.9 124.9 L223.7 124.5 L220.7 123.9 L217.6 123 L214.7 122 L211.8 120.6 L209.1 119.1 L206.5 117.4 L204 115.4 L201.7 113.3 L199.6 111 L197.6 108.5 L195.9 105.9 L194.4 103.2 L193 100.3 L192 97.4 L191.1 94.3 L190.5 91.3 L190.1 88.1 L190 85 L190.1 81.9 L190.5 78.7 L191.1 75.7 L192 72.6 L193 69.7 L194.4 66.8 L195.9 64.1 L197.6 61.5 L199.6 59 L200.6 57.9  M209.9 50.4 L211.8 49.4 L214.7 48 L217.6 47 L220.7 46.1 L223.7 45.5 L226.9 45.1 L230 45" class="line" fill="none" stroke-width="1.5"/>
+  <text x="125" y="48" class="label">L1</text>
+  <text x="268" y="48" class="label">L2</text>
+  <text x="210" y="152" text-anchor="middle" class="label-muted">2本の Wilson ループ（Hopf 絡み目）</text>
+</svg>
+<figcaption>図 5.2：絡み目 \(L_1, L_2\) に沿う2本の Wilson ループ（交差では下を通る線が途切れて描かれている）。経路積分に \(W_{L_1}W_{L_2}\) を挿入した期待値が、この絡み目の結び目不変量を与える。</figcaption>
+</figure>
 
 <div class="table-wrap">
 <table>
@@ -404,7 +429,7 @@ Z(\calM) = \int_{\calM}\mathcal{D}a_\mu(x)\;\ee^{\ii S_{CS}}
 </p>
 
 <p>
-トーラスの2つの非自明なサイクル \(L_1, L_2\) に沿う Wilson ループ演算子
+トーラスの2つの非自明なサイクル \(L_1, L_2\)（図 5.3）に沿う Wilson ループ演算子
 \[
 W_j = \exp\Bigl(\ii q\oint_{L_j}\dd\mathbf{l}\cdot\mathbf{a}\Bigr)\qquad (j=1,2)
 \]
@@ -431,7 +456,7 @@ W_1W_2 = \ee^{2\pi\ii q^2/k}\,W_2W_1
   <text x="20" y="103" class="label-muted">同一視</text>
   <text x="165" y="182" class="label-muted">上下の辺を同一視</text>
 </svg>
-<figcaption>図 5.1：トーラス（向かい合う辺を同一視した正方形）の2つのサイクルに沿う Wilson ループ。1点で交わるため \(W_1\) と \(W_2\) は交換しない。</figcaption>
+<figcaption>図 5.3：トーラス（向かい合う辺を同一視した正方形）の2つのサイクルに沿う Wilson ループ。1点で交わるため \(W_1\) と \(W_2\) は交換しない。</figcaption>
 </figure>
 
 <div class="thm-box">
@@ -551,8 +576,36 @@ K\to WKW^{T},\qquad \boldsymbol{\ell}\to W\boldsymbol{\ell}
 </div>
 
 <p>
-格子ゲージ理論のリンク変数が両端のサイトのゲージ変換で挟まれて変換するのと同じ構造で、微小な Wilson 線がちょうどリンク変数にあたる。
+格子ゲージ理論のリンク変数が両端のサイトのゲージ変換で挟まれて変換するのと同じ構造で、微小な Wilson 線がちょうどリンク変数にあたる（図 5.4）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <line x1="50" y1="80" x2="370" y2="80" class="line accent" stroke-width="1.5"/>
+  <path d="M 87 74 L 93 80 L 87 86" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 167 74 L 173 80 L 167 86" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 247 74 L 253 80 L 247 86" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 327 74 L 333 80 L 327 86" class="line accent" fill="none" stroke-width="1.5"/>
+  <circle cx="50" cy="80" r="4" class="accent-fill"/>
+  <circle cx="130" cy="80" r="4" class="accent-fill"/>
+  <circle cx="210" cy="80" r="4" class="accent-fill"/>
+  <circle cx="290" cy="80" r="4" class="accent-fill"/>
+  <circle cx="370" cy="80" r="4" class="accent-fill"/>
+  <text x="90" y="66" text-anchor="middle" class="label-muted">1 + a dx</text>
+  <text x="170" y="66" text-anchor="middle" class="label-muted">1 + a dx</text>
+  <text x="250" y="66" text-anchor="middle" class="label-muted">1 + a dx</text>
+  <text x="330" y="66" text-anchor="middle" class="label-muted">1 + a dx</text>
+  <text x="50" y="48" text-anchor="middle" class="label">y</text>
+  <text x="370" y="48" text-anchor="middle" class="label">x</text>
+  <text x="50" y="108" text-anchor="middle" class="label">U(y)</text>
+  <text x="130" y="108" text-anchor="middle" class="label-muted">U⁻¹U = 1</text>
+  <text x="210" y="108" text-anchor="middle" class="label-muted">U⁻¹U = 1</text>
+  <text x="290" y="108" text-anchor="middle" class="label-muted">U⁻¹U = 1</text>
+  <text x="370" y="108" text-anchor="middle" class="label">U(x)⁻¹</text>
+  <text x="210" y="138" text-anchor="middle" class="label-muted">途中の変換は打ち消し合い、両端だけが残る</text>
+</svg>
+<figcaption>図 5.4：開いた経路に沿う Wilson 線を、微小な線分（リンク変数に当たる \(1+a_\mu \dd x^\mu\)）の積として表したもの。ゲージ変換のもとで各点の \(U\) は隣り合う線分の間で打ち消し合い、両端 \(y, x\) の変換だけが残る。</figcaption>
+</figure>
 
 <h3 id="sec-5-3-4">§5.3.4 Chern–Simons 作用は計量に依存しない</h3>
 
@@ -613,9 +666,20 @@ Chern–Simons 理論には小さなほころびがある。\(Z(\calM)\) は \(\
 </p>
 
 <ul>
-<li>この情報は、\(\calM\) を境界とする4次元多様体 \(\mathcal{N}\)（\(\calM=\partial\mathcal{N}\)）のトポロジーの情報として述べるのがわかりやすい。向き付け可能な閉3次元多様体は必ず何らかの（一般に多数の）4次元多様体の境界になる。</li>
+<li>この情報は、\(\calM\) を境界とする4次元多様体 \(\mathcal{N}\)（\(\calM=\partial\mathcal{N}\)）のトポロジーの情報として述べるのがわかりやすい（図 5.5）。向き付け可能な閉3次元多様体は必ず何らかの（一般に多数の）4次元多様体の境界になる。</li>
 <li>\(Z(\calM)\) の位相は、\(\mathcal{N}\) の<strong>符号数 (signature)</strong> だけに依存する。</li>
 </ul>
+
+<figure>
+<svg viewBox="0 0 460 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="230" cy="80" rx="90" ry="50" class="gate accent" stroke-width="2"/>
+  <text x="230" y="85" text-anchor="middle" class="label">4次元多様体 N</text>
+  <text x="336" y="76" class="label">M = ∂N</text>
+  <text x="336" y="95" class="label-muted">3次元の境界</text>
+  <text x="230" y="150" text-anchor="middle" class="label-muted">Z(M) の位相は N の符号数に依存する</text>
+</svg>
+<figcaption>図 5.5：3次元多様体 \(\calM\) を境界とする4次元多様体 \(\mathcal{N}\) の模式図（色付きの輪郭が境界 \(\calM=\partial\mathcal{N}\)）。</figcaption>
+</figure>
 
 <div class="remark-box">
 <span class="box-title">直観（アノマリー）</span>

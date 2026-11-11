@@ -81,6 +81,22 @@ Frobenius–Schur 指標が負の粒子は、\(\epsilon_a\) を \(+1\) に保っ
 \(N_{100}=0\) は「ループが途中で終われない」、\(N_{111}=0\) は「ループが交差（分岐）できない」ことを意味する。
 \([N_1]\) の最大固有値は 1 なので \(d_1=d_0=1\) である（<a href="chapter08.html">第8章</a>）。
 </p>
+<figure>
+<svg viewBox="0 0 360 130" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="55" r="30" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="34" y="118" class="label-muted">許される</text>
+  <line x1="180" y1="25" x2="180" y2="85" class="line" stroke-width="1.5"/>
+  <circle cx="180" cy="25" r="3.5" class="accent-fill"/>
+  <circle cx="180" cy="85" r="3.5" class="accent-fill"/>
+  <text x="148" y="118" class="label-muted">終端：禁止</text>
+  <line x1="270" y1="25" x2="330" y2="85" class="line" stroke-width="1.5"/>
+  <line x1="330" y1="25" x2="270" y2="85" class="line" stroke-width="1.5"/>
+  <circle cx="300" cy="55" r="3.5" class="accent-fill"/>
+  <text x="268" y="118" class="label-muted">交差：禁止</text>
+</svg>
+<figcaption>図 18.1：\(\Z_2\) 融合則のループガス。閉じたループだけが許され、線の終端や交差（分岐）は \(N_{100}=N_{111}=0\) により禁止される。</figcaption>
+</figure>
+
 <p>
 この融合則の上で、アイソトピー不変な平面代数はちょうど2つあり、ループの重みが \(d_1=\pm1\) に対応する（\(|d_1|=1\) だから）。
 </p>
@@ -196,6 +212,33 @@ Fibonacci 融合則（<a href="chapter08.html">第8章</a>、<a href="chapter09.
 \big[F^{\tau\tau d}_{\tau\tau f}\big]_{d,f}=
 \begin{pmatrix}1/d_\tau & 1/\sqrt{d_\tau}\\ 1/\sqrt{d_\tau} & -1/d_\tau\end{pmatrix}.
 \]</div>
+<figure>
+<svg viewBox="0 0 360 150" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="120" x2="50" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="120" x2="50" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="50" y1="90" x2="70" y2="60" class="line accent" stroke-width="1.5"/>
+  <line x1="110" y1="120" x2="70" y2="60" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="60" x2="70" y2="20" class="line" stroke-width="1.5"/>
+  <text x="24" y="136" class="label">a</text>
+  <text x="66" y="136" class="label">b</text>
+  <text x="106" y="136" class="label">c</text>
+  <text x="78" y="45" class="label">e</text>
+  <text x="46" y="70" class="label">d</text>
+  <text x="150" y="75" class="label">= Σ_f F ×</text>
+  <line x1="250" y1="120" x2="290" y2="60" class="line" stroke-width="1.5"/>
+  <line x1="290" y1="120" x2="310" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="330" y1="120" x2="310" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="310" y1="90" x2="290" y2="60" class="line accent" stroke-width="1.5"/>
+  <line x1="290" y1="60" x2="290" y2="20" class="line" stroke-width="1.5"/>
+  <text x="244" y="136" class="label">a</text>
+  <text x="286" y="136" class="label">b</text>
+  <text x="326" y="136" class="label">c</text>
+  <text x="298" y="45" class="label">e</text>
+  <text x="314" y="70" class="label">f</text>
+</svg>
+<figcaption>図 18.2：\(F\) 変換。3本の足 \(a,b,c\) の融合を、内線 \(d\)（\(a,b\) を先に融合）の木から内線 \(f\)（\(b,c\) を先に融合）の木に組み替える。Fibonacci では \(a=b=c=e=\tau\) で、\(d,f\in\{I,\tau\}\) の \(2\times2\) 行列になる。</figcaption>
+</figure>
+
 <p>
 行のノルムが 1 という条件から
 </p>
@@ -226,6 +269,28 @@ Fibonacci 融合則（<a href="chapter08.html">第8章</a>、<a href="chapter09.
 そこで粒子を \(0,+1,-1\)（\(0\) は真空）と名付け直すと、融合則は mod 3 の足し算になる。
 線に矢印を付け、矢印に沿って進めば \(+1\)、逆向きなら \(-1\) と読む。頂点では3本の矢印がすべて入るか、すべて出るかのどちらかである。
 </p>
+<figure>
+<svg viewBox="0 0 340 140" xmlns="http://www.w3.org/2000/svg">
+  <line x1="80" y1="15" x2="80" y2="60" class="line" stroke-width="1.5"/>
+  <path d="M76.0 32.8 L80.0 39.8 L84.0 32.8" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="41" y1="82" x2="80" y2="60" class="line" stroke-width="1.5"/>
+  <path d="M58.3 76.8 L62.5 69.9 L54.4 69.9" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="119" y1="82" x2="80" y2="60" class="line" stroke-width="1.5"/>
+  <path d="M105.6 69.9 L97.5 69.9 L101.7 76.8" class="line" fill="none" stroke-width="1.5"/>
+  <circle cx="80" cy="60" r="3.5" class="accent-fill"/>
+  <text x="40" y="125" class="label-muted">3本とも入る</text>
+  <line x1="260" y1="60" x2="260" y2="15" class="line" stroke-width="1.5"/>
+  <path d="M264.0 42.2 L260.0 35.2 L256.0 42.2" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="260" y1="60" x2="221" y2="82" class="line" stroke-width="1.5"/>
+  <path d="M242.7 65.2 L238.6 72.1 L246.6 72.1" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="260" y1="60" x2="299" y2="82" class="line" stroke-width="1.5"/>
+  <path d="M273.4 72.1 L281.4 72.1 L277.3 65.2" class="line" fill="none" stroke-width="1.5"/>
+  <circle cx="260" cy="60" r="3.5" class="accent-fill"/>
+  <text x="220" y="125" class="label-muted">3本とも出る</text>
+</svg>
+<figcaption>図 18.3：\(\Z_3\) 理論の許される頂点。3本の矢印はすべて入るか、すべて出るかのどちらかである（矢印に沿って進めば粒子 \(+1\)、逆向きなら \(-1\)）。</figcaption>
+</figure>
+
 <p>
 自己双対な粒子がないので Frobenius–Schur 指標を気にしなくてよく、アイソトピー不変性と四面体対称性を要求すれば、ゼロでない \(F\) はすべて 1 になることが簡単に示せる（原書の演習 18.1）。
 これは一般の \(\Z_N^{(n)}\) 理論（§18.5.3）の特別な場合である。
@@ -265,6 +330,23 @@ Ising 融合則（\(SU(2)_2\) 融合則とも、<a href="chapter08.html">第8章
 <p>
 で、\(\psi=\bar\psi\)、\(\sigma=\bar\sigma\) である。ループガスとしては、\(\sigma\) のループ（原書では赤）から \(\psi\) の線（青）が枝分かれする頂点 \(\sigma\sigma\psi\) をもつ。
 </p>
+<figure>
+<svg viewBox="0 0 440 140" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="80" cy="55" r="38" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="42" y1="55" x2="118" y2="55" class="line" stroke-width="1.5"/>
+  <text x="76" y="48" class="label">ψ</text>
+  <text x="122" y="24" class="label">σ</text>
+  <line x1="240" y1="110" x2="270" y2="70" class="line accent" stroke-width="1.5"/>
+  <line x1="300" y1="110" x2="270" y2="70" class="line accent" stroke-width="1.5"/>
+  <line x1="270" y1="70" x2="270" y2="30" class="line" stroke-width="1.5"/>
+  <text x="232" y="126" class="label">σ</text>
+  <text x="298" y="126" class="label">σ</text>
+  <text x="278" y="45" class="label">ψ</text>
+  <text x="320" y="95" class="label-muted">σ×σ = I + ψ</text>
+</svg>
+<figcaption>図 18.4：Ising 融合則のループガス。\(\sigma\) のループ（太線）に \(\psi\) の線が頂点 \(\sigma\sigma\psi\) でつながる（左）。右は頂点 \(\sigma\sigma\psi\) の拡大図。</figcaption>
+</figure>
+
 
 <p>
 第1式 \(\psi\times\psi=I\) だけを見れば \(\Z_2\) 融合則なので、§18.1 の結論がそのまま使える。すなわち \(1/d_I=1/d_\psi=1\) に相当する成分が 1 になる。

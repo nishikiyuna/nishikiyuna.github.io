@@ -100,6 +100,41 @@ V_\alpha=\prod_{i\,\in\,\text{vertex }\alpha}\sigma_z^{(i)} .
 <li>二重サージャリー：符号 \(+1\)。</li>
 </ul>
 
+<figure>
+<svg viewBox="0 0 460 185" xmlns="http://www.w3.org/2000/svg">
+  <text x="5" y="15" class="label-muted">(a)</text>
+  <text x="35" y="50" class="label" text-anchor="middle">空</text>
+  <line x1="60" y1="45" x2="95" y2="45" class="line accent" stroke-width="1.5"/>
+  <path d="M89 40 L97 45 L89 50" class="line accent" stroke-width="1.5"/>
+  <circle cx="125" cy="45" r="14" class="line accent" stroke-width="2"/>
+  <text x="150" y="50" class="label">符号 −1</text>
+  <text x="235" y="15" class="label-muted">(b)</text>
+  <path d="M265 20 C 285 40, 245 55, 265 75" class="line accent" stroke-width="2"/>
+  <line x1="290" y1="45" x2="325" y2="45" class="line accent" stroke-width="1.5"/>
+  <path d="M319 40 L327 45 L319 50" class="line accent" stroke-width="1.5"/>
+  <line x1="350" y1="20" x2="350" y2="75" class="line accent" stroke-width="2"/>
+  <text x="375" y="50" class="label">符号 +1</text>
+  <text x="5" y="102" class="label-muted">(c)</text>
+  <line x1="25" y1="110" x2="25" y2="165" class="line accent" stroke-width="2"/>
+  <line x1="50" y1="110" x2="50" y2="165" class="line accent" stroke-width="2"/>
+  <line x1="70" y1="137" x2="105" y2="137" class="line accent" stroke-width="1.5"/>
+  <path d="M99 132 L107 137 L99 142" class="line accent" stroke-width="1.5"/>
+  <path d="M130 110 C 130 130, 155 130, 155 110" class="line accent" stroke-width="2"/>
+  <path d="M130 165 C 130 145, 155 145, 155 165" class="line accent" stroke-width="2"/>
+  <text x="170" y="142" class="label">符号 −1</text>
+  <text x="235" y="102" class="label-muted">(d)</text>
+  <line x1="255" y1="110" x2="255" y2="165" class="line accent" stroke-width="2"/>
+  <line x1="280" y1="110" x2="280" y2="165" class="line accent" stroke-width="2"/>
+  <line x1="300" y1="137" x2="335" y2="137" class="line accent" stroke-width="1.5"/>
+  <path d="M329 132 L337 137 L329 142" class="line accent" stroke-width="1.5"/>
+  <text x="318" y="128" class="label-muted" text-anchor="middle">2回</text>
+  <line x1="355" y1="110" x2="355" y2="165" class="line accent" stroke-width="2"/>
+  <line x1="380" y1="110" x2="380" y2="165" class="line accent" stroke-width="2"/>
+  <text x="397" y="142" class="label">符号 +1</text>
+</svg>
+<figcaption>図 32.1：プラケット反転の4つの典型例。(a) 小ループの付加、(b) アイソトピー、(c) サージャリー、(d) サージャリーの2回繰り返し。符号はループの本数の偶奇が変わるかどうかで決まる。</figcaption>
+</figure>
+
 <p>
 プラケットの<strong>脚 (leg)</strong> とは、プラケット外に向かって出ている辺、すなわち端点を片方しかプラケットの頂点に持たない辺のことである。
 頂点欠陥がなければ、青い脚の本数 \(L\) は常に偶数になる。
@@ -132,7 +167,7 @@ V_\alpha=\prod_{i\,\in\,\text{vertex }\alpha}\sigma_z^{(i)} .
   <text x="240" y="112" class="label-muted">L/2 = 2 は偶数なので、</text>
   <text x="240" y="132" class="label-muted">反転の符号は −1</text>
 </svg>
-<figcaption>図 32.1：プラケットの脚と符号規則（模式図）。青い脚の本数 L から反転の符号が決まる。</figcaption>
+<figcaption>図 32.2：プラケットの脚と符号規則（模式図）。青い脚の本数 L から反転の符号が決まる。</figcaption>
 </figure>
 
 <p>
@@ -321,6 +356,21 @@ S_{ab}^{\text{unitary}}=\operatorname{sign}(d_a)\operatorname{sign}(d_b)\,S_{ab}
 蜂の巣格子では、ある頂点が「上」を向いた極大点（キャップ）になるかどうかは、その頂点につながる辺の青・黒の組合せだけで決まる局所的な規則であり、辺の色に関係なくキャップになりえない頂点もある。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="110" cy="75" r="28" class="line accent" stroke-width="2"/>
+  <circle cx="110" cy="47" r="3.5" class="accent-fill"/>
+  <path d="M320 85 C 322 50, 330 34, 342 36 C 350 38, 352 58, 358 58 C 364 58, 366 38, 374 36 C 386 34, 394 50, 396 85 C 390 112, 326 112, 320 85 Z" class="line accent" stroke-width="2"/>
+  <circle cx="342" cy="36" r="3.5" class="accent-fill"/>
+  <circle cx="374" cy="36" r="3.5" class="accent-fill"/>
+  <text x="110" y="140" class="label" text-anchor="middle">キャップ 1 個</text>
+  <text x="358" y="140" class="label" text-anchor="middle">キャップ 2 個</text>
+  <text x="230" y="168" class="label-muted" text-anchor="middle">青い点がキャップ。図式の値に (−1)^(キャップ数) を掛ける</text>
+</svg>
+<figcaption>図 32.3：キャップ数え上げ。「上」向きに極大になる点（青い点）を数える。キャップが1個のループを基準に、キャップが1個増えるごとに符号 \(-1\) が付く。</figcaption>
+</figure>
+
+
 <h3 id="sec-32-3-0">なぜこれが許されるのか</h3>
 
 <p>
@@ -345,7 +395,7 @@ S_{ab}^{\text{unitary}}=\operatorname{sign}(d_a)\operatorname{sign}(d_b)\,S_{ab}
 \(\alpha\) は境界に青い線が交わらない空間の中で基底状態に直交する冪等元で、しばしば<strong>磁気的</strong>粒子 \(m\) と呼ばれる。
 </p>
 <p>
-ツイストは図 32.5 の操作でキャップの偶奇を変えるので、\(\ket{0,0},\ket{0,1}\) は不変のままだが
+ツイストは原書の図 32.5 の操作でキャップの偶奇を変えるので、\(\ket{0,0},\ket{0,1}\) は不変のままだが
 </p>
 <div class="equation" id="eq-32-twist-u">\[
 \hat\theta\ket{1,0}=-\ket{1,1},\qquad \hat\theta\ket{1,1}=\ket{1,0} .
@@ -417,6 +467,29 @@ I=\beta=(0_R,0_L),\quad \delta=(1_R,0_L),\quad \gamma=(0_R,1_L),\quad m=\alpha=(
 融合則と組みひもは各因子から引き継がれる（<a href="chapter08.html">第8章</a> §8.5、<a href="chapter09.html">第9章</a> §9.5.1、<a href="chapter13.html">第13章</a> §13.4.2）。
 たとえば各因子の \(1\times1=0\) から表の融合則がすぐ出る。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="140" cy="50" r="18" class="gate" stroke-width="1.5"/>
+  <circle cx="260" cy="50" r="18" class="gate accent" stroke-width="1.5"/>
+  <circle cx="140" cy="110" r="18" class="gate accent" stroke-width="1.5"/>
+  <circle cx="260" cy="110" r="18" class="gate" stroke-width="1.5"/>
+  <text x="140" y="55" class="label" text-anchor="middle">γ</text>
+  <text x="260" y="55" class="label" text-anchor="middle">m</text>
+  <text x="140" y="115" class="label" text-anchor="middle">I</text>
+  <text x="260" y="115" class="label" text-anchor="middle">δ</text>
+  <text x="166" y="55" class="label-muted">θ = −i</text>
+  <text x="286" y="55" class="label-muted">θ = 1</text>
+  <text x="166" y="115" class="label-muted">θ = 1</text>
+  <text x="286" y="115" class="label-muted">θ = i</text>
+  <text x="105" y="115" class="label-muted" text-anchor="end">0_L</text>
+  <text x="105" y="55" class="label-muted" text-anchor="end">1_L</text>
+  <text x="140" y="152" class="label-muted" text-anchor="middle">0_R</text>
+  <text x="260" y="152" class="label-muted" text-anchor="middle">1_R</text>
+</svg>
+<figcaption>図 32.4：二重セミオン理論の4粒子。横軸が右巻きセミオン因子、縦軸が左巻きセミオン因子の粒子（0 または 1）で、各粒子は \((n_R,n_L)\) で指定される。</figcaption>
+</figure>
+
 
 <p>
 確認として、\(\theta_\delta=\theta_{1_R}=\ii\)、\(\theta_\gamma=\theta_{1_L}=-\ii\)、\(\theta_m=\theta_{1_R}\theta_{1_L}=1\) となり、先の結果と一致する。

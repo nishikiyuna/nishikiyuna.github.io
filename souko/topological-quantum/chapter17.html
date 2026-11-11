@@ -64,6 +64,20 @@ d_a = \text{行列 } N_a \text{ の最大固有値.}
 <p>
 これが（符号を除いて）ダイアグラム代数のループの重みと等しい、と何度か述べてきた。本節でそれを証明する。
 </p>
+<figure>
+<svg viewBox="0 0 380 100" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50" cy="45" r="18" class="line" fill="none" stroke-width="1.5"/>
+  <circle cx="100" cy="45" r="18" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="46" y="84" class="label">a</text>
+  <text x="96" y="84" class="label">b</text>
+  <text x="140" y="50" class="label">=</text>
+  <text x="165" y="50" class="label">Σ_c N_ab^c</text>
+  <circle cx="290" cy="45" r="18" class="line" fill="none" stroke-width="1.5"/>
+  <text x="286" y="84" class="label">c</text>
+</svg>
+<figcaption>図 17.1：2つのループ \(a,b\) を融合チャネル \(c\) の和に書き換えると、各項に \(c\) のループが1つ残る。</figcaption>
+</figure>
+
 
 <div class="proof-box">
 <span class="box-title">証明の概略</span>
@@ -100,6 +114,21 @@ d_a = \text{行列 } N_a \text{ の最大固有値.}
 <div class="equation" id="eq-17-Stilde">\[
 \Big(x \text{ の線を } a \text{ のループが取り巻く}\Big) = \tilde S_{ax}\,\Big(x \text{ の線}\Big).
 \]</div>
+<figure>
+<svg viewBox="0 0 360 125" xmlns="http://www.w3.org/2000/svg">
+  <path d="M34 63.5 A26 10 0 0 1 86 63.5" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="60" y1="12" x2="60" y2="69.5" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="77.5" x2="60" y2="115" class="line" stroke-width="1.5"/>
+  <path d="M34 63.5 A26 10 0 0 0 86 63.5" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="70" y="16" class="label">x</text>
+  <text x="92" y="40" class="label">a</text>
+  <text x="130" y="68" class="label">= S~_ax ×</text>
+  <line x1="270" y1="12" x2="270" y2="115" class="line" stroke-width="1.5"/>
+  <text x="280" y="16" class="label">x</text>
+</svg>
+<figcaption>図 17.2：粒子 \(x\) の世界線に \(a\) のループを巻いた図は、\(x\) の線の定数倍 \(\tilde S_{ax}\) になる。</figcaption>
+</figure>
+
 <p>
 \(R\) 行列を使えば \(\tilde S_{ax}\) をツイスト \(\theta\)・\(N\)・\(d\) で明示的に書ける（原書の演習 17.4）が、以下では必要ない。
 真空について、次の2つはすぐ分かる。
@@ -150,7 +179,7 @@ S_{ab} = \frac{1}{\calD}\times\Big(a,\,b\text{ の2つのループが1回絡ん�
   <text x="290" y="26" class="label">b</text>
   <text x="95" y="140" class="label-muted">2つのループが1回絡む：S_ab = (この図の値) / D</text>
 </svg>
-<figcaption>図 17.1：Hopf リンクと \(S\) 行列。図の値を全量子次元 \(\calD\) で割ったものが \(S_{ab}\)。</figcaption>
+<figcaption>図 17.3：Hopf リンクと \(S\) 行列。図の値を全量子次元 \(\calD\) で割ったものが \(S_{ab}\)。</figcaption>
 </figure>
 
 <p>
@@ -278,6 +307,36 @@ S=\begin{pmatrix}0&amp;-1\\1&amp;0\end{pmatrix},\qquad T=\begin{pmatrix}1&amp;1\
 \]
 である。この \(2\times2\) 行列が上の関係式を満たすことは簡単に確かめられる。
 </p>
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <polygon points="60,140 120,140 120,80 60,80" class="line" fill="none" stroke-width="1"/>
+  <line x1="60" y1="140" x2="120" y2="140" class="line accent" stroke-width="1.5"/>
+  <circle cx="120" cy="140" r="3" class="accent-fill"/>
+  <line x1="60" y1="140" x2="60" y2="80" class="line accent" stroke-width="1.5"/>
+  <circle cx="60" cy="80" r="3" class="accent-fill"/>
+  <text x="126" y="156" class="label">e1</text>
+  <text x="68" y="76" class="label">e2</text>
+  <text x="30" y="178" class="label-muted">元の基底</text>
+  <polygon points="150,140 210,140 210,80 150,80" class="line" fill="none" stroke-width="1"/>
+  <line x1="210" y1="140" x2="210" y2="80" class="line accent" stroke-width="1.5"/>
+  <circle cx="210" cy="80" r="3" class="accent-fill"/>
+  <line x1="210" y1="140" x2="150" y2="140" class="line accent" stroke-width="1.5"/>
+  <circle cx="150" cy="140" r="3" class="accent-fill"/>
+  <text x="218" y="76" class="label">e1'</text>
+  <text x="126" y="138" class="label">e2'</text>
+  <text x="140" y="178" class="label-muted">S：入れ替え</text>
+  <polygon points="320,140 380,140 440,80 380,80" class="line" fill="none" stroke-width="1"/>
+  <line x1="320" y1="140" x2="380" y2="140" class="line accent" stroke-width="1.5"/>
+  <circle cx="380" cy="140" r="3" class="accent-fill"/>
+  <line x1="320" y1="140" x2="380" y2="80" class="line accent" stroke-width="1.5"/>
+  <circle cx="380" cy="80" r="3" class="accent-fill"/>
+  <text x="386" y="156" class="label">e1'</text>
+  <text x="346" y="76" class="label">e2'</text>
+  <text x="300" y="178" class="label-muted">T：Dehn ツイスト</text>
+</svg>
+<figcaption>図 17.4：\(SL(2,\Z)\) の生成元がトーラスの基本領域に与える作用。\(S\) では \(e_1'=e_2,\ e_2'=-e_1\)、\(T\) では \(e_1'=e_1,\ e_2'=e_1+e_2\)。</figcaption>
+</figure>
+
 
 <div class="remark-box">
 <span class="box-title">直観（トーラスの微分同相写像）</span>
@@ -427,6 +486,21 @@ TQFT はバルクにギャップがあるので低温の比熱はゼロだが、
 \]</div>
 \(\Omega\) の輪は、真空以外の粒子を通さない（殺す）。最後の等号は \(S\) のユニタリ性と \(S_{Ia}=S_{I\bar a}^{*}\)（\(S_{Ia}\) は実）から従う：\(\sum_aS_{Ia}\tilde S_{ax}=\sum_a S_{Ia}S_{ax}/S_{Ix}=(S^2)_{Ix}/S_{Ix}=\delta_{Ix}/S_{II}=\calD\,\delta_{Ix}\)。
 </div>
+<figure>
+<svg viewBox="0 0 380 125" xmlns="http://www.w3.org/2000/svg">
+  <path d="M34 63.5 A26 10 0 0 1 86 63.5" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="60" y1="12" x2="60" y2="69.5" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="77.5" x2="60" y2="115" class="line" stroke-width="1.5"/>
+  <path d="M34 63.5 A26 10 0 0 0 86 63.5" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="70" y="16" class="label">x</text>
+  <text x="92" y="40" class="label">Ω</text>
+  <text x="130" y="68" class="label">= D δ_Ix ×</text>
+  <line x1="290" y1="12" x2="290" y2="115" class="line" stroke-width="1.5"/>
+  <text x="300" y="16" class="label">x</text>
+</svg>
+<figcaption>図 17.5：\(\Omega\) のループは、\(x\) が真空のとき以外は線をゼロにする（殺す性質）。</figcaption>
+</figure>
+
 
 <p>
 系として、\(\Omega\) の輪で結ばれた2本の線 \(a,b\) は、殺す性質により融合チャネルが真空に強制され、

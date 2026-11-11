@@ -177,6 +177,41 @@ p\times p'=(p+p')\bmod 8,\qquad \theta_p=\exp\!\Big(2\pi\ii\,\frac{7}{16}\,p^2\B
 \]</div>
 である。例えば \([1]\times[2]=[3]\) は、\([1]\) の2つの代表元 1, 5 と \([2]\) の代表元 2, 6 のどの組み合わせを融合しても 3 または 7 になることから従う。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <text x="10" y="78" class="label-muted">4 を融合</text>
+  <line x1="150" y1="52" x2="150" y2="98" class="line accent" stroke-width="1.5"/>
+  <line x1="230" y1="52" x2="230" y2="98" class="line" stroke-width="1.5"/>
+  <line x1="310" y1="52" x2="310" y2="98" class="line accent" stroke-width="1.5"/>
+  <line x1="390" y1="52" x2="390" y2="98" class="line" stroke-width="1.5"/>
+  <circle cx="150" cy="40" r="12" class="gate accent" stroke-width="1.5"/>
+  <circle cx="230" cy="40" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="310" cy="40" r="12" class="gate accent" stroke-width="1.5"/>
+  <circle cx="390" cy="40" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="150" cy="110" r="12" class="gate accent" stroke-width="1.5"/>
+  <circle cx="230" cy="110" r="12" class="gate" stroke-width="1.5"/>
+  <circle cx="310" cy="110" r="12" class="gate accent" stroke-width="1.5"/>
+  <circle cx="390" cy="110" r="12" class="gate" stroke-width="1.5"/>
+  <text x="150" y="45" class="label" text-anchor="middle">0</text>
+  <text x="230" y="45" class="label" text-anchor="middle">1</text>
+  <text x="310" y="45" class="label" text-anchor="middle">2</text>
+  <text x="390" y="45" class="label" text-anchor="middle">3</text>
+  <text x="150" y="115" class="label" text-anchor="middle">4</text>
+  <text x="230" y="115" class="label" text-anchor="middle">5</text>
+  <text x="310" y="115" class="label" text-anchor="middle">6</text>
+  <text x="390" y="115" class="label" text-anchor="middle">7</text>
+  <text x="150" y="150" class="label" text-anchor="middle">[0]</text>
+  <text x="230" y="150" class="label" text-anchor="middle">[1]</text>
+  <text x="310" y="150" class="label" text-anchor="middle">[2]</text>
+  <text x="390" y="150" class="label" text-anchor="middle">[3]</text>
+  <text x="150" y="170" class="label-muted" text-anchor="middle">非閉じ込め</text>
+  <text x="230" y="170" class="label-muted" text-anchor="middle">閉じ込め</text>
+  <text x="310" y="170" class="label-muted" text-anchor="middle">非閉じ込め</text>
+  <text x="390" y="170" class="label-muted" text-anchor="middle">閉じ込め</text>
+</svg>
+<figcaption>図 25.2：\(\Z_8^{(3+1/2)}\) で \(J=4\) を凝縮したときの軌道。縦線で結ばれた2つの粒子が1つの軌道 \([p]\) に同一視される。青は \(\theta\) が揃って非閉じ込めとなる軌道（\([0]\) と \([2]\)）。</figcaption>
+</figure>
 </section>
 
 <section>
@@ -210,6 +245,20 @@ R^{Ja}_{J\times a}\,R^{aJ}_{J\times a}=\frac{\theta_{J\times a}}{\theta_J\,\thet
 閉じ込められた粒子を \(\mathcal U\) の液滴の内部へ引きずり込もうとすると、凝縮体との非自明な編みこみがその経路に沿った「ブランチカット」を作り、経路に沿って凝縮体を壊す。
 壊れる長さに比例したエネルギーがかかるので、粒子を縁へ押し戻す力が働く。これが閉じ込めである。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <rect x="5" y="5" width="450" height="180" rx="6" class="gate" stroke-width="1.5"/>
+  <ellipse cx="230" cy="100" rx="110" ry="65" class="line accent" stroke-width="1.5"/>
+  <text x="15" y="26" class="label-muted">凝縮前の理論 A の領域</text>
+  <text x="230" y="95" class="label" text-anchor="middle">凝縮後の理論 U</text>
+  <text x="230" y="115" class="label-muted" text-anchor="middle">（液滴の内部）</text>
+  <circle cx="340" cy="100" r="4" class="accent-fill"/>
+  <text x="352" y="105" class="label">閉じ込め粒子</text>
+  <text x="352" y="122" class="label-muted">（縁に住む）</text>
+</svg>
+<figcaption>図 25.3：A の海に浮かぶ U の液滴。\(\mathcal T\) の完全な理論は液滴の縁の (1+1) 次元に住み、閉じ込められた粒子は縁にしか存在できない。</figcaption>
+</figure>
 
 <div class="example-box">
 <span class="box-title">例（\(\Z_8^{(3+1/2)}\) の続き）</span>
@@ -319,6 +368,22 @@ d_a=\sum_{i=1}^{q_a} n_a^{\,i}\,d_{[a]_i}
 ツイスト因子は \(1,e^{2\pi\ii/3},e^{2\pi\ii/3}\)。これは \(SU(3)_1\)、すなわち \(\Z_3^{(1)}\)（<a href="chapter18.html">第18章</a>）である。
 \([2]_1\) と \([2]_2\) の間には明らかな対称性があり、どちらを添字 1 と呼んでもよい（<a href="chapter36.html">第36章</a>）。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+  <rect x="30" y="70" width="110" height="36" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="85" y="93" class="label" text-anchor="middle">A の粒子 2</text>
+  <path d="M140 88 L300 43" class="line accent" stroke-width="1.5"/>
+  <path d="M140 88 L300 133" class="line accent" stroke-width="1.5"/>
+  <rect x="300" y="25" width="130" height="36" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="365" y="48" class="label" text-anchor="middle">[2]_1 (d=1)</text>
+  <rect x="300" y="115" width="130" height="36" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="365" y="138" class="label" text-anchor="middle">[2]_2 (d=1)</text>
+  <text x="170" y="30" class="label-muted">分裂</text>
+  <text x="170" y="158" class="label-muted">d: 2 = 1 + 1</text>
+</svg>
+<figcaption>図 25.4：\(SU(2)_4\) で粒子 4 を凝縮したとき、最大でない軌道 \([2]\) は2つの粒子 \([2]_1\)、\([2]_2\) に分裂する。量子次元は \(d_2=d_{[2]_1}+d_{[2]_2}\) を満たす。</figcaption>
+</figure>
 
 <div class="example-box">
 <span class="box-title">例（Ising \(\times\) \(\overline{\text{Ising}}\)）</span>

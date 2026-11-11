@@ -84,6 +84,26 @@
 </ul>
 </div>
 
+<figure>
+<svg viewBox="0 0 460 165" xmlns="http://www.w3.org/2000/svg">
+  <path d="M40 30 C 60 55, 20 80, 40 105" class="line accent" stroke-width="2"/>
+  <text x="75" y="72" class="label" text-anchor="middle">=</text>
+  <line x1="110" y1="30" x2="110" y2="105" class="line accent" stroke-width="2"/>
+  <text x="75" y="145" class="label" text-anchor="middle">(1) アイソトピー</text>
+  <circle cx="190" cy="67" r="18" class="line accent" stroke-width="2"/>
+  <text x="228" y="72" class="label" text-anchor="middle">=</text>
+  <text x="262" y="72" class="label" text-anchor="middle">空</text>
+  <text x="230" y="145" class="label" text-anchor="middle">(2) 可縮ループの除去</text>
+  <line x1="330" y1="30" x2="330" y2="105" class="line accent" stroke-width="2"/>
+  <line x1="360" y1="30" x2="360" y2="105" class="line accent" stroke-width="2"/>
+  <text x="383" y="72" class="label" text-anchor="middle">=</text>
+  <path d="M405 30 C 405 55, 435 55, 435 30" class="line accent" stroke-width="2"/>
+  <path d="M405 105 C 405 80, 435 80, 435 105" class="line accent" stroke-width="2"/>
+  <text x="380" y="145" class="label" text-anchor="middle">(3) サージェリー</text>
+</svg>
+<figcaption>図 30.1：ループ気体の3つの操作。(1) 線を滑らかに変形する、(2) 他と絡まない閉じたループを足し引きする、(3) 近接した2本の線をつなぎ替える。</figcaption>
+</figure>
+
 <p>
 これらは第2章以来使ってきた skein 的な規則に見える。ここで扱うのは交差（上下の区別）の無い平面ダイアグラムだけで（第12章との違い）、規則は
 \[
@@ -148,6 +168,21 @@
 環帯上の状態も、トーラスのときと同様に、§30.1の3つの操作で移り合わない部門に分かれる。各部門の代表（参照配置）だけを調べれば十分である。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="130" cy="100" r="80" class="line" stroke-width="1.5"/>
+  <circle cx="130" cy="100" r="38" class="line" stroke-width="1.5"/>
+  <circle cx="130" cy="100" r="59" class="line" stroke-width="2.5"/>
+  <line x1="130" y1="138" x2="130" y2="180" class="line accent" stroke-width="3"/>
+  <circle cx="130" cy="92" r="5" class="accent-fill"/>
+  <text x="130" y="116" class="label" text-anchor="middle">a</text>
+  <text x="240" y="76" class="label">中心の点：円盤内の準粒子 a</text>
+  <text x="240" y="100" class="label">色付きの線：n（内縁→外縁）</text>
+  <text x="240" y="124" class="label">黒い円：m（環帯を周回する線）</text>
+</svg>
+<figcaption>図 30.2：準粒子を含む円盤を囲む環帯。環帯の中に準粒子はなく、状態は内縁から外縁へ走る線の本数 \(n\) と周回する線の本数 \(m\)（ともに偶奇）で分類される。</figcaption>
+</figure>
+
 <p>
 環帯の状態は \(\ket{n,m}\)（\(n,m\in\{0,1\}\)）と書く。
 \(n\) は<strong>内縁から外縁へ走る青い線の本数</strong>（の偶奇）、\(m\) は<strong>環帯を周回する青い線の本数</strong>（の偶奇）である。
@@ -155,7 +190,7 @@
 </p>
 
 <figure>
-<svg viewBox="0 0 460 160" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 555 160" xmlns="http://www.w3.org/2000/svg">
   <!-- |0,0> -->
   <rect x="20" y="20" width="80" height="80" class="line" stroke-width="1"/>
   <line x1="20" y1="20" x2="20" y2="100" class="line accent" stroke-width="2.5" stroke-dasharray="5 4"/>
@@ -182,7 +217,7 @@
   <text x="383" y="117" class="label">|1,1&gt;</text>
   <text x="20" y="143" class="label-muted">長方形の上下の辺が環帯の外縁・内縁、左右の辺（破線）が同一視される。縦線が n、横線が m。</text>
 </svg>
-<figcaption>図 30.1：環帯の4つの参照状態（長方形表示）。\(\ket{1,1}\) の交差は、微視的にどちらかの向きにつなぎ替える（どちらも同値である）。</figcaption>
+<figcaption>図 30.3：環帯の4つの参照状態（長方形表示）。\(\ket{1,1}\) の交差は、微視的にどちらかの向きにつなぎ替える（どちらも同値である）。</figcaption>
 </figure>
 
 <p>
@@ -380,6 +415,26 @@ O_f = \tfrac12\bigl(\ket{1,0}-\ket{1,1}\bigr).
 すなわち \(\hat\theta\ket{1,0}=\ket{1,1}\)、\(\hat\theta\ket{1,1}=\ket{1,0}\)、\(n=0\) の状態は不変である。
 </div>
 
+<figure>
+<svg viewBox="0 0 460 135" xmlns="http://www.w3.org/2000/svg">
+  <rect x="40" y="20" width="70" height="30" rx="4" class="gate" stroke-width="1.5"/>
+  <rect x="40" y="85" width="70" height="30" rx="4" class="gate" stroke-width="1.5"/>
+  <text x="75" y="40" class="label" text-anchor="middle">|0,0&gt;</text>
+  <text x="75" y="105" class="label" text-anchor="middle">|0,1&gt;</text>
+  <text x="125" y="40" class="label-muted">不変</text>
+  <text x="125" y="105" class="label-muted">不変</text>
+  <rect x="250" y="20" width="70" height="30" rx="4" class="gate" stroke-width="1.5"/>
+  <rect x="250" y="85" width="70" height="30" rx="4" class="gate" stroke-width="1.5"/>
+  <text x="285" y="40" class="label" text-anchor="middle">|1,0&gt;</text>
+  <text x="285" y="105" class="label" text-anchor="middle">|1,1&gt;</text>
+  <line x1="285" y1="52" x2="285" y2="83" class="line accent" stroke-width="1.5"/>
+  <path d="M280 60 L285 52 L290 60" class="line accent" stroke-width="1.5"/>
+  <path d="M280 75 L285 83 L290 75" class="line accent" stroke-width="1.5"/>
+  <text x="335" y="72" class="label-muted">入れ替わる</text>
+</svg>
+<figcaption>図 30.4：ツイスト \(\hat\theta\) の作用。\(n=0\) の状態は変わらず、\(n=1\) の2状態は互いに入れ替わる。</figcaption>
+</figure>
+
 <p>
 すると \(\hat\theta O_v=O_v\)（\(\theta_v=1\)、ボソン）、\(\hat\theta O_f=-O_f\)（\(\theta_f=-1\)、フェルミオン）が確かめられる。
 得られた準粒子冪等元がツイスト演算子の固有状態になることは自明な結果ではなく、アニオン理論の構造から期待はできても、当然成り立つとは限らない。
@@ -444,7 +499,7 @@ S=\frac12\begin{pmatrix}1&amp;1&amp;1&amp;1\\1&amp;1&amp;-1&amp;-1\\1&amp;-1&amp
 </p>
 <ol>
 <li>2つの穴を交換する。このとき青い線が引き伸ばされ、絡み合う。</li>
-<li>得られた図を、サージェリーとループの付加・除去（図30.3の操作）で元の4項の和に結びつける。</li>
+<li>得られた図を、サージェリーとループの付加・除去（原書の図30.3の操作）で元の4項の和に結びつける。</li>
 <li>交換後の図の和は、交換前の図の和のちょうど \(-1\) 倍になる。</li>
 </ol>
 <p>
@@ -458,6 +513,22 @@ S=\frac12\begin{pmatrix}1&amp;1&amp;1&amp;1\\1&amp;1&amp;-1&amp;-1\\1&amp;-1&amp
 融合則は、2つの穴を併合して1つの大きな穴と見なす、すなわち両方の穴を囲む仮想的な円を1つの穴の境界と見なすことで図式的に得られる。
 一例として、頂点欠陥と \(f\) の融合が<strong>プラケット欠陥になる</strong>こと（\(v\times f=p\)）を示す。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="130" cy="100" r="85" class="line" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <circle cx="95" cy="100" r="24" class="line" stroke-width="1.5"/>
+  <circle cx="165" cy="100" r="24" class="line" stroke-width="1.5"/>
+  <text x="95" y="105" class="label" text-anchor="middle">v</text>
+  <text x="165" y="105" class="label" text-anchor="middle">f</text>
+  <line x1="95" y1="124" x2="95" y2="177" class="line accent" stroke-width="2.5"/>
+  <line x1="165" y1="124" x2="165" y2="177" class="line accent" stroke-width="2.5"/>
+  <text x="240" y="80" class="label">破線：2つの穴を併合した穴</text>
+  <text x="240" y="104" class="label">その全量子数：v × f = p</text>
+  <text x="240" y="128" class="label-muted">（プラケット欠陥）</text>
+</svg>
+<figcaption>図 30.5：2つの穴をもつ円盤。穴を併合して1つの大きな穴と見なすと、全量子数として融合の結果が読み取れる。</figcaption>
+</figure>
 <ol>
 <li>\(v\)（左の穴）と \(f\)（右の穴）を4項の重ね合わせとして書く。</li>
 <li>3つの操作を使うと、下側の小さな青い線を図の下端から引き抜くことができる。</li>

@@ -61,6 +61,26 @@
 <li><strong>1–3 移動</strong>：三角形の中に頂点を1つ加えて1つの三角形を3つにする、またはその逆（頂点を除去する）。加える頂点は三角形の中心でなくてよい。</li>
 <li><strong>2–2 移動</strong>：隣り合う2つの三角形を、共有する辺を付け替えた別の2つの三角形に置き換える。</li>
 </ul>
+<figure>
+<svg viewBox="0 0 460 148" xmlns="http://www.w3.org/2000/svg">
+  <polygon points="20,110 100,110 60,45" class="line" fill="none" stroke-width="1.5"/>
+  <text x="112" y="82" class="label">↔</text>
+  <polygon points="150,110 230,110 190,45" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="190" y1="88" x2="150" y2="110" class="line accent" stroke-width="1.5"/>
+  <line x1="190" y1="88" x2="230" y2="110" class="line accent" stroke-width="1.5"/>
+  <line x1="190" y1="88" x2="190" y2="45" class="line accent" stroke-width="1.5"/>
+  <circle cx="190" cy="88" r="3" class="accent-fill"/>
+  <text x="70" y="135" class="label-muted">1–3 移動</text>
+  <polygon points="280,45 330,45 330,110 280,110" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="280" y1="110" x2="330" y2="45" class="line accent" stroke-width="1.5"/>
+  <text x="344" y="82" class="label">↔</text>
+  <polygon points="370,45 420,45 420,110 370,110" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="370" y1="45" x2="420" y2="110" class="line accent" stroke-width="1.5"/>
+  <text x="335" y="135" class="label-muted">2–2 移動</text>
+</svg>
+<figcaption>図 23.1：2次元の Pachner 移動。1–3 移動（左）は三角形の内部に頂点を加えて3つに分け、2–2 移動（右）は隣り合う2つの三角形の共有辺を付け替える。</figcaption>
+</figure>
+
 <p>
 したがって、三角形分割に対する関数がこの2つの移動で不変なら、多様体の不変量が得られる。
 なお2次元の Pachner 移動は、3次元の四面体を反対の2方向から見たものと思え、コボルディズム（<a href="chapter07.html">第7章</a>）として解釈できる。
@@ -77,6 +97,44 @@
 <p>
 3次元の Pachner 移動は、4次元の単体（pentachoron）を反対の2方向から見たものと思える。ここでも、Pachner 移動で不変な分割の関数が見つかれば位相不変量が得られる。
 </p>
+<figure>
+<svg viewBox="0 0 440 185" xmlns="http://www.w3.org/2000/svg">
+  <line x1="70" y1="15" x2="30" y2="100" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="15" x2="115" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="15" x2="85" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="150" x2="30" y2="100" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="150" x2="115" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="70" y1="150" x2="85" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="30" y1="100" x2="115" y2="105" class="line accent" stroke-width="1.5"/>
+  <line x1="115" y1="105" x2="85" y2="75" class="line accent" stroke-width="1.5"/>
+  <line x1="85" y1="75" x2="30" y2="100" class="line accent" stroke-width="1.5"/>
+  <circle cx="70" cy="15" r="2.5" class="accent-fill"/>
+  <circle cx="70" cy="150" r="2.5" class="accent-fill"/>
+  <circle cx="30" cy="100" r="2.5" class="accent-fill"/>
+  <circle cx="115" cy="105" r="2.5" class="accent-fill"/>
+  <circle cx="85" cy="75" r="2.5" class="accent-fill"/>
+  <text x="180" y="88" class="label">↔</text>
+  <line x1="320" y1="15" x2="280" y2="100" class="line" stroke-width="1.5"/>
+  <line x1="320" y1="15" x2="365" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="320" y1="15" x2="335" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="320" y1="150" x2="280" y2="100" class="line" stroke-width="1.5"/>
+  <line x1="320" y1="150" x2="365" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="320" y1="150" x2="335" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="280" y1="100" x2="365" y2="105" class="line" stroke-width="1.5"/>
+  <line x1="365" y1="105" x2="335" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="335" y1="75" x2="280" y2="100" class="line" stroke-width="1.5"/>
+  <line x1="320" y1="15" x2="320" y2="150" class="line accent" stroke-width="1.5"/>
+  <circle cx="320" cy="15" r="2.5" class="accent-fill"/>
+  <circle cx="320" cy="150" r="2.5" class="accent-fill"/>
+  <circle cx="280" cy="100" r="2.5" class="accent-fill"/>
+  <circle cx="365" cy="105" r="2.5" class="accent-fill"/>
+  <circle cx="335" cy="75" r="2.5" class="accent-fill"/>
+  <text x="20" y="175" class="label-muted">2つの四面体（共有する面が太線）</text>
+  <text x="245" y="175" class="label-muted">3つの四面体（新しい辺が太線）</text>
+</svg>
+<figcaption>図 23.2：3次元の 2–3 移動。三角形を共有する2つの四面体を、新しい辺（上下の頂点を結ぶ線）を囲む3つの四面体に分け直す。</figcaption>
+</figure>
+
 </section>
 
 <section>
@@ -120,6 +178,26 @@ N_{ba}^{d}&gt;0,\quad N_{c\bar d}^{e}&gt;0,\quad N_{f\bar e}^{\bar a}&gt;0,\quad
 <p>
 （原書の表記に従う）でなければ \(\tilde G\) は0になる。\(\tilde G\) の値は \(G\) と同様、四面体を回転しても変わらない。
 </p>
+<figure>
+<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+  <line x1="110" y1="15" x2="30" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="15" x2="190" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="30" y1="150" x2="190" y2="150" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="15" x2="112" y2="100" class="line" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="112" y1="100" x2="30" y2="150" class="line" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="112" y1="100" x2="190" y2="150" class="line" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="52" y="84" class="label">a</text>
+  <text x="160" y="88" class="label">b</text>
+  <text x="107" y="168" class="label">c</text>
+  <text x="116" y="60" class="label">e</text>
+  <text x="73" y="141" class="label">d</text>
+  <text x="146" y="141" class="label">f</text>
+  <text x="240" y="70" class="label-muted">各辺に粒子ラベル</text>
+  <text x="240" y="92" class="label-muted">各面の3辺は真空に融合</text>
+</svg>
+<figcaption>図 23.3：Turaev–Viro 状態和の四面体。6本の辺に量子数 \(a,\dots,f\) を割り当て、四面体の重み \(\tilde G\) が決まる（破線は奥の辺）。</figcaption>
+</figure>
+
 <div class="remark-box">
 <span class="box-title">補足（入力の条件と文献との違い）</span>
 \(Z_{TV}\) は<strong>ゲージ不変</strong>である。\(F\) 行列（したがって \(\tilde G\)）のゲージ変換（<a href="chapter16.html">第16章</a>の式）を行っても、重み式 <a class="eq-ref" href="#eq-23-W"></a> の中でゲージ因子が打ち消し合う。
@@ -250,6 +328,22 @@ j_1\otimes j_2=|j_1-j_2|\oplus(|j_1-j_2|+1)\oplus\cdots\oplus(j_1+j_2)
 融合則から、各三角形の周りの群の元の積は単位元でなければならない：三角形の辺 \(a,b,c\) について \(cba=1\)。
 これは式 <a class="eq-ref" href="#eq-23-faces"></a> のように三角形の3つの量子数が真空に融合する条件の類似物で、格子ゲージ理論に由来する名前で<strong>平坦性 (flatness) 条件</strong>と呼ばれる（第31章 §31.7）。
 </p>
+<figure>
+<svg viewBox="0 0 330 140" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="110" x2="130" y2="110" class="line" stroke-width="1.5"/>
+  <path d="M78.0 114.0 L85.0 110.0 L78.0 106.0" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="130" y1="110" x2="80" y2="30" class="line" stroke-width="1.5"/>
+  <path d="M109.6 69.8 L102.5 66.0 L102.8 74.1" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="80" y1="30" x2="30" y2="110" class="line" stroke-width="1.5"/>
+  <path d="M52.8 65.9 L52.5 74.0 L59.6 70.2" class="line" fill="none" stroke-width="1.5"/>
+  <text x="76" y="128" class="label">a</text>
+  <text x="114" y="72" class="label">b</text>
+  <text x="40" y="72" class="label">c</text>
+  <text x="170" y="75" class="label-muted">平坦性：c b a = 1</text>
+</svg>
+<figcaption>図 23.4：Dijkgraaf–Witten 模型の三角形。辺に群の元 \(a,b,c\) をラベルし、一周して掛けると単位元になる（平坦性条件）。</figcaption>
+</figure>
+
 <p>
 群の積を融合則にすると、すべての粒子の量子次元は \(d_a=1\) になる（第19章では \(d_a=-1\) の選択も考えたが、それは選択の問題で、\(+1\) に取り直せる。代わりにアイソトピー不変性を失うことがある）。
 したがって式 <a class="eq-ref" href="#eq-23-W"></a> の \(d_a\) の因子と \(\tilde\Theta\) の因子は自明になり、四面体の因子だけが残る。Dijkgraaf–Witten の分配関数は Turaev–Viro の簡略版になる：

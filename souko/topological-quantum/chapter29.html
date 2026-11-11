@@ -159,6 +159,49 @@ Brillouin–Wigner 摂動論はどんなトポロジカル模型の摂動にも�
 このとき \(H^{\text{eff}}\) に非対角成分が生じ、対角化すると縮退していた基底状態が分裂する。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <rect x="40" y="25" width="240" height="130" class="line" stroke-width="1.5"/>
+  <path d="M80 50 L120 50 L120 80 L80 80 Z" class="line accent" stroke-width="2.5"/>
+  <line x1="40" y1="120" x2="280" y2="120" class="line accent" stroke-width="2.5"/>
+  <circle cx="40" cy="120" r="3" class="accent-fill"/>
+  <circle cx="70" cy="120" r="3" class="accent-fill"/>
+  <circle cx="100" cy="120" r="3" class="accent-fill"/>
+  <circle cx="130" cy="120" r="3" class="accent-fill"/>
+  <circle cx="160" cy="120" r="3" class="accent-fill"/>
+  <circle cx="190" cy="120" r="3" class="accent-fill"/>
+  <circle cx="220" cy="120" r="3" class="accent-fill"/>
+  <circle cx="250" cy="120" r="3" class="accent-fill"/>
+  <circle cx="280" cy="120" r="3" class="accent-fill"/>
+  <text x="296" y="62" class="label">可縮な経路：</text>
+  <text x="296" y="80" class="label-muted">同じ基底状態に戻る</text>
+  <text x="296" y="116" class="label">巻き付く経路：</text>
+  <text x="296" y="134" class="label-muted">δH を L 回以上作用</text>
+</svg>
+<figcaption>図 29.1：準粒子がトーラス上で描く経路。小さな閉経路は基底状態を変えず、非自明サイクルを一周する経路（点は局所演算子の作用1回）だけが縮退を解く。</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <line x1="50" y1="146" x2="130" y2="146" class="line accent" stroke-width="3"/>
+  <line x1="50" y1="60" x2="130" y2="60" class="line" stroke-width="1.5"/>
+  <line x1="270" y1="152" x2="350" y2="152" class="line accent" stroke-width="2"/>
+  <line x1="270" y1="148" x2="350" y2="148" class="line accent" stroke-width="2"/>
+  <line x1="270" y1="144" x2="350" y2="144" class="line accent" stroke-width="2"/>
+  <line x1="270" y1="140" x2="350" y2="140" class="line accent" stroke-width="2"/>
+  <line x1="270" y1="60" x2="350" y2="60" class="line" stroke-width="1.5"/>
+  <line x1="190" y1="68" x2="190" y2="138" class="line" stroke-width="1.5"/>
+  <path d="M185 76 L190 66 L195 76" class="line" stroke-width="1.5"/>
+  <path d="M185 130 L190 140 L195 130" class="line" stroke-width="1.5"/>
+  <text x="202" y="107" class="label">Δ</text>
+  <text x="90" y="46" class="label-muted" text-anchor="middle">励起状態</text>
+  <text x="310" y="46" class="label-muted" text-anchor="middle">励起状態</text>
+  <text x="90" y="178" class="label" text-anchor="middle">摂動なし：4重縮退</text>
+  <text x="310" y="178" class="label" text-anchor="middle">摂動あり：分裂 ~ (J/Δ)^L</text>
+</svg>
+<figcaption>図 29.2：基底状態の縮退の分裂。局所的な摂動を加えても4つの基底状態は励起ギャップ \(\Delta\) の下にとどまり、分裂の幅は系のサイズ \(L\) について指数関数的に小さい（縦方向の分裂は誇張して描いてある）。</figcaption>
+</figure>
+
 <div class="thm-box">
 <span class="box-title">結果（分裂は指数関数的に小さい）</span>
 トーラスの最短の非自明サイクルの長さを \(L\) とする。準粒子を一周させるには \(\delta H\) を少なくとも \(L\) 回掛ける必要があるので、
@@ -257,6 +300,38 @@ Brillouin–Wigner 摂動論はどんなトポロジカル模型の摂動にも�
 このため、ストリングの端にいる準粒子は点ではなく有限サイズの雲に見える。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 210" xmlns="http://www.w3.org/2000/svg">
+  <line x1="90" y1="100" x2="370" y2="100" class="line accent" stroke-width="2" stroke-dasharray="6 4"/>
+  <circle cx="90" cy="100" r="28" class="line" stroke-width="1" stroke-dasharray="3 3"/>
+  <circle cx="370" cy="100" r="28" class="line" stroke-width="1" stroke-dasharray="3 3"/>
+  <circle cx="90" cy="100" r="5" class="accent-fill"/>
+  <circle cx="370" cy="100" r="5" class="accent-fill"/>
+  <text x="90" y="147" class="label" text-anchor="middle">e</text>
+  <text x="370" y="147" class="label" text-anchor="middle">e</text>
+  <circle cx="150" cy="76" r="2.5" class="gate"/>
+  <circle cx="166" cy="76" r="2.5" class="gate"/>
+  <line x1="152.5" y1="76" x2="163.5" y2="76" class="line" stroke-width="1"/>
+  <circle cx="170" cy="126" r="2.5" class="gate"/>
+  <circle cx="186" cy="126" r="2.5" class="gate"/>
+  <line x1="172.5" y1="126" x2="183.5" y2="126" class="line" stroke-width="1"/>
+  <circle cx="270" cy="128" r="2.5" class="gate"/>
+  <circle cx="286" cy="128" r="2.5" class="gate"/>
+  <line x1="272.5" y1="128" x2="283.5" y2="128" class="line" stroke-width="1"/>
+  <circle cx="310" cy="74" r="2.5" class="gate"/>
+  <circle cx="326" cy="74" r="2.5" class="gate"/>
+  <line x1="312.5" y1="74" x2="323.5" y2="74" class="line" stroke-width="1"/>
+  <rect x="224" y="30" width="12" height="12" class="accent-fill"/>
+  <line x1="230" y1="42" x2="230" y2="168" class="line accent" stroke-width="1.5"/>
+  <path d="M224 160 L230 170 L236 160" class="line accent" stroke-width="1.5"/>
+  <text x="244" y="40" class="label">m</text>
+  <text x="240" y="92" class="label">−1</text>
+  <text x="25" y="190" class="label-muted">破線の円：仮想励起の雲　小さな2点：仮想的な頂点欠陥の対</text>
+  <text x="25" y="206" class="label-muted">縦線：m の経路（頂点欠陥のストリングを横切るたびに −1）</text>
+</svg>
+<figcaption>図 29.3：摂動のもとでの頂点準粒子 \(e\) の対。端点は仮想励起の雲をまとって有限サイズになるが、プラケット欠陥 \(m\) がストリングを横切るときの位相 \(-1\) は変わらない。</figcaption>
+</figure>
+
 <div class="remark-box">
 <span class="box-title">補足（ピン止めポテンシャル）</span>
 <a class="eq-ref" href="#eq-29-dHx"></a> のような摂動は準粒子に運動を与え、準粒子は初期位置から動き出しうる。
@@ -303,6 +378,21 @@ TQFT のデータを少しだけ変えて、なお整合的な TQFT であり続
 局所演算子でハミルトニアンを摂動して長距離の TQFT の性質を変えるには、系は<strong>相転移</strong>を経なければならない。
 トポロジカルな性質は、ハミルトニアンの個々の点ではなく相全体の性質である。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="80" x2="250" y2="80" class="line accent" stroke-width="5"/>
+  <line x1="250" y1="80" x2="415" y2="80" class="line" stroke-width="5"/>
+  <path d="M407 74 L417 80 L407 86" class="line" stroke-width="1.5"/>
+  <circle cx="250" cy="80" r="6" class="accent-fill"/>
+  <text x="250" y="56" class="label" text-anchor="middle">ギャップが閉じる（相転移）</text>
+  <text x="145" y="108" class="label" text-anchor="middle">トポロジカル相</text>
+  <text x="335" y="108" class="label" text-anchor="middle">別の相</text>
+  <text x="40" y="136" class="label-muted">摂動なし（トーリック符号）</text>
+  <text x="420" y="136" class="label-muted" text-anchor="end">摂動が強い</text>
+</svg>
+<figcaption>図 29.4：摂動の強さに対する相図の模式図。ギャップが開いている間はトポロジカルな性質が変わらず、長距離の TQFT を変えるにはギャップが閉じる相転移を越えなければならない。</figcaption>
+</figure>
 <p>
 異なる TQFT の間の連続相転移は<a href="chapter25.html">第25章</a>で詳しく論じられている。
 TQFT から、トポロジカルでないまったく別の相へ転移することもありうる。

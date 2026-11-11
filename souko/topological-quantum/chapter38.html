@@ -65,8 +65,25 @@
 \((1+1)\) 次元の<strong>共形場理論 (CFT)</strong> は、ギャップレスな1次元（Lorentz 不変）系の物理を記述する。そのような理論は豊かな数学的構造のため、一般に厳密に解ける。
 Witten の仕事以来、\((2+1)\) 次元の Chern–Simons 理論と \((1+1)\) 次元の CFT の間に深い関係があることが理解されている。本質的には、CFT は Chern–Simons 理論の境界の理論である。
 \((2+1)\) 次元の時空多様体をどう切るかによって、\((1+1)\) 次元の動的な理論も、静的な \((2+0)\) 次元の波動関数も得られる。
-CFT の構造の多くは、すでに学んだ TQFT の構造（融合、組みひも、Verlinde 関係など）を繰り返したものだが、CFT には TQFT に反映されない追加の構造があるので、本書では深く扱わなかった。
+CFT の構造の多くは、すでに学んだ TQFT の構造（融合、組みひも、Verlinde 関係など）を繰り返したものだが、CFT には TQFT に反映されない追加の構造があるので、本書では深く扱わなかった（図 38.1）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="150" cy="40" rx="80" ry="18" fill="none" class="line" stroke-width="1.5"/>
+  <path d="M 70 150 A 80 18 0 0 0 230 150" fill="none" class="line" stroke-width="1.5"/>
+  <path d="M 70 150 A 80 18 0 0 1 230 150" fill="none" class="line" stroke-width="1" stroke-dasharray="4 4"/>
+  <line x1="70" y1="40" x2="70" y2="150" class="line accent" stroke-width="3"/>
+  <line x1="230" y1="40" x2="230" y2="150" class="line accent" stroke-width="3"/>
+  <ellipse cx="150" cy="95" rx="80" ry="18" fill="none" class="line accent" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="265" y="55" class="label">内部：Chern–Simons</text>
+  <text x="265" y="80" class="label">側面：CFT（1+1 次元）</text>
+  <text x="265" y="110" class="label-muted">破線：ある時刻の断面</text>
+  <text x="265" y="130" class="label-muted">（2+0 次元の波動関数）</text>
+  <text x="150" y="182" text-anchor="middle" class="label-muted">時間方向：縦</text>
+</svg>
+<figcaption>図 38.1：円板に時間方向を加えた円柱形の時空。内部の Chern–Simons 理論に対して、側面（境界）には CFT が住み、ある時刻で切った断面は静的な波動関数を与える。</figcaption>
+</figure>
 <p>
 \((1+1)\) 次元 CFT とバルクの \((2+0)\) 次元波動関数の関係を、Moore と Read は一般的に利用して、CFT に基づく \((2+0)\) 次元の量子ホール波動関数を構成した（\(\nu=5/2\) の Moore–Read 状態など。<a href="chapter37.html">第37章</a>）。
 この対応が、凝縮系における非アーベル粒子の最初の詳細な提案につながった。実際、量子ホールの設定は、非アーベルなトポロジカル物質が実際に観測されたと信じられている、おそらく唯一の実験系である。
@@ -77,8 +94,48 @@ CFT との関係は、いまや分数量子ホール効果の研究の主要な�
 <p>
 <a href="chapter34.html">第34章</a>で簡単に述べたように、現代の物質理解の重要な方法は、系の部分間の量子エンタングルメントを特徴づけることである。
 この考え方から、密度行列繰り込み群（DMRG）やテンソルネットワークなどの重要な数値的・解析的手法が生まれた。テンソルネットワークの言葉では、多くのトポロジカル物質が非常に美しく明快に記述できる。
-これらの技術は数値シミュレーションの道具になるだけでなく、トポロジカル秩序の構造への深い理解も与える。
+これらの技術は数値シミュレーションの道具になるだけでなく、トポロジカル秩序の構造への深い理解も与える（図 38.2）。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 160" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="30" x2="210" y2="30" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="75" x2="210" y2="75" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="120" x2="210" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="30" x2="60" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="30" x2="110" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="160" y1="30" x2="160" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="210" y1="30" x2="210" y2="120" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="30" x2="70" y2="40" class="line accent" stroke-width="2.5"/>
+  <line x1="110" y1="30" x2="120" y2="40" class="line accent" stroke-width="2.5"/>
+  <line x1="160" y1="30" x2="170" y2="40" class="line accent" stroke-width="2.5"/>
+  <line x1="210" y1="30" x2="220" y2="40" class="line accent" stroke-width="2.5"/>
+  <line x1="60" y1="75" x2="70" y2="85" class="line accent" stroke-width="2.5"/>
+  <line x1="110" y1="75" x2="120" y2="85" class="line accent" stroke-width="2.5"/>
+  <line x1="160" y1="75" x2="170" y2="85" class="line accent" stroke-width="2.5"/>
+  <line x1="210" y1="75" x2="220" y2="85" class="line accent" stroke-width="2.5"/>
+  <line x1="60" y1="120" x2="70" y2="130" class="line accent" stroke-width="2.5"/>
+  <line x1="110" y1="120" x2="120" y2="130" class="line accent" stroke-width="2.5"/>
+  <line x1="160" y1="120" x2="170" y2="130" class="line accent" stroke-width="2.5"/>
+  <line x1="210" y1="120" x2="220" y2="130" class="line accent" stroke-width="2.5"/>
+  <circle cx="60" cy="30" r="5" class="accent-fill"/>
+  <circle cx="110" cy="30" r="5" class="accent-fill"/>
+  <circle cx="160" cy="30" r="5" class="accent-fill"/>
+  <circle cx="210" cy="30" r="5" class="accent-fill"/>
+  <circle cx="60" cy="75" r="5" class="accent-fill"/>
+  <circle cx="110" cy="75" r="5" class="accent-fill"/>
+  <circle cx="160" cy="75" r="5" class="accent-fill"/>
+  <circle cx="210" cy="75" r="5" class="accent-fill"/>
+  <circle cx="60" cy="120" r="5" class="accent-fill"/>
+  <circle cx="110" cy="120" r="5" class="accent-fill"/>
+  <circle cx="160" cy="120" r="5" class="accent-fill"/>
+  <circle cx="210" cy="120" r="5" class="accent-fill"/>
+  <text x="270" y="60" class="label">黒の点：テンソル</text>
+  <text x="270" y="85" class="label-muted">細線：結合（ボンド）</text>
+  <text x="270" y="110" class="label-muted">太い斜線：物理脚</text>
+</svg>
+<figcaption>図 38.2：2次元のテンソルネットワークの模式図。各サイトのテンソルがボンドで隣のテンソルとつながり、物理的な自由度（スピンなど）の脚が外へ出る。</figcaption>
+</figure>
 
 <h3 id="sec-38-1-4">§38.1.4 トポロジカル絶縁体</h3>
 <p>

@@ -245,7 +245,7 @@ Kauffman ブラケットをもう少し注意深く調べる。ひもの途中�
 \big(\text{カール付きのひも}\big) = \big(A + A^{-1} d\big)\,\big(\text{まっすぐなひも}\big)
 = \big(A - A - A^{-3}\big)\big(\text{まっすぐなひも}\big) = -A^{-3}\,\big(\text{まっすぐなひも}\big) .
 \]</div>
-カールを取り除くと因子 \(-A^{-3}\) が生じる（交差の上下が逆のカールなら \(-A^{3}\)）。
+カールを取り除くと因子 \(-A^{-3}\) が生じる（図 2.2。交差の上下が逆のカールなら \(-A^{3}\)）。
 </div>
 
 <p>
@@ -260,6 +260,17 @@ Kauffman ブラケットをもう少し注意深く調べる。ひもの途中�
 である。数学の言葉では、カールの有無は全同位（アンビエント・イソトピー）では同じだが正則イソトピーでは異なる（§2.6.1）。
 結び目は \(S^1\) の埋め込みではなくリボンの埋め込み、すなわち各点で結び目に直交するベクトル（リボンの向き）を指定したものと考えるべきなのである。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 156" xmlns="http://www.w3.org/2000/svg">
+  <path d="M60 139.6 L60 114.6 L59.8 110.8 L59.4 107.1 L58.7 103.5 L57.6 100 L56.4 96.6 L54.8 93.5 L53.1 90.5 L51.2 87.8 L49.1 85.3 L47 83.2 L46.8 83  M38.5 77.7 L37.8 77.4 L35.7 76.7 L33.6 76.3 L31.7 76.1 L30 76.2 L28.4 76.5 L27.2 77 L26.1 77.6 L25.4 78.3 L25 79.1 L24.8 80 L25 80.9 L25.4 81.7 L26.1 82.4 L27.2 83 L28.4 83.5 L30 83.8 L31.7 83.9 L33.6 83.7 L35.7 83.3 L37.8 82.6 L40.1 81.6 L42.4 80.3 L44.7 78.7 L47 76.8 L49.1 74.7 L51.2 72.2 L53.1 69.5 L54.8 66.5 L56.4 63.4 L57.6 60 L58.7 56.5 L59.4 52.9 L59.8 49.2 L60 45.4 L60 20.4" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="105" y="84" class="label">= −A⁻³ ×</text>
+  <line x1="250" y1="140" x2="250" y2="20" class="line" stroke-width="1.5"/>
+  <text x="8" y="152" class="label-muted">カール付きのひも</text>
+  <text x="250" y="152" text-anchor="middle" class="label-muted">まっすぐなひも</text>
+</svg>
+<figcaption>図 2.2：ひもの途中の小さなカールは、スケイン関係式でほどくと因子 \(-A^{-3}\) を残してまっすぐなひもに戻る。カールはリボンの1回のひねりに当たる。</figcaption>
+</figure>
 
 <div class="remark-box">
 <span class="box-title">直観（ひねり = 粒子の自転）</span>
@@ -322,7 +333,7 @@ Kauffman ブラケットを計算し、自己ツイスト1個につき因子 \(-
 
 <div class="example-box">
 <span class="box-title">例（局所的に同じで履歴の異なる二状態）</span>
-同じ時刻面上の同じ4点に粒子がある二つの状態を考える（図 2.2）。
+同じ時刻面上の同じ4点に粒子がある二つの状態を考える（図 2.3）。
 \(\ket{0}\) は隣り合う二点ずつが対生成された状態、\(\ket{1}\) は外側の二点と内側の二点がそれぞれ対生成された状態である。
 時間は下から上に流れ、世界線は下に垂れた弧（カップ）になる。
 ケットの時間を反転する（上下を逆にする）とブラ \(\bra{0}\), \(\bra{1}\) が得られる。
@@ -354,12 +365,12 @@ Kauffman ブラケットを計算し、自己ツイスト1個につき因子 \(-
   <text x="426" y="128" class="label-muted">時間</text>
   <text x="60" y="142" class="label-muted">点線：ある時刻の空間面。弧：過去に対生成された粒子の世界線</text>
 </svg>
-<figcaption>図 2.2：粒子の位置は同じだが対生成の組み合わせが異なる二つの状態。</figcaption>
+<figcaption>図 2.3：粒子の位置は同じだが対生成の組み合わせが異なる二つの状態。</figcaption>
 </figure>
 
 <p>
 この二状態が線形独立であることは内積で分かる。内積はケットの図の上にブラの図を貼り合わせ、
-できた閉じた図の Kauffman ブラケットを求めればよい。
+できた閉じた図（図 2.4）の Kauffman ブラケットを求めればよい。
 </p>
 
 <div class="thm-box">
@@ -370,6 +381,33 @@ Kauffman ブラケットを計算し、自己ツイスト1個につき因子 \(-
 \(\braket00\) は並んだ輪2個、\(\braket11\) は入れ子の輪2個、\(\braket01\) は弧が互い違いにつながって輪1個になるからである。
 \(|d| \neq 1\) なら \(|\braket01|^2 \neq \braket00\braket11\) なので、\(\ket0\) と \(\ket1\) は線形独立である。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- <0|0> -->
+  <line x1="23" y1="70" x2="137" y2="70" class="line" stroke-width="1" stroke-dasharray="4 3"/>
+  <path d="M 35 70 C 35 94 65 94 65 70" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 95 70 C 95 94 125 94 125 70" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 35 70 C 35 46 65 46 65 70" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 95 70 C 95 46 125 46 125 70" class="line" fill="none" stroke-width="1.5"/>
+  <text x="80" y="140" text-anchor="middle" class="label">⟨0|0⟩ = d²</text>
+  <!-- <1|1> -->
+  <line x1="173" y1="70" x2="287" y2="70" class="line" stroke-width="1" stroke-dasharray="4 3"/>
+  <path d="M 185 70 C 185 123 275 123 275 70" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 215 70 C 215 94 245 94 245 70" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 185 70 C 185 17 275 17 275 70" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 215 70 C 215 46 245 46 245 70" class="line" fill="none" stroke-width="1.5"/>
+  <text x="230" y="140" text-anchor="middle" class="label">⟨1|1⟩ = d²</text>
+  <!-- <0|1> -->
+  <line x1="323" y1="70" x2="437" y2="70" class="line" stroke-width="1" stroke-dasharray="4 3"/>
+  <path d="M 335 70 C 335 94 365 94 365 70" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 395 70 C 395 94 425 94 425 70" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M 365 70 C 365 46 395 46 395 70" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M 335 70 C 335 17 425 17 425 70" class="line" fill="none" stroke-width="1.5"/>
+  <text x="380" y="140" text-anchor="middle" class="label">⟨0|1⟩ = d</text>
+</svg>
+<figcaption>図 2.4：内積は、ケット（下側の弧、色付き）の上にブラ（上側の弧）を貼り合わせてできる閉じた図の値である。\(\braket00\) は並んだ輪2個、\(\braket11\) は入れ子の輪2個、\(\braket01\) は弧がつながった輪1個になる。</figcaption>
+</figure>
 
 <p>
 このままではケットは規格化されていない。ブラとケットのそれぞれに \(1/d\) を掛ければ規格化された状態になる。
@@ -520,8 +558,40 @@ FQHE で組みひもを編む対象は<strong>準粒子 (quasiparticle)</strong>
 <li><strong>II 型</strong>：2本のひもの一方を他方の上（または下）に重ねて交差を二つ作る・消す。</li>
 <li><strong>III 型</strong>：2本のひもの交差点の上（または下）を、3本目のひもがまたいで反対側へ移る。</li>
 </ul>
-それぞれ、交差の上下をすべて反転した鏡像の移動も含める。
+それぞれ、交差の上下をすべて反転した鏡像の移動も含める（図 2.5）。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg">
+  <text x="14" y="55" class="label">I 型</text>
+  <path d="M150 85.1 L150 75.1 L149.8 71.9 L149.4 68.7 L148.6 65.6 L147.6 62.6 L146.3 59.8 L144.7 57.2 L143 54.9 L141.2 52.9 L140.7 52.5  M134 48.2 L133.2 47.9 L131.4 47.4 L129.7 47.2 L128.1 47.2 L126.8 47.5 L125.8 48 L125 48.6 L124.6 49.3 L124.4 50 L124.6 50.7 L125 51.4 L125.8 52 L126.8 52.5 L128.1 52.8 L129.7 52.8 L131.4 52.6 L133.2 52.1 L135.2 51.3 L137.2 50.2 L139.2 48.8 L141.2 47.1 L143 45.1 L144.7 42.8 L146.3 40.2 L147.6 37.4 L148.6 34.4 L149.4 31.3 L149.8 28.1 L150 24.9 L150 14.9" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="205" y1="50" x2="255" y2="50" class="line" stroke-width="1.2"/>
+  <path d="M 215 44 L 205 50 L 215 56" class="line" fill="none" stroke-width="1.2"/>
+  <path d="M 245 44 L 255 50 L 245 56" class="line" fill="none" stroke-width="1.2"/>
+  <line x1="310" y1="15" x2="310" y2="85" class="line" stroke-width="1.5"/>
+
+  <text x="14" y="155" class="label">II 型</text>
+  <path d="M150 110 L150 127.7  M150 135.7 L150 164.3  M150 172.3 L150 190" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M130 110 L130 128 L138.4 129.3 L146 130.8 L153 132.4 L159.2 134 L164.6 135.8 L169.4 137.7 L173.4 139.6 L176.7 141.6 L179.2 143.7 L181 145.8 L182.1 147.9 L182.5 150 L182.1 152.1 L181 154.2 L179.2 156.3 L176.7 158.4 L173.4 160.4 L169.4 162.3 L164.6 164.2 L159.2 166 L153 167.6 L146 169.2 L138.4 170.7 L130 172 L130 190" class="line accent" fill="none" stroke-width="1.5"/>
+  <line x1="205" y1="150" x2="255" y2="150" class="line" stroke-width="1.2"/>
+  <path d="M 215 144 L 205 150 L 215 156" class="line" fill="none" stroke-width="1.2"/>
+  <path d="M 245 144 L 255 150 L 245 156" class="line" fill="none" stroke-width="1.2"/>
+  <line x1="310" y1="110" x2="310" y2="190" class="line" stroke-width="1.5"/>
+  <line x1="290" y1="110" x2="290" y2="190" class="line accent" stroke-width="1.5"/>
+
+  <text x="14" y="255" class="label">III 型</text>
+  <path d="M120 210 L132.6 226.8  M137.4 233.2 L180 290" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M180 210 L167.4 226.8  M162.6 233.2 L152.4 246.8  M147.6 253.2 L120 290" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="110" y1="230" x2="190" y2="230" class="line accent" stroke-width="1.5"/>
+  <line x1="205" y1="250" x2="255" y2="250" class="line" stroke-width="1.2"/>
+  <path d="M 215 244 L 205 250 L 215 256" class="line" fill="none" stroke-width="1.2"/>
+  <path d="M 245 244 L 255 250 L 245 256" class="line" fill="none" stroke-width="1.2"/>
+  <path d="M280 210 L322.6 266.8  M327.4 273.2 L340 290" class="line" fill="none" stroke-width="1.5"/>
+  <path d="M340 210 L312.4 246.8  M307.6 253.2 L297.4 266.8  M292.6 273.2 L280 290" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="270" y1="270" x2="350" y2="270" class="line accent" stroke-width="1.5"/>
+</svg>
+<figcaption>図 2.5：三種類の Reidemeister 移動。I 型はカールの生成・消去、II 型は2本のひもの一方を他方の上に重ねて交差を二つ作る・消す操作、III 型は交差点の上を3本目のひもがまたぐ操作である（色付きの線が動くひも）。</figcaption>
+</figure>
 
 <p>
 必要な移動の回数は非常に多くなりうる。交差 \(c\) 個の図が自明な結び目であるとき、

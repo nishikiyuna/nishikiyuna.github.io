@@ -103,6 +103,18 @@ d_a=\chi_{R_a}(e)
 元は \(e,r,r^{-1},x,xr,xr^{-1}\) で、共役類は3つ：単位元 \(\{e\}\)、回転 \(\{r,r^{-1}\}\)、反転 \(\{x,xr,xr^{-1}\}\)。
 既約表現も3つある（既約表現の個数は共役類の個数に等しい）。
 </p>
+<figure>
+<svg viewBox="0 0 340 125" xmlns="http://www.w3.org/2000/svg">
+  <polygon points="80,20 30,100 130,100" class="line" fill="none" stroke-width="1.5"/>
+  <line x1="80" y1="8" x2="80" y2="112" class="line" stroke-width="1" stroke-dasharray="4 3"/>
+  <path d="M92 68 A12 12 0 1 1 80 56" class="line accent" fill="none" stroke-width="1.5"/>
+  <path d="M74 52 L80 56 L74 60" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="170" y="55" class="label">r：120度回転</text>
+  <text x="170" y="80" class="label">x：対称軸での反転</text>
+</svg>
+<figcaption>図 20.1：\(S_3\) は正三角形の対称性の群。回転 \(r\) と、破線の軸に関する反転 \(x\) が生成元である。</figcaption>
+</figure>
+
 
 <div class="table-wrap">
 <table>
@@ -221,6 +233,22 @@ R^{ab}_c=\begin{cases}
 \(a=b\) のときは、\(R_a\otimes R_a\) のどの部分が対称か反対称かを知る必要がある（§20.5.1）。
 最後の場合の符号は直観的である。スピン \(\tfrac12\) 2個のスピン一重項のような反対称な組み合わせを交換すると \(-1\) が付く。
 </p>
+<figure>
+<svg viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg">
+  <text x="34" y="132" class="label">R_a</text>
+  <text x="94" y="132" class="label">R_b</text>
+  <text x="34" y="14" class="label">R_b</text>
+  <text x="94" y="14" class="label">R_a</text>
+  <line x1="100" y1="118" x2="74.8" y2="78.6" class="line" stroke-width="1.5"/>
+  <line x1="65.2" y1="63.4" x2="40" y2="24" class="line" stroke-width="1.5"/>
+  <line x1="40" y1="118" x2="100" y2="24" class="line accent" stroke-width="1.5"/>
+  <text x="150" y="50" class="label-muted">c が R_a⊗R_a の</text>
+  <text x="150" y="68" class="label-muted">対称部分：R = +1</text>
+  <text x="150" y="92" class="label-muted">反対称部分：R = -1</text>
+</svg>
+<figcaption>図 20.2：ボソン的な組みひもは、テンソル因子の並べ替えである。同種粒子 \(a=b\) では、融合先 \(c\) が対称部分に現れれば \(+1\)、反対称部分に現れれば \(-1\) を与える。</figcaption>
+</figure>
+
 <div class="caution-box">
 <span class="box-title">注意（ゲージと規約）</span>
 \(a=b\) のときの \(R^{aa}_c\) 自体はゲージに依存するので、式 <a class="eq-ref" href="#eq-20-Rbos"></a> はゲージの選び方を含む。
@@ -282,6 +310,25 @@ Nikshych（2018）の定理により、非アーベル群の \(\mathrm{Rep}(G)\)
 <div class="equation" id="eq-20-symmetric">\[
 R^{ab}_cR^{ba}_c=1\qquad (N_{ab}^c&gt;0\ \text{を満たすすべての}\ a,b,c)
 \]</div>
+<figure>
+<svg viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">
+  <text x="34" y="132" class="label">a</text>
+  <text x="94" y="132" class="label">b</text>
+  <line x1="100" y1="118" x2="74.8" y2="78.6" class="line" stroke-width="1.5"/>
+  <line x1="65.2" y1="63.4" x2="40" y2="24" class="line" stroke-width="1.5"/>
+  <line x1="40" y1="118" x2="100" y2="24" class="line accent" stroke-width="1.5"/>
+  <text x="135" y="76" class="label">=</text>
+  <text x="174" y="132" class="label">a</text>
+  <text x="234" y="132" class="label">b</text>
+  <line x1="180" y1="118" x2="205.2" y2="78.6" class="line accent" stroke-width="1.5"/>
+  <line x1="214.8" y1="63.4" x2="240" y2="24" class="line accent" stroke-width="1.5"/>
+  <line x1="240" y1="118" x2="180" y2="24" class="line" stroke-width="1.5"/>
+  <text x="262" y="50" class="label-muted">(3+1)次元では</text>
+  <text x="262" y="68" class="label-muted">連続変形で移り合う</text>
+</svg>
+<figcaption>図 20.3：\((3+1)\) 次元では、\(a\) が \(b\) の前を通る世界線と後ろを通る世界線が連続変形でつながるので、\(R^{ab}_cR^{ba}_c=1\)（全粒子が透明）になる。</figcaption>
+</figure>
+
 <p>
 である。この条件が成り立ち、かつ六角形方程式の解でもあるとき、<strong>対称テンソル圏</strong>と呼ぶ。
 これはある意味でモジュラーテンソル圏の正反対である（モジュラーでは真空以外に透明な粒子がなく、対称では全粒子が透明）。

@@ -254,6 +254,26 @@ Kitaev の規約はこれをリンク変数が対角な基底（\(\sigma_z\) が
 \(\mathcal N\) は和の項数である。すべてのプラケットについて反転前後が同じ重みで入るので \(P_\beta=+1\) が成り立つ。これがループ気体の描像である。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <line x1="25" y1="30" x2="355" y2="30" class="line" stroke-width="1"/>
+  <line x1="25" y1="80" x2="355" y2="80" class="line" stroke-width="1"/>
+  <line x1="25" y1="130" x2="355" y2="130" class="line" stroke-width="1"/>
+  <line x1="40" y1="15" x2="40" y2="145" class="line" stroke-width="1"/>
+  <line x1="90" y1="15" x2="90" y2="145" class="line" stroke-width="1"/>
+  <line x1="140" y1="15" x2="140" y2="145" class="line" stroke-width="1"/>
+  <line x1="190" y1="15" x2="190" y2="145" class="line" stroke-width="1"/>
+  <line x1="240" y1="15" x2="240" y2="145" class="line" stroke-width="1"/>
+  <line x1="290" y1="15" x2="290" y2="145" class="line" stroke-width="1"/>
+  <line x1="340" y1="15" x2="340" y2="145" class="line" stroke-width="1"/>
+  <path d="M90 30 L190 30 L190 80 L90 80 Z" class="line accent" stroke-width="4"/>
+  <line x1="25" y1="130" x2="355" y2="130" class="line accent" stroke-width="4"/>
+  <text x="25" y="172" class="label-muted">上：プラケット反転で出入りできる可縮な閉ループ（頂点での交差も可）</text>
+  <text x="25" y="190" class="label-muted">下：トーラスのサイクルを巻く閉ループ（巻く本数の偶奇が保存される）</text>
+</svg>
+<figcaption>図 27.2：規則1を満たすループ配位（青い辺を太線で描く）。どの頂点にも青い辺が偶数本入るので、線は端をもたず閉じている。</figcaption>
+</figure>
+
 <div class="thm-box">
 <span class="box-title">結果（プラケット反転で変わらない量：巻き付きの偶奇）</span>
 トーラスの非自明サイクルに沿って1本の切断線を引き、それを横切る青い辺の本数を数える。
@@ -341,6 +361,29 @@ V_\alpha\bigl[\sigma_x^{(i)}\ket{\psi}\bigr] = -\,\sigma_x^{(i)} V_\alpha\ket{\p
 誤りの経路と訂正の経路が違っていても、合わせて可縮な閉ループになるなら訂正は成功する。
 </div>
 
+<figure>
+<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+  <line x1="25" y1="30" x2="355" y2="30" class="line" stroke-width="1"/>
+  <line x1="25" y1="80" x2="355" y2="80" class="line" stroke-width="1"/>
+  <line x1="25" y1="130" x2="355" y2="130" class="line" stroke-width="1"/>
+  <line x1="40" y1="15" x2="40" y2="145" class="line" stroke-width="1"/>
+  <line x1="90" y1="15" x2="90" y2="145" class="line" stroke-width="1"/>
+  <line x1="190" y1="15" x2="190" y2="145" class="line" stroke-width="1"/>
+  <line x1="240" y1="15" x2="240" y2="145" class="line" stroke-width="1"/>
+  <line x1="290" y1="15" x2="290" y2="145" class="line" stroke-width="1"/>
+  <line x1="340" y1="15" x2="340" y2="145" class="line" stroke-width="1"/>
+  <line x1="140" y1="15" x2="140" y2="30" class="line" stroke-width="1"/>
+  <line x1="140" y1="80" x2="140" y2="145" class="line" stroke-width="1"/>
+  <path d="M90 30 L190 30 L190 80 L90 80 Z" class="line accent" stroke-width="4"/>
+  <line x1="140" y1="30" x2="140" y2="80" class="line accent" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="115" y="60" class="label" text-anchor="middle">P</text>
+  <text x="165" y="60" class="label" text-anchor="middle">P</text>
+  <text x="25" y="172" class="label-muted">太線：σx を掛けた閉ループ = 内側の2つのプラケット演算子 P の積</text>
+  <text x="25" y="190" class="label-muted">破線：内側の共有辺は2回反転されて打ち消し、外周の σx だけが残る</text>
+</svg>
+<figcaption>図 27.3：閉じた \(\sigma_x\) ループは囲まれたプラケット演算子の積に等しい。符号空間では \(P_\beta=1\) なので、可縮なループは恒等演算子として働く。</figcaption>
+</figure>
+
 <p>
 これに対し、ストリングが<strong>非自明サイクルを一周</strong>して閉じると（欠陥をサイクルに沿って一周させて対消滅させると）、
 欠陥は残らず符号空間には戻るが、そのサイクルを巻く青いループの本数の偶奇が変わる。これは論理誤りである。
@@ -357,7 +400,7 @@ V_\alpha\bigl[\sigma_x^{(i)}\ket{\psi}\bigr] = -\,\sigma_x^{(i)} V_\alpha\ket{\p
 </p>
 
 <figure>
-<svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 555 200" xmlns="http://www.w3.org/2000/svg">
   <!-- grid -->
   <line x1="25" y1="30" x2="355" y2="30" class="line" stroke-width="1"/>
   <line x1="25" y1="80" x2="355" y2="80" class="line" stroke-width="1"/>
@@ -390,7 +433,7 @@ V_\alpha\bigl[\sigma_x^{(i)}\ket{\psi}\bigr] = -\,\sigma_x^{(i)} V_\alpha\ket{\p
   <text x="25" y="172" class="label-muted">左：辺に沿う σx のストリング。両端（●）が頂点欠陥 Vα = −1</text>
   <text x="25" y="190" class="label-muted">右：σz を掛けた辺（太線）を貫く双対格子上のストリング。両端（■）がプラケット欠陥 Pβ = −1</text>
 </svg>
-<figcaption>図 27.2：2種類の誤りストリング。観測できるのは端点の欠陥だけである。記号 e, m は第28章での呼び名。</figcaption>
+<figcaption>図 27.4：2種類の誤りストリング。観測できるのは端点の欠陥だけである。記号 e, m は第28章での呼び名。</figcaption>
 </figure>
 
 <h3 id="sec-27-4-2">§27.4.2 \(\sigma_z\) 誤り</h3>
@@ -435,6 +478,19 @@ V_\alpha\bigl[\sigma_x^{(i)}\ket{\psi}\bigr] = -\,\sigma_x^{(i)} V_\alpha\ket{\p
 非自明サイクルを巻く \(\sigma_x\) のループと、それと交差するサイクルを巻く \(\sigma_z\) の双対ループは、ちょうど1本の辺で交わるので反可換になる。
 ゲージ理論の言葉では、非可縮な Wilson ループと 't Hooft ループの組が論理量子ビットの Pauli 演算子になっている。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 175" xmlns="http://www.w3.org/2000/svg">
+  <rect x="60" y="35" width="240" height="100" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="95" x2="300" y2="95" class="line accent" stroke-width="4"/>
+  <line x1="180" y1="35" x2="180" y2="135" class="line accent" stroke-width="2" stroke-dasharray="5 4"/>
+  <circle cx="180" cy="95" r="5" class="accent-fill"/>
+  <text x="180" y="24" class="label" text-anchor="middle">σz の双対ループ</text>
+  <text x="312" y="100" class="label">σx のループ</text>
+  <text x="230" y="162" class="label-muted" text-anchor="middle">向かい合う辺は同一視（トーラス）。2つのループは1本の辺で交わり反可換</text>
+</svg>
+<figcaption>図 27.5：2つの論理量子ビット演算子を表すトーラス上のループ。一方のサイクルを巻く \(\sigma_x\) ループ（実線）と、それと交わるサイクルを巻く \(\sigma_z\) の双対ループ（破線）。</figcaption>
+</figure>
 
 <h3 id="sec-27-4-3">§27.4.3 \(\sigma_x\) と \(\sigma_z\) の組合せ</h3>
 

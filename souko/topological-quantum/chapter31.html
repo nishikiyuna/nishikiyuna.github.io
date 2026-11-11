@@ -272,6 +272,26 @@ Kitaev 模型でも同様に、プラケット演算子はプラケットの周�
 したがって2つの格子の基底状態の間に同型がある。
 </p>
 
+<figure>
+<svg viewBox="0 0 460 185" xmlns="http://www.w3.org/2000/svg">
+  <rect x="40" y="40" width="100" height="110" class="line" stroke-width="1.5"/>
+  <text x="90" y="100" class="label" text-anchor="middle">β</text>
+  <line x1="160" y1="95" x2="248" y2="95" class="line accent" stroke-width="1.5"/>
+  <path d="M240 89 L250 95 L240 101" class="line accent" stroke-width="1.5"/>
+  <text x="205" y="80" class="label-muted" text-anchor="middle">操作B</text>
+  <rect x="270" y="40" width="100" height="110" class="line" stroke-width="1.5"/>
+  <line x1="320" y1="40" x2="320" y2="70" class="line accent" stroke-width="2"/>
+  <circle cx="320" cy="88" r="18" class="line accent" stroke-width="2"/>
+  <circle cx="320" cy="40" r="3" class="accent-fill"/>
+  <text x="328" y="60" class="label-muted">k = e</text>
+  <text x="320" y="92" class="label" text-anchor="middle">β2</text>
+  <text x="346" y="92" class="label">h</text>
+  <text x="320" y="135" class="label" text-anchor="middle">β1</text>
+  <text x="230" y="175" class="label-muted" text-anchor="middle">おたまじゃくし：茎（ラベル k = e）とループ（ラベル h）</text>
+</svg>
+<figcaption>図 31.1：操作B（プラケットの追加）。辺の途中に頂点を挿入して「おたまじゃくし」を付けると、プラケット \(\beta\) が \(\beta_1\) と小さな \(\beta_2\) に分かれる。</figcaption>
+</figure>
+
 <div class="example-box">
 <span class="box-title">例（球面上の最小格子：基底状態は一意）</span>
 格子に依存しないことが分かったので、最小の分解を使って縮退度を求められる。
@@ -322,7 +342,7 @@ Kitaev 模型でも同様に、プラケット演算子はプラケットの周�
 格子上の量子数の言葉と格子の無い連続ダイアグラムの言葉は、混ぜて使えると便利なことがある。
 その好例が、\(\hat P_\beta(h)\)（<a class="eq-ref" href="#eq-31-Ph"></a>）は<strong>プラケットの内部にラベル \(h\) のループを挿入し、それを周囲の辺の変数へ融合する操作</strong>である、という見方である。
 プラケットの中心の \(\times\) 印は平面の穴（puncture）で、これがあるためループは操作2で消せず、辺へ押し込んで融合するしかない。
-辺に押し込むとき、各辺では補題（図31.10）で \(g\to hg\) となり、各角では補題（図31.11）で整合する。
+辺に押し込むとき、各辺では補題（原書の図31.10）で \(g\to hg\) となり、各角では補題（原書の図31.11）で整合する。
 この見方で、プラケット演算子は次のようにダイアグラムで書ける。
 </p>
 <div class="equation" id="eq-31-Omega">\[
@@ -338,7 +358,7 @@ Kitaev 模型でも同様に、プラケット演算子はプラケットの周�
 
 <p>
 Kitaev 模型が平面ダイアグラム代数に結びつくと分かると、ダイアグラム代数を一般化してもっと一般のトポロジカル模型が作れるのではないか、という疑問が自然に出てくる。
-群 \(G\) の性質に基づくという方針を保ったまま、\(F\) 移動（図31.9の操作3）を一般化すれば、別の整合的な平面ダイアグラム代数が得られる。
+群 \(G\) の性質に基づくという方針を保ったまま、\(F\) 移動（原書の図31.9の操作3）を一般化すれば、別の整合的な平面ダイアグラム代数が得られる。
 第19章§19.1で議論したとおり、任意の 3-コサイクルが整合的なスカラー \(F\) 行列を与える。
 Kitaev 模型が使うのは自明なコサイクル（\(F\)、第19章の記法では \(\omega\) がただの 1）だが、非自明なコサイクル（非自明な \(F\)）を使った Kitaev 模型も作れる。
 これを Kitaev 模型の<strong>ねじれ (twisting)</strong>（あるいは quasi-quantum double）と呼ぶ。
@@ -381,7 +401,7 @@ Kitaev 模型が使うのは自明なコサイクル（\(F\)、第19章の記法
   <text x="200" y="140" class="label-muted">四隅の点は同一の頂点（周期境界）</text>
   <text x="60" y="182" class="label-muted">図中の矢印は辺の向き（水平：右向き、鉛直：上向き）</text>
 </svg>
-<figcaption>図 31.1：トーラスの最小分解（1頂点・2辺・1プラケット）。基底状態は、可換な \((b,a)\) の共役軌道の和になる。</figcaption>
+<figcaption>図 31.2：トーラスの最小分解（1頂点・2辺・1プラケット）。基底状態は、可換な \((b,a)\) の共役軌道の和になる。</figcaption>
 </figure>
 
 <p>
@@ -492,7 +512,7 @@ Kitaev 模型が使うのは自明なコサイクル（\(F\)、第19章の記法
 <h3 id="sec-31-6-0">弦の端は共役類でラベルされる</h3>
 
 <p>
-図31.15の状況を考える。ラベル \(h\) の弦の端があるダイアグラムに、操作2でラベル \(g\) のループを作る。
+原書の図31.15の状況を考える。ラベル \(h\) の弦の端があるダイアグラムに、操作2でラベル \(g\) のループを作る。
 このループを弦の端の上へ引き寄せると、弦の端のラベルは \(ghg^{-1}\) に共役される。
 Kitaev 模型の波動関数は許されるすべての操作で移り合うダイアグラムの重ね合わせなので、弦の端のラベルが \(h\) の状態と \(ghg^{-1}\)（任意の \(g\)）の状態の重ね合わせでなければならない。
 </p>
@@ -529,7 +549,7 @@ Kitaev 模型の波動関数は許されるすべての操作で移り合うダ�
   <text x="200" y="120" class="label-muted">交点で頂点条件を満たすように上端が ghg⁻¹</text>
   <text x="200" y="145" class="label-muted">左右の辺（破線）は同一視される</text>
 </svg>
-<figcaption>図 31.2：Kitaev 模型のチューブ代数の基底 \(\ket{h,g}\)（長方形表示）。h と ghg⁻¹ は同じ共役類に属するが、一般に同じ元とは限らない。</figcaption>
+<figcaption>図 31.3：Kitaev 模型のチューブ代数の基底 \(\ket{h,g}\)（長方形表示）。h と ghg⁻¹ は同じ共役類に属するが、一般に同じ元とは限らない。</figcaption>
 </figure>
 
 <p>
@@ -562,7 +582,7 @@ Kitaev 模型の波動関数は許されるすべての操作で移り合うダ�
 h=p\,r_C\,p^{-1}\qquad(p\in\{p\}_C).
 \]</div>
 <p>
-図31.2の \(ghg^{-1}\) も \(h\) と同じ共役類にあるので、同様に一意に
+図 31.3 の \(ghg^{-1}\) も \(h\) と同じ共役類にあるので、同様に一意に
 \[
 ghg^{-1}=p'\,r_C\,p'^{-1}\qquad(p'\in\{p\}_C)
 \]
@@ -580,7 +600,7 @@ z=p'^{-1}\,g\,p,\qquad\text{すなわち}\qquad g=p'\,z\,p^{-1}
 実際、\(ghg^{-1}=p'r_Cp'^{-1}\) に \(h=pr_Cp^{-1}\) を代入し \(p'\) を左辺に集めると \(p'^{-1}g(pr_Cp^{-1})g^{-1}p'=zr_Cz^{-1}=r_C\) となる。
 \(r_C\) と可換でない \(z\) を入れると矛盾が生じる。
 そこで環帯の状態を \(\ket{h,g}\) の代わりに \(\ket{C,z;p',p}\) と書く（\(z\in Z(r_C)\)、\(p,p'\in\{p\}_C\)）。
-この対応は図31.18のように図式的にも分かりやすい（\(r_C\) が中央の頂点にあり、\(z\) の線が \(r_C\) と可換なので頂点条件 \(r_Czr_C^{-1}z^{-1}=e\) が満たされる）。
+この対応は原書の図31.18のように図式的にも分かりやすい（\(r_C\) が中央の頂点にあり、\(z\) の線が \(r_C\) と可換なので頂点条件 \(r_Czr_C^{-1}z^{-1}=e\) が満たされる）。
 </p>
 
 <div class="remark-box">
@@ -686,6 +706,38 @@ Kitaev 模型の準粒子の種類は、<strong>共役類 \(C\)</strong> と、<
 \]
 が得られ、§31.5で見つけた8つの基底状態と一致する。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="20" width="140" height="120" rx="6" class="gate" stroke-width="1.5"/>
+  <rect x="160" y="20" width="140" height="120" rx="6" class="gate" stroke-width="1.5"/>
+  <rect x="310" y="20" width="140" height="120" rx="6" class="gate" stroke-width="1.5"/>
+  <text x="80" y="40" class="label" text-anchor="middle">C_e = {e}</text>
+  <text x="230" y="40" class="label" text-anchor="middle">C_r = {r, r2}</text>
+  <text x="380" y="40" class="label" text-anchor="middle">C_x = {x, xr, xr2}</text>
+  <circle cx="80" cy="75" r="15" class="gate accent" stroke-width="1.5"/>
+  <circle cx="205" cy="75" r="15" class="gate accent" stroke-width="1.5"/>
+  <circle cx="255" cy="75" r="15" class="gate accent" stroke-width="1.5"/>
+  <circle cx="330" cy="75" r="15" class="gate accent" stroke-width="1.5"/>
+  <circle cx="380" cy="75" r="15" class="gate accent" stroke-width="1.5"/>
+  <circle cx="430" cy="75" r="15" class="gate accent" stroke-width="1.5"/>
+  <text x="80" y="80" class="label" text-anchor="middle">e</text>
+  <text x="205" y="80" class="label" text-anchor="middle">r</text>
+  <text x="255" y="80" class="label" text-anchor="middle">r2</text>
+  <text x="330" y="80" class="label" text-anchor="middle">x</text>
+  <text x="380" y="80" class="label" text-anchor="middle">xr</text>
+  <text x="430" y="80" class="label" text-anchor="middle">xr2</text>
+  <text x="80" y="108" class="label-muted" text-anchor="middle">Z = S3</text>
+  <text x="80" y="126" class="label-muted" text-anchor="middle">R = I, S, V</text>
+  <text x="230" y="108" class="label-muted" text-anchor="middle">Z = Z3</text>
+  <text x="230" y="126" class="label-muted" text-anchor="middle">R = 1, ω, ω²</text>
+  <text x="380" y="108" class="label-muted" text-anchor="middle">Z = Z2</text>
+  <text x="380" y="126" class="label-muted" text-anchor="middle">R = +1, −1</text>
+  <text x="230" y="168" class="label-muted" text-anchor="middle">準粒子 [C, R] の量子次元 d = |C| × dim R</text>
+</svg>
+<figcaption>図 31.4：\(S_3\) の3つの共役類と、代表元の中心化群 \(Z\) の既約表現 \(R\)。各類で既約表現の個数を数えると \(3+2+3=8\) となり、準粒子 \([C,R]\) は8種類になる。</figcaption>
+</figure>
+
 
 <p>
 軌道和 \(\Psi_{h,g}\)（\(h\) が弦、\(g\) が環帯を一周する元）の言葉で、<a class="eq-ref" href="#eq-31-torus"></a> は \(z\) に指標 \(\chi_R(z)\) の重みを付けた軌道和になる。8つの状態は次のとおりである（規格化前）。
@@ -811,7 +863,7 @@ Kitaev 模型の準粒子にも同様のものが作れ、<strong>リボン演�
 
 <p>
 次に頂点欠陥の弦演算子の類似を考える。トーリック符号の頂点欠陥の弦と同様に、赤い辺の列の上に弦を置くことになるが、手順はもう少し複雑である。
-最初のプラケットから最後のプラケットまで、ラベル \(h\) の弦を引き、緑の辺を通過させる。ダイアグラム代数では、この弦が緑の辺 \(x_1\) を通ると弦のラベルは \(x_1^{-1}hx_1\) に共役され（図31.15と同様）、
+最初のプラケットから最後のプラケットまで、ラベル \(h\) の弦を引き、緑の辺を通過させる。ダイアグラム代数では、この弦が緑の辺 \(x_1\) を通ると弦のラベルは \(x_1^{-1}hx_1\) に共役され（原書の図31.15と同様）、
 続けて \(x_2\) を通ると \(x_2^{-1}x_1^{-1}hx_1x_2\) となる。こうして弦をダイアグラムに入れてから赤い辺に融合する。演算子を
 \[
 \hat Z_h(\text{path})=\text{経路に沿ってラベル } h \text{ の弦を引き、辺に融合する操作}
@@ -893,7 +945,7 @@ W_{\text{loop}}=\operatorname{Tr}_R\,\mathcal P\exp\Bigl(\ii\oint_{\text{loop}}\
 </p>
 
 <p>
-ここで空間を離散化し、頂点を辺で結ぶ（図31.23右）。<strong>これは本章前半の Kitaev 模型の格子とは別で、その双対格子である</strong>。
+ここで空間を離散化し、頂点を辺で結ぶ（原書の図31.23右）。<strong>これは本章前半の Kitaev 模型の格子とは別で、その双対格子である</strong>。
 頂点 \(i\) から \(j\) への有向辺に群の元 \(g_{i,j}=\mathcal P\exp\bigl(\ii\int_{r_i}^{r_j}\dd l^\mu A_\mu\bigr)\) を割り当てる。
 逆向きに辿れば逆元 \(g_{j,i}=g_{i,j}^{-1}\) である。頂点 \(i_1,i_2,\dots,i_N,i_1\) を訪れる Wilson ループは
 \[
@@ -955,11 +1007,49 @@ H=-J_1\sum_{\text{vertices }i}A_i-J_2\sum_{\text{plaquettes }p}B_p,\qquad J_1&gt
 <div class="thm-box">
 <span class="box-title">結果（Kitaev 模型と離散ゲージ理論の対応）</span>
 <a class="eq-ref" href="#eq-31-Hgauge"></a> は Kitaev (2003) が導入したハミルトニアンそのものである。
-これは§31.1.3の <a class="eq-ref" href="#eq-31-H"></a> を<strong>双対格子</strong>の上で書いたものと同値で（図31.23）、
+これは§31.1.3の <a class="eq-ref" href="#eq-31-H"></a> を<strong>双対格子</strong>の上で書いたものと同値で（原書の図31.23）、
 \(J_2=\Delta_v\)、\(J_1=\Delta_p\) である。
 もとの模型の頂点で作用していた \(\hat V_\alpha\) は、いまの模型のプラケットで作用する \(B_p\) と同一であり、
 もとの模型のプラケットで作用していた \(\hat P_\beta\) は、いまの模型の頂点で作用する \(A_i\) と同一である。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 175" xmlns="http://www.w3.org/2000/svg">
+  <line x1="60" y1="40" x2="160" y2="40" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="90" x2="160" y2="90" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="140" x2="160" y2="140" class="line" stroke-width="1.5"/>
+  <line x1="60" y1="40" x2="60" y2="140" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="40" x2="110" y2="140" class="line" stroke-width="1.5"/>
+  <line x1="160" y1="40" x2="160" y2="140" class="line" stroke-width="1.5"/>
+  <path d="M85 28 L85 65 L135 65 L135 28" class="line accent" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M38 65 L85 65" class="line accent" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M135 65 L182 65" class="line accent" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M85 65 L85 115 L135 115 L135 65" class="line accent" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M38 115 L85 115" class="line accent" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M135 115 L182 115" class="line accent" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M85 115 L85 152" class="line accent" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M135 115 L135 152" class="line accent" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <circle cx="60" cy="40" r="4" class="gate"/>
+  <circle cx="110" cy="40" r="4" class="gate"/>
+  <circle cx="160" cy="40" r="4" class="gate"/>
+  <circle cx="60" cy="90" r="4" class="gate"/>
+  <circle cx="110" cy="90" r="4" class="gate"/>
+  <circle cx="160" cy="90" r="4" class="gate"/>
+  <circle cx="60" cy="140" r="4" class="gate"/>
+  <circle cx="110" cy="140" r="4" class="gate"/>
+  <circle cx="160" cy="140" r="4" class="gate"/>
+  <circle cx="85" cy="65" r="4" class="accent-fill"/>
+  <circle cx="135" cy="65" r="4" class="accent-fill"/>
+  <circle cx="85" cy="115" r="4" class="accent-fill"/>
+  <circle cx="135" cy="115" r="4" class="accent-fill"/>
+  <text x="225" y="50" class="label">実線・白丸：本章前半の格子</text>
+  <text x="225" y="78" class="label">破線・青点：双対格子</text>
+  <text x="225" y="112" class="label">V 項は双対の B 項に対応</text>
+  <text x="225" y="136" class="label">P 項は双対の A 項に対応</text>
+</svg>
+<figcaption>図 31.5：元の格子とその双対格子。双対格子の頂点は元のプラケットの中心にあり、双対格子の辺は元の辺と1本ずつ交差する。頂点とプラケットの役割が入れ替わる。</figcaption>
+</figure>
+
 
 <div class="remark-box">
 <span class="box-title">補足（辞書：格子ゲージ理論の言葉での読み替え）</span>

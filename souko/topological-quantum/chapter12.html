@@ -123,6 +123,33 @@ C^{(6)}_{n,m,q}=\sum_{n'}C^{(5)}_{n,n',q}\,C^{(1)}_{n',m,q}
 「真空で始まり真空で終わる図は複素数」という最初の主張と整合する。
 この貼り合わせは<a href="chapter07.html">第7章</a>で境界付き多様体を貼り合わせた操作と同じ構造をしている。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <line x1="80" y1="40" x2="80" y2="15" class="line" stroke-width="1.5"/>
+  <line x1="120" y1="40" x2="120" y2="15" class="line" stroke-width="1.5"/>
+  <rect x="60" y="40" width="80" height="30" class="gate" stroke-width="1.5"/>
+  <text x="76" y="60" class="label">C(5)</text>
+  <line x1="75" y1="70" x2="75" y2="120" class="line accent" stroke-width="1.5"/>
+  <line x1="100" y1="70" x2="100" y2="120" class="line accent" stroke-width="1.5"/>
+  <line x1="125" y1="70" x2="125" y2="120" class="line accent" stroke-width="1.5"/>
+  <rect x="60" y="120" width="80" height="30" class="gate" stroke-width="1.5"/>
+  <text x="76" y="140" class="label">C(1)</text>
+  <line x1="80" y1="150" x2="80" y2="172" class="line" stroke-width="1.5"/>
+  <line x1="120" y1="150" x2="120" y2="172" class="line" stroke-width="1.5"/>
+  <text x="160" y="25" class="label-muted">出力（上端・ケット側）</text>
+  <text x="160" y="100" class="label-muted">中間状態が縮約される</text>
+  <text x="160" y="170" class="label-muted">入力（下端・ブラ側）</text>
+  <text x="310" y="100" class="label">＝</text>
+  <line x1="360" y1="60" x2="360" y2="15" class="line" stroke-width="1.5"/>
+  <line x1="400" y1="60" x2="400" y2="15" class="line" stroke-width="1.5"/>
+  <rect x="340" y="60" width="80" height="60" class="gate" stroke-width="1.5"/>
+  <text x="356" y="95" class="label">C(6)</text>
+  <line x1="360" y1="120" x2="360" y2="172" class="line" stroke-width="1.5"/>
+  <line x1="400" y1="120" x2="400" y2="172" class="line" stroke-width="1.5"/>
+</svg>
+<figcaption>図 12.1：演算子を縦に積む。下の図の上端と上の図の下端が縮約され、係数は行列の積 \(C^{(6)}=C^{(5)}C^{(1)}\) になる。</figcaption>
+</figure>
 </section>
 
 <section>
@@ -205,7 +232,7 @@ C^{(6)}_{n,m,q}=\sum_{n'}C^{(5)}_{n,n',q}\,C^{(1)}_{n',m,q}
   <text x="441" y="90" class="label">c</text>
   <text x="290" y="172" class="label-muted">バブルの除去（物理的規格化）</text>
 </svg>
-<figcaption>図 12.1：頂点のケットとブラ、および両者を積んでできるバブル。物理的規格化ではバブルは係数なしで1本の線に置き換わる（時間は下から上）。</figcaption>
+<figcaption>図 12.2：頂点のケットとブラ、および両者を積んでできるバブル。物理的規格化ではバブルは係数なしで1本の線に置き換わる（時間は下から上）。</figcaption>
 </figure>
 
 <div class="thm-box">
@@ -312,7 +339,7 @@ C^{(6)}_{n,m,q}=\sum_{n'}C^{(5)}_{n,n',q}\,C^{(1)}_{n',m,q}
   <text x="384" y="106" class="label">f</text>
   <text x="367" y="152" class="label">e</text>
 </svg>
-<figcaption>図 12.2：F 移動。左の木（a と b を先に融合）を、右の木（b と c を先に融合）の重ね合わせに書き換える。係数は直下の規則にある F 行列要素。</figcaption>
+<figcaption>図 12.3：F 移動。左の木（a と b を先に融合）を、右の木（b と c を先に融合）の重ね合わせに書き換える。係数は直下の規則にある F 行列要素。</figcaption>
 </figure>
 
 <div class="thm-box">
@@ -394,6 +421,18 @@ Kauffman ブラケットでは、ひもを切らない限り図を自由に変�
 頂点の足の曲げについては §12.4.1 と<a href="chapter14.html">第14章</a>で調べる。
 <a href="chapter16.html">第16章</a>で扱う単純な理論ではこれらも許される（時間と空間を自由に入れ替えられる）が、そのような理論は一般的ではない。
 </p>
+
+<figure>
+<svg viewBox="0 0 460 175" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 60 150 C 60 105 110 105 110 80 C 110 55 60 55 60 20" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="30" y="170" class="label-muted">許される：常に上向き</text>
+  <path d="M 280 150 L 280 50 C 280 25 320 25 320 50 L 320 110 C 320 135 360 135 360 110 L 360 20" class="line" fill="none" stroke-width="1.5"/>
+  <text x="268" y="15" class="label-muted">対消滅</text>
+  <text x="330" y="152" class="label-muted">対生成</text>
+  <text x="250" y="172" class="label-muted">一般には許されない：時間を逆行</text>
+</svg>
+<figcaption>図 12.4：因果的アイソトピー。上向きの線をうねらせるだけの変形（左）は許されるが、時間を逆行するジグザグ（右）を作る変形は余分な対生成・対消滅を含むので一般には許されない。</figcaption>
+</figure>
 </section>
 
 <section>
@@ -442,6 +481,27 @@ Kauffman ブラケットでは、ひもを切らない限り図を自由に変�
 \]</div>
 である（物理的規格化）。つまり足を曲げた頂点は素直な頂点に比例するが、比例係数は一般に 1 ではない。
 </div>
+
+<figure>
+<svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+  <line x1="110" y1="160" x2="110" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="110" y1="95" x2="80" y2="20" class="line" stroke-width="1.5"/>
+  <path d="M 110 95 L 140 128 C 152 145 190 145 190 120 L 190 20" class="line accent" fill="none" stroke-width="1.5"/>
+  <text x="118" y="155" class="label">b</text>
+  <text x="68" y="14" class="label">c</text>
+  <text x="196" y="30" class="label">a</text>
+  <text x="40" y="182" class="label-muted">足を曲げた頂点</text>
+  <text x="225" y="95" class="label">＝ F(Ic) ×</text>
+  <line x1="380" y1="160" x2="380" y2="95" class="line" stroke-width="1.5"/>
+  <line x1="380" y1="95" x2="350" y2="20" class="line" stroke-width="1.5"/>
+  <line x1="380" y1="95" x2="410" y2="20" class="line accent" stroke-width="1.5"/>
+  <text x="388" y="155" class="label">b</text>
+  <text x="338" y="14" class="label">c</text>
+  <text x="416" y="30" class="label">a</text>
+  <text x="330" y="182" class="label-muted">素直な頂点</text>
+</svg>
+<figcaption>図 12.5：頂点の足を曲げる。\(a\) の足をいったん下へ折り返した図は、素直な頂点に \(F\) 行列の要素 \([F^{a\bar a b}_b]_{Ic}\) を掛けたものに等しい。</figcaption>
+</figure>
 
 <div class="example-box">
 <span class="box-title">例（2つのループが線 \(c\) を共有する図）</span>
